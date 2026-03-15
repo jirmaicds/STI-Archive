@@ -649,12 +649,17 @@ async function handleStudiesPdf(req, res) {
     if (isSupabaseConfigured()) {
       const supabase = getSupabase();
       
+      // Debug: log the path being used
+      console.log('PDF Path received:', pdfPath);
+      
       // Path from frontend is: Research/2023-2024/Juangco et al. (2024).pdf
       // This matches directly with the Studies bucket
       // No need to add 'research/' prefix
       
       // Redirect to public URL directly
       const { data: urlData } = supabase.storage.from('Studies').getPublicUrl(pdfPath);
+      
+      console.log('Supabase URL generated:', urlData?.publicUrl);
       
       if (urlData?.publicUrl) {
         res.statusCode = 302;
@@ -665,10 +670,11 @@ async function handleStudiesPdf(req, res) {
       
       console.error('PDF not found in Studies bucket:', { pdfPath });
       res.statusCode = 404;
-      res.end(JSON.stringify({ success: false, error: 'PDF not found in Studies bucket' }));
+      res.end(JSON.stringify({ success: false, error: 'PDF not found in Studies bucket', debug: { pdfPath, supabaseConfigured: true } }));
     } else {
+      console.log('Supabase NOT configured - URL:', config.supabase.url, 'Key:', config.supabase.anonKey ? 'set' : 'not set');
       res.statusCode = 404;
-      res.end(JSON.stringify({ success: false, error: 'PDF not available - Supabase not configured' }));
+      res.end(JSON.stringify({ success: false, error: 'PDF not available - Supabase not configured', debug: { url: config.supabase.url, hasKey: !!config.supabase.anonKey } }));
     }
   } catch (error) {
     console.error('Error getting PDF:', error);

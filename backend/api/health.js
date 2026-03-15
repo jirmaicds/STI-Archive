@@ -1,10 +1,7 @@
 /**
  * STI Archives API - Health Check
- * Tests Supabase connection
+ * Simple test without Supabase
  */
-
-const { config, isSupabaseConfigured } = require('../config/index.js');
-const { getSupabase } = require('../services/supabase.js');
 
 function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -24,31 +21,14 @@ async function handler(req, res) {
   const result = {
     success: true,
     timestamp: new Date().toISOString(),
-    supabase: {
-      configured: isSupabaseConfigured(),
-      url: config.supabase.url ? 'SET' : 'NOT SET',
-      anonKey: config.supabase.anonKey ? 'SET' : 'NOT SET',
-      serviceKey: config.supabase.serviceKey ? 'SET' : 'NOT SET'
-    },
-    jwt: {
-      secret: config.jwt.secret ? 'SET' : 'NOT SET'
+    message: 'API is working!',
+    environment: {
+      supabaseUrl: process.env.SUPABASE_URL ? 'SET' : 'NOT SET',
+      supabaseAnonKey: process.env.SUPABASE_ANON_KEY ? 'SET' : 'NOT SET',
+      supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY ? 'SET' : 'NOT SET',
+      jwtSecret: process.env.JWT_SECRET ? 'SET' : 'NOT SET'
     }
   };
-
-  // Test Supabase connection - skip table query to avoid RLS issues
-  if (isSupabaseConfigured()) {
-    try {
-      const supabase = getSupabase();
-      // Just verify client is created - skip table query
-      result.supabase.connection = 'SUCCESS (client created)';
-      result.supabase.clientUrl = config.supabase.url;
-    } catch (err) {
-      result.supabase.connection = 'ERROR';
-      result.supabase.error = err.message;
-    }
-  } else {
-    result.supabase.connection = 'NOT CONFIGURED';
-  }
 
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json');

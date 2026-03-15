@@ -48,6 +48,10 @@
       "dest": "/api/auth/approve-user.js"
     },
     {
+      "src": "/api/auth/accept-user",
+      "dest": "/api/auth/approve-user.js"
+    },
+    {
       "src": "/api/activity/log",
       "dest": "/api/activity/log.js"
     },
@@ -62,6 +66,14 @@
     {
       "src": "/api/users",
       "dest": "/api/users/index.js"
+    },
+    {
+      "src": "/api/users/status",
+      "dest": "/api/users/status/index.js"
+    },
+    {
+      "src": "/api/users/remove",
+      "dest": "/api/users/status/index.js"
     },
     {
       "src": "/api/users/([^/]+)",
@@ -86,6 +98,14 @@
     {
       "src": "/api/user/upload",
       "dest": "/api/user/upload/index.js"
+    },
+    {
+      "src": "/api/admin/user-uploads",
+      "dest": "/api/admin/user-uploads/index.js"
+    },
+    {
+      "src": "/api/admin/user-upload/([^/]+)",
+      "dest": "/api/admin/user-uploads/index.js"
     },
     {
       "src": "/api/documents",

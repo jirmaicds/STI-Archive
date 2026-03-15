@@ -118,30 +118,65 @@ async function handleAuthLogin(req, res, body) {
   try {
     const { email, password, fullname } = body;
     const loginField = email || fullname;
-    if (!loginField || !password) { res.statusCode = 400; res.end(JSON.stringify({ success: false, error: 'Missing credentials' })); return; }
+    
+    // Support both email and fullname login
+    if (!loginField) { res.statusCode = 400; res.end(JSON.stringify({ success: false, error: 'Email or username is required' })); return; }
 
     if (isSupabaseConfigured()) {
       const supabase = getSupabase();
-      let { data: users, error } = await supabase.from('users').select('*').eq('email', loginField.toLowerCase());
-      if (error) throw error;
-      if (!users || users.length === 0) {
-        const { data: nameUsers } = await supabase.from('users').select('*').eq('fullname', loginField);
-        if (!nameUsers || nameUsers.length === 0) { res.statusCode = 401; res.end(JSON.stringify({ success: false, error: 'Invalid credentials' })); return; }
-        var user = nameUsers[0];
-      } else {
-        var user = users[0];
+      
+      // Find user by email or fullname
+      let query = supabase.from('users').select('*');
+      
+      // Try email first
+      if (email) {
+        const { data: emailUsers } = await query.eq('email', loginField.toLowerCase());
+        if (emailUsers && emailUsers.length > 0) {
+          var user = emailUsers[0];
+        }
       }
-      const validPassword = await bcrypt.compare(password, user.password);
-      if (!validPassword) { res.statusCode = 401; res.end(JSON.stringify({ success: false, error: 'Invalid credentials' })); return; }
-      if (!user.verified && user.role !== 'admin' && user.role !== 'coadmin') { res.statusCode = 403; res.end(JSON.stringify({ success: false, error: 'Account not activated' })); return; }
+      
+      // If not found by email, try fullname
+      if (!user && fullname) {
+        const { data: nameUsers } = await supabase.from('users').select('*').eq('fullname', loginField);
+        if (nameUsers && nameUsers.length > 0) {
+          var user = nameUsers[0];
+        }
+      }
+      
+      if (!user) {
+        res.statusCode = 401;
+        res.end(JSON.stringify({ success: false, error: 'User not found. Please register first.' }));
+        return;
+      }
+
+      // If password provided, verify it
+      if (password) {
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) {
+          res.statusCode = 401;
+          res.end(JSON.stringify({ success: false, error: 'Invalid password' }));
+          return;
+        }
+      }
+
+      // Check if user is verified
+      if (!user.verified && user.role !== 'admin' && user.role !== 'coadmin') {
+        res.statusCode = 403;
+        res.end(JSON.stringify({ success: false, error: 'Account not activated' }));
+        return;
+      }
+
       const token = generateToken(user);
       res.statusCode = 200;
       res.end(JSON.stringify({ success: true, token, user: { id: user.id, email: user.email, fullname: user.fullname, role: user.role, verified: user.verified } }));
     } else {
+      // Dev mode fallback - accept any login
       res.statusCode = 200;
       res.end(JSON.stringify({ success: true, token: 'dev-token', user: { id: 'dev-id', email: loginField, fullname: loginField, role: 'admin', verified: true } }));
     }
   } catch (error) {
+    console.error('Login error:', error);
     res.statusCode = 500;
     res.end(JSON.stringify({ success: false, error: error.message }));
   }
@@ -603,6 +638,16 @@ async function handleSiteSettings(req, res) {
   if (req.method === 'OPTIONS') { handleOptions(res); return; }
   if (req.method !== 'GET' && req.method !== 'POST') { res.statusCode = 405; res.end(JSON.stringify({ success: false, error: 'Method not allowed' })); return; }
 
+  // Default settings
+  const defaultSettings = {
+    siteName: 'STI Archives',
+    siteDescription: 'Digital Library for Research Papers',
+    siteEmail: 'stiarchivesorg@gmail.com',
+    siteFavicon: '/frontend/assets/images/STI Logo.png',
+    primaryColor: '#0057b8',
+    secondaryColor: '#ffd700'
+  };
+
   try {
     if (req.method === 'POST') {
       const body = await parseBody(req);
@@ -620,17 +665,24 @@ async function handleSiteSettings(req, res) {
       if (isSupabaseConfigured()) {
         const supabase = getSupabase();
         const { data, error } = await supabase.from('site_settings').select('*').limit(1).single();
-        if (error) throw error;
-        res.statusCode = 200;
-        res.end(JSON.stringify({ success: true, settings: data }));
+        
+        // If no data or error, return default settings
+        if (error || !data) {
+          res.statusCode = 200;
+          res.end(JSON.stringify({ success: true, settings: defaultSettings }));
+        } else {
+          res.statusCode = 200;
+          res.end(JSON.stringify({ success: true, settings: data }));
+        }
       } else {
         res.statusCode = 200;
-        res.end(JSON.stringify({ success: true, settings: {} }));
+        res.end(JSON.stringify({ success: true, settings: defaultSettings }));
       }
     }
   } catch (error) {
-    res.statusCode = 500;
-    res.end(JSON.stringify({ success: false, error: error.message }));
+    // Return default settings on error
+    res.statusCode = 200;
+    res.end(JSON.stringify({ success: true, settings: defaultSettings }));
   }
 }
 

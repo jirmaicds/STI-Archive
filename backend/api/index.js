@@ -642,21 +642,65 @@ async function handleStudiesPdf(req, res) {
 
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
-    const filename = url.searchParams.get('filename') || url.searchParams.get('path');
+    const pdfPath = url.searchParams.get('path') || url.searchParams.get('filename');
 
-    if (!filename) { res.statusCode = 400; res.end(JSON.stringify({ success: false, error: 'filename is required' })); return; }
+    if (!pdfPath) { res.statusCode = 400; res.end(JSON.stringify({ success: false, error: 'PDF path is required' })); return; }
 
     if (isSupabaseConfigured()) {
       const supabase = getSupabase();
-      const { data, error } = await supabase.storage.from('Studies').getPublicUrl(`research/${filename}`);
-      if (error) throw error;
-      res.statusCode = 200;
-      res.end(JSON.stringify({ success: true, url: data.publicUrl }));
+      
+      // PDF is in Studies bucket → research/2023-2024/filename.pdf
+      const folderPath = 'research/' + pdfPath;
+      
+      // Try to download from Studies bucket
+      const { data: studyData, error: studyError } = await supabase.storage.from('Studies').download(folderPath);
+      
+      if (studyData && !studyError) {
+        res.setHeader('Content-Type', 'application/pdf');
+        const chunks = [];
+        for await (const chunk of studyData.stream()) {
+          chunks.push(chunk);
+        }
+        const buffer = Buffer.concat(chunks);
+        res.setHeader('Content-Length', buffer.length);
+        res.end(buffer);
+        return;
+      }
+      
+      // Try direct path
+      const { data: directData, error: directError } = await supabase.storage.from('Studies').download(pdfPath);
+      
+      if (directData && !directError) {
+        res.setHeader('Content-Type', 'application/pdf');
+        const chunks = [];
+        for await (const chunk of directData.stream()) {
+          chunks.push(chunk);
+        }
+        const buffer = Buffer.concat(chunks);
+        res.setHeader('Content-Length', buffer.length);
+        res.end(buffer);
+        return;
+      }
+      
+      // If download fails, try to redirect to public URL
+      const { data: urlData } = supabase.storage.from('Studies').getPublicUrl(folderPath);
+      
+      if (urlData?.publicUrl) {
+        res.statusCode = 302;
+        res.setHeader('Location', urlData.publicUrl);
+        res.end();
+        return;
+      }
+      
+      console.error('PDF not found in Studies bucket:', { folderPath, pdfPath, studyError, directError });
+      res.statusCode = 404;
+      res.end(JSON.stringify({ success: false, error: 'PDF not found in Studies bucket' }));
     } else {
-      res.statusCode = 200;
-      res.end(JSON.stringify({ success: false, error: 'Supabase not configured' }));
+      res.statusCode = 404;
+      res.end(JSON.stringify({ success: false, error: 'PDF not available - Supabase not configured' }));
     }
   } catch (error) {
+    console.error('Error getting PDF:', error);
     res.statusCode = 500;
     res.end(JSON.stringify({ success: false, error: error.message }));
   }

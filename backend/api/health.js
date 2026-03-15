@@ -1,14 +1,18 @@
 /**
- * Vercel Serverless Function - Health Check
+ * STI Archives API - Health Check
+ * Tests Supabase connection
  */
+
+const { config, isSupabaseConfigured } = require('../config/index.js');
+const { getSupabase } = require('../services/supabase.js');
 
 function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 }
 
-module.exports = async function handler(req, res) {
+async function handler(req, res) {
   setCorsHeaders(res);
   
   if (req.method === 'OPTIONS') {
@@ -17,21 +21,43 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  // Check Supabase connection
-  let supabaseStatus = 'not_configured';
-  try {
-    const { isSupabaseConfigured } = require('../config/index.js');
-    supabaseStatus = isSupabaseConfigured() ? 'connected' : 'not_configured';
-  } catch (e) {
-    supabaseStatus = 'error';
+  const result = {
+    success: true,
+    timestamp: new Date().toISOString(),
+    supabase: {
+      configured: isSupabaseConfigured(),
+      url: config.supabase.url ? 'SET' : 'NOT SET',
+      anonKey: config.supabase.anonKey ? 'SET' : 'NOT SET',
+      serviceKey: config.supabase.serviceKey ? 'SET' : 'NOT SET'
+    },
+    jwt: {
+      secret: config.jwt.secret ? 'SET' : 'NOT SET'
+    }
+  };
+
+  // Test Supabase connection
+  if (isSupabaseConfigured()) {
+    try {
+      const supabase = getSupabase();
+      const { data, error } = await supabase.from('users').select('count').limit(1);
+      
+      if (error) {
+        result.supabase.connection = 'ERROR';
+        result.supabase.error = error.message;
+      } else {
+        result.supabase.connection = 'SUCCESS';
+      }
+    } catch (err) {
+      result.supabase.connection = 'ERROR';
+      result.supabase.error = err.message;
+    }
+  } else {
+    result.supabase.connection = 'NOT CONFIGURED';
   }
 
   res.statusCode = 200;
-  res.end(JSON.stringify({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    supabase: supabaseStatus,
-    node: process.version,
-    platform: process.platform
-  }));
-};
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify(result, null, 2));
+}
+
+module.exports = handler;

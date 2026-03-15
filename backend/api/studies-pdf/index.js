@@ -48,21 +48,21 @@ async function handleGetPdf(req, res) {
     if (isSupabaseConfigured()) {
       const supabase = getSupabase();
       
-      // Try to get from articles bucket - get public URL and redirect
-      const { data: urlData1 } = supabase.storage
-        .from('articles')
-        .getPublicUrl(pdfPath);
+      // PDF is in Studies bucket → research/2023-2024/filename.pdf
+      // Path from frontend is: Research/2023-2024/Santibañez et al.pdf
+      // Need to prepend 'research/' to match folder structure
+      const folderPath = 'research/' + pdfPath;
       
-      // Check if file exists in articles bucket
-      const { data: articleData } = await supabase.storage
-        .from('articles')
-        .download(pdfPath);
+      // Try to get from Studies bucket
+      const { data: studyData, error: studyError } = await supabase.storage
+        .from('Studies')
+        .download(folderPath);
       
-      if (articleData) {
-        // Serve from articles bucket
+      if (studyData && !studyError) {
+        // Serve from Studies bucket
         res.setHeader('Content-Type', 'application/pdf');
         const chunks = [];
-        for await (const chunk of articleData.stream()) {
+        for await (const chunk of studyData.stream()) {
           chunks.push(chunk);
         }
         const buffer = Buffer.concat(chunks);
@@ -71,15 +71,15 @@ async function handleGetPdf(req, res) {
         return;
       }
       
-      // Try user-uploads bucket
-      const { data: uploadData } = await supabase.storage
-        .from('user-uploads')
+      // Try direct path in Studies bucket
+      const { data: directData, error: directError } = await supabase.storage
+        .from('Studies')
         .download(pdfPath);
       
-      if (uploadData) {
+      if (directData && !directError) {
         res.setHeader('Content-Type', 'application/pdf');
         const chunks = [];
-        for await (const chunk of uploadData.stream()) {
+        for await (const chunk of directData.stream()) {
           chunks.push(chunk);
         }
         const buffer = Buffer.concat(chunks);
@@ -88,28 +88,21 @@ async function handleGetPdf(req, res) {
         return;
       }
       
-      // If not found in either bucket, try getting public URL from articles
-      if (urlData1?.publicUrl) {
+      // If download fails, try to redirect to public URL
+      const { data: urlData } = supabase.storage
+        .from('Studies')
+        .getPublicUrl(folderPath);
+      
+      if (urlData?.publicUrl) {
         res.statusCode = 302;
-        res.setHeader('Location', urlData1.publicUrl);
+        res.setHeader('Location', urlData.publicUrl);
         res.end();
         return;
       }
       
-      // Try user-uploads public URL
-      const { data: urlData2 } = supabase.storage
-        .from('user-uploads')
-        .getPublicUrl(pdfPath);
-      
-      if (urlData2?.publicUrl) {
-        res.statusCode = 302;
-        res.setHeader('Location', urlData2.publicUrl);
-        res.end();
-        return;
-      }
-      
+      console.error('PDF not found in Studies bucket:', { folderPath, pdfPath, studyError, directError });
       res.statusCode = 404;
-      res.end(JSON.stringify({ success: false, error: 'PDF not found in storage' }));
+      res.end(JSON.stringify({ success: false, error: 'PDF not found in Studies bucket' }));
       return;
     } else {
       // Fallback - PDF not available

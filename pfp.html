@@ -1126,7 +1126,8 @@
         }
 
         .background-image-container:hover {
-            /* No hover effects */
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
         }
 
         
@@ -1636,6 +1637,7 @@
         .upld-boxes .upld-dscrpt small.description-text {
             display: -webkit-box;
             -webkit-line-clamp: 3;
+            line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
             max-height: 3.6em;
@@ -5656,8 +5658,8 @@
                         desc.innerHTML = `
                             <div style="text-align: center; padding: 5px; margin: 0 8px; overflow: hidden;">
                                 <strong style="display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 2px;">${title}</strong>
-                                <small style="display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 1px;">by ${author || 'Unknown'}</small>
-                                <small style="display: block; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; line-height: 1.2; max-height: 3.6em;">${description || 'No description'}</small>
+                                <small style="overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; line-height: 1.2; max-height: 3.6em;">by ${author || 'Unknown'}</small>
+                                <small style="overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; line-height: 1.2; max-height: 3.6em;">${description || 'No description'}</small>
                             </div>
                         `;
 
@@ -5676,8 +5678,8 @@
                     desc.innerHTML = `
                         <div style="text-align: center; padding: 5px; margin: 0 10px; overflow: hidden;">
                             <strong style="display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 2px;">${title}</strong>
-                            <small style="display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 1px;">by ${author || 'Unknown'}</small>
-                            <small style="display: block; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; line-height: 1.2; max-height: 3.6em;">${description || 'No description'}</small>
+                            <small style="overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; line-height: 1.2; max-height: 3.6em;">by ${author || 'Unknown'}</small>
+                            <small style="overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; line-height: 1.2; max-height: 3.6em;">${description || 'No description'}</small>
                         </div>
                     `;
 

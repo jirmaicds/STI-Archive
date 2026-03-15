@@ -5547,15 +5547,15 @@ STI Archives Admin`;
             localStorage.setItem('users', JSON.stringify(users));
         }
         function refreshUsers() {
-            fetch('/api/users');
+            fetch('/api/users')
                 .then(response => response.json())
                 .then(data => {
-                    if (data) {
+                    if (data && !data.error) {
                         localStorage.setItem('users', JSON.stringify(data));
                         loadUsers();
                         alert('Users list refreshed successfully!');
                     } else {
-                        alert('Failed to refresh users: ' + (data.error || 'Unknown error'));
+                        alert('Failed to refresh users: ' + (data?.error || 'Unknown error'));
                     }
                 })
                 .catch(error => {

@@ -2207,21 +2207,6 @@
             // Legacy localStorage login (fallback when API fails)
             const fullname = email;
             const users = await getUsers();
-            // Check for Test User FIRST before user array lookup
-            const isTestUser = fullname === 'Test User';
-            
-            // REMOVED: Hardcoded admin check - now uses Supabase only
-                    setTimeout(() => {
-                        window.location.href = "Homepage.html";
-                    }, 1500);
-                    return;
-                } else {
-                    messageDiv.textContent = 'Invalid password for test user.';
-                    messageDiv.style.color = '#ff6b6b';
-                    messageDiv.style.display = 'block';
-                    return;
-                }
-            }
             
             // Then check users from users.json
             // Use fullname field and isActive for proper approval flow

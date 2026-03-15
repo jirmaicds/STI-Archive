@@ -20,11 +20,11 @@
       "dest": "/backend/api/index.js"
     },
     {
-      "src": "/assets/(.*)",
+      "src": "/frontend/assets/(.*)",
       "dest": "/frontend/assets/$1"
     },
     {
-      "src": "/frontend/assets/(.*)",
+      "src": "/assets/(.*)",
       "dest": "/frontend/assets/$1"
     },
     {

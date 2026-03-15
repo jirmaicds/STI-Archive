@@ -21,7 +21,7 @@
     },
     {
       "src": "/api/health",
-      "dest": "/backend/api/health.js"
+      "dest": "/backend/api/health"
     },
     {
       "src": "/get_users",

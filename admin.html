@@ -4183,7 +4183,7 @@
                 const token = localStorage.getItem('sti_auth_token');
                 console.log('DEBUG: Auth token:', token ? 'present' : 'missing');
                 // Add cache-busting query parameter
-                const response = await fetch('/get_users?_=' + Date.now(), {
+                const response = await fetch('/api/users?_=' + Date.now(), {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -4191,15 +4191,19 @@
                 console.log('DEBUG: Fetch response status:', response.status);
                 if (response.ok) {
                     console.log('DEBUG: Server responded successfully, parsing JSON...');
-                    const users = await response.json();
+                    const usersData = await response.json();
+                    // Handle {success: true, users: []} format from API
+                    const users = usersData.success ? usersData.users : usersData;
+                    // Handle both array and {users: []} response formats
+                    const userData = Array.isArray(users) ? users : (users.users || []);
                     // Add backward compatibility: map fullname to name
-                    users.forEach(user => {
+                    userData.forEach(user => {
                         if (user.fullname && !user.name) {
                             user.name = user.fullname;
                         }
                     });
                     // Save to localStorage for offline use
-                    localStorage.setItem('users', JSON.stringify(users));
+                    localStorage.setItem('users', JSON.stringify(userData));
                     isLoadingUsers = false;
                     return users;
                 } else {
@@ -5229,7 +5233,7 @@
                 // Start polling for new users every 5 seconds
                 setInterval(async () => {
                     try {
-                        const response = await fetch('/get_users');
+                        const response = await fetch('/api/users');
                         if (response.ok) {
                             const serverUsers = await response.json();
                             console.log('DEBUG: Polled users from server, count:', serverUsers.length);
@@ -8430,7 +8434,7 @@ STI Archives Admin`;
                 isLoadingSiteSettings = true;
                 console.log('DEBUG: Attempting to load site settings from server...');
                 try {
-                    const response = await fetch('/get_site_settings');
+                    const response = await fetch('/api/site-settings');
                     console.log('DEBUG: Site settings fetch response status:', response.status);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);

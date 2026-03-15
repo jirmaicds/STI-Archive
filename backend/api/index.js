@@ -652,37 +652,7 @@ async function handleStudiesPdf(req, res) {
       // PDF is in Studies bucket → research/2023-2024/filename.pdf
       const folderPath = 'research/' + pdfPath;
       
-      // Try to download from Studies bucket
-      const { data: studyData, error: studyError } = await supabase.storage.from('Studies').download(folderPath);
-      
-      if (studyData && !studyError) {
-        res.setHeader('Content-Type', 'application/pdf');
-        const chunks = [];
-        for await (const chunk of studyData.stream()) {
-          chunks.push(chunk);
-        }
-        const buffer = Buffer.concat(chunks);
-        res.setHeader('Content-Length', buffer.length);
-        res.end(buffer);
-        return;
-      }
-      
-      // Try direct path
-      const { data: directData, error: directError } = await supabase.storage.from('Studies').download(pdfPath);
-      
-      if (directData && !directError) {
-        res.setHeader('Content-Type', 'application/pdf');
-        const chunks = [];
-        for await (const chunk of directData.stream()) {
-          chunks.push(chunk);
-        }
-        const buffer = Buffer.concat(chunks);
-        res.setHeader('Content-Length', buffer.length);
-        res.end(buffer);
-        return;
-      }
-      
-      // If download fails, try to redirect to public URL
+      // Redirect to public URL directly
       const { data: urlData } = supabase.storage.from('Studies').getPublicUrl(folderPath);
       
       if (urlData?.publicUrl) {
@@ -692,7 +662,7 @@ async function handleStudiesPdf(req, res) {
         return;
       }
       
-      console.error('PDF not found in Studies bucket:', { folderPath, pdfPath, studyError, directError });
+      console.error('PDF not found in Studies bucket:', { folderPath, pdfPath });
       res.statusCode = 404;
       res.end(JSON.stringify({ success: false, error: 'PDF not found in Studies bucket' }));
     } else {

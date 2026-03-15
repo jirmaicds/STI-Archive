@@ -35,7 +35,7 @@ function getTransporter() {
  * Send password reset email
  */
 async function sendPasswordResetEmail(email, resetCode, resetToken) {
-  const siteUrl = process.env.SITE_URL || 'https://stiarchives.x10.mx';
+  const siteUrl = process.env.SITE_URL || 'https://sti-archive.vercel.app';
   const mailOptions = {
     from: `"STI Archives" <${emailConfig.auth.user}>`,
     to: email,
@@ -66,7 +66,7 @@ async function sendPasswordResetEmail(email, resetCode, resetToken) {
  * Send account activation email
  */
 async function sendActivationEmail(email, activationToken, userName) {
-  const siteUrl = process.env.SITE_URL || 'https://stiarchives.x10.mx';
+  const siteUrl = process.env.SITE_URL || 'https://sti-archive.vercel.app';
   const activationUrl = `${siteUrl}/api/auth/activate?token=${activationToken}`;
   
   const mailOptions = {
@@ -98,7 +98,7 @@ async function sendActivationEmail(email, activationToken, userName) {
  * Send account approval notification
  */
 async function sendApprovalNotification(email, userName) {
-  const siteUrl = process.env.SITE_URL || 'https://stiarchives.x10.mx';
+  const siteUrl = process.env.SITE_URL || 'https://sti-archive.vercel.app';
   
   const mailOptions = {
     from: `"STI Archives" <${emailConfig.auth.user}>`,

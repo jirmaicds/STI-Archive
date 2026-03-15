@@ -2209,45 +2209,8 @@
             const users = await getUsers();
             // Check for Test User FIRST before user array lookup
             const isTestUser = fullname === 'Test User';
-            // Check for Permanent Admin FIRST before user array lookup
-            const isAdmin = fullname === 'Permanent Admin' || fullname === 'Admin';
             
-            // Check for hardcoded admin account FIRST
-            if (isAdmin) {
-                if (password === 'admin123') {
-                    const adminAccount = { email: 'admin@clmb.sti.archives', fullname: 'Admin', role: 'admin', id: 'admin-permanent', isActive: true };
-                    localStorage.setItem('currentUser', JSON.stringify(adminAccount));
-                    if (rememberMe) {
-                        localStorage.setItem('adminRememberMe', fullname);
-                    } else {
-                        localStorage.removeItem('adminRememberMe');
-                    }
-                    // Show success modal
-                    showSuccessLoginMessage();
-                    setTimeout(() => {
-                        window.location.href = "admin.html";
-                    }, 1500);
-                    return;
-                } else {
-                    messageDiv.textContent = 'Invalid password. Please try again.';
-                    messageDiv.style.color = '#ff6b6b';
-                    messageDiv.style.display = 'block';
-                    return;
-                }
-            }
-            
-            // Check for Test User FIRST
-            if (isTestUser) {
-                if (password === 'usertesting') {
-                    const testUserAccount = { email: 'user@clmb.sti.archives', fullname: 'Test User', role: 'user', id: 'user-test', isActive: true };
-                    localStorage.setItem('currentUser', JSON.stringify(testUserAccount));
-                    if (rememberMe) {
-                        localStorage.setItem('userRememberMe', fullname);
-                    } else {
-                        localStorage.removeItem('userRememberMe');
-                    }
-                    // Show success modal
-                    showSuccessLoginMessage();
+            // REMOVED: Hardcoded admin check - now uses Supabase only
                     setTimeout(() => {
                         window.location.href = "Homepage.html";
                     }, 1500);

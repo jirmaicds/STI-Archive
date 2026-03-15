@@ -5245,7 +5245,7 @@
                     document.querySelector('.update-email-btn').innerHTML = '<i class="fas fa-plus"></i> Update Email';
         
                     // Send email change request to admins
-                    fetch('http://localhost:3001/request_email_change', {
+                    fetch('/api/user/request-email-change', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -5895,7 +5895,7 @@
 
         async function loadSiteSettings() {
             try {
-                const response = await fetch('http://localhost:3001/get_site_settings');
+                const response = await fetch('/api/site-settings');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }

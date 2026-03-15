@@ -4147,7 +4147,7 @@ STI Archives Admin`;
                 alert('Please fill in all fields.');
                 return;
             }
-            fetch('http://localhost:3001/send_update_email', {
+            fetch('/api/auth/send-update-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ to_email: email, subject: subject, message: message })
@@ -4248,7 +4248,7 @@ STI Archives Admin`;
                 }
 
                 // Also try server-side removal
-                fetch('http://localhost:3001/remove_user', {
+                fetch('/api/users/remove', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ user_id: userId })
@@ -5547,7 +5547,7 @@ STI Archives Admin`;
             localStorage.setItem('users', JSON.stringify(users));
         }
         function refreshUsers() {
-            fetch('/get_users')
+            fetch('/api/users');
                 .then(response => response.json())
                 .then(data => {
                     if (data) {
@@ -5791,7 +5791,7 @@ STI Archives Admin`;
                 strand: document.getElementById('edit-user-section').value
             };
 
-            fetch('http://localhost:3001/update_user', {
+            fetch('/api/users/update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userData)
@@ -5899,7 +5899,7 @@ STI Archives Admin`;
                 raf_path: null
             };
 
-            fetch('http://localhost:3001/add_user', {
+            fetch('/api/users/add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userData)
@@ -6079,7 +6079,7 @@ STI Archives Admin`;
                 isLoadingSiteSettings = true;
                 console.log('DEBUG: Attempting to load site settings from server...');
                 try {
-                    const response = await fetch('http://localhost:3001/get_site_settings');
+                    const response = await fetch('/api/site-settings');
                     console.log('DEBUG: Site settings fetch response status:', response.status);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -6154,7 +6154,7 @@ STI Archives Admin`;
 
             async function saveSettings(title, favicon) {
                 try {
-                    const response = await fetch('http://localhost:3001/update_site_settings', {
+                    const response = await fetch('/api/site-settings/update', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

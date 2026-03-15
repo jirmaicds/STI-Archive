@@ -116,31 +116,28 @@ async function handleAuthLogin(req, res, body) {
   if (req.method !== 'POST') { res.statusCode = 405; res.end(JSON.stringify({ success: false, error: 'Method not allowed' })); return; }
 
   try {
-    const { email, password, fullname } = body;
-    const loginField = email || fullname;
+    // Frontend sends { fullname: "username", password: "xxx" }
+    // Also support { email: "email", password: "xxx" }
+    const loginField = body.fullname || body.email;
+    const { password } = body;
     
-    // Support both email and fullname login
-    if (!loginField) { res.statusCode = 400; res.end(JSON.stringify({ success: false, error: 'Email or username is required' })); return; }
+    if (!loginField) { res.statusCode = 400; res.end(JSON.stringify({ success: false, error: 'Username or email is required' })); return; }
+    if (!password) { res.statusCode = 400; res.end(JSON.stringify({ success: false, error: 'Password is required' })); return; }
 
     if (isSupabaseConfigured()) {
       const supabase = getSupabase();
+      let user = null;
       
-      // Find user by email or fullname
-      let query = supabase.from('users').select('*');
+      // Try fullname lookup first (since frontend sends fullname field)
+      const { data: nameUsers } = await supabase.from('users').select('*').eq('fullname', loginField);
       
-      // Try email first
-      if (email) {
-        const { data: emailUsers } = await query.eq('email', loginField.toLowerCase());
+      if (nameUsers && nameUsers.length > 0) {
+        user = nameUsers[0];
+      } else {
+        // Try email lookup
+        const { data: emailUsers } = await supabase.from('users').select('*').eq('email', loginField.toLowerCase());
         if (emailUsers && emailUsers.length > 0) {
-          var user = emailUsers[0];
-        }
-      }
-      
-      // If not found by email, try fullname
-      if (!user && fullname) {
-        const { data: nameUsers } = await supabase.from('users').select('*').eq('fullname', loginField);
-        if (nameUsers && nameUsers.length > 0) {
-          var user = nameUsers[0];
+          user = emailUsers[0];
         }
       }
       
@@ -150,14 +147,12 @@ async function handleAuthLogin(req, res, body) {
         return;
       }
 
-      // If password provided, verify it
-      if (password) {
-        const validPassword = await bcrypt.compare(password, user.password);
-        if (!validPassword) {
-          res.statusCode = 401;
-          res.end(JSON.stringify({ success: false, error: 'Invalid password' }));
-          return;
-        }
+      // Verify password
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        res.statusCode = 401;
+        res.end(JSON.stringify({ success: false, error: 'Invalid password' }));
+        return;
       }
 
       // Check if user is verified

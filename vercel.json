@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "backend/api/**/*.js",
+      "src": "backend/api/index.js",
       "use": "@vercel/node"
     },
     {
@@ -17,19 +17,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/backend/api/$1"
-    },
-    {
-      "src": "/api/health",
-      "dest": "/backend/api/health"
-    },
-    {
-      "src": "/get_users",
-      "dest": "/backend/api/users/index.js"
-    },
-    {
-      "src": "/get_site_settings",
-      "dest": "/backend/api/site-settings/index.js"
+      "dest": "/backend/api/index.js"
     },
     {
       "src": "/assets/(.*)",

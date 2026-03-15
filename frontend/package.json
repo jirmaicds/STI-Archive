@@ -1,0 +1,17 @@
+{
+  "name": "sti-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for STI web application",
+  "main": "./index.html",
+  "scripts": {
+    "start": "http-server -p 3000 -c-1 -c \"Access-Control-Allow-Origin: *\"",
+    "dev": "http-server -p 3000 -c-1 -c \"Access-Control-Allow-Origin: *\"",
+    "test": "echo 'No tests configured'"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "keywords": ["html", "css", "javascript", "frontend"],
+  "author": "STI Development Team",
+  "license": "MIT"
+}

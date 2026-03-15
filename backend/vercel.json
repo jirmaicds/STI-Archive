@@ -1,0 +1,106 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/health",
+      "dest": "/api/health.js"
+    },
+    {
+      "src": "/api/auth/register",
+      "dest": "/api/auth/register.js"
+    },
+    {
+      "src": "/api/auth/login",
+      "dest": "/api/auth/login.js"
+    },
+    {
+      "src": "/api/auth/profile",
+      "dest": "/api/auth/profile.js"
+    },
+    {
+      "src": "/api/auth/logout",
+      "dest": "/api/auth/logout.js"
+    },
+    {
+      "src": "/api/auth/activate",
+      "dest": "/api/auth/activate.js"
+    },
+    {
+      "src": "/api/auth/forgot-password",
+      "dest": "/api/auth/forgot-password.js"
+    },
+    {
+      "src": "/api/auth/reset-password",
+      "dest": "/api/auth/reset-password.js"
+    },
+    {
+      "src": "/api/auth/verify-reset-code",
+      "dest": "/api/auth/verify-reset-code.js"
+    },
+    {
+      "src": "/api/auth/approve-user",
+      "dest": "/api/auth/approve-user.js"
+    },
+    {
+      "src": "/api/activity/log",
+      "dest": "/api/activity/log.js"
+    },
+    {
+      "src": "/api/activity/logs",
+      "dest": "/api/activity/logs.js"
+    },
+    {
+      "src": "/api/activity/count",
+      "dest": "/api/activity/count.js"
+    },
+    {
+      "src": "/api/users",
+      "dest": "/api/users/index.js"
+    },
+    {
+      "src": "/api/users/([^/]+)",
+      "dest": "/api/users/[id]/index.js"
+    },
+    {
+      "src": "/api/articles",
+      "dest": "/api/articles/index.js"
+    },
+    {
+      "src": "/api/articles/([^/]+)",
+      "dest": "/api/articles/[id]/index.js"
+    },
+    {
+      "src": "/api/carousel",
+      "dest": "/api/carousel/index.js"
+    },
+    {
+      "src": "/api/carousel/([^/]+)",
+      "dest": "/api/carousel/[id]/index.js"
+    },
+    {
+      "src": "/api/user/upload",
+      "dest": "/api/user/upload/index.js"
+    },
+    {
+      "src": "/api/documents",
+      "dest": "/api/documents/index.js"
+    },
+    {
+      "src": "/api/documents/([^/]+)",
+      "dest": "/api/documents/[id]/index.js"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

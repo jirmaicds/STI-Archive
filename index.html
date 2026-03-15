@@ -1,0 +1,4070 @@
+    <!--Index.html-->
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LogIn | STI Archives</title>
+        <!-- Preconnect to CDN for faster initial connection -->
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+        <link rel="icon" type="image/png" href="frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg?v=1" id="favicon-link">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+        <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+        <link rel="stylesheet" href="frontend/assets/css/style.css">
+        <style>
+            /* Override for index.html main-content and adsContentContainer - now at root */
+            .sidebar {
+                display: none !important;
+            }
+        </style>
+        <style>
+            .dark-mode-toggle i {
+                color: black !important;
+                font-size: 18px;
+            }
+            body.dark-mode .dark-mode-toggle i.fa-sun {
+                color: yellow !important;
+            }
+            body.dark-mode #stiBuildingSection {
+                filter: brightness(0.7);
+            }
+            body.dark-mode #stiBuildingImage {
+                filter: brightness(0.6);
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Poppins', Arial, sans-serif;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                background: #1a2636;
+                position: relative;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+            /* Custom Scrollbar - Only for larger screens - Firefox compatible */
+            @media (min-width: 1024px) {
+                html {
+                    scrollbar-width: thin;
+                    scrollbar-color: #666 #222;
+                }
+                /* Custom Scrollbar - Show on hover with color */
+                html:hover {
+                    scrollbar-color: #888 #333;
+                }
+                /* Webkit scrollbar styling (Chrome, Edge, Safari) */
+                ::-webkit-scrollbar {
+                    width: 8px;
+                    height: 8px;
+                }
+                ::-webkit-scrollbar-track {
+                    background: #222;
+                }
+                ::-webkit-scrollbar-thumb {
+                    background: #666;
+                    border-radius: 4px;
+                }
+                ::-webkit-scrollbar-thumb:hover {
+                    background: #aaa;
+                    width: 12px;
+                }
+                /* Hide scrollbar arrows (buttons) */
+                ::-webkit-scrollbar-button {
+                    display: none;
+                }
+                ::-webkit-scrollbar-corner {
+                    display: none;
+                }
+            }
+            /* Ensure html takes full height for scrolling - larger screens only */
+            @media (min-width: 768px) {
+                html {
+                    min-height: 100%;
+                    height: auto;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                }
+                body {
+                    min-height: 100%;
+                    height: auto;
+                    overflow-y: auto;
+                }
+            }
+            /* Mobile - footer fixed */
+            @media (max-width: 766px) {
+                #siteFooter, .site-footer {
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    z-index: 9999;
+                }
+            }
+            /* Larger screens - footer below content */
+            @media (min-width: 768px) {
+                #siteFooter, .site-footer {
+                    position: relative;
+                    z-index: 1000;
+                }
+            }
+            @media (min-width: 1200px) {
+                body {
+                    height: auto;
+                    min-height: 100%;
+                    overflow-y: scroll;
+                }
+                #stiBuildingSection {
+                    min-height: 100vh;
+                    height: auto;
+                    background-attachment: scroll;
+                    overflow-y: visible;
+                }
+            }
+            @media (min-width: 1024px) and (max-width: 1199px) {
+                body {
+                    overflow-y: scroll;
+                }
+            }
+            /* Mobile screens - ensure image is visible */
+            @media (max-width: 766px) {
+                #stiBuildingSection {
+                    min-height: auto !important;
+                    height: 100vh;
+                    background-image: none !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    justify-content: center !important;
+                    align-items: center !important;
+                    position: relative !important;
+                }
+                #stiBuildingSection img#stiBuildingImage {
+                    display: block !important;
+                    width: 100% !important;
+                    height: auto !important;
+                    max-height: 100vh !important;
+                    object-fit: cover;
+                    position: absolute !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    z-index: 0 !important;
+                }
+                #stiBuildingSection  {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    justify-content: center !important;
+                    align-items: center !important;
+                    width: 100%;
+                    min-height: 20vh !important;
+                    height: 20vh !important;
+                    max-height: 20vh !important;
+                    position: relative !important;
+                    z-index: 1 !important;
+                }
+            
+                #adsContentContainer {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    justify-content: center !important;
+                    align-items: center !important;
+                    width: 90% !important;
+                    position: absolute !important;
+                    left: 5% !important;
+                    right: 5% !important;
+                    
+                    bottom: auto !important;
+                    padding: 10px !important;
+
+                    
+                    user-select: none;
+                    
+                }
+                #adsContentContainer p {
+                    font-size: 14px !important;
+                    color: #132a3f !important;
+                    text-align: center !important;
+                }
+                #adsContentContainer .img {
+                    user-select: none;
+                }
+                
+            }
+            
+            /* Larger screens - main-content overlay on background image */
+            @media (min-width: 768px) {
+                #stiBuildingSection {
+                    background-image: url('frontend/assets/images/STI Building medium-dark.png');
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    min-height: 100vh;
+                    height: auto;
+                    display: flex;
+                    flex-direction: column;
+                }
+                #stiBuildingSection img#stiBuildingImage {
+                    display: none;
+                }
+                #stiBuildingSection .main-content {
+                    position: relative !important;
+                    width: 100% !important;
+                    min-height: 100vh !important;
+                    height: auto !important;
+                    background: none !important;
+                    padding: 20px 5vw !important;
+                    box-sizing: border-box;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    align-items: stretch;
+                }
+                #adsContentContainer {
+                    position: absolute !important;
+                    right: 5% !important;
+                    top: 50% !important;
+                    transform: translateY(-50%) !important;
+                    width: 40% !important;
+                    max-height: none !important;
+                    height: auto !important;
+                    display: block !important;
+                    overflow: visible;
+                }
+                #adsContentContainer .image-slider {
+                    height: 350px !important;
+                }
+            }
+            
+            /* Laptop to Desktop - Center aligned to image */
+            @media (min-width: 1024px) {
+                #adsContentContainer {
+                    right: 8% !important;
+                    width: 35% !important;
+                    max-height: 80vh !important;
+                }
+                #adsContentContainer .image-slider {
+                    height: 400px !important;
+                }
+            }
+            
+            /* Large Desktop screens */
+            @media (min-width: 1440px) {
+                #adsContentContainer {
+                    right: 10% !important;
+                    width: 30% !important;
+                }
+                #stiBuildingSection {
+                    background-size: cover;
+                    min-height: 100vh;
+                }
+            }
+            
+            /* Extra large screens (4K displays) */
+            @media (min-width: 2000px) {
+                #stiBuildingSection {
+                    background-size: cover;
+                    min-height: 100vh;
+                }
+                #adsContentContainer {
+                    right: 15% !important;
+                    width: 25% !important;
+                }
+            }
+            
+            /* Small screens - show img instead of background */
+            @media (max-width: 766px) {
+                #stiBuildingSection {
+                    background-image: none !important;
+                }
+                #stiBuildingSection img#stiBuildingImage {
+                    display: block !important;
+                }
+            }
+            
+            /* Image slider styles */
+            .image-slider {
+                position: relative;
+                width: 100%;
+                    height: 100%;
+                    overflow: hidden;
+                    border-radius: 8px;
+                }
+                .slider-wrapper {
+                    display: flex;
+                    transition: transform 0.5s ease-in-out;
+                }
+                .slider-wrapper img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                    object-position: center;
+                    flex-shrink: 0;
+                    background-color: #f0f0f0;
+                }
+                .slider-dots {
+                    display: flex;
+                    justify-content: center;
+                    gap: 8px;
+                    margin-top: 10px;
+                    padding: 10px 0;
+                }
+                .dot {
+                    width: 10px;
+                    height: 10px;
+                    background-color: white;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    opacity: 0.7;
+                    transition: opacity 0.3s;
+                }
+                .dot.active {
+                    opacity: 1;
+                }
+                #adsContentContainer p {
+                    font-size: 18px;
+                    line-height: 1.6;
+                    color: white;
+                    text-shadow: 1px 1px 2px black;
+                }
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+
+            @media (max-height: 600px) {
+                body {
+                    overflow-y: scroll;
+                }
+                .auth-container.auth-container--signup {
+                    max-height: calc(100vh - 40px);
+                    overflow-y: auto;
+                }
+            }
+            body::before {
+                content: "";
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(20, 34, 56, 0.55);
+                z-index: 0;
+                pointer-events: none;
+            }
+            .main-content {
+                position: relative;
+                top: auto;
+                left: 0;
+                width: 100%;
+                z-index: 1;
+                display: flex;
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: space-between;
+                padding: 20px 5vw 80px 5vw;
+                box-sizing: border-box;
+                min-height: 120vh;
+            }
+            .auth-container {
+                background: #fff;
+                border-radius: 16px;
+                box-shadow: 0 2px 16px #0002;
+                padding: 20px 30px;
+                width: 40vw;
+                max-width: 380px;
+                max-height: 600px;
+                height: auto;
+                min-height: 280px;
+                overflow-x: hidden;
+                overflow-y: auto;
+                transition: width 0.3s ease;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+                position: relative;
+            }
+            .auth-close-btn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: none;
+                border: none;
+                font-size: 15px;
+                cursor: pointer;
+                color: #333;
+                z-index: 10;
+                transition: color 0.2s ease;
+            }
+            .auth-close-btn:hover {
+                color: #ff6b6b;
+            }
+            body.dark-mode .auth-close-btn {
+                color: #fff;
+            }
+            body.dark-mode .auth-close-btn:hover {
+                color: #ff6b6b;
+            }
+            @media (max-height: 700px) {
+                .auth-container {
+                    max-height: 600px;
+                    min-height: 250px;
+                }
+            }
+            @media (max-width: 768px) {
+                body {
+                    overflow-y: auto;
+                }
+                .auth-container {
+                    width: 90vw;
+                    max-width: 380px;
+                    max-height: 600px;
+                    height: auto;
+                    min-height: 280px;
+                    overflow-y: auto;
+                }
+                .auth-container.auth-container--signup {
+                    width: 90vw;
+                    max-width: 380px;
+                    max-height: 600px;
+                    overflow-y: auto;
+                }
+            }
+            @media (max-width: 480px) {
+                body {
+                    overflow-y: auto;
+                }
+                .auth-container {
+                    width: 95vw;
+                    max-width: 340px;
+                    max-height: 600px;
+                    height: auto;
+                    min-height: 280px;
+                    overflow-y: auto;
+                }
+                .auth-container.auth-container--signup {
+                    width: 95vw;
+                    max-width: 380px;
+                    max-height: 600px;
+                    overflow-y: auto;
+                }
+            }
+            
+            .auth-container.auth-container--signup {
+                width: 80vw;
+                max-width: 350px;
+                max-height: 600px;
+                height: auto;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+            @media (max-width: 479px) {
+                body {
+                    overflow-y: auto;
+                }
+                .auth-container {
+                    
+                    max-width: 350px;
+                    max-height: 200px;
+                    height: auto;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                }
+                .auth-container.auth-container--signup {
+                    
+                    max-width: 350px;
+                    max-height: 450px;
+                    height: auto;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                }
+            }
+            @media (max-height: 700px) {
+                
+                .auth-container.auth-container--signup {
+                    max-height: 420px;
+                }
+            }
+            .auth-container2 {
+                background: #fff;
+                border-radius: 16px;
+                box-shadow: 0 2px 16px #0002;
+                height:500px;
+                width: 450px;
+                max-width: 100vw;
+                color: #132a3f;
+                display: none;
+            }
+            .auth-tabs {
+                
+                justify-content: center;
+                
+                width: 100%;
+            }
+            .auth-tab {
+                
+                text-align: center;
+                padding: 10px 0;
+                cursor: pointer;
+                font-weight: 600;
+                color: #132a3f;
+                border-bottom: 2px solid transparent;
+                transition: border 0.2s, color 0.2s;
+                
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .auth-tab.active {
+                color: #0057b8;
+                border-bottom: 2.5px solid #0057b8;
+            }
+            .auth-tab:not(.active):hover {
+                color: #666;
+            }
+            .auth-form {
+                display: none;
+                flex-direction: column;
+                gap: 14px;
+                width: 100%;
+            }
+            .auth-form.active {
+                display: flex;
+            }
+            .form-group {
+                display: flex;
+                flex-direction: column;
+            }
+            .auth-form label {
+                font-size: 15px;
+                font-weight: 500;
+                margin-bottom: 4px;
+            }
+            .auth-form input {
+                padding: 8px 12px;
+                border-radius: 8px;
+                border: 1px solid #bfc9d9;
+                font-size: 16px;
+                outline: none;
+                transition: border 0.2s;
+            }
+            #signupForm input,
+            #signupForm select {
+                background-color: #e8f0fe;
+            }
+            #loginForm input {
+                background-color: #e8f0fe;
+            }
+            .auth-form input:focus {
+                border: 1.5px solid #0057b8;
+            }
+            .error-message {
+                color: red;
+                font-size: 14px;
+                display: none;
+                margin-top: 4px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .error-message i {
+                color: red;
+                font-size: 16px;
+            }
+            .dark-mode .error-message i {
+                color: #ff6b6b !important;
+                font-size: 16px;
+            }
+            .input-error {
+                border: 1px solid red !important;
+            }
+            .auth-form select.input-error {
+                border: 1px solid red !important;
+            }
+            .auth-form select {
+                padding: 8px 15px 8px 12px;
+                border-radius: 8px;
+                border: 1px solid #bfc9d9;
+                font-size: 16px;
+                outline: none;
+                transition: border 0.2s;
+                background: #fff;
+                color: #000;
+            }
+            .auth-form select:focus {
+                border: 1.5px solid #0057b8;
+            }
+            .auth-form input[type="file"] {
+                padding: 6px 12px;
+                border-radius: 8px;
+                border: 1px solid #bfc9d9;
+                font-size: 16px;
+                outline: none;
+                transition: border 0.2s;
+                background: #fff;
+                color: #000;
+            }
+            .auth-form input[type="file"]:focus {
+                border: 1.5px solid #0057b8;
+            }
+            .auth-form button {
+                background: #0057b8;
+                color: #fff;
+                border: none;
+                border-radius: 8px;
+                padding: 10px 0;
+                font-size: 17px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            .auth-form button:hover {
+                background: #0099cc;
+            }
+            .auth-form .admin-btn {
+                background: #ffd700;
+                color: #232f41;
+                width: 100%;
+            }
+            .auth-form .admin-btn:hover {
+                background: #e6c200;
+            }
+            .form-footer {
+                text-align: center;
+                font-size: 14px;
+            }
+            .form-footer a {
+                color: #0057b8;
+                text-decoration: none;
+                font-weight: 600;
+            }
+            .form-footer a:hover {
+                text-decoration: underline;
+            }
+            .password-container {
+                position: relative;
+                display: flex;
+                align-items: center;
+            }
+            .password-container input[type="password"],
+            .password-container input[type="text"] {
+                width: 100%;
+                box-sizing: border-box;
+                padding-right: 38px;
+            }
+            .toggle-password {
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: none;
+                border: none;
+                cursor: pointer;
+                color: #888;
+                font-size: 18px;
+                padding: 0;
+                outline: none;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: color 0.2s;
+            }
+            .toggle-password:hover,
+            .toggle-password:focus {
+                color: #222;
+                background: none;
+            }
+            .auth-form button.toggle-password {
+                background: none !important;
+                color: #888 !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                min-width: 0 !important;
+                min-height: 0 !important;
+            }
+            /* Dark mode styles */
+            body.dark-mode {
+                background: #0a1428;
+            }
+            body.dark-mode::before {
+                background: rgba(10, 18, 32, 0.80);
+            }
+            .dark-mode .auth-container {
+                background: #1a2636;
+                color: #e2e8f0;
+                box-shadow: 0 2px 16px #0006;
+            }
+            .dark-mode .auth-container2 {
+                background-color:#132a3f ;
+                color: #fff;
+                box-shadow: 0 2px 16px #0002;
+            }
+            .dark-mode .auth-tab {
+                color: #e2e8f0;
+            }
+            .dark-mode .auth-tab.active {
+                color: #ffd700;
+                border-bottom: 2.5px solid #ffd700;
+            }
+            .dark-mode .auth-container2 .auth-tab,
+            .dark-mode .auth-container2 .auth-tab.active {
+                color: #fff;
+                border-bottom-color: #0057b8;
+            }
+            .dark-mode .auth-container2 .auth-tab.active {
+                color: #ffd700;
+                border-bottom: 2.5px solid #ffd700;
+            }
+            .dark-mode .auth-form label {
+                color: #fff;
+            }
+            .dark-mode .auth-container2 .auth-form label {
+                color: #fff;
+            }
+            .dark-mode .auth-form input {
+                background: #132a3f ;
+                color: #fff;
+                border: 1px solid #bfc9d9;
+            }
+            .dark-mode #signupForm input {
+                background-color: #e8f0fe;
+                color: black;
+                caret-color: black;
+            }
+            .dark-mode #loginForm input {
+                background-color: #e8f0fe;
+                color: black;
+                caret-color: black;
+            }
+            .dark-mode .auth-container2 .auth-form input {
+                background: #132a3f  !important;
+                color: #fff !important;
+                border: 1px solid #bfc9d9 !important;
+            }
+            .dark-mode .auth-form select {
+                background: #132a3f ;
+                color: #6c6b6b;
+                border: 1px solid #bfc9d9;
+            }
+            .dark-mode .auth-container2 .auth-form select {
+                background: #132a3f !important;
+                color: #132a3f !important;
+                border: 1px solid #bfc9d9 !important;
+            }
+            .dark-mode .auth-form input[type="file"] {
+                background:#132a3f ;
+                color: #fff;
+                border: 1px solid #bfc9d9;
+            }
+            .dark-mode .auth-container2 .auth-form input[type="file"] {
+                background: #fff !important;
+                color: #132a3f !important;
+                border: 1px solid #bfc9d9 !important;
+            }
+            .dark-mode .form-group span {
+                color: #b0b7c3;
+            }
+            .dark-mode .auth-form button {
+                background: #ffd700;
+                color: #232f41;
+            }
+            .dark-mode .auth-form button:hover {
+                background: #e6c200;
+            }
+            .dark-mode .auth-form .admin-btn {
+                background: #0057b8;
+                color: #fff;
+            }
+            .dark-mode .auth-form .admin-btn:hover {
+                background: #0099cc;
+            }
+            .dark-mode .form-footer a {
+                color: #ffd700;
+            }
+            .dark-mode .auth-container2 .form-footer a {
+                color: #0057b8;
+            }
+            .dark-mode .toggle-password {
+                color: #ffd700;
+            }
+            .dark-mode .auth-container2 .toggle-password {
+                color: #fff;
+            }
+            .dark-mode .toggle-password:hover,
+            .dark-mode .toggle-password:focus {
+                color: #fff;
+            }
+            /* Dark mode for signup credentials */
+            .dark-mode #signupCredentials {
+                background: #1a2636;
+                color: #e2e8f0;
+            }
+            .dark-mode #signupCredentials h3 {
+                color: #ffd700;
+            }
+            .dark-mode #signupCredentials label {
+                color: #e2e8f0;
+            }
+            .dark-mode #signupCredentials #cred-name,
+            .dark-mode #signupCredentials #cred-email {
+                color: #ffd700;
+            }
+            .dark-mode #signupCredentials #cred-password {
+                background: #232f41;
+                color: #ffd700;
+                border: 1px solid #374151;
+            }
+            .dark-mode .centered-text {
+                color: #ffe;
+                text-shadow: 0 2px 8px #000c;
+            }
+            /* Forgot Password link colors */
+            #forgotPassword {
+                color: #0057b8;
+                transition: color 0.2s;
+            }
+            #admin-forgotPassword {
+                color: #0057b8;
+                transition: color 0.2s;
+            }
+            #forgotPassword:hover,
+            #admin-forgotPassword:hover {
+                color: #003a7a;
+            }
+            .dark-mode #forgotPassword {
+                color: #ffd700;
+            }
+            .dark-mode #forgotPassword:hover {
+                color: #cca300;
+            }
+            .dark-mode #admin-forgotPassword {
+                color: #ffd700;
+            }
+            .dark-mode #admin-forgotPassword:hover {
+                color: #cca300;
+            }
+            /* >>> UPDATED: Toggle Button Styles - Default Moon with black bg white border, Dark mode Sun transparent bg yellow border */
+            .darklight-toggle {
+                position: fixed;
+                top: 24px;
+                right: 32px;
+                z-index: 2;
+                border-radius: 50%;
+                width: 44px;
+                height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                font-size: 1.5rem;
+                color: white; /* White color for LIGHT mode */
+                background: black; /* Black background for LIGHT mode */
+                border: 2px solid white; /* White border for LIGHT mode */
+                box-shadow: 0 2px 8px #353535;
+                transition: all 0.2s ease;
+            }
+            .dark-mode .darklight-toggle {
+                color: #ffd700; /* Yellow sun in DARK mode */
+                background: transparent; /* Transparent in DARK mode */
+                border: 2px solid #ffd700; /* Yellow border in DARK mode */
+                box-shadow: 0 2px 8px #ffd700;
+            }
+            /* Error message styling */
+            .error-message {
+                animation: fadeInError 0.3s ease;
+            }
+            @keyframes fadeInError {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .dark-mode .error-message {
+                color: #ff6b6b !important;
+            }
+            .dark-mode .error-message i {
+                color: #ff6b6b !important;
+            }
+            /* Student back link styling */
+            .student-back-link {
+                color: #666;
+                text-decoration: none;
+                transition: color 0.2s;
+            }
+            .student-back-link:hover {
+                color: #999;
+            }
+            .student-highlight {
+                color: #0057b8;
+                font-weight: bold;
+            }
+            .dark-mode .student-back-link {
+                color: #b0b7c3;
+            }
+            .dark-mode .student-back-link:hover {
+                color: #e2e8f0;
+            }
+            .dark-mode .student-highlight {
+                color: #ffd700;
+            }
+            /* Reset Password Modal Styles */
+            .reset-pass {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: none; /* Initially hidden */
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                animation: fadeIn 0.5s ease;
+                /* background: rgba(0, 0, 0, 0.6); REMOVED: No background overlay */
+            }
+            .reset-pass.show {
+                display: flex;
+            }
+            .reset-pass-content {
+                background: #fff;
+                border-radius: 20px;
+                padding: 30px 30px 20px 30px; /* Reduced padding at bottom */
+                margin: 20px;
+                text-align: center;
+                height:28vh;
+                max-width: 400px;
+                width: 30%;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                animation: slideUp 0.5s ease;
+                position: relative;
+            }
+            .reset-pass-content h2 {
+                color: #0057b8;
+                margin: 5px 0 10px 0; /* Reduced top margin */
+                font-size: 1.8rem;
+            }
+            .reset-pass-content p {
+                color: #666;
+                margin: 0 0 15px 0; /* Reduced bottom margin */
+                font-size: 1rem;
+            }
+            .reset-pass-content input {
+                width: 100%;
+                padding: 12px 15px;
+                border: 1px solid #bfc9d9;
+                border-radius: 8px;
+                font-size: 16px;
+                margin-bottom: 10px; /* Reduced bottom margin */
+                outline: none;
+                transition: border 0.2s;
+                box-sizing: border-box;
+            }
+            .reset-pass-content input:focus {
+                border: 1.5px solid #0057b8;
+            }
+            .reset-pass-content button {
+                background: #0057b8;
+                color: #fff;
+                border: none;
+                border-radius: 8px;
+                padding: 12px 30px;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                margin-top: 10px;
+                margin-bottom:10000px; /* This seems like an error, likely should be removed or reduced */
+                transition: background 0.2s;
+            }
+            .reset-pass-content button:hover {
+                background: #0099cc;
+            }
+            .close-modal {
+                position: absolute;
+                top: 15px;
+                right: 20px;
+                font-size: 28px;
+                font-weight: bold;
+                color: #aaa;
+                cursor: pointer;
+                transition: color 0.2s;
+                line-height: 1;
+            }
+            .close-modal:hover {
+                color: #000;
+            }
+            #resetMessage {
+                margin-top: 10px; /* Reduced top margin */
+                font-size: 14px;
+                min-height: 20px;
+            }
+            /* New error message styling specifically for reset modal input */
+            #reset-email-error {
+                /* Inherits base .error-message styles */
+                margin-top: 4px; /* Space above the error message */
+                margin-bottom: 10px; /* Space below the error message, pushing the button down */
+                display: none; /* Hidden by default */
+            }
+            /* Dark mode for reset modal */
+            .dark-mode .reset-pass-content {
+                background: #1a2636;
+                color: #e2e8f0;
+            }
+            .dark-mode .reset-pass-content h2 {
+                color: #ffd700;
+            }
+            .dark-mode .reset-pass-content p {
+                color: #b0b7c3;
+            }
+            .dark-mode .reset-pass-content input {
+                background: #232f41;
+                color: #e2e8f0;
+                border: 1px solid #374151;
+            }
+            .dark-mode .reset-pass-content button {
+                background: #ffd700;
+                color: #232f41;
+            }
+            .dark-mode .reset-pass-content button:hover {
+                background: #e6c200;
+            }
+            .dark-mode .close-modal {
+                color: #e2e8f0;
+            }
+            .dark-mode .close-modal:hover {
+                color: #ffd700;
+            }
+            .dark-mode #reset-email-error {
+                color: #ff6b6b !important;
+            }
+            .dark-mode #reset-email-error i {
+                color: #ff6b6b !important;
+            }
+            /* Modal Styles */
+            .modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                animation: fadeIn 0.5s ease;
+            }
+            .modal.show {
+                display: flex;
+            }
+            .modal-content {
+                background: #fff;
+                border-radius: 20px;
+                padding: 0;
+                max-width: 600px;
+                width: 90%;
+                max-height: 80vh;
+                overflow-y: auto;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                animation: slideUp 0.5s ease;
+                position: relative;
+            }
+            .modal-header {
+                padding: 20px 30px;
+                border-bottom: 1px solid #e0e0e0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .modal-header h2 {
+                margin: 0;
+                color: #0057b8;
+                font-size: 1.8rem;
+            }
+            .modal-body {
+                padding: 20px 30px;
+                color: #333;
+            }
+            .modal-body h3 {
+                color: #0057b8;
+                margin-top: 20px;
+                margin-bottom: 10px;
+            }
+            .modal-body p {
+                line-height: 1.6;
+            }
+            .modal-body ul {
+                margin: 10px 0;
+                padding-left: 20px;
+            }
+            .modal-body li {
+                margin-bottom: 5px;
+            }
+            .close-modal {
+                font-size: 28px;
+                font-weight: bold;
+                color: #aaa;
+                cursor: pointer;
+                transition: color 0.2s;
+                line-height: 1;
+            }
+            .close-modal:hover {
+                color: #000;
+            }
+            #resetMessage {
+                margin-top: 10px; /* Reduced top margin */
+                font-size: 14px;
+                min-height: 20px;
+            }
+            /* Dark mode for modals */
+            .dark-mode .modal-content {
+                background: #1a2636;
+                color: #e2e8f0;
+            }
+            .dark-mode .modal-header {
+                border-bottom: 1px solid #374151;
+            }
+            .dark-mode .modal-header h2 {
+                color: #ffd700;
+            }
+            .dark-mode .modal-body h3 {
+                color: #ffd700;
+            }
+            .dark-mode .modal-body p {
+                color: #e2e8f0;
+            }
+            .dark-mode .close-modal {
+                color: #e2e8f0;
+            }
+            .dark-mode .close-modal:hover {
+                color: #ffd700;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translateY(50px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+            @keyframes slideInFromTop {
+                from { transform: translateY(-100%); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+            @keyframes slideOutToTop {
+                from { transform: translateY(0); opacity: 1; }
+                to { transform: translateY(-100%); opacity: 0; }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            /* Hide auth-container2 by default */
+            .auth-container2 {
+                display: none;
+            }
+            .auth-container2 .error-message,
+            .auth-container2 .error-message i {
+                color: #ff6b6b !important;
+            }
+            @media (max-width: 768px) {
+                .main-content {
+                    flex-direction: column;
+                    align-items: center;
+                    padding: 0;
+                }
+                .centered-text {
+                    text-align: center;
+                    margin-top: 18px;
+                    margin-bottom: 18px;
+                    padding: 0 4vw;
+                }
+                .centered-text h1 {
+                    font-size: 1.3rem;
+                    margin-bottom: 7px;
+                }
+                .centered-text p {
+                    font-size: 0.97rem;
+                }
+                .auth-container {
+                    padding: 24px 6vw;
+                    width: 60vw;
+
+                    max-height:70vh;
+                }
+                .auth-container.auth-container--signup {
+                    width: 60vw;
+
+                }
+                .auth-container2 {
+                    padding: 20px 6vw;
+                }
+                .darklight-toggle {
+                    top: 10px;
+                    right: 10px;
+                    width: 38px;
+                    height: 38px;
+                    font-size: 1.2rem;
+                }
+                .reset-pass-content {
+                    padding: 30px 20px;
+                    margin: 20px;
+                }
+                .reset-pass-content h2 {
+                    font-size: 1.5rem;
+                }
+            }
+            
+            
+            
+            
+            /* Custom thin scrollbar - expands only when hovering on scrollbar */
+            .auth-container::-webkit-scrollbar {
+               
+                max-width:10px;
+                
+            }
+            
+            .auth-container::-webkit-scrollbar-track {
+                background: transparent;
+                
+            }
+            
+            .auth-container::-webkit-scrollbar-button {
+                display: block !important;
+                width: 10px !important;
+                height: 20px !important;
+                border: none !important;
+            }
+            .auth-container::-webkit-scrollbar-button:vertical:decrement{
+                display: block;
+                width: 10px;
+                height: 20px;
+                background-color: #fff;
+                background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path fill='gray' d='M6 3L2 8h8z'/></svg>");
+                background-repeat: no-repeat;
+                background-position: center;
+                border-top-right-radius: 5px;
+            }
+            .auth-container::-webkit-scrollbar-button:vertical:increment{
+                display: block;
+                width: 10px;
+                height: 20px;
+                background-color: #fff;
+                background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path fill='gray' d='M6 9L2 4h8z'/></svg>");
+                background-repeat: no-repeat;
+                background-position: center;
+                border-bottom-right-radius: 5px;
+            }
+            /* Hide the extra 'start' and 'end' button states to prevent double arrows */
+            .auth-container::-webkit-scrollbar-button:vertical:start:increment,
+            .auth-container::-webkit-scrollbar-button:vertical:end:decrement {
+                display: none !important;
+            }
+            .auth-container::-webkit-scrollbar-thumb {
+                background: #888;
+                border-radius: 4px;
+            }
+            .auth-container::-webkit-scrollbar-thumb:hover {
+                background: #555;
+                width: 10px;
+            }
+            
+            /* Dark mode for auth-container scrollbar */
+            body.dark-mode .auth-container::-webkit-scrollbar-track {
+                background: #1a2636;
+            }
+            body.dark-mode .auth-container::-webkit-scrollbar-button {
+                background-color: #333;
+            }
+            body.dark-mode .auth-container::-webkit-scrollbar-button:vertical:decrement {
+                background-color: #444;
+                background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path fill='white' d='M6 3L2 8h8z'/></svg>");
+            }
+            body.dark-mode .auth-container::-webkit-scrollbar-button:vertical:decrement:hover {
+                background-color: #555;
+            }
+            body.dark-mode .auth-container::-webkit-scrollbar-thumb {
+                background: #666;
+            }
+            body.dark-mode .auth-container::-webkit-scrollbar-button:vertical:increment {
+                background-color: #444;
+                background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path fill='white' d='M6 9L2 4h8z'/></svg>");
+            }
+            body.dark-mode .auth-container::-webkit-scrollbar-button:vertical:increment:hover {
+                background-color: #555;
+            }
+            
+            body.dark-mode .auth-container::-webkit-scrollbar-thumb:hover {
+                background: #888;
+            }
+            @media (max-width: 514px) {
+                
+                
+                /* Thin scrollbar for tablet to phone screens */
+                .auth-container::-webkit-scrollbar {
+                    width: 4px;
+                }
+                .auth-container::-webkit-scrollbar-track {
+                    background: transparent;
+                    
+
+                }
+                .auth-container::-webkit-scrollbar-button {
+                    display: none !important;
+                }
+                .auth-container::-webkit-scrollbar-thumb {
+                    background: #888;
+                    border-radius: 2px;
+                    
+                }
+                .auth-container::-webkit-scrollbar-thumb:hover {
+                    background: #555;
+                }
+            }
+            
+            /* Fix forgot password modal on small screens */
+            @media (max-width: 617px) {
+                .reset-pass-content {
+                    width: 90%;
+                    max-width: none;
+                }
+            }
+            /* >>> NEW: Ads/Content Container */
+            #adsContentContainer {
+                position: relative;
+                margin-top: 50px;
+                width: 900px;
+                max-width: 90vw;
+                height: 500px;
+                max-height: 80vh;
+                background-color: white;
+                border-radius: 8px;
+                padding: 20px;
+                box-sizing: border-box;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            }
+            
+            /* Dark mode for adsContentContainer - solid color */
+            body.dark-mode #adsContentContainer {
+                background-color: #232f41;
+            }
+            
+            /* Make content in adsContentContainer not highlightable */
+            #adsContentContainer {
+                user-select: none;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+            }
+            #adsContentContainer img {
+                pointer-events: none;
+                -webkit-user-drag: none;
+                -moz-user-drag: none;
+                -ms-user-drag: none;
+            }
+            
+            #adsContentContainer img {
+                width: 100%;
+                height: calc(100% - 60px);
+                max-height: 400px;
+                object-fit: cover;
+                border-radius: 8px;
+            }
+            
+            /* Responsive adjustments for adsContentContainer */
+            @media (max-width: 768px) {
+                #adsContentContainer {
+                    width: 95vw;
+                    height: 400px;
+                    padding: 15px;
+                }
+                #adsContentContainer img {
+                    max-height: 300px;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                #adsContentContainer {
+                    width: 95vw;
+                    height: 350px;
+                    padding: 10px;
+                }
+                #adsContentContainer img {
+                    max-height: 250px;
+                }
+            }
+            
+            /* Move containers down when screen width is 766px or below */
+            @media (max-width: 766px) {
+                .auth-container {
+                    top: 200% !important;
+                    left: 50% !important;
+                    transform: translate(-50%, -50%) !important;
+                    max-height: 450px !important;
+                    overflow-y: auto !important;
+                }
+                .auth-container.auth-container--signup {
+                    top: 200% !important;
+                    left: 50% !important;
+                    transform: translate(-50%, -50%) !important;
+                    height: auto !important;
+                    max-height: 450px !important;
+                    overflow-y: auto !important;
+                }
+                #adsContentContainer {
+                    top: 250% !important;
+                    
+                }
+            }
+            
+            
+            
+            /* >>> NEW: Success Login Modal (Top Right Corner) */
+            .success-login-modal {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #00aa00;
+                color: #fff;
+                padding: 16px 24px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                z-index: 10002;
+                animation: slideInRight 0.3s ease;
+                max-width: 300px;
+                text-align: center;
+            }
+            .success-login-modal p {
+                margin: 0;
+                font-size: 1rem;
+                font-weight: 600;
+            }
+            /* >>> NEW: Reset Sent Modal (Top Right Corner) */
+            .reset-sent-modal {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #0099cc; /* Blue background */
+                color: #fff;
+                padding: 16px 24px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                z-index: 10002;
+                animation: slideInRight 0.3s ease;
+                max-width: 300px;
+                text-align: center;
+                display: none; /* Initially hidden */
+            }
+            .reset-sent-modal p {
+                margin: 0;
+                font-size: 1rem;
+                font-weight: 600;
+            }
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(100%);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+        </style>
+    </head>
+    <body>
+    <div style="flex: 1; display: flex; flex-direction: column;">
+    <!-- STI Building Section with Welcome Modal -->
+    <div style="position: relative; width: 100%;">
+    <nav class="main-navbar" id="main-navbar" style="background: transparent !important; position: absolute; top: 0; left: 0; z-index: 100;">
+        <div class="sti-logo">
+            <a href="/index.html"><img src="frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg" alt="STI Logo" style="height: 40px; width: auto; border-radius: 6px;"></a>
+            <a href="/index.html"><span style="display:flex; align-items:center; height:40px; color: #0057b8;">ARCHIVES</span></a>
+        </div>
+        <div style="flex:1"></div>
+        <div class="nav-center">
+        </div>
+        <div class="navbar-right user-nav-fixed">
+            <button id="loginNavBtn" class="login-nav-btn" onclick="toggleAuthContainer()" style="margin-right: 10px; background: #0057b8; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                Login
+            </button>
+            <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode" style="margin-right: 10px; background: transparent; border: none; cursor: pointer;">
+                <i class="fa fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+    <script>
+    function showAuthContainer() {
+        const authContainer = document.getElementById('authContainer');
+        const overlay = document.getElementById('authOverlay');
+        if (authContainer) {
+            authContainer.style.display = 'flex';
+        }
+        if (overlay) {
+            overlay.style.display = 'block';
+        }
+    }
+    
+    function hideAuthContainer() {
+        const authContainer = document.getElementById('authContainer');
+        const overlay = document.getElementById('authOverlay');
+        if (authContainer) {
+            authContainer.style.display = 'none';
+        }
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+    }
+    
+    function toggleAuthContainer() {
+        const authContainer = document.getElementById('authContainer');
+        const authOverlay = document.getElementById('authOverlay');
+        if (authContainer) {
+            // Always show the container when clicked
+            authContainer.style.display = 'flex';
+            if (authOverlay) authOverlay.style.display = 'block';
+            console.log('Login clicked, display:', authContainer.style.display);
+        }
+    }
+    </script>
+    
+        <div id="stiBuildingSection" style="position: relative; width: 100%; min-height: 100vh; height: auto; background-image: url('frontend/assets/images/STI Building medium-dark.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+        <img id="stiBuildingImage" src="frontend/assets/images/STI Building medium-dark.png" alt="STI Building" style="width:100%;height:auto;display:none;">
+        
+        <!-- Main content overlay on background image -->
+        <div class="main-content" style="position: absolute; top: 0; left: 0; width: 100%; min-height: 100%; box-sizing: border-box; padding-bottom: 80px; background: none;">
+            <!-- Ads/Content Container - Right Side -->
+            <div id="adsContentContainer" style="width: 45%; position: absolute; right: 5%; top: 50%; transform: translateY(-50%); display: block;">
+            <div class="image-slider" style="position: relative; width: 100%; height: 300px; overflow: hidden; border-radius: 8px;">
+                <div class="slider-wrapper" style="display: flex; transition: transform 0.5s ease-in-out;">
+                    <img src="frontend/assets/images/STI ARCHIVES.png" alt="STI Archives" style="width: 100%; height: 100%; object-fit: cover; flex-shrink: 0;">
+                    <img src="frontend/assets/images/1.png" alt="Image 1" style="width: 100%; height: 100%; object-fit: cover; flex-shrink: 0;">
+                    <img src="frontend/assets/images/2.png" alt="Image 2" style="width: 100%; height: 100%; object-fit: cover; flex-shrink: 0;">
+                    <img src="frontend/assets/images/3.png" alt="Image 3" style="width: 100%; height: 100%; object-fit: cover; flex-shrink: 0;">
+                </div>
+            </div>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 10px;">
+                <button id="pauseBtn" onclick="toggleSlideshow()" style="background: transparent; border: none; cursor: pointer; font-size: 20px; color: gray;">
+                    <i class="fa fa-pause" id="pauseIcon"></i>
+                </button>
+                <div class="slider-dots" style="display: flex; justify-content: center; gap: 8px;">
+                    <span class="dot" onclick="currentSlide(1)" style="width: 10px; height: 10px; background-color: white; border-radius: 50%; cursor: pointer; opacity: 0.7; border: 1px solid #333;"></span>
+                    <span class="dot" onclick="currentSlide(2)" style="width: 10px; height: 10px; background-color: white; border-radius: 50%; cursor: pointer; opacity: 0.7; border: 1px solid #333;"></span>
+                    <span class="dot" onclick="currentSlide(3)" style="width: 10px; height: 10px; background-color: white; border-radius: 50%; cursor: pointer; opacity: 0.7; border: 1px solid #333;"></span>
+                    <span class="dot" onclick="currentSlide(4)" style="width: 10px; height: 10px; background-color: white; border-radius: 50%; cursor: pointer; opacity: 0.7; border: 1px solid #333;"></span>
+                </div>
+            </div>
+        </div>
+            </div>
+
+            <!-- Auth Overlay -->
+            <div id="authOverlay" onclick="hideAuthContainer()" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div>
+
+            <!-- Auth Container - Center (Hidden initially) -->
+            <div class="auth-container" id="authContainer" style="width: 400px; display: none; position: absolute; left: 50%; top: 10%; transform: translateX(-50%); z-index: 1000;">
+                <button type="button" class="auth-close-btn" onclick="hideAuthContainer()" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="auth-tabs" style="display: flex; flex-direction: row; justify-content: center; width: 100%; margin-bottom: 15px;">
+                    <div class="auth-tab active" id="loginTab" style="flex: 1; text-align: center; height: 50px; display: flex; align-items: center; justify-content: center;">Log In</div>
+                    <div class="auth-tab" id="signupTab" style="flex: 1; text-align: center; height: 50px; display: flex; align-items: center; justify-content: center;">Sign Up</div>
+                </div>
+                <form class="auth-form active" id="loginForm" autocomplete="off" method="POST" action="javascript:void(0);">
+                    <label for="login-email">Full Name</label>
+                    <input type="text" id="login-email" placeholder="Enter your full name" required maxlength="45">
+                    <span id="login-email-error" class="error-message" style="display: none;"><i class="fas fa-exclamation-circle"></i> Please enter your full name.</span>
+                    <label for="login-password">Password</label>
+                    <div class="password-container">
+                        <input type="password" id="login-password" placeholder="Enter your password" required maxlength="64">
+                        <button type="button" class="toggle-password" data-target="login-password">
+                            <i class="fa fa-eye"></i>
+                        </button>
+                    </div>
+                    <span id="login-password-error" class="error-message" style="display: none;"><i class="fas fa-exclamation-circle"></i> Password is required</span>
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="rememberMe">
+                            <label for="rememberMe" style="font-size: 14px; margin: 0;">Remember Me</label>
+                        </div>
+                        <a href="#" id="forgotPassword" style="font-size: 14px; text-decoration:none; ">Forgot Password?</a>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; ">
+                        <label for="terms-login" style="font-size: 14px; margin: 0; text-align: justify;">
+                            <input type="checkbox" id="terms-login" required>
+                            By logging in, you acknowledge and agree you have read and agree to be bound by 
+                            <a href="#" id="termsLink" style="color: #0057b8;">Terms of Conditions</a> & 
+                            <a href="#" id="privacyLink" style="color: #0057b8;">Privacy Policy</a></label>
+                    </div>
+                    <button type="submit">Login</button>
+                    <div id="login-message" style="font-size: 14px; margin-top: 10px; text-align: center; display: none;"></div>
+                    
+                    <div class="form-footer">
+                        <p style="font-size: 14px; text-align: center; margin: 15px 0 0 0;">Don't have an Account? <a href="#" id="switchToSignup" style="color: #0057b8; text-decoration: none;">Sign Up</a></p>
+                    </div>
+                </form>
+                <!-- SIGNUP FORM: Single-column -->
+                <form class="auth-form" id="signupForm" autocomplete="off" method="POST" action="javascript:void(0);">
+                    <div class="form-group">
+                        <label for="signup-fullname">Full Name</label>
+                        <input type="text" id="signup-fullname" name="fullname" placeholder="Enter your full name" required maxlength="100">
+                        <span id="signup-fullname-error" class="error-message" style="display: none;"><i class="fas fa-exclamation-circle"></i> Please enter your full name (first and last name).</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email Address</label>
+                        <input type="email" id="signup-email" name="email" placeholder="Enter your email address" required maxlength="100" style="width: 100%; padding: 8px 12px; box-sizing: border-box;" onkeydown="if(event.key === ' ') event.preventDefault();">
+                        <span id="signup-email-error" class="error-message" style="display: none;"><i class="fas fa-exclamation-circle"></i> Please enter a valid email address.</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <div class="password-container">
+                            <input type="password" id="signup-password" name="password" placeholder="Enter your password" required maxlength="64" style="width: 100%; padding: 8px 12px; box-sizing: border-box;">
+                            <button type="button" class="toggle-password" data-target="signup-password">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                        </div>
+                        <span id="signup-password-error" class="error-message" style="display: none;"><i class="fas fa-exclamation-circle"></i> Password must be 8-64 characters</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-confirm-password">Confirm Password</label>
+                        <div class="password-container">
+                            <input type="password" id="signup-confirm-password" name="confirm_password" placeholder="Confirm your password" required maxlength="64" style="width: 100%; padding: 8px 12px; box-sizing: border-box;">
+                            <button type="button" class="toggle-password" data-target="signup-confirm-password">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                        </div>
+                        <span id="signup-confirm-password-error" class="error-message" style="display: none;"><i class="fas fa-exclamation-circle"></i> Passwords do not match</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-role">Role</label>
+                        <select id="signup-role" name="role" required>
+                            <option value="">Select Role</option>
+                            <option value="senior_high">Senior High</option>
+                            <option value="college">College</option>
+                            <option value="educator">Educator</option>
+                            
+                        </select>
+                        <span id="signup-role-error" class="error-message" style="display: none;"><i class="fas fa-exclamation-circle"></i> Please select a role.</span>
+                    </div>
+
+                    <div class="form-group" id="gradeGroup" style="display: none;">
+                        <label for="signup-grade">Grade</label>
+                        <select id="signup-grade" name="grade" required>
+                            <option value="">Select Grade</option>
+                            <option value="Grade 11">Grade 11</option>
+                            <option value="Grade 12">Grade 12</option>
+                        </select>
+                        <span id="signup-grade-error" class="error-message" style="display: none;"><i class="fas fa-exclamation-circle"></i> Please select a grade.</span>
+                    </div>
+                    <div class="form-group" id="sectionGroup" style="display: none;">
+                        <label for="signup-section">Section</label>
+                        <select id="signup-section" name="section" required>
+                            <option value="" style="color: #666; font-style: italic;">Select Section</option>
+                            <!-- Options will be set dynamically -->
+                        </select>
+                        <span id="signup-section-error" class="error-message" style="display: none;"><i class="fas fa-exclamation-circle"></i> Please select a section.</span>
+                    </div>
+                    <div class="form-group" id="rafGroup" style="display: none;">
+                        <label for="signup-raf">Registration Assessment Form (RAF)</label>
+                        <input type="file" id="signup-raf" name="raf" accept=".pdf,.doc,.docx">
+                        <span id="signup-raf-error" class="error-message" style="display: none;"><i class="fas fa-exclamation-circle"></i> Please upload your RAF file.</span>
+                    </div>
+                    <div class="form-group" id="educatorIdGroup" style="display: none;">
+                        <label for="signup-educator-id">Educator ID</label>
+                        <input type="file" id="signup-educator-id" name="educator_id" accept=".pdf,.doc,.docx">
+                        <span id="signup-educator-id-error" class="error-message" style="display: none;"><i class="fas fa-exclamation-circle"></i> Please upload your Educator ID file.</span>
+                    </div>
+                    <div class="form-group full-width" style="display: flex; align-items: center; gap: 4px; text-align:justify;">
+                        <label for="terms-signup" style="font-size: 14px; margin: 0;">
+                            <input type="checkbox" id="terms-signup" name="terms" required> 
+                            By signing up, you acknowledge and agree you have read and agree to be bound by 
+                            <a href="#" id="termsLinkSignup" style="color: #0057b8;">Terms of Conditions</a> & 
+                            <a href="#" id="privacyLinkSignup" style="color: #0057b8;">Privacy Policy</a></label>
+                    </div>
+                    <button type="submit" class="form-group full-width">Sign Up</button>
+                    <div id="signup-message" class="form-group full-width" style="font-size: 14px; margin-top: 10px; text-align: center; display: none;"></div>
+                    <div class="form-footer form-group full-width">
+                        <p style="font-size: 14px; text-align: center; margin: 10px 0 0 0;">Already have an Account? <a href="#" id="switchToLogin" style="color: #0057b8; text-decoration: none;">Log in</a></p>
+                    </div>
+                </form>
+
+                <!-- WAITING FOR VERIFICATION -->
+                <div class="auth-form" id="waitingVerification" style="display: none; flex-direction: column; gap: 20px; text-align: center;">
+                    <div style="margin-bottom: 10px;">
+                        <h3 style="color: #0057b8; margin-bottom: 15px;">Please wait for admin to verify your credentials.</h3>
+                        <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Your account has been submitted for verification. An admin will review your information and send login credentials via email once approved.</p>
+                    </div>
+
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0;">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                            <div class="spinner" style="width: 20px; height: 20px; border: 2px solid #f3f3f3; border-top: 2px solid #0057b8; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                            <span style="color: #666; font-size: 14px;">Checking verification status...</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <p style="color: #666; font-size: 14px; margin-bottom: 20px;">You will receive an email with your login details once verified.</p>
+                        <p style="font-size: 14px; margin-bottom: 10px;"><a href="#" onclick="backToSignup()" style="color: #0057b8; text-decoration: none;">back to sign up</a></p>
+                        <button onclick="backToLogin()" style="background: #0057b8; color: #fff; border: none; border-radius: 8px; padding: 12px 24px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px;">Continue LogIn</button>
+                    </div>
+                </div>
+
+                <!-- SIGNUP CREDENTIALS DISPLAY -->
+                <div class="auth-form" id="signupCredentials" style="display: none; flex-direction: column; gap: 20px; text-align: center;">
+                    <div style="margin-bottom: 10px;">
+                        <h3 style="color: #0057b8; margin-bottom: 15px;">Account Verified!</h3>
+                        <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Your account has been approved. Please save these credentials for login.</p>
+                    </div>
+
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0;">
+                        <div style="margin-bottom: 15px;">
+                            <label style="font-weight: 600; color: #333;">Name:</label>
+                            <div id="cred-name" style="font-size: 16px; color: #0057b8; margin-top: 5px;"></div>
+                        </div>
+
+                        <div style="margin-bottom: 15px;">
+                            <label style="font-weight: 600; color: #333;">Email:</label>
+                            <div id="cred-email" style="font-size: 16px; color: #0057b8; margin-top: 5px; word-break: break-all;"></div>
+                        </div>
+
+                        <div style="margin-bottom: 15px;">
+                            <label style="font-weight: 600; color: #333;">Password:</label>
+                            <div id="cred-password" style="font-size: 16px; color: #0057b8; margin-top: 5px; font-family: monospace; background: #fff; padding: 8px; border-radius: 4px; border: 1px solid #ddd;"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <p style="color: #666; font-size: 14px; margin-bottom: 20px;">⚠️ <strong>Important:</strong> Keep these credentials secure. You will need them to log in.</p>
+                        <button onclick="backToLogin()" style="background: #0057b8; color: #fff; border: none; border-radius: 8px; padding: 12px 24px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px;">Back to Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+
+        <!--SECOND FORM ADMIN--> <!-- REMOVED -->
+        <!-- Forgot Password Modal -->
+        <div id="forgotPasswordModal" class="reset-pass">
+            <div class="reset-pass-content">
+                <span class="close-modal" onclick="closeResetModal()">&times;</span>
+                <h2>Reset Password</h2>
+                <p>Enter your email address to reset your password:</p>
+                <input type="email" id="resetEmail" placeholder="Enter your Gmail address" required maxlength="45" onkeydown="if(event.key === ' ') event.preventDefault();">
+                <!-- >>> NEW: Error message span for reset email input -->
+                <span id="reset-email-error" class="error-message" style="display: none;"></span>
+                <!-- >>> CHANGED: Button text -->
+                <button onclick="resetPassword()">Send Reset</button>
+                <!-- >>> HIDDEN: General reset message paragraph (kept for JS compatibility) -->
+                <p id="resetMessage" style="display: none;"></p>
+            </div>
+        </div>
+        <!-- Terms and Conditions Modal -->
+        <div id="termsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Terms and Conditions</h2>
+                    <span class="close-modal" onclick="closeModal('termsModal')">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <h3>1. Acceptance of Terms</h3>
+                    <p>By accessing and using STI Archives, you agree to comply with these Terms and Conditions. If you do not agree, please discontinue use of the service.</p>
+                    <h3>2. User Accounts</h3>
+                    <p>Users must provide accurate information (such as full name). You are responsible for maintaining the confidentiality of your account and activities under it.</p>
+                    <h3>3. Content Usage</h3>
+                    <p>All research papers, capstone projects, and other content in STI Archives are protected under copyright and academic integrity standards. Unauthorized downloading, copying, or distribution without permission is strictly prohibited and may result in penalties.</p>
+                    <h3>4. Prohibited Activities</h3>
+                    <ul>
+                        <li>Uploading inappropriate, offensive, or non-academic content (e.g., unrelated images or PDFs).</li>
+                        <li>Using another person’s work without proper authorization.</li>
+                        <li>Attempting to bypass security measures or misuse the website.</li>
+                    </ul>
+                    <p><strong>Violations may result in suspension of access for up to 1 month or permanent banning for repeated offenses.</strong></p>
+                    <h3>5. Privacy</h3>
+                    <p>Your personal information, including full name and RAF, is collected for verification and record purposes. For details, please review our Privacy Policy.</p>
+                    <h3>6. Enforcement and Penalties</h3>
+                    <p>Users who take research files without authorization will face disciplinary actions, which may include temporary suspension, account restriction, or referral to STI College administration for further action.</p>
+                    <h3>7. Termination</h3>
+                    <p>STI Archives reserves the right to suspend or terminate any account immediately, without prior notice, for violation of these terms.</p>
+                    <h3>8. Disclaimer</h3>
+                    <p>STI Archives is provided on an "as is" basis. We make no warranties regarding uninterrupted access, completeness of content, or fitness for a particular purpose.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Privacy Policy Modal -->
+        <div id="privacyModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Privacy Policy</h2>
+                    <span class="close-modal" onclick="closeModal('privacyModal')">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <h3>1. Information We Collect</h3>
+                    <p>We collect the information you provide directly to us, such as when you create an account, upload academic work, or contact us for assistance. This may include your full name for verification purposes.</p>
+                    <h3>2. How We Use Your Information</h3>
+                    <p>The information we collect is used to verify user identity, manage and improve our services, process submissions, and communicate with you regarding your account and activities within STI Archives.</p>
+                    <h3>3. Information Sharing</h3>
+                    <p>We do not sell, trade, or share your personal information with outside parties without your consent, except when required by school administration or applicable law.</p>
+                    <h3>4. Your Rights</h3>
+                    <p>You have the right to request access, correction, or deletion of your personal information at any time. Please contact STI Archives support for such requests.</p>
+                    <h3>5. Changes to This Policy</h3>
+                    <p>We may update this Privacy Policy from time to time. Any changes will be posted on this page, and continued use of the website means acceptance of the updated policy.</p>
+                    <h3>6. Contact Us</h3>
+                    <p>If you have any questions or concerns about this Privacy Policy, please reach out to us through the STI Archives support system.</p>
+                </div>
+            </div>
+        </div>
+        <!-- RAF Preview Modal -->
+        <div id="raf-preview-modal" class="modal">
+            <div class="modal-content" style="max-width: 800px; max-height: 90vh;">
+                <span class="close-modal" onclick="closeRafModal()">&times;</span>
+                <h3>RAF Preview</h3>
+                <div id="raf-preview-content" style="margin-top: 15px;"></div>
+            </div>
+        </div>
+        <!-- Generated Account Modal -->
+        <div id="generatedAccountModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Generated Account Details</h2>
+                    <span class="close-modal" onclick="closeGeneratedModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>Your account has been generated. Please save these credentials. Your account will be pending approval by an admin.</p>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0;">
+                        <div style="margin-bottom: 15px;">
+                            <label style="font-weight: 600; color: #333;">Email:</label>
+                            <div id="gen-email" style="font-size: 16px; color: #0057b8; margin-top: 5px; word-break: break-all;"></div>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="font-weight: 600; color: #333;">Password:</label>
+                            <div id="gen-password" style="font-size: 16px; color: #0057b8; margin-top: 5px; font-family: monospace; background: #fff; padding: 8px; border-radius: 4px; border: 1px solid #ddd;"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <p style="color: #666; font-size: 14px; margin-bottom: 20px;">⚠️ <strong>Important:</strong> Keep these credentials secure. You will be able to log in once approved.</p>
+                        <button onclick="closeGeneratedModal()" style="background: #0057b8; color: #fff; border: none; border-radius: 8px; padding: 12px 24px; font-size: 16px; font-weight: 600; cursor: pointer;">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- >>> NEW: Success Login Modal (Top Right) -->
+        <div id="successLoginModal" class="success-login-modal" style="display: none;">
+            <p>Successfully logged in!</p>
+        </div>
+        <!-- >>> NEW: Reset Sent Modal (Top Right) -->
+        <div id="resetSentModal" class="reset-sent-modal">
+            <p>Password reset code sent! Check your email.</p>
+        </div>
+        <!-- Generated Account Modal -->
+        <div id="generatedAccountModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Your Account Has Been Granted Access!</h2>
+                    <span class="close-modal" onclick="closeGeneratedAccountModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>Congratulations! Your account has been approved by the admin. Here are your login credentials:</p>
+                    <p style="color: #0057b8; font-size: 16px; font-weight: bold; text-align: center; margin-bottom: 20px;">You have been granted access to our website.</p>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0;">
+                        <div style="margin-bottom: 15px;">
+                            <label style="font-weight: 600; color: #333;">Email:</label>
+                            <div id="gen-acc-email" style="font-size: 16px; color: #0057b8; margin-top: 5px; word-break: break-all;"></div>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="font-weight: 600; color: #333;">Password:</label>
+                            <div id="gen-acc-password" style="font-size: 16px; color: #0057b8; margin-top: 5px; font-family: monospace; background: #fff; padding: 8px; border-radius: 4px; border: 1px solid #ddd;"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <p style="color: #666; font-size: 14px; margin-bottom: 20px;">⚠️ <strong>Important:</strong> Keep these credentials secure. You can now log in to access our website.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Generated Account Modal -->
+        <div id="generatedAccountModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Your Account Has Been Granted Access!</h2>
+                    <span class="close-modal" onclick="closeGeneratedAccountModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <h3 style="margin: 0; font-size: 18px;">Your account has been created and you have been granted access to our website!</h3>
+                        </div>
+                        <p style="color: #333; font-size: 16px; margin-bottom: 20px;">Congratulations! Your account has been approved by the admin. Here are your login credentials:</p>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0;">
+                        <div style="margin-bottom: 15px;">
+                            <label style="font-weight: 600; color: #333;">Email:</label>
+                            <div id="gen-acc-email" style="font-size: 16px; color: #0057b8; margin-top: 5px; word-break: break-all;"></div>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="font-weight: 600; color: #333;">Password:</label>
+                            <div id="gen-acc-password" style="font-size: 16px; color: #0057b8; margin-top: 5px; font-family: monospace; background: #fff; padding: 8px; border-radius: 4px; border: 1px solid #ddd;"></div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <p style="color: #666; font-size: 14px; margin-bottom: 20px;">⚠️ <strong>Important:</strong> Keep these credentials secure. You can now log in to access our website.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const adminBtn = document.getElementById('adminBtn');
+            if (adminBtn) {
+                adminBtn.parentElement.remove(); // Remove the entire Admin button container
+            }
+            const studentMainContent = document.querySelector('.main-content');
+            const adminMainContent = document.querySelectorAll('.main-content')[1];
+            if (studentMainContent && adminMainContent) {
+                // Ensure admin content is hidden since we removed the button
+                adminMainContent.style.display = 'none';
+            }
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const loginTab = document.getElementById('loginTab');
+            const signupTab = document.getElementById('signupTab');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const authContainer = document.getElementById('authContainer');
+            function showLogin() {
+                // Clear any inline display styles that might override CSS classes
+                loginForm.style.display = '';
+                signupForm.style.display = '';
+                loginTab.classList.add('active');
+                signupTab.classList.remove('active');
+                loginForm.classList.add('active');
+                signupForm.classList.remove('active');
+                authContainer.classList.remove('auth-container--signup');
+            }
+            function showSignup() {
+                // Clear any inline display styles that might override CSS classes
+                loginForm.style.display = '';
+                signupForm.style.display = '';
+                signupTab.classList.add('active');
+                loginTab.classList.remove('active');
+                signupForm.classList.add('active');
+                loginForm.classList.remove('active');
+                authContainer.classList.add('auth-container--signup');
+            }
+            loginTab.addEventListener('click', showLogin);
+            signupTab.addEventListener('click', showSignup);
+            const switchToSignup = document.getElementById('switchToSignup');
+            const switchToLogin = document.getElementById('switchToLogin');
+            if (switchToSignup) {
+                switchToSignup.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showSignup();
+                });
+            }
+            if (switchToLogin) {
+                switchToLogin.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showLogin();
+                });
+            }
+            showLogin();
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const studentBackLink = document.getElementById('studentBackLink');
+            const authContainer = document.querySelector('.auth-container');
+            const authContainer2 = document.querySelector('.auth-container2');
+            if (studentBackLink && authContainer && authContainer2) {
+                studentBackLink.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    authContainer.style.display = 'block';
+                    authContainer2.style.display = 'none';
+                });
+            }
+        });
+        document.querySelectorAll('.toggle-password').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const targetId = this.dataset.target;
+                const targetInput = document.getElementById(targetId);
+                const icon = this.querySelector('i');
+                if (targetInput && icon) {
+                    if (targetInput.type === "password") {
+                        targetInput.type = "text";
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        targetInput.type = "password";
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                }
+            });
+        });
+        // ... [Rest of your JS logic remains exactly as before] ...
+        const loginEmailInput = document.getElementById('login-email');
+        const loginEmailError = document.getElementById('login-email-error');
+        const loginPasswordInput = document.getElementById('login-password');
+        const loginPasswordError = document.getElementById('login-password-error');
+        
+        // Add capitalizeWords functionality to login fullname input
+        loginEmailInput.addEventListener('input', function() {
+            const capitalized = capitalizeWords(this.value);
+            if (this.value !== capitalized) {
+                this.value = capitalized;
+            }
+        });
+        
+        function validateLoginEmail() {
+            const fullname = loginEmailInput.value.trim();
+            if (!fullname) {
+                loginEmailError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter your full name.';
+                loginEmailError.style.display = 'block';
+                loginEmailInput.classList.add('input-error');
+                return false;
+            } else if (fullname.split(' ').length < 2) {
+                loginEmailError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter your full name (first and last name).';
+                loginEmailError.style.display = 'block';
+                loginEmailInput.classList.add('input-error');
+                return false;
+            } else {
+                loginEmailError.style.display = 'none';
+                loginEmailInput.classList.remove('input-error');
+                return true;
+            }
+        }
+        loginEmailInput.addEventListener('input', () => {
+            if (loginEmailError.style.display === 'block') {
+                const fullname = loginEmailInput.value.trim();
+                if (fullname && fullname.split(' ').length >= 2) {
+                    loginEmailError.style.display = 'none';
+                    loginEmailInput.classList.remove('input-error');
+                }
+            }
+        });
+        function validateLoginPassword() {
+            const password = loginPasswordInput.value;
+            if (!password) {
+                loginPasswordError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Password is required';
+                loginPasswordError.style.display = 'block';
+                loginPasswordInput.classList.add('input-error');
+                return false;
+            } else if (password.length < 8) {
+                loginPasswordError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Password must be at least 8 characters long.';
+                loginPasswordError.style.display = 'block';
+                loginPasswordInput.classList.add('input-error');
+                return false;
+            } else {
+                loginPasswordError.style.display = 'none';
+                loginPasswordInput.classList.remove('input-error');
+                return true;
+            }
+        }
+        loginPasswordInput.addEventListener('input', () => {
+            if (loginPasswordError.style.display === 'block') {
+                const password = loginPasswordInput.value;
+                if (password.length >= 8) {
+                    loginPasswordError.style.display = 'none';
+                    loginPasswordInput.classList.remove('input-error');
+                }
+            }
+        });
+        async function getUsers() {
+            try {
+                const response = await fetch('http://localhost:5500/get_users');
+                if (response.ok) {
+                    return await response.json();
+                }
+            } catch (error) {
+                console.error('Failed to fetch users from server:', error);
+            }
+            // Fallback to localStorage
+            return JSON.parse(localStorage.getItem('users')) || [];
+        }
+        const loginForm = document.getElementById('loginForm');
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const messageDiv = document.getElementById('login-message');
+            loginEmailError.style.display = 'none';
+            loginPasswordError.style.display = 'none';
+            loginEmailInput.classList.remove('input-error');
+            loginPasswordInput.classList.remove('input-error');
+            let hasErrors = false;
+            // Full name validation (no email regex needed)
+            if (!email) {
+                loginEmailError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter your full name.';
+                loginEmailError.style.display = 'block';
+                loginEmailInput.classList.add('input-error');
+                hasErrors = true;
+            } else if (email.length < 2) {
+                loginEmailError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Full name must be at least 2 characters.';
+                loginEmailError.style.display = 'block';
+                loginEmailInput.classList.add('input-error');
+                hasErrors = true;
+            }
+            if (!password) {
+                loginPasswordError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Password is required';
+                loginPasswordError.style.display = 'block';
+                loginPasswordInput.classList.add('input-error');
+                hasErrors = true;
+            } else if (password.length < 8) {
+                loginPasswordError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Password must be at least 8 characters long.';
+                loginPasswordError.style.display = 'block';
+                loginPasswordInput.classList.add('input-error');
+                hasErrors = true;
+            }
+            if (hasErrors) {
+                messageDiv.style.display = 'none';
+                return;
+            }
+            // API-based login (try, if fails use localStorage)
+            try {
+                // Show loading state
+                messageDiv.textContent = 'Logging in...';
+                messageDiv.style.color = '#666';
+                messageDiv.style.display = 'block';
+                
+                // Call login API with timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+                
+                try {
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ fullname: email, password }),
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+                    
+                    const data = await response.json();
+                    
+                    // Check if account is pending approval
+                    if (data.pending) {
+                        // Show waiting for verification screen
+                        const userId = data.user?.user_id || data.user_id || data.id;
+                        sessionStorage.setItem('pendingVerificationUserId', userId);
+                        showWaitingForVerification(userId);
+                        return;
+                    }
+                    
+                    // Check if account was rejected
+                    if (data.rejected) {
+                        messageDiv.innerHTML = '<span style="color: #dc3545;"><i class="fas fa-times-circle"></i> Your account request has been declined. Please contact the administrator for more information.</span>';
+                        messageDiv.style.display = 'block';
+                        return;
+                    }
+                    
+                    if (response.ok && data.token) {
+                        // Store JWT token
+                        localStorage.setItem('sti_auth_token', data.token);
+                        localStorage.setItem('currentUser', JSON.stringify(data.user));
+                        
+                        if (rememberMe) {
+                            localStorage.setItem('rememberMe', email);
+                        } else {
+                            localStorage.removeItem('rememberMe');
+                        }
+                        
+                        // Show success modal
+                        showSuccessLoginMessage();
+                        
+                        // Redirect based on user role
+                        setTimeout(() => {
+                            const userRole = data.user.role;
+                            if (userRole === 'admin') {
+                                window.location.href = 'admin.html';
+                            } else if (userRole === 'coadmin') {
+                                window.location.href = 'coadmin.html';
+                            } else if (userRole === 'subadmin') {
+                                window.location.href = 'subadmin.html';
+                            } else {
+                                window.location.href = 'Homepage.html';
+                            }
+                        }, 1500);
+                        return; // Login successful, stop here
+                    }
+                } catch (fetchError) {
+                    clearTimeout(timeoutId);
+                    console.log('API fetch failed, using localStorage login...');
+                }
+            } catch (error) {
+                console.log('API not available, using localStorage login...');
+            }
+            
+            // Legacy localStorage login (fallback when API fails)
+            const fullname = email;
+            const users = await getUsers();
+            // Check for Test User FIRST before user array lookup
+            const isTestUser = fullname === 'Test User';
+            // Check for Permanent Admin FIRST before user array lookup
+            const isAdmin = fullname === 'Permanent Admin' || fullname === 'Admin';
+            
+            // Check for hardcoded admin account FIRST
+            if (isAdmin) {
+                if (password === 'admin123') {
+                    const adminAccount = { email: 'admin@clmb.sti.archives', fullname: 'Admin', role: 'admin', id: 'admin-permanent', isActive: true };
+                    localStorage.setItem('currentUser', JSON.stringify(adminAccount));
+                    if (rememberMe) {
+                        localStorage.setItem('adminRememberMe', fullname);
+                    } else {
+                        localStorage.removeItem('adminRememberMe');
+                    }
+                    // Show success modal
+                    showSuccessLoginMessage();
+                    setTimeout(() => {
+                        window.location.href = "admin.html";
+                    }, 1500);
+                    return;
+                } else {
+                    messageDiv.textContent = 'Invalid password. Please try again.';
+                    messageDiv.style.color = '#ff6b6b';
+                    messageDiv.style.display = 'block';
+                    return;
+                }
+            }
+            
+            // Check for Test User FIRST
+            if (isTestUser) {
+                if (password === 'usertesting') {
+                    const testUserAccount = { email: 'user@clmb.sti.archives', fullname: 'Test User', role: 'user', id: 'user-test', isActive: true };
+                    localStorage.setItem('currentUser', JSON.stringify(testUserAccount));
+                    if (rememberMe) {
+                        localStorage.setItem('userRememberMe', fullname);
+                    } else {
+                        localStorage.removeItem('userRememberMe');
+                    }
+                    // Show success modal
+                    showSuccessLoginMessage();
+                    setTimeout(() => {
+                        window.location.href = "Homepage.html";
+                    }, 1500);
+                    return;
+                } else {
+                    messageDiv.textContent = 'Invalid password for test user.';
+                    messageDiv.style.color = '#ff6b6b';
+                    messageDiv.style.display = 'block';
+                    return;
+                }
+            }
+            
+            // Then check users from users.json
+            // Use fullname field and isActive for proper approval flow
+            const user = users.find(u => u.fullname === fullname && u.isActive !== false);
+            
+            // Check if user exists but is not active (pending approval)
+            const pendingUser = users.find(u => u.fullname === fullname && u.isActive === false);
+            const rejectedUser = users.find(u => u.fullname === fullname && u.rejected === true);
+            
+            if (rejectedUser) {
+                messageDiv.innerHTML = '<span style="color: #dc3545;"><i class="fas fa-times-circle"></i> Your account request has been declined. Please contact the administrator for more information.</span>';
+                messageDiv.style.display = 'block';
+                return;
+            }
+            
+            if (pendingUser) {
+                // Show waiting for verification screen
+                const userId = pendingUser.user_id || pendingUser.id;
+                sessionStorage.setItem('pendingVerificationUserId', userId);
+                showWaitingForVerification(userId);
+                return;
+            }
+             
+            if (user) {
+                if (user.password === password) {
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    if (rememberMe) {
+                        localStorage.setItem('rememberMe', fullname);
+                    } else {
+                        localStorage.removeItem('rememberMe');
+                    }
+                    // Check role for redirect
+                    if (user.role === 'admin') {
+                        showSuccessLoginMessage();
+                        setTimeout(() => {
+                            window.location.href = "admin.html";
+                        }, 2000);
+                    } else if (user.role === 'coadmin') {
+                        showSuccessLoginMessage();
+                        setTimeout(() => {
+                            window.location.href = "coadmin.html";
+                        }, 2000);
+                    } else if (user.role === 'subadmin') {
+                        showSuccessLoginMessage();
+                        setTimeout(() => {
+                            window.location.href = "subadmin.html";
+                        }, 2000);
+                    } else {
+                        showSuccessLoginMessage();
+                        setTimeout(() => {
+                            window.location.href = "Homepage.html";
+                        }, 1000);
+                    }
+                } else {
+                    messageDiv.textContent = 'Please double-check your credentials and try again.';
+                    messageDiv.style.color = 'red';
+                    messageDiv.style.display = 'block';
+                }
+            } else {
+                messageDiv.innerHTML = 'No account found. Please sign up first to create an account.';
+                messageDiv.style.color = '#ff6b6b';
+                messageDiv.style.display = 'block';
+            }
+        });
+        
+        const signupFullnameInput = document.getElementById('signup-fullname');
+        const signupFullnameError = document.getElementById('signup-fullname-error');
+        function capitalizeWords(str) {
+            return str.replace(/\b\w/g, l => l.toUpperCase());
+        }
+        function validateFullname() {
+            const name = signupFullnameInput.value.trim();
+            const words = name.split(/\s+/).filter(word => word.length > 0);
+            if (words.length >= 2) {
+                signupFullnameError.style.display = 'none';
+                signupFullnameInput.classList.remove('input-error');
+                return true;
+            } else {
+                signupFullnameError.style.display = 'flex';
+                signupFullnameInput.classList.add('input-error');
+                return false;
+            }
+        }
+        signupFullnameInput.addEventListener('input', function() {
+            const capitalized = capitalizeWords(this.value);
+            if (this.value !== capitalized) {
+                this.value = capitalized;
+            }
+            if (signupFullnameError.style.display === 'flex') {
+                validateFullname();
+            }
+        });
+        
+        // Password validation
+        const signupPasswordInput = document.getElementById('signup-password');
+        const signupPasswordError = document.getElementById('signup-password-error');
+        const signupConfirmPasswordInput = document.getElementById('signup-confirm-password');
+        const signupConfirmPasswordError = document.getElementById('signup-confirm-password-error');
+        
+        function validatePassword() {
+            const password = signupPasswordInput.value.trim();
+            if (password.length >= 8 && password.length <= 64) {
+                signupPasswordError.style.display = 'none';
+                signupPasswordInput.classList.remove('input-error');
+                return true;
+            } else {
+                signupPasswordError.style.display = 'flex';
+                signupPasswordInput.classList.add('input-error');
+                return false;
+            }
+        }
+        
+        function validateConfirmPassword() {
+            const password = signupPasswordInput.value;
+            const confirmPassword = signupConfirmPasswordInput.value;
+            if (password === confirmPassword && confirmPassword.length >= 8) {
+                signupConfirmPasswordError.style.display = 'none';
+                signupConfirmPasswordInput.classList.remove('input-error');
+                return true;
+            } else {
+                signupConfirmPasswordError.style.display = 'flex';
+                signupConfirmPasswordInput.classList.add('input-error');
+                return false;
+            }
+        }
+        
+        signupPasswordInput.addEventListener('input', function() {
+            if (signupPasswordError.style.display === 'flex') {
+                validatePassword();
+            }
+            // Also validate confirm password if it has a value
+            if (signupConfirmPasswordInput.value) {
+                validateConfirmPassword();
+            }
+        });
+        
+        signupConfirmPasswordInput.addEventListener('input', function() {
+            if (signupConfirmPasswordError.style.display === 'flex') {
+                validateConfirmPassword();
+            }
+        });
+        
+        // >>> REAL-TIME VALIDATION - Validate on input and blur for immediate feedback
+        
+        // Fullname real-time validation
+        signupFullnameInput.addEventListener('blur', function() {
+            validateFullname();
+        });
+        // Also validate on input (not just when error is showing)
+        signupFullnameInput.removeEventListener('input', function() {
+            const capitalized = capitalizeWords(this.value);
+            if (this.value !== capitalized) {
+                this.value = capitalized;
+            }
+            if (signupFullnameError.style.display === 'flex') {
+                validateFullname();
+            }
+        });
+        signupFullnameInput.addEventListener('input', function() {
+            const capitalized = capitalizeWords(this.value);
+            if (this.value !== capitalized) {
+                this.value = capitalized;
+            }
+            validateFullname(); // Always validate on input
+        });
+        
+        // Email validation - get elements and add real-time validation
+        const signupEmailInput = document.getElementById('signup-email');
+        const signupEmailError = document.getElementById('signup-email-error');
+        
+        // Role, Grade, Section select elements
+        const signupRoleSelect = document.getElementById('signup-role');
+        const signupGradeSelect = document.getElementById('signup-grade');
+        const signupSectionSelect = document.getElementById('signup-section');
+        const signupRoleError = document.getElementById('signup-role-error');
+        const signupGradeError = document.getElementById('signup-grade-error');
+        const signupSectionError = document.getElementById('signup-section-error');
+        const gradeGroup = document.getElementById('gradeGroup');
+        const sectionGroup = document.getElementById('sectionGroup');
+        
+        function validateEmailRealTime() {
+            const email = signupEmailInput.value.trim();
+            const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+            if (!email) {
+                signupEmailError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter your email address.';
+                signupEmailError.style.display = 'flex';
+                signupEmailInput.classList.add('input-error');
+                return false;
+            } else if (!emailRegex.test(email)) {
+                signupEmailError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter a valid email address.';
+                signupEmailError.style.display = 'flex';
+                signupEmailInput.classList.add('input-error');
+                return false;
+            } else {
+                signupEmailError.style.display = 'none';
+                signupEmailInput.classList.remove('input-error');
+                return true;
+            }
+        }
+        
+        signupEmailInput.addEventListener('input', validateEmailRealTime);
+        signupEmailInput.addEventListener('blur', validateEmailRealTime);
+        
+        // Password real-time validation
+        signupPasswordInput.removeEventListener('input', function() {
+            if (signupPasswordError.style.display === 'flex') {
+                validatePassword();
+            }
+            // Also validate confirm password if it has a value
+            if (signupConfirmPasswordInput.value) {
+                validateConfirmPassword();
+            }
+        });
+        signupPasswordInput.addEventListener('input', function() {
+            validatePassword(); // Always validate on input
+            // Also validate confirm password if it has a value
+            if (signupConfirmPasswordInput.value) {
+                validateConfirmPassword();
+            }
+        });
+        signupPasswordInput.addEventListener('blur', function() {
+            validatePassword();
+        });
+        
+        // Confirm password real-time validation
+        signupConfirmPasswordInput.removeEventListener('input', function() {
+            if (signupConfirmPasswordError.style.display === 'flex') {
+                validateConfirmPassword();
+            }
+        });
+        signupConfirmPasswordInput.addEventListener('input', function() {
+            validateConfirmPassword(); // Always validate on input
+        });
+        signupConfirmPasswordInput.addEventListener('blur', function() {
+            validateConfirmPassword();
+        });
+        
+        // Role real-time validation
+        signupRoleSelect.addEventListener('change', function() {
+            validateRole();
+        });
+        signupRoleSelect.addEventListener('blur', function() {
+            validateRole();
+        });
+        
+        // Grade real-time validation
+        signupGradeSelect.addEventListener('change', function() {
+            if (signupRoleSelect.value === 'senior_high') {
+                validateGrade();
+            }
+        });
+        signupGradeSelect.addEventListener('blur', function() {
+            if (signupRoleSelect.value === 'senior_high') {
+                validateGrade();
+            }
+        });
+        
+        // Section real-time validation
+        signupSectionSelect.addEventListener('change', function() {
+            if (signupRoleSelect.value === 'senior_high' || signupRoleSelect.value === 'college') {
+                validateSection();
+            }
+        });
+        signupSectionSelect.addEventListener('blur', function() {
+            if (signupRoleSelect.value === 'senior_high' || signupRoleSelect.value === 'college') {
+                validateSection();
+            }
+        });
+        const rafGroup = document.getElementById('rafGroup'); // Reference to the raf group div
+        const educatorIdGroup = document.getElementById('educatorIdGroup'); // Reference to the educator id group div
+
+        function validateRole() {
+            const role = signupRoleSelect.value;
+            if (!role) {
+                signupRoleError.style.display = 'flex';
+                signupRoleSelect.classList.add('input-error');
+                gradeGroup.style.display = 'none'; // Hide grade group if role is empty
+                signupGradeSelect.disabled = true; // Disable grade select
+                sectionGroup.style.display = 'none'; // Hide section group if role is empty
+                signupSectionSelect.disabled = true; // Disable section select
+                rafGroup.style.display = 'none'; // Hide raf group if role is empty
+                educatorIdGroup.style.display = 'none'; // Hide educator id group if role is empty
+                return false;
+            } else {
+                signupRoleError.style.display = 'none';
+                signupRoleSelect.classList.remove('input-error');
+                if (role === 'senior_high') {
+                    gradeGroup.style.display = 'flex'; // Show grade group for senior high
+                    signupGradeSelect.disabled = false; // Enable grade select
+                    sectionGroup.style.display = 'flex'; // Show section group for senior high
+                    signupSectionSelect.disabled = false; // Enable section select
+                    rafGroup.style.display = 'flex'; // Show raf group for senior high
+                    educatorIdGroup.style.display = 'none'; // Hide educator id for senior high
+                } else if (role === 'college') {
+                    gradeGroup.style.display = 'none'; // Hide grade group for college
+                    signupGradeSelect.disabled = true; // Disable grade select
+                    sectionGroup.style.display = 'flex'; // Show degree input for college
+                    signupSectionSelect.disabled = false; // Enable degree select
+                    rafGroup.style.display = 'flex'; // Show raf group for college
+                    educatorIdGroup.style.display = 'none'; // Hide educator id for college
+                } else if (role === 'educator') {
+                    gradeGroup.style.display = 'none'; // Hide grade group for educator
+                    signupGradeSelect.disabled = true; // Disable grade select
+                    sectionGroup.style.display = 'none'; // Hide section group for educator
+                    signupSectionSelect.disabled = true; // Disable section select
+                    rafGroup.style.display = 'none'; // Hide raf group for educator
+                    educatorIdGroup.style.display = 'flex'; // Show educator id for educator
+                } else {
+                    gradeGroup.style.display = 'none'; // Hide grade group for other roles
+                    signupGradeSelect.disabled = true; // Disable grade select
+                    sectionGroup.style.display = 'none'; // Hide section group for other roles
+                    signupSectionSelect.disabled = true; // Disable section select
+                    rafGroup.style.display = 'none'; // Hide raf group for other roles
+                    educatorIdGroup.style.display = 'none'; // Hide educator id for other roles
+                }
+                if (role === 'senior_high' || role === 'college') {
+                    rafGroup.style.display = 'flex';
+                    educatorIdGroup.style.display = 'none';
+                } else if (role === 'educator') {
+                    rafGroup.style.display = 'none';
+                    educatorIdGroup.style.display = 'flex';
+                } else {
+                    rafGroup.style.display = 'none';
+                    educatorIdGroup.style.display = 'none';
+                }
+                if (role === 'senior_high' || role === 'college') {
+                    rafGroup.style.display = 'flex';
+                    document.getElementById('signup-raf').required = true;
+                    educatorIdGroup.style.display = 'none';
+                    document.getElementById('signup-educator-id').required = false;
+                } else if (role === 'educator') {
+                    rafGroup.style.display = 'none';
+                    document.getElementById('signup-raf').required = false;
+                    educatorIdGroup.style.display = 'flex';
+                    document.getElementById('signup-educator-id').required = true;
+                } else {
+                    rafGroup.style.display = 'none';
+                    document.getElementById('signup-raf').required = false;
+                    educatorIdGroup.style.display = 'none';
+                    document.getElementById('signup-educator-id').required = false;
+                }
+
+                return true;
+            }
+        }
+
+        function validateGrade() {
+            const grade = signupGradeSelect.value;
+            if (!grade) {
+                signupGradeError.style.display = 'flex';
+                signupGradeSelect.classList.add('input-error');
+                return false;
+            } else {
+                signupGradeError.style.display = 'none';
+                signupGradeSelect.classList.remove('input-error');
+                return true;
+            }
+        }
+
+        function validateSection() {
+            const section = signupSectionSelect.value;
+            if (!section) {
+                signupSectionError.style.display = 'flex';
+                signupSectionSelect.classList.add('input-error');
+                return false;
+            } else {
+                signupSectionError.style.display = 'none';
+                signupSectionSelect.classList.remove('input-error');
+                return true;
+            }
+        }
+
+        function updateSectionOptions() {
+            const role = signupRoleSelect.value;
+            const grade = signupGradeSelect.value;
+            signupSectionSelect.innerHTML = '';
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = role === 'college' ? 'Select Degree' : 'Select Section';
+            defaultOption.style.color = '#666';
+            defaultOption.style.fontStyle = 'italic';
+            signupSectionSelect.appendChild(defaultOption);
+
+            // Update the label text based on role
+            const sectionLabel = document.querySelector('label[for="signup-section"]');
+            if (sectionLabel) {
+                sectionLabel.textContent = role === 'college' ? 'Degree' : 'Section';
+            }
+
+            if (!role) {
+                // If no role is selected, hide the grade and section groups and disable the selects
+                gradeGroup.style.display = 'none';
+                signupGradeSelect.disabled = true;
+                sectionGroup.style.display = 'none';
+                signupSectionSelect.disabled = true;
+                signupGradeError.style.display = 'none'; // Clear any existing grade error
+                signupSectionError.style.display = 'none'; // Clear any existing section error
+                return;
+            }
+
+            if (role === 'senior_high') {
+                // For senior high, show grade and section
+                gradeGroup.style.display = 'flex';
+                signupGradeSelect.disabled = false;
+                sectionGroup.style.display = 'flex';
+                signupSectionSelect.disabled = false;
+                [
+                    { value: 'abm', text: 'ABM' },
+                    { value: 'itmawd', text: 'ITMAWD' },
+                    { value: 'stem', text: 'STEM' }
+                ].forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt.value;
+                    option.textContent = opt.text;
+                    signupSectionSelect.appendChild(option);
+                });
+            } else if (role === 'college') {
+                // For college, hide grade and show degree
+                gradeGroup.style.display = 'none';
+                signupGradeSelect.disabled = true;
+                sectionGroup.style.display = 'flex';
+                signupSectionSelect.disabled = false;
+                [
+                    { value: 'bsba', text: 'BSBA' },
+                    { value: 'bscs', text: 'BSCS' },
+                    { value: 'bsit', text: 'BSIT' }
+                ].forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt.value;
+                    option.textContent = opt.text;
+                    signupSectionSelect.appendChild(option);
+                });
+            } else if (role === 'educator') {
+                // For educator, hide grade and section
+                gradeGroup.style.display = 'none';
+                signupGradeSelect.disabled = true;
+                sectionGroup.style.display = 'none';
+                signupSectionSelect.disabled = true;
+            } else {
+                // For other roles, hide grade and section
+                gradeGroup.style.display = 'none';
+                signupGradeSelect.disabled = true;
+                sectionGroup.style.display = 'none';
+                signupSectionSelect.disabled = true;
+            }
+        };
+
+        // Event listeners for role, grade, and section
+        signupRoleSelect.addEventListener('change', function() {
+            updateSectionOptions();
+            validateRole(); // Validate role after change
+            if (signupRoleSelect.value === 'senior_high') {
+                validateGrade(); // Validate grade for senior high
+            } else {
+                validateSection(); // Validate section for other roles
+            }
+        });
+
+        signupGradeSelect.addEventListener('change', function() {
+            updateSectionOptions();
+            validateGrade(); // Validate grade after change
+            validateSection(); // Validate section after options update
+        });
+
+        // Initial setup: hide grade, section, raf, educator id, student id, and teacher id groups and disable selects
+        gradeGroup.style.display = 'none';
+        signupGradeSelect.disabled = true;
+        sectionGroup.style.display = 'none';
+        signupSectionSelect.disabled = true;
+        rafGroup.style.display = 'none';
+        educatorIdGroup.style.display = 'none';
+        // Populate section options for senior high by default
+        [
+            { value: 'abm', text: 'ABM' },
+            { value: 'itmawd', text: 'ITMAWD' },
+            { value: 'stem', text: 'STEM' }
+        ].forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.text;
+            signupSectionSelect.appendChild(option);
+        });
+
+        // Initialize section options based on current role value (likely empty on load)
+        updateSectionOptions();
+
+        // Validate grade and section when they change
+        signupGradeSelect.addEventListener('change', validateGrade);
+        signupSectionSelect.addEventListener('change', validateSection);
+
+        // Hide RAF error when file is selected
+        const signupRafInput = document.getElementById('signup-raf');
+        signupRafInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                document.getElementById('signup-raf-error').style.display = 'none';
+                this.classList.remove('input-error');
+            }
+        });
+
+        // Hide Educator ID error when file is selected
+        const signupEducatorIdInput = document.getElementById('signup-educator-id');
+        signupEducatorIdInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                document.getElementById('signup-educator-id-error').style.display = 'none';
+                this.classList.remove('input-error');
+            }
+        });
+
+        function validateFullname() {
+            const fullname = document.getElementById('signup-fullname').value.trim();
+            if (!fullname || fullname.split(' ').length < 2) {
+                document.getElementById('signup-fullname-error').innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter your full name (first and last name).';
+                document.getElementById('signup-fullname-error').style.display = 'flex';
+                document.getElementById('signup-fullname').classList.add('input-error');
+                return false;
+            } else {
+                document.getElementById('signup-fullname-error').style.display = 'none';
+                document.getElementById('signup-fullname').classList.remove('input-error');
+                return true;
+            }
+        }
+
+        function validateEmail() {
+             const email = document.getElementById('signup-email').value.trim();
+             const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+             if (!email) {
+                 document.getElementById('signup-email-error').innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter your email address.';
+                 document.getElementById('signup-email-error').style.display = 'flex';
+                 document.getElementById('signup-email').classList.add('input-error');
+                 return false;
+             } else if (!emailRegex.test(email)) {
+                 document.getElementById('signup-email-error').innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter a valid email address.';
+                 document.getElementById('signup-email-error').style.display = 'flex';
+                 document.getElementById('signup-email').classList.add('input-error');
+                 return false;
+             } else {
+                 document.getElementById('signup-email-error').style.display = 'none';
+                 document.getElementById('signup-email').classList.remove('input-error');
+                 return true;
+             }
+         }
+
+        function validateGrade() {
+            const role = document.getElementById('signup-role').value;
+            if (role === 'senior_high') {
+                const grade = document.getElementById('signup-grade').value;
+                if (!grade || grade === '') {
+                    document.getElementById('signup-grade-error').innerHTML = '<i class="fas fa-exclamation-circle"></i> Please select a grade.';
+                    document.getElementById('signup-grade-error').style.display = 'flex';
+                    document.getElementById('signup-grade').classList.add('input-error');
+                    return false;
+                } else {
+                    document.getElementById('signup-grade-error').style.display = 'none';
+                    document.getElementById('signup-grade').classList.remove('input-error');
+                    return true;
+                }
+            }
+            return true; // Not required for other roles
+        }
+
+        function validateSection() {
+            const section = document.getElementById('signup-section').value;
+            if (!section || section === '') {
+                document.getElementById('signup-section-error').innerHTML = '<i class="fas fa-exclamation-circle"></i> Please select a section.';
+                document.getElementById('signup-section-error').style.display = 'flex';
+                document.getElementById('signup-section').classList.add('input-error');
+                return false;
+            } else {
+                document.getElementById('signup-section-error').style.display = 'none';
+                document.getElementById('signup-section').classList.remove('input-error');
+                return true;
+            }
+        }
+
+         function handleSignup() {
+                console.log('DEBUG: handleSignup called');
+                const roleSelect = document.getElementById('signup-role');
+                let valid = true;
+                console.log('DEBUG: Starting validation');
+                if (!validateFullname()) { console.log('DEBUG: validateFullname failed'); valid = false; }
+                if (!validateEmail()) { console.log('DEBUG: validateEmail failed'); valid = false; }
+                if (!validatePassword()) { console.log('DEBUG: validatePassword failed'); valid = false; }
+                if (!validateConfirmPassword()) { console.log('DEBUG: validateConfirmPassword failed'); valid = false; }
+                if (!validateRole()) { console.log('DEBUG: validateRole failed'); valid = false; }
+                if (roleSelect.value === 'senior_high' && !validateGrade()) { console.log('DEBUG: validateGrade failed'); valid = false; }
+                if ((roleSelect.value === 'senior_high' || roleSelect.value === 'college') && !validateSection()) { console.log('DEBUG: validateSection failed'); valid = false; }
+                console.log('DEBUG: Validation result:', valid);
+
+                const fullname = document.getElementById('signup-fullname').value.trim();
+                const email = document.getElementById('signup-email').value.trim();
+                const role = roleSelect.value;
+                // Generate sequential User ID
+                const existingUsers = JSON.parse(localStorage.getItem('users')) || [];
+                let maxId = 0;
+                existingUsers.forEach(user => {
+                    const id = parseInt(user.id);
+                    if (!isNaN(id) && id > maxId) {
+                        maxId = id;
+                    }
+                });
+                const userId = String(maxId + 1);
+
+               let requiredFile;
+               if (role === 'educator') {
+                   requiredFile = document.getElementById('signup-educator-id').files[0];
+                   if (!requiredFile) {
+                       document.getElementById('signup-educator-id-error').style.display = 'flex';
+                       valid = false;
+                   } else {
+                       document.getElementById('signup-educator-id-error').style.display = 'none';
+                   }
+               } else if (role === 'senior_high' || role === 'college') {
+                   requiredFile = document.getElementById('signup-raf').files[0];
+                   if (!requiredFile) {
+                       document.getElementById('signup-raf-error').style.display = 'flex';
+                       valid = false;
+                   } else {
+                       document.getElementById('signup-raf-error').style.display = 'none';
+                   }
+               }
+
+               if (!valid) {
+                   console.log('DEBUG: Validation failed, not proceeding');
+                   return;
+               }
+             const grade = roleSelect.value === 'senior_high' ? document.getElementById('signup-grade').value : '';
+            const section = document.getElementById('signup-section').value;
+
+            // Create newUser object
+            const newUser = {
+                id: userId,
+                user_id: userId,
+                 name: fullname,
+                 email: email,
+                 personal_email: email,
+                password: document.getElementById('signup-password').value,
+                role: role,
+                section: section,
+                grade: grade,
+                strand: section,
+                created_at: new Date().toISOString(),
+                verified: false,
+                rejected: false,
+                banned: false,
+                status: 'signing-up',
+                raf_path: requiredFile ? 'local:' + userId : null
+            };
+
+           // Store document in local storage for preview
+           if (requiredFile) {
+               const reader = new FileReader();
+               reader.onload = function(e) {
+                   localStorage.setItem(newUser.id + '_raf', e.target.result);
+               };
+               reader.readAsDataURL(requiredFile);
+           }
+
+           // Store user in localStorage (client-side only)
+           const users = JSON.parse(localStorage.getItem('users')) || [];
+           const existingUserIndex = users.findIndex(u => u.email === email);
+           if (existingUserIndex >= 0) {
+             users[existingUserIndex] = { ...users[existingUserIndex], ...newUser };
+           } else {
+             users.push(newUser);
+           }
+           localStorage.setItem('users', JSON.stringify(users));
+
+            // Create FormData for server
+            const formData = new FormData();
+             formData.append('fullname', fullname);
+             formData.append('email', email);
+             formData.append('password', document.getElementById('signup-password').value);
+             formData.append('role', role);
+            formData.append('section', section);
+            formData.append('user_id', userId);
+
+           // Add grade to formData if senior high
+           if (role === 'senior_high') {
+               formData.append('grade', grade);
+           }
+
+           // Add document file
+           if (role === 'educator') {
+               formData.append('educator_id', requiredFile);
+           } else {
+               formData.append('raf', requiredFile);
+           }
+
+           console.log('DEBUG: FormData created for signup:', {
+                fullname: fullname,
+                email: email,
+                role: role,
+               section: section,
+               grade: grade,
+               hasFile: !!requiredFile
+           });
+
+           // Send formData to server /signup_user
+           console.log('DEBUG: Sending FormData to server');
+           fetch('http://localhost:5500/signup_user', {
+               method: 'POST',
+               body: formData
+           })
+           .then(response => {
+                // Check response status before parsing JSON
+                if (!response.ok) {
+                    // Handle specific HTTP errors
+                    if (response.status === 409) {
+                        // User already exists - parse response to get existing name and email
+                        return response.json().then(errData => {
+                            const errorMsg = (errData.existingName && errData.existingEmail) 
+                                ? `User (${errData.existingName} - ${errData.existingEmail}) already registered. You can now log in or if this was not you, use a different fullname and email.`
+                                : errData.existingName
+                                    ? `User already exists (${errData.existingName}). Please use a different email or log in.`
+                                    : 'User already exists. Please use a different email or log in.';
+                            document.getElementById('signup-message').innerHTML = '<span style="color: red;">' + errorMsg + '</span>';
+                            document.getElementById('signup-message').style.display = 'block';
+                            return Promise.reject({ status: 409, error: 'User already exists', existingName: errData.existingName, existingEmail: errData.existingEmail });
+                        });
+                    }
+                    // Handle other errors
+                    return response.json().then(errData => {
+                        throw new Error(errData.error || `HTTP error ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+           .then(data => {
+               console.log('DEBUG: Server response:', data);
+               if (data.status === 'success' || data.message) {
+                   console.log('DEBUG: Signup successful');
+                   // Check if account is pending approval
+                   if (data.pending) {
+                       // Show waiting for verification screen (email already sent by backend)
+                       sessionStorage.setItem('pendingVerificationUserId', userId);
+                       console.log('DEBUG: Showing waiting verification for pending user userId:', userId);
+                       
+                       // Show waiting for verification message
+                       showWaitingForVerification(userId);
+                       
+                       // Reset form
+                       document.getElementById('signupForm').reset();
+                       document.getElementById('gradeGroup').style.display = 'none';
+                       document.getElementById('signup-grade').disabled = true;
+                       document.getElementById('sectionGroup').style.display = 'none';
+                       document.getElementById('signup-section').disabled = true;
+                       document.getElementById('rafGroup').style.display = 'none';
+                       document.getElementById('signup-raf-error').style.display = 'none';
+                       return;
+                   }
+                   // For admin/coadmin, auto-login
+                   if (data.token) {
+                       localStorage.setItem('token', data.token);
+                       localStorage.setItem('user', JSON.stringify(data.user));
+                       window.location.href = 'Homepage.html';
+                       return;
+                   }
+                   // If we got here, signup was successful - show waiting for verification
+                   // Store user_id for verification polling
+                   sessionStorage.setItem('pendingVerificationUserId', userId);
+                   console.log('DEBUG: Showing waiting verification for userId:', userId);
+                   
+                   // Show waiting for verification message
+                   showWaitingForVerification(userId);
+                   
+                   // Reset form
+                   document.getElementById('signupForm').reset();
+                   document.getElementById('gradeGroup').style.display = 'none';
+                   document.getElementById('signup-grade').disabled = true;
+                   document.getElementById('sectionGroup').style.display = 'none';
+                   document.getElementById('signup-section').disabled = true;
+                   document.getElementById('rafGroup').style.display = 'none';
+                   document.getElementById('signup-raf-error').style.display = 'none';
+               } else {
+                   console.error('DEBUG: Signup failed:', data.error);
+                   document.getElementById('signup-message').innerHTML = '<span style="color: red;">' + (data.error || 'Registration failed') + '</span>';
+                   document.getElementById('signup-message').style.display = 'block';
+               }
+           })
+           .catch(error => {
+               // Don't show error if it's the 409 we already handled
+               if (error.status !== 409) {
+                   console.error('DEBUG: Error sending to server:', error);
+               }
+           });
+          }
+
+        // Function to show signup credentials
+        function showSignupCredentials() {
+            const credentials = JSON.parse(sessionStorage.getItem('signupCredentials'));
+            if (!credentials) return;
+
+            // Hide signup form and show credentials
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('signupCredentials').style.display = 'flex';
+
+            // Populate credentials
+            document.getElementById('cred-email').textContent = credentials.email;
+            document.getElementById('cred-password').textContent = credentials.password;
+            document.getElementById('cred-name').textContent = credentials.name;
+        }
+
+        // Function to show waiting for verification message
+        function showWaitingForVerification(userId) {
+            // Hide signup form and show waiting message
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('waitingVerification').style.display = 'flex';
+            // Hide login and signup tabs
+            document.getElementById('loginTab').style.display = 'none';
+            document.getElementById('signupTab').style.display = 'none';
+            // Store user_id for polling
+            sessionStorage.setItem('pendingVerificationUserId', userId);
+            // Start polling for verification status
+            startVerificationPolling(userId);
+        }
+
+        // Function to poll for verification status
+        function startVerificationPolling(userId) {
+            console.log('DEBUG: Starting verification polling for userId:', userId);
+            // Clear any existing polling
+            const existingInterval = sessionStorage.getItem('verificationPollInterval');
+            if (existingInterval) {
+                clearInterval(parseInt(existingInterval));
+                sessionStorage.removeItem('verificationPollInterval');
+            }
+            const pollInterval = setInterval(async () => {
+                try {
+                    console.log('DEBUG: Polling verification for userId:', userId);
+                    const response = await fetch(`http://localhost:5500/check_user_verification/${userId}`);
+                    console.log('DEBUG: Poll response status:', response.status);
+                    if (response.ok) {
+                        const user = await response.json();
+                        console.log('DEBUG: User data from server:', user);
+                        if (user.verified) {
+                            console.log('DEBUG: User verified, showing approval message');
+                            clearInterval(pollInterval);
+                            sessionStorage.removeItem('verificationPollInterval');
+                            sessionStorage.removeItem('pendingVerificationUserId');
+                            // Show account approved message
+                            showAccountApprovedMessage();
+                        } else {
+                            console.log('DEBUG: User not yet verified');
+                        }
+                    } else {
+                        console.log('DEBUG: Poll response not ok');
+                    }
+                } catch (error) {
+                    console.error('Error checking verification status:', error);
+                    // Fallback to localStorage check
+                    const users = JSON.parse(localStorage.getItem('users')) || [];
+                    const localUser = users.find(u => String(u.id) === String(userId) || String(u.student_id) === String(userId) || String(u.user_id) === String(userId));
+                    console.log('DEBUG: Local user found:', localUser);
+                    if (localUser && localUser.verified) {
+                        console.log('DEBUG: Local user verified, showing approval message');
+                        clearInterval(pollInterval);
+                        sessionStorage.removeItem('verificationPollInterval');
+                        sessionStorage.removeItem('pendingVerificationUserId');
+                        showAccountApprovedMessage();
+                    }
+                }
+            }, 5000); // Check every 5 seconds
+            // Store the interval ID
+            sessionStorage.setItem('verificationPollInterval', pollInterval.toString());
+        }
+
+        // Function to show waiting for verification screen
+        function showWaitingForVerification(userId) {
+            console.log('DEBUG: Showing waiting verification screen for userId:', userId);
+            // Hide all auth forms and show waiting screen
+            document.querySelectorAll('.auth-form').forEach(form => form.style.display = 'none');
+            document.getElementById('waitingVerification').style.display = 'flex';
+
+            // Start polling for verification status
+            startVerificationPolling(userId);
+        }
+
+        // Function to show account approved message
+        function showAccountApprovedMessage() {
+            // Hide waiting verification screen
+            document.getElementById('waitingVerification').style.display = 'none';
+            // Restore login and signup tabs
+            document.getElementById('loginTab').style.display = 'flex';
+            document.getElementById('signupTab').style.display = 'flex';
+            // Show a success message instead of modal
+            const messageDiv = document.createElement('div');
+            messageDiv.style.position = 'fixed';
+            messageDiv.style.top = '20px';
+            messageDiv.style.right = '20px';
+            messageDiv.style.background = '#00aa00';
+            messageDiv.style.color = '#fff';
+            messageDiv.style.padding = '16px 24px';
+            messageDiv.style.borderRadius = '8px';
+            messageDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+            messageDiv.style.zIndex = '10002';
+            messageDiv.style.maxWidth = '400px';
+            messageDiv.innerHTML = '<p style="margin: 0; font-size: 1rem; font-weight: 600;">Account approved! Check your email for login credentials.</p>';
+            document.body.appendChild(messageDiv);
+            // Remove after 5 seconds
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.parentNode.removeChild(messageDiv);
+                }
+            }, 5000);
+        }
+
+        // Function to close generated account modal
+        function closeGeneratedAccountModal() {
+            document.getElementById('generatedAccountModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Function to proceed to login
+        function proceedToLogin() {
+            closeGeneratedAccountModal();
+            // Switch to login tab
+            document.getElementById('loginTab').click();
+        }
+
+        // Function to hide credentials and show login
+        function backToLogin() {
+            document.getElementById('signupCredentials').style.display = 'none';
+            // Clear inline display style and show signup form properly
+            document.getElementById('signupForm').style.display = '';
+            document.getElementById('signupForm').classList.add('active');
+            // Switch to login tab using the proper function
+            document.getElementById('loginTab').click();
+            sessionStorage.removeItem('signupCredentials');
+            
+            // Clear saved signup form data after successful login
+            clearSignupFormData();
+        }
+
+        // Check for stored credentials or pending verification on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const credentials = sessionStorage.getItem('signupCredentials');
+            const pendingUserId = sessionStorage.getItem('pendingVerificationUserId');
+
+            if (credentials) {
+                showSignupCredentials();
+            } else if (pendingUserId) {
+                showWaitingForVerification(pendingUserId);
+            }
+        });
+
+        // Extract lastname from fullname
+        function extractLastname(fullname) {
+            const names = fullname.trim().split(/\s+/);
+            if (names.length < 2) {
+                return names[0].toLowerCase();
+            }
+            return names[names.length - 1].toLowerCase();
+        }
+        // Password generation utility
+        function generatePassword(length = 12) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+            let password = '';
+            for (let i = 0; i < length; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return password;
+        }
+        // Dark mode toggle - wrapped in DOMContentLoaded to ensure element exists
+        document.addEventListener('DOMContentLoaded', function() {
+            const darklightToggle = document.getElementById('darkModeToggle');
+            const icon = darklightToggle.querySelector('i');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const savedMode = localStorage.getItem('darkMode');
+
+            function setDarkMode(on) {
+                document.body.classList.toggle('dark-mode', on);
+                // Update icon: sun in dark mode, moon in light mode
+                if (on) {
+                    icon.className = 'fa fa-sun';
+                } else {
+                    icon.className = 'fa fa-moon';
+                }
+                localStorage.setItem('darkMode', on ? 'on' : 'off');
+            }
+
+            // Initialize: Default to light mode (false) unless savedMode is explicitly 'on'
+            setDarkMode(savedMode === 'on');
+
+            darklightToggle.addEventListener('click', function() {
+                setDarkMode(!document.body.classList.contains('dark-mode'));
+            });
+            
+            // Login button in navbar - toggle auth container
+            const loginNavBtn = document.getElementById('loginNavBtn');
+            const authContainer = document.getElementById('authContainer');
+            
+            if (loginNavBtn && authContainer) {
+                const authOverlay = document.getElementById('authOverlay');
+                loginNavBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Always show the container when clicked
+                    authContainer.style.display = 'flex';
+                    if (authOverlay) authOverlay.style.display = 'block';
+                    console.log('Login clicked, display:', authContainer.style.display);
+                });
+            }
+        });
+        // Migration: Update old domain emails to new domain
+        function migrateEmailDomains() {
+            const keys = ['rememberMe', 'adminRememberMe', 'userRememberMe'];
+            keys.forEach(key => {
+                const storedValue = localStorage.getItem(key);
+                if (storedValue && storedValue.includes('@calamba.sti.edu.ph')) {
+                    const newValue = storedValue.replace('@calamba.sti.edu.ph', '@clmb.sti.archives');
+                    localStorage.setItem(key, newValue);
+                }
+            });
+        }
+        migrateEmailDomains();
+
+        const rememberedFullname = localStorage.getItem('rememberMe');
+        // >>> UPDATED: Check for user remember me too
+        const rememberedUserFullname = localStorage.getItem('userRememberMe');
+        if (rememberedFullname) {
+            document.getElementById('login-email').value = rememberedFullname;
+            document.getElementById('rememberMe').checked = true;
+        } else if (rememberedUserFullname) {
+            document.getElementById('login-email').value = rememberedUserFullname;
+            document.getElementById('rememberMe').checked = true;
+        }
+        const forgotPasswordLink = document.getElementById('forgotPassword');
+        forgotPasswordLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            showResetModal();
+        });
+        function showResetModal() {
+            const modal = document.getElementById('forgotPasswordModal');
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            // Clear input and any previous messages/errors when modal opens
+            document.getElementById('resetEmail').value = '';
+            document.getElementById('resetMessage').textContent = '';
+            document.getElementById('reset-email-error').style.display = 'none';
+            document.getElementById('resetEmail').classList.remove('input-error');
+            // Add real-time input validation listener
+            const resetEmailInput = document.getElementById('resetEmail');
+            resetEmailInput.addEventListener('input', validateResetEmailFormat);
+        }
+        function closeResetModal() {
+            const modal = document.getElementById('forgotPasswordModal');
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+            document.getElementById('resetEmail').value = '';
+            document.getElementById('resetMessage').textContent = '';
+            // Hide and clear the custom error message
+            const resetEmailError = document.getElementById('reset-email-error');
+            if (resetEmailError) {
+                resetEmailError.style.display = 'none';
+                resetEmailError.textContent = '';
+            }
+            // Remove the input listener when closing
+            const resetEmailInput = document.getElementById('resetEmail');
+            resetEmailInput.removeEventListener('input', validateResetEmailFormat);
+        }
+        window.addEventListener('click', function(e) {
+            const forgotModal = document.getElementById('forgotPasswordModal');
+            if (e.target === forgotModal) {
+                closeResetModal();
+            }
+            const rafModal = document.getElementById('raf-preview-modal');
+            if (e.target === rafModal) {
+                closeRafModal();
+            }
+            // Handle reset sent modal click outside
+            const resetSentModal = document.getElementById('resetSentModal');
+            if (e.target === resetSentModal) {
+                resetSentModal.style.display = 'none';
+            }
+        });
+        // >>> NEW: Real-time validation for reset email input format
+        function validateResetEmailFormat() {
+            const emailInput = document.getElementById('resetEmail');
+            const email = emailInput.value.trim();
+            const errorMessageElement = document.getElementById('reset-email-error');
+
+            // Clear previous messages and error states
+            errorMessageElement.style.display = 'none';
+            errorMessageElement.textContent = '';
+            emailInput.classList.remove('input-error');
+
+            // If input is empty, don't show error yet (handled on button click)
+            if (!email) {
+                return;
+            }
+
+            // Basic email format validation regex for any valid email address
+            const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+            // Check if it matches the required format (example@email.com)
+            if (!emailRegex.test(email)) {
+                // Show error message for invalid format
+                errorMessageElement.innerHTML = '<i class="fas fa-exclamation-circle" style="color: white; background: red; border-radius: 50%; width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; margin-right: 5px;"></i> Please enter a valid email address.';
+                errorMessageElement.style.display = 'flex'; // Show the new error message span
+                emailInput.classList.add('input-error'); // Highlight input field
+                // No need to focus here as it's real-time
+                return; // Exit the function early
+            }
+
+            // If validation passes (format looks okay), hide any error message
+            errorMessageElement.style.display = 'none';
+            emailInput.classList.remove('input-error');
+        }
+
+        // >>> CHANGED: Updated resetPassword function to call backend
+        async function resetPassword() {
+            const emailInput = document.getElementById('resetEmail');
+            const email = emailInput.value.trim().toLowerCase();
+            const messageElement = document.getElementById('resetMessage'); // General message (hidden)
+            const errorMessageElement = document.getElementById('reset-email-error'); // Specific error message span
+
+            // Clear previous messages and error states
+            messageElement.textContent = ''; // Clear hidden general message
+            messageElement.style.display = 'none';
+            errorMessageElement.style.display = 'none';
+            errorMessageElement.textContent = '';
+            emailInput.classList.remove('input-error');
+
+            // Check if email is empty
+            if (!email) {
+                // Show specific error message for empty email in the general message area (for compatibility)
+                messageElement.innerHTML = '<i class="fas fa-exclamation-circle" style="color: white; background: red; border-radius: 50%; width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; margin-right: 5px;"></i> Email address is required to reset your password.';
+                messageElement.style.color = 'red';
+                messageElement.style.display = 'block'; // Show the general message paragraph
+                emailInput.focus();
+                return; // Exit the function early
+            }
+
+            // Basic email format validation regex for any valid email address
+            const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+            // Check if it matches the required format (example@email.com)
+            if (!emailRegex.test(email)) {
+                // Show error message for invalid format in the specific error span
+                errorMessageElement.innerHTML = '<i class="fas fa-exclamation-circle" style="color: white; background: red; border-radius: 50%; width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; margin-right: 5px;"></i> Please enter a valid email address.';
+                errorMessageElement.style.display = 'flex'; // Show the new error message span
+                emailInput.classList.add('input-error'); // Highlight input field
+                emailInput.focus();
+                return; // Exit the function early
+            }
+
+            // Send request to backend (using the API endpoint)
+            try {
+                const response = await fetch('/api/auth/forgot-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Close the reset modal
+                    closeResetModal();
+                    // Show the success modal
+                    showResetSentModal();
+                } else {
+                    // Show error message
+                    errorMessageElement.innerHTML = '<i class="fas fa-exclamation-circle" style="color: white; background: red; border-radius: 50%; width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; margin-right: 5px;"></i> ' + (data.error || 'Failed to reset password');
+                    errorMessageElement.style.display = 'flex';
+                    emailInput.classList.add('input-error');
+                }
+            } catch (error) {
+                console.error('Error resetting password:', error);
+                errorMessageElement.innerHTML = '<i class="fas fa-exclamation-circle" style="color: white; background: red; border-radius: 50%; width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; margin-right: 5px;"></i> Network error. Please try again.';
+                errorMessageElement.style.display = 'flex';
+                emailInput.classList.add('input-error');
+            }
+        }
+
+        // >>> NEW: Function to show the Reset Sent modal
+        function showResetSentModal() {
+            const modal = document.getElementById('resetSentModal');
+            modal.style.display = 'block';
+            // Hide the modal after 3 seconds
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 3000);
+        }
+        const adminEmailInput = document.getElementById('admin-login-email');
+        const adminEmailError = document.getElementById('admin-login-email-error');
+        const adminPasswordInput = document.getElementById('admin-login-password');
+        const adminPasswordError = document.getElementById('admin-login-password-error');
+        const adminLoginForm = document.getElementById('adminloginForm');
+        const adminLoginMessage = document.getElementById('admin-login-message');
+        function validateAdminEmail() {
+            const email = adminEmailInput.value.trim();
+            const emailRegex = /^[A-Za-z0-9._%+-]+@clmb\.sti\.archives$/;
+            if (!email) {
+                adminEmailError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter a valid email address.';
+                adminEmailError.style.display = 'flex';
+                adminEmailInput.classList.add('input-error');
+                return false;
+            } else if (!emailRegex.test(email)) {
+                adminEmailError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Only emails from @clmb.sti.archives are accepted.';
+                adminEmailError.style.display = 'flex';
+                adminEmailInput.classList.add('input-error');
+                return false;
+            } else {
+                adminEmailError.style.display = 'none';
+                adminEmailInput.classList.remove('input-error');
+                return true;
+            }
+        }
+        if (adminEmailInput) {
+            adminEmailInput.addEventListener('input', () => {
+                if (adminEmailError.style.display === 'flex') {
+                    const email = adminEmailInput.value.trim();
+                    const emailRegex = /^[A-Za-z0-9._%+-]+@clmb\.sti\.archives$/;
+                    if (email && emailRegex.test(email)) {
+                        adminEmailError.style.display = 'none';
+                        adminEmailInput.classList.remove('input-error');
+                    }
+                }
+            });
+        }
+        function validateAdminPassword() {
+            const password = adminPasswordInput.value;
+            if (!password) {
+                adminPasswordError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Password is required';
+                adminPasswordError.style.display = 'flex';
+                adminPasswordInput.classList.add('input-error');
+                return false;
+            } else if (password.length < 8) {
+                adminPasswordError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Password must be at least 8 characters long.';
+                adminPasswordError.style.display = 'flex';
+                adminPasswordInput.classList.add('input-error');
+                return false;
+            } else {
+                adminPasswordError.style.display = 'none';
+                adminPasswordInput.classList.remove('input-error');
+                return true;
+            }
+        }
+        if (adminPasswordInput) {
+            adminPasswordInput.addEventListener('input', () => {
+                if (adminPasswordError.style.display === 'flex') {
+                    const password = adminPasswordInput.value;
+                    if (password.length >= 8) {
+                        adminPasswordError.style.display = 'none';
+                        adminPasswordInput.classList.remove('input-error');
+                    }
+                }
+            });
+        }
+        // Note: Admin login is now handled in the main login form above.
+        // const adminCredentials = [
+        //     { email: 'admin@clmb.sti.archives', password: 'admin123', name: 'Permanent Admin', role: 'admin', id: 'admin-permanent' }
+        // ];
+        // adminLoginForm.addEventListener('submit', function(e) {
+        //     e.preventDefault();
+        //     const email = adminEmailInput.value.trim().toLowerCase();
+        //     const password = adminPasswordInput.value;
+        //     const rememberMe = document.getElementById('admin-rememberMe').checked;
+        //     adminEmailError.style.display = 'none';
+        //     adminPasswordError.style.display = 'none';
+        //     adminEmailInput.classList.remove('input-error');
+        //     adminPasswordInput.classList.remove('input-error');
+        //     adminLoginMessage.style.display = 'none';
+        //     let hasErrors = false;
+        //     const emailRegex = /^[A-Za-z0-9._%+-]+@calamba\.sti\.edu\.ph$/;
+        //     if (!email) {
+        //         adminEmailError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Only emails from @calamba.sti.edu.ph are accepted.';
+        //         adminEmailError.style.display = 'flex';
+        //         adminEmailInput.classList.add('input-error');
+        //         hasErrors = true;
+        //     } else if (!emailRegex.test(email)) {
+        //         adminEmailError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Only emails from @calamba.sti.edu.ph are accepted.';
+        //         adminEmailError.style.display = 'flex';
+        //         adminEmailInput.classList.add('input-error');
+        //         hasErrors = true;
+        //     }
+        //     if (!password) {
+        //         adminPasswordError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Password is required';
+        //         adminPasswordError.style.display = 'flex';
+        //         adminPasswordInput.classList.add('input-error');
+        //         hasErrors = true;
+        //     } else if (password.length < 8) {
+        //         adminPasswordError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Password must be at least 8 characters long.';
+        //         adminPasswordError.style.display = 'flex';
+        //         adminPasswordInput.classList.add('input-error');
+        //         hasErrors = true;
+        //     }
+        //     if (hasErrors) {
+        //         adminLoginMessage.style.display = 'none';
+        //         return;
+        //     }
+        //     const admin = adminCredentials.find(u => u.email === email);
+        //     if (admin && admin.password === password) {
+        //         localStorage.setItem('currentUser', JSON.stringify(admin));
+        //         if (rememberMe) {
+        //             localStorage.setItem('adminRememberMe', email);
+        //         } else {
+        //             localStorage.removeItem('adminRememberMe');
+        //         }
+        //         adminLoginMessage.textContent = 'Successfully logged in as admin!';
+        //         adminLoginMessage.style.color = 'green';
+        //         adminLoginMessage.style.display = 'block';
+        //         setTimeout(() => {
+        //             window.location.href = "admin.html";
+        //         }, 2000);
+        //     } else {
+        //         if (admin) {
+        //             adminLoginMessage.textContent = 'Invalid password. Please try again.';
+        //             adminLoginMessage.style.color = '#ff6b6b';
+        //             adminLoginMessage.style.display = 'block';
+        //         } else {
+        //             adminLoginMessage.textContent = 'No account found with this email address.';
+        //             adminLoginMessage.style.color = '#ff6b6b';
+        //             adminLoginMessage.style.display = 'block';
+        //         }
+        //     }
+        // });
+        // const rememberedAdminEmail = localStorage.getItem('adminRememberMe');
+        // if (rememberedAdminEmail) {
+        //     adminEmailInput.value = rememberedAdminEmail;
+        //     document.getElementById('admin-rememberMe').checked = true;
+        // }
+        // const adminForgotPasswordLink = document.getElementById('admin-forgotPassword');
+        // if (adminForgotPasswordLink) {
+        //     adminForgotPasswordLink.addEventListener('click', function(e) {
+        //         e.preventDefault();
+        //         document.getElementById('forgotPasswordModal').classList.add('show');
+        //         document.body.style.overflow = 'hidden';
+        //     });
+        // }
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+        window.addEventListener('click', function(e) {
+            const termsModal = document.getElementById('termsModal');
+            const privacyModal = document.getElementById('privacyModal');
+            if (e.target === termsModal) {
+                closeModal('termsModal');
+            }
+            if (e.target === privacyModal) {
+                closeModal('privacyModal');
+            }
+        });
+        document.getElementById('termsLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal('termsModal');
+        });
+        document.getElementById('privacyLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal('privacyModal');
+        });
+        document.getElementById('termsLinkSignup').addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal('termsModal');
+        });
+        document.getElementById('privacyLinkSignup').addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal('privacyModal');
+        });
+        const termsLogin = document.getElementById('terms-login');
+        const termsSignup = document.getElementById('terms-signup');
+        function syncCheckboxes() {
+            termsSignup.checked = termsLogin.checked;
+        }
+        termsLogin.addEventListener('change', syncCheckboxes);
+        termsSignup.addEventListener('change', function() {
+            termsLogin.checked = termsSignup.checked;
+        });
+        
+        // >>> NEW: Sign Up Now button handler - show auth container
+        const signupNowBtn = document.getElementById('signupNowBtn');
+        const authContainer = document.getElementById('authContainer');
+        
+        if (signupNowBtn && authContainer) {
+            signupNowBtn.addEventListener('click', function() {
+                // Show auth container
+                authContainer.style.display = 'flex';
+            });
+        }
+        
+        // >>> REMOVED: Auto-hide functionality - modal is now always visible until button click
+        // function initWelcomeModal() removed - no longer needed
+
+        function previewRaf(path) {
+            const modal = document.getElementById('raf-preview-modal');
+            const content = document.getElementById('raf-preview-content');
+            if (path.endsWith('.pdf')) {
+                content.innerHTML = `<iframe src="${path}" width="100%" height="600px"></iframe>`;
+            } else if (path.match(/\.(doc|docx)$/)) {
+                content.innerHTML = `<p>Document preview not available. <a href="${path}" target="_blank" download>Download RAF</a></p>`;
+            } else {
+                content.innerHTML = `<p>Preview not available for this file type.</p>`;
+            }
+            modal.style.display = 'flex';
+        }
+        function closeRafModal() {
+            document.getElementById('raf-preview-modal').style.display = 'none';
+        }
+        function closeGeneratedModal() {
+            document.getElementById('generatedAccountModal').style.display = 'none';
+            // Reset form after modal is closed
+            document.getElementById('signupForm').reset();
+            document.getElementById('gradeGroup').style.display = 'none';
+            document.getElementById('signup-grade').disabled = true;
+            document.getElementById('sectionGroup').style.display = 'none';
+            document.getElementById('signup-section').disabled = true;
+            document.getElementById('rafGroup').style.display = 'none';
+            document.getElementById('educatorIdGroup').style.display = 'none';
+            document.getElementById('signup-raf-error').style.display = 'none';
+            document.getElementById('signup-educator-id-error').style.display = 'none';
+        }
+        window.previewRaf = previewRaf;
+        // >>> NEW: Show Success Login Modal
+        function showSuccessModal() {
+            const modal = document.getElementById('successLoginModal');
+            modal.style.display = 'block';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 3000);
+        }
+        
+        // >>> NEW: Show Success Login Message (Green background, white text, right upper side)
+        function showSuccessLoginMessage() {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.position = 'fixed';
+            messageDiv.style.top = '20px';
+            messageDiv.style.right = '20px';
+            messageDiv.style.background = '#00aa00';
+            messageDiv.style.color = '#fff';
+            messageDiv.style.padding = '16px 24px';
+            messageDiv.style.borderRadius = '8px';
+            messageDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+            messageDiv.style.zIndex = '10002';
+            messageDiv.style.maxWidth = '300px';
+            messageDiv.style.textAlign = 'center';
+            messageDiv.style.animation = 'slideInRight 0.3s ease';
+            messageDiv.innerHTML = '<p style="margin: 0; font-size: 1rem; font-weight: 600;">You have successfully logged in!</p>';
+            document.body.appendChild(messageDiv);
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.parentNode.removeChild(messageDiv);
+                }
+            }, 3000);
+        }
+
+        // Load site settings from server and apply to page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSiteSettings();
+
+            // Add form submit handler for signup form
+            const signupForm = document.getElementById('signupForm');
+            if (signupForm) {
+                signupForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('DEBUG: Signup form submitted');
+                    handleSignup();
+                });
+
+                // Save form data on input changes for form persistence
+                const formFields = ['signup-fullname', 'signup-email', 'signup-password', 'signup-confirm-password', 'signup-role', 'signup-grade', 'signup-section', 'terms-signup'];
+                formFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        field.addEventListener('input', function() {
+                            saveSignupFormData();
+                        });
+                        field.addEventListener('change', function() {
+                            saveSignupFormData();
+                            // Show/hide dynamic fields based on role
+                            if (fieldId === 'signup-role') {
+                                if (typeof updateSectionOptions === 'function') {
+                                    updateSectionOptions();
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // Restore form data on page load
+                restoreSignupFormData();
+            }
+
+
+        });
+
+        // Function to save signup form data to sessionStorage (clears when browser closes)
+        function saveSignupFormData() {
+            const formData = {
+                fullname: document.getElementById('signup-fullname')?.value || '',
+                email: document.getElementById('signup-email')?.value || '',
+                password: document.getElementById('signup-password')?.value || '',
+                confirmPassword: document.getElementById('signup-confirm-password')?.value || '',
+                role: document.getElementById('signup-role')?.value || '',
+                grade: document.getElementById('signup-grade')?.value || '',
+                section: document.getElementById('signup-section')?.value || '',
+                terms: document.getElementById('terms-signup')?.checked || false
+            };
+            sessionStorage.setItem('signupFormData', JSON.stringify(formData));
+        }
+
+        // Function to restore signup form data from sessionStorage
+        function restoreSignupFormData() {
+            const savedData = sessionStorage.getItem('signupFormData');
+            if (savedData) {
+                try {
+                    const formData = JSON.parse(savedData);
+                    
+                    if (formData.fullname) {
+                        const fullnameField = document.getElementById('signup-fullname');
+                        if (fullnameField) fullnameField.value = formData.fullname;
+                    }
+                    if (formData.email) {
+                        const emailField = document.getElementById('signup-email');
+                        if (emailField) emailField.value = formData.email;
+                    }
+                    if (formData.password) {
+                        const passwordField = document.getElementById('signup-password');
+                        if (passwordField) passwordField.value = formData.password;
+                    }
+                    if (formData.confirmPassword) {
+                        const confirmPasswordField = document.getElementById('signup-confirm-password');
+                        if (confirmPasswordField) confirmPasswordField.value = formData.confirmPassword;
+                    }
+                    if (formData.role) {
+                        const roleField = document.getElementById('signup-role');
+                        if (roleField) {
+                            roleField.value = formData.role;
+                            // Trigger role change to show/hide relevant fields
+                            if (typeof updateSectionOptions === 'function') {
+                                updateSectionOptions();
+                            }
+                        }
+                    }
+                    if (formData.grade) {
+                        const gradeField = document.getElementById('signup-grade');
+                        if (gradeField) gradeField.value = formData.grade;
+                    }
+                    if (formData.section) {
+                        const sectionField = document.getElementById('signup-section');
+                        if (sectionField) sectionField.value = formData.section;
+                    }
+                    if (formData.terms) {
+                        const termsField = document.getElementById('terms-signup');
+                        if (termsField) termsField.checked = formData.terms;
+                    }
+                    
+                    console.log('Signup form data restored from localStorage');
+                } catch (e) {
+                    console.error('Error restoring signup form data:', e);
+                }
+            }
+        }
+
+        // Function to clear saved signup form data
+        function clearSignupFormData() {
+            sessionStorage.removeItem('signupFormData');
+        }
+
+        async function loadSiteSettings() {
+            try {
+                const response = await fetch('http://localhost:5500/get_site_settings');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const settings = await response.json();
+                // Check if favicon is a blob URL and reset to default if so
+                if (settings.siteFavicon && settings.siteFavicon.startsWith('blob:')) {
+                    settings.siteFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
+                }
+                updateDocumentTitle(settings.siteTitle);
+                updateDocumentFavicon(settings.siteFavicon);
+            } catch (error) {
+                console.error('Failed to load site settings:', error);
+                // Fallback to defaults
+                const defaultTitle = 'LogIn | STI Archives';
+                const defaultFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
+                updateDocumentTitle(defaultTitle);
+                updateDocumentFavicon(defaultFavicon);
+            }
+        }
+
+        function updateDocumentTitle(siteTitle) {
+            document.title = siteTitle;
+        }
+
+        function updateDocumentFavicon(faviconSrc) {
+            let faviconLink = document.querySelector('link[rel="icon"]');
+            if (!faviconLink) {
+                faviconLink = document.createElement('link');
+                faviconLink.rel = 'icon';
+                faviconLink.type = 'image/png';
+                document.head.appendChild(faviconLink);
+            }
+            // Add version parameter only for non-data URLs to avoid issues with base64
+            const href = faviconSrc.startsWith('data:') ? faviconSrc : faviconSrc + '?v=1';
+            faviconLink.href = href;
+        }
+
+        // Function to show generated account modal
+        function showGeneratedAccountModal(user) {
+            // Hide waiting verification screen
+            document.getElementById('waitingVerification').style.display = 'none';
+            // Restore login and signup tabs
+            document.getElementById('loginTab').style.display = 'flex';
+            document.getElementById('signupTab').style.display = 'flex';
+            // Show modal with credentials
+            document.getElementById('gen-acc-email').textContent = user.email;
+            document.getElementById('gen-acc-password').textContent = user.password;
+            document.getElementById('generatedAccountModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Function to close generated account modal
+        function closeGeneratedAccountModal() {
+            document.getElementById('generatedAccountModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Function to proceed to login
+        function proceedToLogin() {
+            closeGeneratedAccountModal();
+            // Switch to login tab
+            document.getElementById('loginTab').click();
+        }
+
+        // Function to show waiting for verification screen
+        function showWaitingForVerification(userId) {
+            // Hide all auth forms and show waiting screen
+            document.querySelectorAll('.auth-form').forEach(form => form.style.display = 'none');
+            document.getElementById('waitingVerification').style.display = 'flex';
+            // Hide login and signup tabs
+            document.getElementById('loginTab').style.display = 'none';
+            document.getElementById('signupTab').style.display = 'none';
+
+            // Start polling for verification status
+            startVerificationPolling(userId);
+        }
+
+        // Function to go back to login
+        function backToLogin() {
+            // Hide waiting verification
+            document.getElementById('waitingVerification').style.display = 'none';
+            // Restore login and signup tabs
+            document.getElementById('loginTab').style.display = 'flex';
+            document.getElementById('signupTab').style.display = 'flex';
+            // Clear inline display styles and use class-based toggling
+            document.getElementById('loginForm').style.display = '';
+            document.getElementById('loginForm').classList.add('active');
+            document.getElementById('signupForm').style.display = '';
+            document.getElementById('signupForm').classList.remove('active');
+            // Update tab states
+            document.getElementById('loginTab').classList.add('active');
+            document.getElementById('signupTab').classList.remove('active');
+            document.getElementById('authContainer').classList.remove('auth-container--signup');
+        }
+
+        // Function to go back to signup (keeps user data so they can modify)
+        function backToSignup() {
+            // Clear any ongoing verification polling
+            const pollInterval = sessionStorage.getItem('verificationPollInterval');
+            if (pollInterval) {
+                clearInterval(parseInt(pollInterval));
+                sessionStorage.removeItem('verificationPollInterval');
+            }
+            // Clear previous verification state
+            sessionStorage.removeItem('pendingVerificationUserId');
+            
+            // NOTE: We keep the form data so user can modify their answers
+            // Only hide dynamic fields that should be hidden
+            document.getElementById('gradeGroup').style.display = 'none';
+            document.getElementById('signup-grade').disabled = true;
+            document.getElementById('sectionGroup').style.display = 'none';
+            document.getElementById('signup-section').disabled = true;
+            document.getElementById('rafGroup').style.display = 'none';
+            document.getElementById('educatorIdGroup').style.display = 'none';
+            document.getElementById('signup-raf-error').style.display = 'none';
+            document.getElementById('signup-educator-id-error').style.display = 'none';
+            
+            // Hide waiting verification and show signup form
+            document.getElementById('waitingVerification').style.display = 'none';
+            // Restore login and signup tabs
+            document.getElementById('loginTab').style.display = 'flex';
+            document.getElementById('signupTab').style.display = 'flex';
+            document.getElementById('signupForm').style.display = '';
+            document.getElementById('signupForm').classList.add('active');
+            document.getElementById('loginForm').style.display = '';
+            document.getElementById('loginForm').classList.remove('active');
+            // Update tab states
+            document.getElementById('signupTab').classList.add('active');
+            document.getElementById('loginTab').classList.remove('active');
+            document.getElementById('authContainer').classList.add('auth-container--signup');
+            
+            // Restore form data from localStorage
+            restoreSignupFormData();
+        }
+        </script>
+        </div>
+        <!-- Closing stiBuildingSection -->
+        </div>
+        <script>
+        // Image slider functionality
+        let slideIndex = 1;
+        let slideInterval;
+        let isPaused = false;
+        const slideDuration = 5000; // 5 seconds
+        
+        function startSlideshow() {
+            slideInterval = setInterval(function() {
+                slideIndex++;
+                showSlides(slideIndex);
+            }, slideDuration);
+        }
+        
+        function stopSlideshow() {
+            clearInterval(slideInterval);
+        }
+        
+        showSlides(slideIndex);
+        startSlideshow();
+        
+        // Pause on hover
+        document.querySelector('.image-slider').addEventListener('mouseenter', stopSlideshow);
+        document.querySelector('.image-slider').addEventListener('mouseleave', startSlideshow);
+        
+        function showSlides(n) {
+            let i;
+            let slides = document.querySelectorAll('.slider-wrapper img');
+            let dots = document.querySelectorAll('.dot');
+            
+            if (n > slides.length) { slideIndex = 1; }
+            if (n < 1) { slideIndex = slides.length; }
+            
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = 'none';
+            }
+            for (i = 0; i < dots.length; i++) {
+                dots[i].style.opacity = '0.7';
+                dots[i].style.backgroundColor = 'white';
+            }
+            
+            slides[slideIndex - 1].style.display = 'block';
+            dots[slideIndex - 1].style.opacity = '1';
+            dots[slideIndex - 1].style.backgroundColor = 'gray';
+        }
+        
+        function currentSlide(n) {
+            slideIndex = n;
+            showSlides(slideIndex);
+        }
+        
+        function toggleSlideshow() {
+            const icon = document.getElementById('pauseIcon');
+            if (isPaused) {
+                startSlideshow();
+                icon.className = 'fa fa-pause';
+                isPaused = false;
+            } else {
+                stopSlideshow();
+                icon.className = 'fa fa-play';
+                isPaused = true;
+            }
+        }
+        
+        function toggleDarkMode() {
+            console.log('Dark mode toggle clicked');
+            const body = document.body;
+            const toggleBtn = document.getElementById('darkModeToggle');
+            const icon = toggleBtn ? toggleBtn.querySelector('i') : null;
+            const isDark = body.classList.contains('dark-mode');
+            
+            console.log('Current dark mode:', isDark);
+            
+            if (isDark) {
+                body.classList.remove('dark-mode');
+                if (icon) icon.className = 'fa fa-moon';
+                localStorage.setItem('darkMode', 'off');
+                console.log('Dark mode turned OFF');
+            } else {
+                body.classList.add('dark-mode');
+                if (icon) icon.className = 'fa fa-sun';
+                localStorage.setItem('darkMode', 'on');
+                console.log('Dark mode turned ON');
+            }
+        }
+        </script>
+        <script src="frontend/assets/js/script.js"></script>
+        
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-content">
+                <span>&copy; 2025 STI Archives. All rights reserved.</span>
+                <span class="footer-links">
+                    <a href="/terms.html">Terms & Conditions</a> | 
+                    <a href="/privacy.html">Privacy Policy</a>
+                </span>
+                <span>Made for STI College Calamba | ITMAWD 21 G1</span>
+            </div>
+        </footer>
+    </div>
+    </body>
+    </html>

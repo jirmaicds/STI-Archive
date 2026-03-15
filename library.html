@@ -1,0 +1,3953 @@
+<!--library.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Preconnect to CDN for faster initial connection -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="stylesheet" href="/frontend/assets/css/style.css">
+  <!-- Load Font Awesome with fallback -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+  <title>Library | STI Archives</title>
+  <link rel="icon" type="image/png" href="/frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg?v=1" id="favicon-link">
+  <style>
+   body {
+     margin: 0;
+     padding: 0;
+     font-family: 'Segoe UI', sans-serif;
+     display: flex;
+     flex-direction: column;
+     min-height: 100vh;
+   }
+   .content-wrapper {
+     display: flex;
+     flex-direction: row;
+     flex: 1;
+   }
+   .library-footer {
+     margin-top: auto;
+     margin-bottom: auto;
+   }
+   .sidebarlft {
+     width: 130px;
+     background: #fff;
+     border-right: 1px solid #ddd;
+     padding: 20px;
+     flex-shrink: 0;
+     min-height: calc(100vh - 70px);
+     position: sticky;
+     top: 70px;
+     transition: transform 0.3s ease, width 0.3s ease;
+   }
+   .sidebarlft.collapsed {
+     transform: translateX(-100%);
+     width: 0;
+     padding: 0;
+     overflow: hidden;
+   }
+   .sidebarlft.collapsed h3,
+   .sidebarlft.collapsed ul,
+   .sidebarlft.collapsed .custom-range,
+   .sidebarlft.collapsed .dropdown {
+     display: none;
+   }
+   .sidebar-close {
+     display: none;
+   }
+   .main {
+     flex: 1;
+     padding: 20px 40px;
+     background: #f8f9fa;
+   }
+   .library-footer {
+     background: #002244;
+     border-top: 1px solid #ddd;
+     padding: 20px;
+     text-align: center;
+     color: #fff;
+     font-size: 14px;
+   }
+   .dark-mode .library-footer {
+     background: #181f2a;
+     border-top-color: #374151;
+     color: #ffd700;
+   }
+   .search-wrapper {
+     display: flex;
+     flex-direction: column;
+     gap: .25rem;
+     background-color: #fff;
+     height:28px;
+     width:300px;
+   }
+   .search-wrapper label {
+     font-size: 1.2rem;
+     font-weight: 600;
+     padding-top:10%;
+   }
+   input {
+     font-size: 1rem;
+   }
+   .user-cards {
+     display: grid;
+     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+     gap: .25rem;
+     margin-top: 1rem;
+     margin-left: 10%;
+     margin-right: 10%;
+   }
+   .card {
+     border: 1px solid black;
+     background-color: white;
+     padding: .5rem;
+   }
+   .card > .header {
+     margin-bottom: .25rem;
+   }
+   .card > .body {
+     font-size: .8rem;
+     color: #777;
+   }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+    .pagination button {
+      padding: 8px 16px;
+      background: #0057b8;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    .pagination button:hover:not(:disabled) {
+      background: #003f8a;
+      transform: translateY(-1px);
+    }
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .pagination button.active {
+      background: #ffd700;
+      color: #0057b8;
+      font-weight: bold;
+    }
+    .pagination button.active:hover {
+      background: #ffed4e;
+    }
+    .pagination button:not(.active) {
+      background: white;
+      color: #0057b8;
+      border: 1px solid #0057b8;
+    }
+    .pagination button:not(.active):hover {
+      background: #f0f8ff;
+    }
+    .articles-container {
+      min-height: 200px;
+      transition: opacity 0.3s ease;
+    }
+    .articles-container.loading {
+      opacity: 0.6;
+    }
+   
+   .sidebar-down h3 {
+     margin-bottom: 15px;
+     font-size: 1rem;
+     color: #333;
+   }
+   .sidebarlft ul {
+     list-style: none;
+     margin-bottom: 20px;
+   }
+   .sidebarlft li {
+     margin-bottom: 10px;
+     cursor: pointer;
+     color: #444;
+   }
+   .sidebarlft li:hover {
+     text-decoration: underline;
+   }
+   .filter-option {
+     cursor: pointer;
+     padding: 5px 0;
+     transition: color 0.3s ease;
+   }
+   .filter-option.active {
+     color: #0057b8;
+     font-weight: bold;
+   }
+   .dark-mode .filter-option.active {
+     color: #ffd700;
+   }
+   .filter-option:hover {
+     color: #0057b8;
+   }
+   .sidebarlft input[type="checkbox"] {
+     margin-right: 6px;
+   }
+   .create-alert {
+     margin-top: 20px;
+     font-size: 0.9rem;
+     color: #132a3f;
+     cursor: pointer;
+   }
+   .dark-mode .create-alert {
+     color: white;
+   }
+   /* Show nav dropdowns on large screens, hide sidebar dropdowns */
+   .nav-icons-center .dropdown {
+     display: block;
+   }
+   .sidebarlft .dropdown {
+     display: none;
+   }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .toggle-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #333;
+      margin-right: 10px;
+      display: none;
+    }
+    .sidebar-toggle {
+      display: none;
+    }
+    @media (max-width: 1024px) {
+      .toggle-btn {
+        display: block;
+      }
+      .sidebar-toggle {
+        display: block;
+      }
+      .sidebarlft {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 240px;
+        height: 100%;
+        transform: translateX(-100%);
+        z-index: 9999;
+        transition: transform 0.3s ease;
+      }
+      .sidebarlft.open {
+        transform: translateX(0);
+      }
+    }
+    .topbar h2 {
+       font-size: 1.2rem;
+       color: #333;
+     }
+     .topbar .links {
+       display: flex;
+       gap: 20px;
+       font-size: 0.9rem;
+       color: #555;
+     }
+     .dropdown {
+       position: relative;
+       display: inline-block;
+     }
+     .dropdown-toggle {
+       background: #0057b8;
+       color: #fff;
+       padding: 8px 16px;
+       border-radius: 6px;
+       cursor: pointer;
+       font-size: 14px;
+       transition: background 0.3s;
+       text-decoration: none;
+       display: inline-block;
+     }
+     .dropdown-toggle.research-btn,
+     .dropdown-toggle.capstone-btn {
+       font-weight: bold;
+     }
+     .dropdown-toggle.research-btn {
+       background-color: #e7b624;
+       box-shadow: 0 2px 0 0 #b8860b, 2px 0 0 0 #b8860b;
+     }
+     .dropdown-toggle.research-btn:hover {
+       border-top: 2px solid #ffd700;
+       border-left: 2px solid #ffd700;
+       box-shadow: 0 2px 0 0 #b8860b, 2px 0 0 0 #b8860b;
+     }
+     .dropdown-toggle:hover {
+       background: #003f8a;
+     }
+     .dropdown-toggle.active {
+       background: #003f8a;
+       font-weight: bold;
+     }
+     .dropdown-menu1 {
+       position: absolute;
+       top: 100%;
+       left: 0;
+       background: #fff;
+       border-radius: 6px;
+       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+       padding: 4px 0;
+       min-width: 150px;
+       display: none;
+       z-index: 10;
+       border: 1px solid #ddd;
+     }
+     .dropdown:hover .dropdown-menu1 {
+       display: block;
+     }
+     .dropdown-menu2 {
+       position: absolute;
+       top: 100%;
+       left: 0;
+       background: #fff;
+       border-radius: 6px;
+       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+       padding: 4px 0;
+       min-width: 150px;
+       display: none;
+       z-index: 10;
+       border: 1px solid #ddd;
+     }
+     .dropdown:hover .dropdown-menu2 {
+       display: block;
+     }
+     .dropdown-menu1 div {
+
+       font-size: 14px;
+       color: #333;
+       cursor: pointer;
+       transition: background 0.2s;
+     }
+     .dropdown-menu1 div.active,
+     .dropdown-menu2 div.active {
+       font-weight: bold;
+       background: #e0f0ff;
+     }
+     
+     .dropdown-menu2 div {
+       padding: 6px 16px;
+       font-size: 14px;
+       color: #333;
+       cursor: pointer;
+       transition: background 0.2s;
+     }
+     
+     .sub-dropdown {
+       position: relative;
+     }
+     .sub-dropdown-toggle {
+       padding: 6px 16px;
+       font-size: 14px;
+       color: #333;
+       cursor: pointer;
+       transition: background 0.2s;
+     }
+     
+     .sub-dropdown-menu,
+     .sub-dropdown-menu1,
+     .sub-dropdown-menu2 {
+       position: absolute;
+       top: 0;
+       left: 100%;
+       background: #fff;
+       border-radius: 6px;
+       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+       padding: 8px 0;
+       min-width: 150px;
+       display: none;
+       z-index: 10;
+       border: 1px solid #ddd;
+     }
+     .sub-dropdown:hover .sub-dropdown-menu,
+     .sub-dropdown:hover .sub-dropdown-menu1,
+     .sub-dropdown:hover .sub-dropdown-menu2 {
+       display: block;
+     }
+     .sub-dropdown-menu div,
+     .sub-dropdown-menu1 div,
+     .sub-dropdown-menu2 div {
+       padding: 6px 16px;
+       font-size: 14px;
+       color: #333;
+       cursor: pointer;
+       transition: background 0.2s;
+     }
+     .sub-dropdown-menu div[data-strand="ABM"]:hover,
+     .sub-dropdown-menu1 div[data-strand="ABM"]:hover,
+     .sub-dropdown-menu2 div[data-strand="ABM"]:hover {
+       background: #ffebee;
+       color: #ff5722;
+     }
+     .sub-dropdown-menu div[data-strand="ITMAWD"]:hover,
+     .sub-dropdown-menu1 div[data-strand="ITMAWD"]:hover,
+     .sub-dropdown-menu2 div[data-strand="ITMAWD"]:hover {
+       background: #e8f5e8;
+       color: #4caf50;
+     }
+     .sub-dropdown-menu div[data-strand="STEM"]:hover,
+     .sub-dropdown-menu1 div[data-strand="STEM"]:hover,
+     .sub-dropdown-menu2 div[data-strand="STEM"]:hover {
+       background: #e3f2fd;
+       color: #2196f3;
+     }
+     .dark-mode .dropdown-menu {
+       background: #232f41;
+       border: 1px solid #374151;
+       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+     }
+     .dark-mode .dropdown-menu div {
+       color: #e2e8f0;
+     }
+     .dark-mode .dropdown-menu div:hover {
+       background: #374151;
+       color: #ffd700;
+     }
+     .dark-mode .sub-dropdown-toggle {
+       color: #e2e8f0;
+     }
+     .dark-mode .sub-dropdown-toggle:hover {
+       background: #374151;
+       color: #ffd700;
+     }
+     .dark-mode .sub-dropdown-menu,
+     .dark-mode .sub-dropdown-menu1,
+     .dark-mode .sub-dropdown-menu2 {
+       background: #232f41;
+       border: 1px solid #374151;
+       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+     }
+     .dark-mode .sub-dropdown-menu div,
+     .dark-mode .sub-dropdown-menu1 div,
+     .dark-mode .sub-dropdown-menu2 div {
+       color: #e2e8f0;
+     }
+     .dark-mode .sub-dropdown-menu div[data-strand="ABM"]:hover,
+     .dark-mode .sub-dropdown-menu1 div[data-strand="ABM"]:hover,
+     .dark-mode .sub-dropdown-menu2 div[data-strand="ABM"]:hover {
+       background: #ffebee;
+       color: #ff5722;
+     }
+     .dark-mode .sub-dropdown-menu div[data-strand="ITMAWD"]:hover,
+     .dark-mode .sub-dropdown-menu1 div[data-strand="ITMAWD"]:hover,
+     .dark-mode .sub-dropdown-menu2 div[data-strand="ITMAWD"]:hover {
+       background: #e8f5e8;
+       color: #4caf50;
+     }
+     .dark-mode .sub-dropdown-menu div[data-strand="STEM"]:hover,
+     .dark-mode .sub-dropdown-menu1 div[data-strand="STEM"]:hover,
+     .dark-mode .sub-dropdown-menu2 div[data-strand="STEM"]:hover {
+       background: #e3f2fd;
+       color: #2196f3;
+     }
+     .dark-mode .dropdown-menu1,
+     .dark-mode .dropdown-menu2 {
+       background: #374151;
+     }
+     .dark-mode .dropdown-menu2 div {
+       color: white;
+     }
+     .dark-mode .dropdown-menu2 div:hover {
+       color: #ffd700;
+     }
+     .dark-mode .dropdown-menu1 .sub-dropdown-menu,
+     .dark-mode .dropdown-menu1 .sub-dropdown-menu1,
+     .dark-mode .dropdown-menu1 .sub-dropdown-menu2,
+     .dark-mode .dropdown-menu2 .sub-dropdown-menu {
+       background: #374151;
+       color: #e2e8f0;
+     }
+     .dark-mode .sub-dropdown-toggle.active {
+       background-color: #4a5568;
+     }
+     .dark-mode .dropdown-menu2 div.active {
+       background-color: #4a5568;
+     }
+    .result-count {
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 20px;
+    }
+    .article {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px #0001;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .article:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px #0002;
+    }
+    .article h3 {
+      /* background removed - no background color for article titles */
+      color: #333 !important;
+      font-size: 1rem;
+      margin-bottom: 6px;
+      cursor: pointer;
+    }
+    .article .meta {
+      font-size: 0.85rem;
+      color: #555;
+      margin-bottom: 10px;
+    }
+    .article .summary {
+      font-size: 0.9rem;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .article .actions {
+      font-size: 0.85rem;
+      color: #1a0dab;
+      display: flex;
+      gap: 20px;
+      cursor: pointer;
+    }
+    .dark-mode .article .actions {
+      color: #00a6ff;
+    }
+    .article .actions span:hover  {
+      text-decoration: underline;
+      color: #00a6ff !important;
+    }
+    .article .actions span:first-child {
+      color: #1a0dab;
+    }
+    .dark-mode .actions span:first-child {
+      color: #00a6ff;
+    }
+    .article .actions span:nth-child(2) {
+      color: #1a0dab !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+      text-decoration: none !important;
+      background: none !important;
+      border: none !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      position: relative !important;
+    }
+    .article .actions span:nth-child(2):hover {
+      color: #00a6ff !important;
+    }
+    .dark-mode .article .actions span:nth-child(2) {
+      color: #00a6ff !important;
+    }
+    .source-tag {
+      font-size: 0.8rem;
+      color: #007bff;
+      float: right;
+    }
+    .dark-mode .content-wrapper {
+      background: #181f2a;
+    }
+    .dark-mode .sidebarlft {
+      background: #232f41;
+      color: #e2e8f0;
+    }
+    .dark-mode .sidebarlft h3 {
+      color: white;
+    }
+    .dark-mode .sidebarlft li {
+      color: #e2e8f0;
+    }
+    .dark-mode .main {
+      background: #181f2a;
+      color: #e2e8f0;
+    }
+    .dark-mode .article {
+      background: #232f41;
+      color: #e2e8f0;
+    }
+    .dark-mode .article h3 {
+      /* background removed - no background color for article titles in dark mode */
+      color: #e2e8f0 !important;
+    }
+    .dark-mode .article .meta {
+      color: #b0b7c3;
+    }
+    .dark-mode .article .summary {
+      color: #e2e8f0;
+    }
+    .dark-mode .result-count {
+      color: #b0b7c3;
+    }
+    .dark-mode .upload-date {
+      color: #b0b7c3;
+    }
+    .search-filter-bar {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      background: none;
+      padding: 10px ;
+      border-radius: 8px;
+      box-shadow: none;
+      gap: 15px;
+      width: 400px;
+      
+      transition: all 0.3s ease;
+    }
+    .search-filter-bar.shrink {
+      padding: 6px 10px;
+      max-width: 450px;
+      gap: 10px;
+    }
+    .search-filter-bar.shrink .search-input {
+      font-size: 13px;
+      padding: 8px 12px;
+    }
+    .search-filter-bar.shrink .search-btn {
+      font-size: 13px;
+      padding: 8px 12px;
+    }
+    .search-container {
+      display: flex;
+      flex: 1;
+      width: 100%;
+      max-width: none;
+      position: relative;
+    }
+    .search-input {
+      width: 100%;
+      padding: 10px 25px;
+      border: 1px solid #ddd;
+      border-radius: 25px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.3s;
+      background: transparent;
+    }
+    .search-input:focus {
+      border-color: #0057b8;
+    }
+    
+    .filter-container {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .filter-select {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+      min-width: 150px;
+      transition: border-color 0.3s;
+    }
+    .filter-select:focus {
+      border-color: #0057b8;
+      outline: none;
+    }
+    .filter-select:disabled {
+      background: #f5f5f5;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    .dark-mode .search-input {
+      background: #374151;
+      color: #e2e8f0;
+      border-color: #4b5563;
+    }
+    .dark-mode .search-input:focus {
+      border-color: #ffd700;
+    }
+    .dark-mode .filter-select {
+      background: #374151;
+      color: #e2e8f0;
+      border-color: #4b5563;
+    }
+    .dark-mode .filter-select:focus {
+      border-color: #ffd700;
+    }
+    .dark-mode .filter-select option {
+      background: #374151;
+      color: #e2e8f0;
+    }
+    
+    /* Filter Topics Modal Styles */
+    .filter-icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border: 1px solid #ddd;
+      border-radius: 50%;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #333;
+    }
+    .filter-icon-btn:hover {
+      background: #0057b8;
+      color: white;
+      border-color: #0057b8;
+    }
+    .filter-icon-btn.active {
+      background: #0057b8;
+      color: white;
+      border-color: #0057b8;
+    }
+    .dark-mode .filter-icon-btn {
+      background: #374151;
+      border-color: #4b5563;
+      color: #e2e8f0;
+    }
+    .dark-mode .filter-icon-btn:hover,
+    .dark-mode .filter-icon-btn.active {
+      background: #ffd700;
+      border-color: #ffd700;
+      color: #333;
+    }
+    .topics-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    .topics-modal-content {
+      background: white;
+      border-radius: 4px;
+      padding: 15px;
+      width: 600px;
+      max-width: 95%;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Position modal near filter icon on larger screens */
+    @media (min-width: 1141px) {
+      .topics-modal-content {
+        position: absolute;
+        top: 120px;
+        left: 280px;
+        margin: 0;
+      }
+      .topics-modal {
+        position: relative;
+        background: transparent;
+        width: auto;
+        height: auto;
+        display: block;
+      }
+      .topics-modal.show {
+        display: block;
+        animation: none;
+      }
+    }
+    
+    /* Navbar modal specific positioning */
+    .topics-modal-navbar {
+      display: none;
+    }
+    
+    @media (min-width: 1141px) {
+      .topics-modal-navbar {
+        display: none;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: auto;
+        height: auto;
+        background: transparent;
+        z-index: 10000;
+      }
+      .topics-modal-navbar .topics-modal-content {
+        position: relative;
+        top: auto;
+        left: auto;
+      }
+      .topics-modal-navbar.show {
+        display: block;
+      }
+      /* Hide main content modal on large screens */
+      #topicsModal {
+        display: none !important;
+      }
+    }
+    
+    /* Main content modal for small screens */
+    @media (max-width: 1140px) {
+      .topics-modal-navbar {
+        display: none !important;
+      }
+      #topicsModal {
+        display: none;
+      }
+      #topicsModal.show {
+        display: flex;
+      }
+    }
+    
+    .dark-mode .topics-modal-content {
+      background: #232f41;
+    }
+    .topics-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 15px;
+    }
+    .dark-mode .topics-modal-header {
+      border-bottom-color: #444;
+    }
+    .topics-modal-header h2 {
+      margin: 0;
+      font-size: 1.3rem;
+      color: #333;
+    }
+    .dark-mode .topics-modal-header h2 {
+      color: #ffffff;
+    }
+    .topics-modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      line-height: 1;
+    }
+    .topics-modal-close:hover {
+      background: #f0f0f0;
+      color: #333;
+    }
+    .dark-mode .topics-modal-close {
+      color: #999;
+    }
+    .dark-mode .topics-modal-close:hover {
+      background: #444;
+      color: #fff;
+    }
+    .topics-list {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-start;
+    }
+    .topic-item {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: default;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      color: #333;
+      white-space: nowrap;
+    }
+    .topic-item:hover {
+      background: #f0f7ff;
+      border-color: #0057b8;
+    }
+    .dark-mode .topic-item {
+      border-color: #4b5563;
+      color: #e2e8f0;
+    }
+    .dark-mode .topic-item:hover {
+      background: #374151;
+      border-color: #ffd700;
+    }
+    .topic-item.selected {
+      background: #0057b8;
+      color: white;
+      border-color: #0057b8;
+    }
+    .dark-mode .topic-item.selected {
+      background: #ffd700;
+      color: #333;
+      border-color: #ffd700;
+    }
+    
+    /* Dark mode filter icon */
+    .dark-mode .filter-icon-btn {
+      background: #374151;
+      border-color: #4b5563;
+      color: #ffffff;
+    }
+    .dark-mode .filter-icon-btn i,
+    .dark-mode .filter-icon-btn-main i {
+      color: #ffffff;
+    }
+    .dark-mode .filter-icon-btn:hover,
+    .dark-mode .filter-icon-btn.active {
+      background: #ffd700;
+      border-color: #ffd700;
+      color: #333;
+    }
+    .dark-mode .filter-icon-btn:hover i,
+    .dark-mode .filter-icon-btn.active i {
+      color: #333;
+    }
+    .dark-mode .filter-icon-btn-main {
+      background: #374151;
+      border-color: #4b5563;
+      color: #ffffff;
+    }
+    .dark-mode .filter-icon-btn-main:hover,
+    .dark-mode .filter-icon-btn-main.active {
+      background: #ffd700;
+      border-color: #ffd700;
+      color: #333;
+    }
+    
+    /* Dark mode modal background */
+    .dark-mode .topics-modal-content {
+      background: #232f41;
+    }
+    
+    /* Filter icon visibility based on screen width */
+    .filter-icon-btn-main {
+      display: none;
+    }
+    .filter-icon-btn {
+      display: flex;
+    }
+    
+    /* Below 1140px: show main content filter icon, hide navbar filter icon */
+    @media (max-width: 1140px) {
+      .filter-icon-btn {
+        display: none;
+      }
+      .filter-icon-btn-main {
+        display: flex;
+      }
+      /* Show main content search */
+      #mainSearchContainer {
+        display: block !important;
+      }
+      /* Hide navbar search */
+      #searchContainer .search-input {
+        display: none !important;
+      }
+    }
+    
+    /* Above 1140px: show navbar filter icon, hide main content filter icon */
+    @media (min-width: 1141px) {
+      .filter-icon-btn {
+        display: flex;
+      }
+      .filter-icon-btn-main {
+        display: none;
+      }
+    }
+    @media (max-width: 1160px) and (min-width: 481px) {
+      .nav-left {
+        left:100px;
+      }
+    }
+    .search-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .search-suggestions.show {
+      display: block;
+    }
+    .suggestion-item {
+      padding: 10px 15px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background-color 0.2s;
+    }
+    .suggestion-item:hover,
+    .suggestion-item.active {
+      background-color: #f8f9fa;
+    }
+    .suggestion-item:last-child {
+      border-bottom: none;
+    }
+    .dark-mode .search-suggestions {
+      background: #232f41;
+      border-color: #4b5563;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .dark-mode .suggestion-item {
+      color: #e2e8f0;
+      border-bottom-color: #374151;
+    }
+    .dark-mode .suggestion-item:hover,
+    .dark-mode .suggestion-item.active {
+      background-color: #374151;
+    }
+    .menu-btn,
+    .search-btn {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #333;
+      padding: 8px;
+      transition: color 0.3s;
+    }
+    /* Hide menu-btn on large screens, show only on mobile */
+    .menu-btn {
+      display: none;
+    }
+    @media (max-width: 1140px) {
+      .menu-btn {
+        display: block;
+      }
+      .nav-icons-center {
+        display: none !important;
+      }
+    }
+    @media (min-width: 1141px) {
+      .nav-icons-center {
+        display: flex !important;
+      }
+    }
+    .menu-btn:hover,
+    .search-btn:hover {
+      color: #0057b8;
+    }
+    .dark-mode .menu-btn,
+    .dark-mode .search-btn {
+      color: #ffd700;
+    }
+    .dark-mode .menu-btn:hover,
+    .dark-mode .search-btn:hover {
+      color: #e2e8f0;
+    }
+    .dark-mode .search-toggle {
+      color: white;
+    }
+    .clear-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #333;
+      transition: color 0.2s;
+      font-size: 14px;
+      z-index: 10;
+    }
+    .clear-icon:hover {
+      color: #333;
+    }
+    .dark-mode .clear-icon {
+      color:#ffd700; 
+    }
+    .dark-mode .clear-icon:hover {
+      color: #e2e8f0;
+    }
+    .search-container.in-main {
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 20px;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .section h2 {
+      color: #0057b8;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #0057b8;
+      padding-bottom: 10px;
+    }
+    .dark-mode .section h2 {
+      color: #ffd700;
+      border-bottom-color: #ffd700;
+    }
+    mark {
+      background-color: #ffd700;
+      color: #000;
+      padding: 0 2px;
+      border-radius: 2px;
+      font-weight: bold;
+    }
+    .dark-mode mark {
+      background-color: #ffd700;
+      color: #000;
+    }
+    .article[data-category="research"] {
+      border-left: 4px solid #ffd700 !important;
+    }
+    .article[data-category="capstone"] {
+      border-left: 4px solid #0057b8 !important;
+    }
+    .section-title {
+      color: #0057b8;
+      font-size: 2rem;
+      margin-bottom: 30px;
+      border-bottom: 3px solid #0057b8;
+      padding-bottom: 15px;
+      font-weight: 600;
+    }
+    .filter-summary {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #0057b8;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .dark-mode .section-title {
+      color: #ffd700;
+      border-bottom-color: #ffd700;
+    }
+    .subsection {
+      margin-bottom: 40px;
+    }
+    .subsection-title {
+      color: #333;
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+      padding: 10px 15px;
+      background: #f8f9fa;
+      border-left: 4px solid #0057b8;
+      border-radius: 0 8px 8px 0;
+      font-weight: 500;
+    }
+    .dark-mode .subsection-title {
+      color: #e2e8f0;
+      background: #232f41;
+      border-left-color: #ffd700;
+    }
+    .subsection:empty,
+    .subsection:has(div:empty) {
+      display: none;
+    }
+    .subsection-title[data-strand="ABM"] {
+      border-left-color: #ff5722;
+    }
+    .subsection-title[data-strand="ITMAWD"] {
+      border-left-color: #4caf50;
+    }
+    .subsection-title[data-strand="STEM"] {
+      border-left-color: #2196f3;
+    }
+    .subsection-title[data-strand="Grade 11"],
+    .subsection-title[data-strand="Grade 12"] {
+      border-left-color: #ff9800;
+    }
+    .filter-btn {
+      border: 2px solid;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .filter-btn {
+      background: #0057b8;
+      color: white;
+      border-color: #0057b8;
+    }
+    .filter-btn:hover {
+      background: #003f8a;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,87,184,0.3);
+    }
+    .research-btn {
+      background: #e7b624 !important;
+      color: white !important;
+      border-color: #f4c430 !important;
+    }
+    .research-btn:hover {
+      background: #b19540 !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(244,196,48,0.3);
+    }
+    .capstone-btn {
+      background: #0057b8 !important;
+      color: white !important;
+      border-color: #0057b8 !important;
+    }
+    .capstone-btn:hover {
+      background: #003f8a !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,87,184,0.3);
+    }
+    .filter-btn.active {
+      opacity: 0.7;
+      transform: scale(0.95);
+    }
+    .button-container {
+      display: inline-flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      vertical-align: middle;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #user-Icon {
+      font-size: 30px;
+      color: #0057b8;
+    }
+    .user-name h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+    .user-name a {
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    .text {
+      transition: opacity 0.3s;
+    }
+    .dark-mode .navbar-right.user-nav-fixed #userIcon {
+        border-color: #ffd700 !important;
+    }
+    
+    .citation-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 10000 !important;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .citation-modal.show {
+      display: flex !important;
+      animation: modalFadeIn 0.3s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .citation-modal.show {
+      display: flex !important;
+      animation: modalFadeIn 0.3s ease-out;
+    }
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .citation-modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      position: relative;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      animation: modalContentFadeIn 0.3s ease-out 0.1s both;
+      font-size: 14px;
+      width: 600px;
+      max-width: 90vw;
+    }
+    @keyframes modalContentFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .citation-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      position: relative;
+    }
+    .citation-modal-header h2 {
+      margin: 0;
+      color: #333;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    .citation-close {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: #666;
+      padding: 3px;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s;
+    }
+    .citation-close:hover {
+      background-color: #f0f0f0;
+      color: #333;
+    }
+    .citation-format-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+      overflow-x: auto;
+    }
+    .citation-tab {
+      background: none;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #666;
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+    .citation-tab.active {
+      color: #007bff;
+      border-bottom-color: #007bff;
+      background-color: #f8f9fa;
+    }
+    .citation-tab:hover {
+      color: #007bff;
+      background-color: #f8f9fa;
+    }
+    .citation-content {
+       font-family: 'Courier New', monospace;
+       font-size: 14px;
+       line-height: 1.6;
+       background-color: #f8f9fa;
+       padding: 20px;
+       border-radius: 8px;
+       border-left: 4px solid #007bff;
+       white-space: normal;
+       word-wrap: break-word;
+    }
+    .citation-copy-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 15px;
+      transition: background-color 0.3s;
+    }
+    .citation-copy-btn:hover {
+      background-color: #0056b3;
+    }
+    .citation-copy-btn.copied {
+      background-color: #28a745;
+    }
+
+    .related-articles-content {
+      padding: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .related-article-item {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .related-article-item:hover {
+      background-color: #f8f9fa;
+    }
+
+    .related-article-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .dark-mode .related-article-item:hover {
+      background-color: #374151;
+    }
+
+    .related-article-item h4 {
+      margin: 0 0 8px 0;
+      color: #0057b8;
+      font-size: 1.1rem;
+    }
+
+    .related-meta {
+      font-size: 0.9rem;
+      color: #666;
+      margin: 5px 0;
+    }
+
+    .related-summary {
+      font-size: 0.95rem;
+      color: #333;
+      line-height: 1.4;
+    }
+
+    .dark-mode .related-article-item h4 {
+      color: #ffd700;
+    }
+
+    .dark-mode .related-meta {
+      color: #b0b7c3;
+    }
+
+    .dark-mode .related-summary {
+      color: #e2e8f0;
+    }
+    .dark-mode .citation-modal-content {
+      background-color: #2d2d2d;
+      color: #ffffff;
+    }
+    .dark-mode .citation-modal-header {
+      border-bottom-color: #444;
+    }
+    .dark-mode .citation-modal-header h2 {
+      color: #ffffff;
+    }
+    .dark-mode .citation-close {
+      color: #ccc;
+    }
+    .dark-mode .citation-close:hover {
+      background-color: #3d3d3d;
+      color: #ffffff;
+    }
+    .dark-mode .citation-format-tabs {
+      border-bottom-color: #444;
+    }
+    .dark-mode .citation-tab {
+      color: #ccc;
+    }
+    .dark-mode .citation-tab.active {
+      color: #ffd700;
+      border-bottom-color: #ffd700;
+      background-color: #3d3d3d;
+    }
+    .dark-mode .citation-tab:hover {
+      color: #ffd700;
+      background-color: #3d3d3d;
+    }
+    .dark-mode .citation-content {
+      background-color: #3d3d3d;
+      color: #ffffff;
+    }
+    @media (max-width: 1200px) {
+      .citation-modal-content {
+        width: 700px;
+        max-width: 85vw;
+      }
+    }
+    @media (max-width: 992px) {
+      .citation-modal-content {
+        width: 650px;
+        max-width: 90vw;
+      }
+    }
+    @media (max-width: 768px) {
+      .citation-modal-content {
+        width: 95%;
+        max-width: 95%;
+        padding: 15px;
+        margin: 10px;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+      .citation-format-tabs {
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+      .citation-content {
+        font-size: 12px;
+        padding: 12px;
+      }
+      .citation-modal-header h2 {
+        font-size: 1rem;
+      }
+      .citation-copy-btn {
+        width: 100%;
+        margin-top: 10px;
+      }
+    }
+    @media (max-width: 576px) {
+      .citation-modal-content {
+        width: 98%;
+        max-width: 98%;
+        padding: 12px;
+        margin: 5px;
+        max-height: 85vh;
+      }
+      .citation-modal-header {
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+      }
+      .citation-modal-header h2 {
+        font-size: 0.9rem;
+      }
+      .citation-format-tabs {
+        margin-bottom: 15px;
+      }
+      .citation-tab {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+      .citation-content {
+        font-size: 11px;
+        padding: 10px;
+        font-family: 'Courier New', monospace;
+      }
+      .citation-copy-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+    }
+    @media (max-width: 480px) {
+      .citation-modal-content {
+        width: 100%;
+        max-width: 100%;
+        padding: 10px;
+        margin: 2px;
+        border-radius: 6px;
+      }
+      .citation-modal-header h2 {
+        font-size: 0.85rem;
+      }
+      .citation-close {
+        width: 22px;
+        height: 22px;
+        font-size: 16px;
+      }
+      .citation-format-tabs {
+        gap: 3px;
+      }
+      .citation-tab {
+        padding: 6px 8px;
+        font-size: 12px;
+      }
+      .citation-content {
+        font-size: 10px;
+        padding: 8px;
+        line-height: 1.4;
+      }
+    }
+    .filter-dropdown-menu {
+      min-width: 300px;
+      max-width: 400px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      background: white;
+      z-index: 1000;
+    }
+    .dark-mode .filter-dropdown-menu {
+      background: #232f41;
+      border-color: #374151;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .filter-section {
+      margin-bottom: 20px;
+    }
+    .filter-section h3 {
+      margin: 0 0 10px 0;
+      color: #0057b8;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .dark-mode .filter-section h3 {
+      color: #ffd700;
+    }
+    .filter-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .filter-option-radio {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    .filter-option-radio:hover {
+      background-color: #f8f9fa;
+    }
+    .dark-mode .filter-option-radio:hover {
+      background-color: #374151;
+    }
+    .filter-option-radio input[type="radio"] {
+      margin: 0;
+    }
+    .filter-option-radio label {
+      cursor: pointer;
+      margin: 0;
+      font-weight: normal;
+    }
+    .filter-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    .filter-btn-modal {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+    .filter-apply {
+      background-color: #0057b8;
+      color: white;
+    }
+    .filter-apply:hover {
+      background-color: #003f8a;
+    }
+    .filter-clear {
+      background-color: #6c757d;
+      color: white;
+    }
+    .filter-clear:hover {
+      background-color: #545b62;
+    }
+    .strand-section,
+    .program-section {
+      display: none;
+    }
+    .level-shs .strand-section {
+      display: block;
+    }
+    .level-college .program-section {
+      display: block;
+    }
+    /* NEW: Center nav-icons-center */
+    .nav-icons-center {
+      display: flex;
+      justify-items: start;
+      align-items: center;
+
+      
+    }
+    .sidebar-toggle {
+      background: none;
+      border: none;
+      color: #0057b8;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 8px;
+      margin-left: 10px;
+      transition: color 0.3s;
+    }
+    .sidebar-toggle:hover {
+      color: #003f8a;
+    }
+    .dark-mode .sidebar-toggle {
+      color: #ffd700;
+    }
+    .nav-icons-center .dropdown {
+      margin: 0;
+    }
+    /* Ensure main navbar uses flex and centers content */
+    .main-navbar {
+      display: flex;
+      background: #ffffff;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 0 12px;
+      position: relative;
+      height:65px;
+      border-bottom: 1px solid #ddd;
+    }
+    .dark-mode .main-navbar {
+      background: #232f41;
+    }
+    .sti-logo {
+       display: flex;
+       align-items: center;
+   }
+   .sti-logo img {
+       
+       display:flex;
+            align-items: center;
+            height: 40px;
+            width: auto;
+            border-radius: 6px;
+            margin-left: 30px;
+   }
+   .sti-logo span {
+       font-size: 24px;
+       color: #0057b8;
+   }
+   .nav-left {
+       position: absolute;
+       left: 5px;
+       display: flex;
+       align-items: center;
+   }
+    .main-navbar.shrink {
+      position: fixed;
+      height: 50px;
+      box-shadow: 0 4px 12px #0003;
+    }
+
+    .main-navbar.shrink .sti-logo {
+      height: 34px;
+      margin-top: 0;
+    }
+
+    
+
+    .main-navbar.shrink .sti-logo span {
+      font-size: 22px;
+    }
+
+    .main-navbar.shrink .nav-text {
+      font-size: 24px;
+    }
+
+    .navbar-right.user-nav-fixed #userIcon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #0057b8;
+}
+
+    .main-navbar.shrink .dark-mode-toggle {
+      font-size: 20px;
+    }
+    .navbar-right {
+       position: absolute;
+       right: 20px;
+     }
+
+     /* Responsive navbar for small screens */
+     @media (max-width: 1060px) {
+       .main-navbar {
+         height: 60px;
+         padding: 0 10px;
+       }
+
+       .sti-logo img {
+         height: 35px;
+         margin-left: 10px;
+       }
+
+       .sti-logo span {
+         font-size: 18px;
+       }
+
+       .nav-icons-center {
+         margin-left: 20px;
+       }
+
+       .search-container {
+         width: auto;
+         max-width: 250px;
+       }
+
+       .search-input {
+         padding: 8px 20px;
+         font-size: 13px;
+       }
+
+       .dropdown-toggle {
+         padding: 6px 12px;
+         font-size: 12px;
+       }
+
+       .navbar-right {
+         right: 10px;
+       }
+
+       .navbar-right.user-nav-fixed .fa-user-circle {
+         font-size: 28px;
+       }
+
+       /* Hide nav dropdowns and show sidebar dropdowns on tablet/cellphone */
+       .nav-icons-center .dropdown {
+         display: none;
+       }
+       .sidebarlft .dropdown {
+         display: block;
+       }
+     }
+
+      /* Mobile and tablet screens - below 1140px */
+      @media (max-width: 1140px) {
+        .search-toggle {
+          display: block;
+        }
+        /* Keep search input in navbar hidden on mobile, but show in main content */
+        #searchContainer .search-input {
+          display: none;
+        }
+        /* Show main content search on mobile and tablet */
+        #mainSearchContainer {
+          display: block;
+        }
+      }
+      
+      /* Desktop screens above 1140px */
+      @media (min-width: 1141px) {
+        /* Hide main content search on desktop */
+        #mainSearchContainer {
+          display: none;
+        }
+        /* Show navbar search on desktop */
+        #searchContainer .search-input {
+          display: block;
+        }
+      }
+      
+      @media (max-width: 798px) {
+          .sidebarlft {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 130px;
+            height: 100%;
+            transform: translateX(-100%);
+            z-index: 9999;
+            transition: transform 0.3s ease;
+          }
+          .sidebarlft.open {
+            transform: translateX(0);
+          }
+          .sidebar-close {
+            display: block;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #333;
+            cursor: pointer;
+            z-index: 10000;
+          }
+      }
+
+     @media (min-width: 1061px) {
+       .search-toggle {
+         display: none;
+       }
+     }
+
+     /* Show sidebarlft dropdowns between 1061px and 1140px */
+     @media (min-width: 1061px) and (max-width: 1140px) {
+       .sidebarlft .dropdown {
+         display: block;
+       }
+     }
+
+     @media (max-width: 480px) {
+       .main-navbar {
+         height: 55px;
+       }
+
+       .sti-logo img {
+         height: 30px;
+         margin-left: 5px;
+       }
+
+       .sti-logo span {
+         font-size: 16px;
+       }
+
+       .nav-icons-center {
+         margin-left: 15px;
+       }
+
+       .search-container {
+         width: 150px;
+         max-width: 150px;
+       }
+
+       .search-input {
+         padding: 6px 15px;
+         font-size: 12px;
+       }
+
+       .dropdown-toggle {
+         padding: 5px 10px;
+         font-size: 11px;
+       }
+
+       .navbar-right.user-nav-fixed .fa-user-circle {
+         font-size: 24px;
+       }
+     }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0;
+      padding: 10px;
+      position: relative;
+      z-index: 1;
+    }
+    .pagination button {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      background: white;
+      color: #0057b8;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.3s;
+      scroll-behavior: auto;
+      position: relative;
+      z-index: 1;
+    }
+    .pagination button:hover {
+      background: #f0f0f0;
+    }
+
+    .pagination button:focus {
+      outline: none;
+    }
+    .pagination button.active {
+      background: #0057b8;
+      color: white;
+    }
+    .pagination button:disabled {
+      background: #f5f5f5;
+      color: #ccc;
+      cursor: not-allowed;
+    }
+    .dark-mode .pagination button {
+      background: #374151;
+      color: #e2e8f0;
+      border-color: #4b5563;
+    }
+    .dark-mode .pagination button:hover:not(:disabled) {
+      background: #4b5563;
+    }
+    .dark-mode .pagination button.active {
+      background: #ffd700;
+      color: #000;
+    }
+    .dark-mode .pagination button:disabled {
+      background: #2d2d2d;
+      color: #666;
+    }
+    /* Dark mode for mnb */
+    .dark-mode #mnb {
+      background-color: #232f41 !important;
+      border-color: #444 !important;
+    }
+    /* Hide mnb on larger screens */
+    @media (min-width: 1060px) {
+      #mnb {
+        display: none !important;
+      }
+    }
+    
+    /* === FOOTER === */
+    .site-footer {
+        background: #002244;
+        color: #ffffff;
+        padding: 20px;
+        text-align: center;
+        margin-top: auto;
+    }
+    .site-footer .footer-links a {
+        color: #ffd700;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .site-footer .footer-links a:hover {
+        color: #ffffff;
+        text-decoration: underline;
+    }
+    .footer-content {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    .dark-mode .site-footer {
+        background: #0f172a;
+    }
+    /* Citation Counter Styles */
+    .cited-counter {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-left: 15px;
+      cursor: default;
+      padding: 2px 8px;
+      border-radius: 12px;
+      transition: none;
+      background: rgba(0, 87, 184, 0.1);
+    }
+    .cited-counter:hover {
+      background: rgba(0, 87, 184, 0.1);
+      transform: none;
+    }
+    .cited-counter.modified {
+      animation: counterPulse 0.3s ease;
+      background: rgba(40, 167, 69, 0.2);
+    }
+    @keyframes counterPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .cited-counter .counter-value {
+      font-weight: bold;
+      color: #0057b8;
+      min-width: 20px;
+      text-align: center;
+    }
+    .dark-mode .cited-counter {
+      background: rgba(255, 215, 0, 0.15);
+    }
+    .dark-mode .cited-counter:hover {
+      background: rgba(255, 215, 0, 0.15);
+    }
+    .dark-mode .cited-counter .counter-value {
+      color: #ffd700;
+    }
+    .dark-mode .cited-counter.modified {
+      background: rgba(40, 167, 69, 0.3);
+    }
+
+    /* === RESPONSIVE SIZING FOR FILE VIEWER, HOMEEDITOR, EDITOR === */
+    /* Tablet screens (768px - 1024px) */
+    @media (max-width: 1024px) and (min-width: 769px) {
+      .file-viewer,
+      .home-editor,
+      #homeEditor,
+      .editor,
+      #editor {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+        min-height: 60vh;
+        padding: 15px;
+        box-sizing: border-box;
+      }
+      
+      /* When shown side by side on tablet */
+      .file-viewer + .home-editor,
+      .file-viewer + .editor,
+      #homeEditor + .editor,
+      .file-viewer + #homeEditor {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+        margin-top: 10px;
+      }
+    }
+
+    /* Mobile screens (below 768px) */
+    @media (max-width: 768px) {
+      .file-viewer,
+      .home-editor,
+      #homeEditor,
+      .editor,
+      #editor {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+        min-height: 50vh;
+        padding: 10px;
+        box-sizing: border-box;
+        position: relative !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: 0 !important;
+      }
+      
+      /* Full width on mobile */
+      .file-viewer.expanded,
+      .home-editor.expanded,
+      #homeEditor.expanded,
+      .editor.expanded,
+      #editor.expanded {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+      }
+      
+      /* Hide side-by-side layout on mobile */
+      .file-viewer + .home-editor,
+      .file-viewer + .editor,
+      #homeEditor + .editor,
+      .file-viewer + #homeEditor {
+        display: none !important;
+      }
+    }
+
+    /* Small mobile screens (below 480px) */
+    @media (max-width: 480px) {
+      .file-viewer,
+      .home-editor,
+      #homeEditor,
+      .editor,
+      #editor {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+        min-height: 45vh;
+        padding: 8px;
+        box-sizing: border-box;
+        font-size: 14px;
+      }
+    }
+
+
+  </style>
+</head>
+<body>
+  <nav class="main-navbar" id="main-navbar">
+    <div class="sti-logo">
+      <div class="nav-left">
+        <a href="/Homepage.html"><img src="/frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg" alt="STI Logo" ></a>
+                <a href="/Homepage.html"><span>ARCHIVES</span></a>
+        
+      </div>
+    </div>
+    <div class="nav-icons-center">
+      <!-- Search bar -->
+      <div class="search-filter-bar">
+        <button class="filter-icon-btn" id="filterIconBtnNavbar" onclick="toggleTopicsModal()" title="Filter by topic">
+          <i class="fas fa-filter"></i>
+        </button>
+        <div class="search-container" id="searchContainer">
+          <input type="text" id="articleSearch" placeholder="Search works, authors, or topics... " class="search-input">
+          <i class="fas fa-times clear-icon" id="clearIcon" style="display: none;"></i>
+          <div class="search-suggestions" id="searchSuggestions"></div>
+        </div>
+      </div>
+      <!-- Topics Filter Modal for Navbar -->
+      <div class="topics-modal topics-modal-navbar" id="topicsModalNavbar">
+        <div class="topics-modal-content">
+          <div class="topics-modal-header">
+            <h2>Filter by Topic</h2>
+            <button class="topics-modal-close" onclick="closeTopicsModal('navbar')">&times;</button>
+          </div>
+          <div class="topics-list">
+            <div class="topic-item" onclick="selectTopic(this, 'agriculture', 'navbar')">Agriculture</div>
+            <div class="topic-item" onclick="selectTopic(this, 'business', 'navbar')">Business</div>
+            <div class="topic-item" onclick="selectTopic(this, 'cosmetics', 'navbar')">Cosmetics</div>
+            <div class="topic-item" onclick="selectTopic(this, 'education', 'navbar')">Education</div>
+            <div class="topic-item" onclick="selectTopic(this, 'environment', 'navbar')">Environment</div>
+            <div class="topic-item" onclick="selectTopic(this, 'food', 'navbar')">Food</div>
+            <div class="topic-item" onclick="selectTopic(this, 'technology', 'navbar')">Technology</div>
+          </div>
+        </div>
+      </div>
+      <!-- Research Dropdown -->
+      <div class="dropdown">
+        <div class="dropdown-toggle research-btn" onclick="toggleCategory('research')">
+          Research
+        </div>
+        <div class="dropdown-menu1">
+          <div class="sub-dropdown">
+            <div class="sub-dropdown-toggle sub-dropdown-toggle-g11" onclick="filterArticles('research', 'Qualitative', 'type')">Qualitative</div>
+            <div class="sub-dropdown-menu1">
+              <div class="grade-11" data-strand="ABM" onclick="selectStrand('ABM', this)">ABM</div>
+              <div class="grade-11" data-strand="ITMAWD" onclick="selectStrand('ITMAWD', this)">ITMAWD</div>
+              <div class="grade-11" data-strand="STEM" onclick="selectStrand('STEM', this)">STEM</div>
+            </div>
+          </div>
+          <div class="sub-dropdown">
+            <div class="sub-dropdown-toggle sub-dropdown-toggle-g12" onclick="filterArticles('research', 'Quantitative', 'type')">Quantitative</div>
+            <div class="sub-dropdown-menu2">
+              <div class="grade-12" data-strand="ABM" onclick="selectStrand('ABM', this)">ABM</div>
+              <div class="grade-12" data-strand="ITMAWD" onclick="selectStrand('ITMAWD', this)">ITMAWD</div>
+              <div class="grade-12" data-strand="STEM" onclick="selectStrand('STEM', this)">STEM</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Capstone Dropdown -->
+      <div class="dropdown">
+        <button class="dropdown-toggle capstone-btn" onclick="toggleCategory('capstone')">
+          Capstone
+        </button>
+        <div class="dropdown-menu2">
+          <div onclick="filterArticles('capstone', 'BSBA', 'program')">BSBA</div>
+          <div onclick="filterArticles('capstone', 'BSCS', 'program')">BSCS</div>
+          <div onclick="filterArticles('capstone', 'BSIT', 'program')">BSIT</div>
+        </div>
+      </div>
+    </div>
+    <div class="navbar-right user-nav-fixed">
+      <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode">
+        <i class="fa fa-moon"></i>
+      </button>
+      <img id="userIcon" src="Screenshot 2025-09-10 204105.png" alt="Profile" style="cursor:pointer;">
+    </div>
+  </nav>
+  <div id="mnb" style="background-color: rgb(255, 255, 255); width:auto; height: 50px; border:1px solid #d3d3d3; display: flex; align-items: center; justify-content: center; padding: 0 10px;">
+    <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="search-filter-bar" style="flex: 1; margin: 0 10px; justify-content: space-between;">
+      <button class="filter-icon-btn filter-icon-btn-main" id="filterIconBtnMain" onclick="toggleTopicsModal()" title="Filter by topic">
+        <i class="fas fa-filter"></i>
+      </button>
+      <div class="search-container in-main" id="mainSearchContainer" style="flex: 1; max-width: 100%;">
+        <input type="text" id="mainArticleSearch" placeholder="Search works, authors, or topics... " class="search-input" style="width: 100%; position: relative; top: 1px;">
+        <i class="fas fa-times clear-icon" id="mainClearIcon" style="display: none;"></i>
+        <div class="search-suggestions" id="mainSearchSuggestions"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar">
+    <div class="sidebar-content">
+      <ul>
+        <li><a href="pfp.html"><i class="fa-solid fa-user"></i> <span class="text">Profile</span></a></li>
+        <li><a href="myspace.html"><i class="fa-solid fa-feather-pointed"></i> <span class="text">Myspace</span></a></li>
+        <li><a href="about.html"><i class="fa-solid fa-info-circle"></i> <span class="text">About Us</span></a></li>
+        <hr>
+        <li><a href="index.html"><i class="fa-solid fa-sign-out-alt"></i> <span class="text">Sign out</span></a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="content-wrapper">
+    <!-- Sidebar -->
+    <div class="sidebarlft">
+      
+      <button class="sidebar-close" onclick="closeSidebar()">&times;</button>
+      <!-- Research Dropdown -->
+      <div class="dropdown">
+        <div class="dropdown-toggle research-btn" onclick="toggleCategory('research')">
+          Research
+        </div>
+        <div class="dropdown-menu1">
+          <div class="sub-dropdown">
+            <div class="sub-dropdown-toggle sub-dropdown-toggle-g11" onclick="filterArticles('research', 'Qualitative', 'type')">Qualitative</div>
+            <div class="sub-dropdown-menu1">
+              <div class="grade-11" data-strand="ABM" onclick="selectStrand('ABM', this)">Grade 11 - ABM - 11</div>
+              <div class="grade-11" data-strand="ITMAWD" onclick="selectStrand('ITMAWD', this)">Grade 11 - ITMAWD - 11</div>
+              <div class="grade-11" data-strand="STEM" onclick="selectStrand('STEM', this)">Grade 11 - STEM - 11</div>
+            </div>
+          </div>
+          <div class="sub-dropdown">
+            <div class="sub-dropdown-toggle sub-dropdown-toggle-g12" onclick="filterArticles('research', 'Quantitative', 'type')">Quantitative</div>
+            <div class="sub-dropdown-menu2">
+              <div class="grade-12" data-strand="ABM" onclick="selectStrand('ABM', this)">ABM</div>
+              <div class="grade-12" data-strand="ITMAWD" onclick="selectStrand('ITMAWD', this)">ITMAWD</div>
+              <div class="grade-12" data-strand="STEM" onclick="selectStrand('STEM', this)">STEM</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Capstone Dropdown -->
+      <div class="dropdown">
+        <button class="dropdown-toggle capstone-btn" onclick="toggleCategory('capstone')">
+          Capstone
+        </button>
+        <div class="dropdown-menu2">
+          <div onclick="filterArticles('capstone', 'BSBA', 'program')">BSBA</div>
+          <div onclick="filterArticles('capstone', 'BSCS', 'program')">BSCS</div>
+          <div onclick="filterArticles('capstone', 'BSIT', 'program')">BSIT</div>
+        </div>
+      </div>
+      <ul class="filter-list" data-filter-group="year">
+        <li class="filter-option active" data-filter="any">Any time</li>
+        <li class="filter-option" data-filter="2025">Publish 2025</li>
+        <li class="filter-option" data-filter="2024">Publish 2024</li>
+        <li class="filter-option" data-filter="2023">Publish 2023</li>
+      </ul>
+    </div>
+    <!-- Main Content -->
+    <div class="main">
+      <!-- Topics Filter Modal for Main Content -->
+      <div class="topics-modal" id="topicsModal">
+        <div class="topics-modal-content">
+          <div class="topics-modal-header">
+            <h2>Filter by Topic</h2>
+            <button class="topics-modal-close" onclick="closeTopicsModal('main')">&times;</button>
+          </div>
+          <div class="topics-list">
+            <div class="topic-item" onclick="selectTopic(this, 'agriculture', 'main')">Agriculture</div>
+            <div class="topic-item" onclick="selectTopic(this, 'business', 'main')">Business</div>
+            <div class="topic-item" onclick="selectTopic(this, 'cosmetics', 'main')">Cosmetics</div>
+            <div class="topic-item" onclick="selectTopic(this, 'education', 'main')">Education</div>
+            <div class="topic-item" onclick="selectTopic(this, 'environment', 'main')">Environment</div>
+            <div class="topic-item" onclick="selectTopic(this, 'food', 'main')">Food</div>
+            <div class="topic-item" onclick="selectTopic(this, 'technology', 'main')">Technology</div>
+          </div>
+        </div>
+      </div>
+      <div id="filter-summary" class="filter-summary"></div>
+      <div id="articles-container"></div>
+      <!-- Hidden research section for dynamic content -->
+      <div class="research-section" id="research-section" style="display: none;">
+        <h2 class="section-title">Research Papers</h2>
+        <div class="subsection">
+          <h3 class="subsection-title">Grade 11</h3>
+          <div class="grade-11-articles" id="grade-11-articles"></div>
+        </div>
+        <div class="subsection">
+          <h3 class="subsection-title">Grade 12</h3>
+          <div class="grade-12-articles" id="grade-12-articles"></div>
+        </div>
+        <div class="subsection">
+          <h3 class="subsection-title">ABM</h3>
+          <div class="abm-articles" id="abm-articles"></div>
+        </div>
+        <div class="subsection">
+          <h3 class="subsection-title">ITMAWD</h3>
+          <div class="itmawd-articles" id="itmawd-articles"></div>
+        </div>
+        <div class="subsection">
+          <h3 class="subsection-title">STEM</h3>
+          <div class="stem-articles" id="stem-articles"></div>
+        </div>
+      </div>
+      <!-- Hidden capstone section for dynamic content -->
+      <div class="capstone-section" id="capstone-section" style="display: none;">
+        <h2 class="section-title">Capstone Projects</h2>
+        <div class="capstone-articles" id="capstone-articles"></div>
+      </div>
+      <!-- Pagination -->
+      <div class="pagination" id="pagination"></div>
+    </div>
+</div>
+<script src="/frontend/assets/js/script.js"></script>
+  <script>
+  // Reset citation data on page load (for testing)
+  localStorage.removeItem('citedArticles');
+  localStorage.removeItem('citationCounts');
+  
+  // === UTILITIES ===
+  function getRelativeTime(uploadDate) {
+    const now = new Date();
+    const upload = new Date(uploadDate);
+    const diffMs = now - upload;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDays === 0) return 'today';
+    if (diffDays === 1) return '1 day ago';
+    if (diffDays < 30) return `${diffDays} days ago`;
+    const diffMonths = Math.floor(diffDays / 30);
+    if (diffMonths === 1) return '1 month ago';
+    if (diffMonths < 12) return `${diffMonths} months ago`;
+    const diffYears = Math.floor(diffDays / 365);
+    return `${diffYears} year${diffYears > 1 ? 's' : ''} ago`;
+  }
+
+  function highlightText(text, searchTerm) {
+    if (!searchTerm) return text;
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    return text.replace(regex, '<mark>$1</mark>');
+  }
+
+  // === INITIALIZE & LOAD ARTICLES ===
+  async function initializeArticles() {
+    // Clear localStorage to ensure fresh load
+    localStorage.removeItem('allArticles');
+    
+    try {
+      // Use same API as admin to ensure consistent articles
+      const response = await fetch('/api/articles');
+      const data = await response.json();
+      let serverArticles = data.articles || data;
+
+      if (serverArticles && serverArticles.length > 0) {
+        // Store all articles (same as admin)
+        localStorage.setItem('allArticles', JSON.stringify(serverArticles));
+        return serverArticles;
+      }
+    } catch (error) {
+      console.error('Failed to load articles from server:', error);
+    }
+
+    // Fallback to local articles if server fails
+    const existingArticles = [
+        { title: 'Exploring Public Awareness And Safety Measures For Microplastic Consumption In Fish', authors: 'Caluya, C. I. L., Cejes, M. T. H. M., Habacon, K. L. R., Oliva, J. R. E., & Villegas, J. D.', meta: 'Caluya, C. I. L., Cejes, M. T. H. M., Habacon, K. L. R., Oliva, J. R. E., & Villegas, J. D. – 2024–2025', summary: 'This qualitative phenomenological study investigates public awareness, vendor practices, and government measures on microplastic contamination in fish, revealing low public knowledge, lack of standardized safety checks, and insufficient resources for proper monitoring...', category: 'research', strand: 'STEM', level: 'Senior High School', program: 'Grade 11', year: '2024', type: 'research', pdfPath: '/Studies/Research/2023-2024/Cejes et al.pdf' },
+        { title: 'Farmers\' Perceptions On The Effectiveness Of Ventilation To Hinder Pesticide Exposure', authors: 'Aquino, B. R. A., Burgos, F. E. D., Eliserio, C. A. C., Inoc, J. V. H., & Magbato, E. Y.', meta: 'Aquino, B. R. A., Burgos, F. E. D., Eliserio, C. A. C., Inoc, J. V. H., & Magbato, E. Y. – 2025', summary: 'This qualitative phenomenological study explores farmers\' perceptions of greenhouse ventilation as a strategy to reduce pesticide exposure, highlighting that proper airflow can improve crop health, reduce pesticide dependence, and promote safer and more sustainable farming practices...', category: 'research', strand: 'STEM', level: 'Senior High School', program: 'Grade 12', year: '2025', type: 'research', pdfPath: '/Studies/Research/2023-2024/Eliserio et al.pdf' },
+        { title: 'The Effectiveness of Lagundi Essential Oil as an Inhaler in Terms of Marketability Among Selected Grade-11 Senior High School Students in STI College Calamba', authors: 'Grade 11 Students', meta: 'Grade 11 Students – 2025 – STI College Calamba', summary: 'This study examines the marketability and effectiveness of lagundi essential oil as an inhaler product among selected Grade-11 students, evaluating consumer preferences, product viability, and potential market acceptance...', category: 'research', strand: 'STEM', level: 'Senior High School', program: 'Grade 11', year: '2025', type: 'research', pdfPath: '/Studies/Research/2023-2024/Espiritu et al.pdf' },
+        { title: 'Analyzing Safety Protocols Adherence In Gasoline Stations: Urban vs. Rural Perspectives', authors: 'Santibañez, J., et al.', meta: 'Santibañez, J., et al. – 2024 – STI College Calamba', summary: 'This study compares urban and rural gasoline stations to examine workers\' adherence to Department of Labor and Employment (DOLE) safety protocols, finding both compliance and lapses that impact health, safety, and emergency preparedness...', category: 'research', strand: 'ABM', level: 'college', program: 'BSBA', year: '2024', type: 'research', pdfPath: '/Studies/Research/2023-2024/Santibañez et al.pdf' },
+        { title: 'Ethereal Blossom: Floral Scented Cologne Balm', authors: 'Baloloy, Winona Ashley I. Belda, Eldrich Seann T. Cubano, Rednz Nhorween C. Lulu, Kurl Angela C. Mendoza, Aizeiya N.', meta: 'Baloloy, Winona Ashley I. Belda, Eldrich Seann T. Cubano, Rednz Nhorween C. Lulu, Kurl Angela C. Mendoza, Aizeiya N. — 2025 STI College Calamba', summary: 'This feasibility study examines the market demand, financial viability, and marketing strategies for Ethereal Blossom, a floral cologne balm designed to combine elegance, skin-friendliness, and eco-consciousness for fragrance consumers...', category: 'research', strand: 'ABM', level: 'college', program: 'BSBA', year: '2025', type: 'research', fileIds: [] },
+        { title: 'Trash to Treasure: The Role of Recycling Technologies in Sustainable Future', authors: 'Awid, Christa Belle L., Barerra, Tamiya Judea A., De Torres, Kent Hervey L., Gonzales, Christine Anne M., and Tuazon, Rancel G.', meta: 'Awid, Christa Belle L., Barerra, Tamiya Judea A., De Torres, Kent Hervey L., Gonzales, Christine Anne M., and Tuazon, Rancel G. – 2025 – STI College Calamba', summary: 'This study explores the perspectives of local government units on recycling technologies, highlighting their role in reducing waste, promoting sustainability, addressing implementation challenges, and balancing environmental goals with financial constraints...', category: 'research', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', pdfPath: '/Studies/Research/2023-2024/Juangco et al. (2024).pdf' },
+        { title: 'STI Archives: Digital Library Management System', authors: 'ITMAWD 21 Group', meta: 'ITMAWD 21 Group – 2025 – STI College Calamba', summary: 'A comprehensive web-based digital library system designed to manage and showcase student research papers and capstone projects...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', fileIds: [] },
+        { title: 'AI-Powered Student Performance Analytics', authors: 'Computer Science Department', meta: 'Computer Science Department – 2025 – STI College Calamba', summary: 'An intelligent system that analyzes student performance data using machine learning algorithms...', category: 'capstone', strand: 'STEM', level: 'college', program: 'BSCS', year: '2025', type: 'research', fileIds: [] },
+        { title: 'Sustainable Urban Farming Practices', authors: 'Environmental Science Team', meta: 'Environmental Science Team – 2025 – STI College Calamba', summary: 'This study explores innovative urban farming techniques that promote sustainability and food security in densely populated areas...', category: 'research', strand: 'STEM', level: 'Senior High School', program: 'Grade 11', year: '2025', type: 'research', fileIds: [] },
+        { title: 'Mobile Health Monitoring App', authors: 'IT Development Group', meta: 'IT Development Group – 2025 – STI College Calamba', summary: 'A comprehensive mobile application for real-time health monitoring and telemedicine services...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', fileIds: [] },
+        { title: 'E-Commerce Platform for Local Businesses', authors: 'Business Informatics Team', meta: 'Business Informatics Team – 2025 – STI College Calamba', summary: 'A scalable e-commerce solution designed to help local businesses establish online presence and manage digital sales...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', fileIds: [] },
+        { title: 'Smart Campus Security System', authors: 'Security Systems Group', meta: 'Security Systems Group – 2025 – STI College Calamba', summary: 'An integrated security system utilizing IoT devices and AI for comprehensive campus surveillance and access control...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', fileIds: [] },
+        { title: 'Virtual Reality Learning Environment', authors: 'Educational Technology Dept', meta: 'Educational Technology Dept – 2025 – STI College Calamba', summary: 'An immersive VR platform for interactive learning experiences across various academic disciplines...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', fileIds: [] },
+        { title: 'Blockchain-Based Voting System', authors: 'Cybersecurity Research Team', meta: 'Cybersecurity Research Team – 2025 – STI College Calamba', summary: 'A secure and transparent voting system leveraging blockchain technology for elections and organizational decisions...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', fileIds: [] },
+        { title: 'AI-Driven Financial Advisor', authors: 'Finance Technology Group', meta: 'Finance Technology Group – 2025 – STI College Calamba', summary: 'An intelligent financial planning tool that uses AI to provide personalized investment advice and portfolio management...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', fileIds: [] },
+        { title: 'Engaging Learning, Letter by Letter an Interactive Spell it! Game for Preschool', authors: 'ITMAWD 21 Group', meta: 'ITMAWD 21 Group – 2025 – STI College Calamba', summary: 'An interactive educational game designed to teach preschool children spelling through engaging letter-by-letter gameplay, promoting early literacy skills in a fun and interactive environment...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', fileIds: [] },
+        { title: 'Smart Agriculture Monitoring System Using IoT Sensors', authors: 'Computer Science Department', meta: 'Computer Science Department – 2023 – STI College Calamba', summary: 'A comprehensive IoT-based system for monitoring soil moisture, temperature, and humidity in agricultural fields, providing real-time data to farmers for optimized crop management and water conservation...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSCS', year: '2023', type: 'research', fileIds: [] }
+      ];
+      // Filter to only include articles with PDFs (fileIds with content or pdfPath)
+      const articlesWithPDFs = existingArticles.filter(article => 
+        (article.fileIds && article.fileIds.length > 0) || 
+        (article.pdfPath && article.pdfPath.length > 0)
+      );
+      localStorage.setItem('allArticles', JSON.stringify(articlesWithPDFs));
+
+      // Save to server as well
+      try {
+        await fetch('/save_articles', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ articles: existingArticles })
+        });
+      } catch (error) {
+        console.error('Failed to save articles to server:', error);
+      }
+
+      return existingArticles;
+    }
+  
+
+  function loadUploadedArticles() {
+    const articlesData = JSON.parse(localStorage.getItem('allArticles')) || [];
+    articlesData.forEach(article => {
+      const articleDiv = document.createElement('div');
+      articleDiv.className = 'article';
+      articleDiv.setAttribute('data-category', article.category);
+      articleDiv.setAttribute('data-strand', article.strand);
+      articleDiv.setAttribute('data-level', article.level);
+      articleDiv.setAttribute('data-program', article.program);
+      articleDiv.setAttribute('data-year', article.year);
+      articleDiv.setAttribute('data-topic', article.topic || '');
+      articleDiv.setAttribute('data-type', article.type || article.qualitativeQuantitative || '');
+      
+      // Store PDF ID for Couchbase retrieval
+      if (article.pdfId) {
+        articleDiv.setAttribute('data-pdf-id', article.pdfId);
+      }
+      
+      // Store PDF path for Studies folder PDFs
+      if (article.pdfPath) {
+        articleDiv.setAttribute('data-pdf-path', article.pdfPath);
+      }
+      
+      // Set type based on grade level
+      let articleType = article.type || '';
+      if (article.program === 'Grade 11') {
+        articleType = 'Qualitative';
+      } else if (article.program === 'Grade 12') {
+        articleType = 'Quantitative';
+      }
+      articleDiv.setAttribute('data-type', articleType);
+
+      let studyId = article.title.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20);
+      if (article.title.includes('Lagundi')) studyId = 'lagundi_oil';
+      if (article.title.includes('Farmers')) studyId = 'perceptions';
+
+      // Add PDF indicator if article has PDF (pdfId for Couchbase or pdfPath for Studies)
+      const hasPDF = article.pdfId || article.pdfPath;
+      const pdfIndicator = hasPDF ? 
+        `<span style="color: #dc3545; margin-left: 10px;" title="PDF available"><i class="fas fa-file-pdf"></i></span>` : 
+        '';
+
+      // Build URL parameters for myspace
+      let myspaceUrl = 'myspace.html?study=' + studyId;
+      if (article.pdfPath) {
+        myspaceUrl += '&pdfPath=' + encodeURIComponent(article.pdfPath);
+      } else if (article.pdfId) {
+        myspaceUrl += '&pdfId=' + encodeURIComponent(article.pdfId);
+      }
+
+      // Add visual indicator for articles with PDF - clicking opens in myspace
+      const pdfNote = hasPDF ? 
+        `<span style="color: #28a745; font-size: 11px; margin-left: 10px;">Click to view PDF</span>` : 
+        '';
+
+      articleDiv.innerHTML = `
+        <h3><a href="${myspaceUrl}" style="text-decoration: none; color: inherit;" title="${hasPDF ? 'Click to view PDF in myspace' : ''}">${article.title}${pdfIndicator}</a>${pdfNote}</h3>
+        <div class="meta">${article.meta}</div>
+        <div class="summary">${article.summary}</div>
+        <div class="actions">
+          <span onclick="saveArticle(this)">★ Save</span>
+          <span class="cited-counter" data-article-title="${article.title.replace(/"/g, '&quot;')}">
+            <span>cited</span>
+            <span class="counter-value">${getCitationCount(article.title)}</span>
+          </span>
+        </div>
+      `;
+
+      allArticles.push(articleDiv);
+      
+      // Note: Articles are now rendered via renderPage() which uses #articles-container
+      // Don't append directly to .main container to avoid duplicate display
+    });
+  }
+
+  let currentPage = 1;
+  const articlesPerPage = 10;
+  let allSortedArticles = [];
+  let originalAllSortedArticles = [];
+  let currentFilters = { year: 'any', sort: 'az', type: 'any' };
+  let currentQuery = '';
+  let allArticles = [];
+  let currentFilter = { category: null, value: null, attribute: null, additional: null };
+  let lastGrade = null;
+
+  function getAllArticles() {
+    const articles = [];
+    const containers = ['grade-11-articles', 'grade-12-articles', 'abm-articles', 'itmawd-articles', 'stem-articles', 'capstone-articles'];
+    containers.forEach(id => {
+      const cont = document.getElementById(id);
+      if (cont) articles.push(...Array.from(cont.querySelectorAll('.article')));
+    });
+    return articles;
+  }
+
+  function applyAllFilters() {
+    let filtered = originalAllSortedArticles.slice();
+
+    // category and strand from currentFilter
+    if (currentFilter.category) {
+      filtered = filtered.filter(a => a.getAttribute('data-category') === currentFilter.category);
+    }
+    if (currentFilter.value && currentFilter.attribute) {
+      // Handle 'both' case - filter by both topic AND type
+      if (currentFilter.attribute === 'both') {
+        filtered = filtered.filter(a => {
+          const topic = (a.getAttribute('data-topic') || '').toLowerCase();
+          const type = (a.getAttribute('data-type') || '').toLowerCase();
+          const value = currentFilter.value.toLowerCase();
+          return topic === value || type === value;
+        });
+      } else {
+        filtered = filtered.filter(a => a.getAttribute(`data-${currentFilter.attribute}`) === currentFilter.value);
+      }
+    }
+    if (currentFilter.additional) {
+      const [addAttr, addVal] = currentFilter.additional.split('=');
+      filtered = filtered.filter(a => a.getAttribute(`data-${addAttr}`) === addVal);
+    }
+
+    // year filter
+    const yearFilter = currentFilters.year;
+    if (yearFilter !== 'any') {
+      if (yearFilter === '2025') filtered = filtered.filter(a => {
+        const meta = a.querySelector('.meta').textContent;
+        return meta.includes('2025');
+      });
+      else if (yearFilter === '2024') filtered = filtered.filter(a => {
+        const meta = a.querySelector('.meta').textContent;
+        return meta.includes('2024') || meta.includes('2025');
+      });
+      else if (yearFilter === '2023') filtered = filtered.filter(a => {
+        const meta = a.querySelector('.meta').textContent;
+        return meta.includes('2023');
+      });
+    }
+
+    // sort
+    const sortFilter = currentFilters.sort;
+    if (sortFilter === 'az') {
+      filtered.sort((a,b) => a.querySelector('h3').textContent.localeCompare(b.querySelector('h3').textContent));
+    } else if (sortFilter === 'date') {
+      filtered.sort((a,b) => {
+        const aMeta = a.querySelector('.meta').textContent;
+        const bMeta = b.querySelector('.meta').textContent;
+        const aYear = aMeta.match(/(\d{4})/) ? parseInt(aMeta.match(/(\d{4})/)[1]) : 0;
+        const bYear = bMeta.match(/(\d{4})/) ? parseInt(bMeta.match(/(\d{4})/)[1]) : 0;
+        return bYear - aYear;
+      });
+    }
+
+    // apply search - search in title, meta, summary, and topic
+    if (currentQuery) {
+      filtered = filtered.filter(article => {
+        const title = article.querySelector('h3').textContent.toLowerCase();
+        const meta = article.querySelector('.meta').textContent.toLowerCase();
+        const summary = article.querySelector('.summary').textContent.toLowerCase();
+        
+        // Also search in the article's data attributes (strand, program, category, topic)
+        const strand = (article.getAttribute('data-strand') || '').toLowerCase();
+        const program = (article.getAttribute('data-program') || '').toLowerCase();
+        const category = (article.getAttribute('data-category') || '').toLowerCase();
+        const topic = (article.getAttribute('data-topic') || '').toLowerCase();
+        const type = (article.getAttribute('data-type') || '').toLowerCase();
+        const level = (article.getAttribute('data-level') || '').toLowerCase();
+        
+        return title.includes(currentQuery) || 
+               meta.includes(currentQuery) || 
+               summary.includes(currentQuery) ||
+               strand.includes(currentQuery) ||
+               program.includes(currentQuery) ||
+               category.includes(currentQuery) ||
+               topic.includes(currentQuery) ||
+               type.includes(currentQuery) ||
+               level.includes(currentQuery);
+      });
+      // sort by relevance
+      filtered.sort((a, b) => {
+        const aTitle = a.querySelector('h3').textContent.toLowerCase();
+        const bTitle = b.querySelector('h3').textContent.toLowerCase();
+        const aStarts = aTitle.startsWith(currentQuery);
+        const bStarts = bTitle.startsWith(currentQuery);
+        if (aStarts && !bStarts) return -1;
+        if (!aStarts && bStarts) return 1;
+        return aTitle.localeCompare(bTitle);
+      });
+    }
+
+    // set styles
+    filtered.forEach(article => {
+      const category = article.getAttribute('data-category');
+      if (category === 'research') {
+        article.style.borderLeft = '4px solid #f4c430';
+      } else if (category === 'capstone') {
+        article.style.borderLeft = '4px solid #0057b8';
+      }
+    });
+
+    allSortedArticles = filtered;
+    renderPage(1);
+    renderPagination();
+    updateURL();
+    updateDropdownActiveStates();
+    updateFilterSummary();
+  }
+
+  function updateURL() {
+    const params = new URLSearchParams();
+    if (currentFilter.category) params.set('category', currentFilter.category);
+    if (currentFilter.value) params.set('strand', currentFilter.value);
+    if (currentFilters.year !== 'any') params.set('year', currentFilters.year);
+    const newURL = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+    history.replaceState(null, '', newURL);
+  }
+
+  function updateDropdownActiveStates() {
+    // Remove active from all dropdown toggles and items
+    document.querySelectorAll('.dropdown-toggle').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.dropdown-menu1 div, .dropdown-menu2 div').forEach(div => div.classList.remove('active'));
+
+    // Add active to category buttons
+    if (currentFilter.category === 'research') {
+      document.querySelectorAll('.dropdown-toggle.research-btn').forEach(btn => btn.classList.add('active'));
+    } else if (currentFilter.category === 'capstone') {
+      document.querySelectorAll('.dropdown-toggle.capstone-btn').forEach(btn => btn.classList.add('active'));
+    }
+
+    // Add active to sub items
+    if (currentFilter.category === 'research') {
+      // Handle Qualitative/Quantitative subdropdowns
+      if (currentFilter.value === 'Qualitative' && currentFilter.attribute === 'type') {
+        document.querySelectorAll('.dropdown-menu1 .sub-dropdown-toggle').forEach(toggle => {
+          if (toggle.textContent.trim() === 'Qualitative') toggle.classList.add('active');
+        });
+      }
+      if (currentFilter.value === 'Quantitative' && currentFilter.attribute === 'type') {
+        document.querySelectorAll('.dropdown-menu1 .sub-dropdown-toggle').forEach(toggle => {
+          if (toggle.textContent.trim() === 'Quantitative') toggle.classList.add('active');
+        });
+      }
+      // Handle strand selection
+      if (currentFilter.attribute === 'strand') {
+        document.querySelectorAll('.dropdown-menu1 .sub-dropdown-menu div').forEach(div => {
+          if (div.textContent.trim().includes(currentFilter.value)) div.classList.add('active');
+        });
+      }
+    }
+    if (currentFilter.category === 'capstone') {
+      document.querySelectorAll('.dropdown-menu2 div').forEach(div => {
+        if (div.textContent.trim() === currentFilter.value) div.classList.add('active');
+      });
+    }
+  }
+
+  function selectStrand(strand, element) {
+    const toggle = element.closest('.sub-dropdown').querySelector('.sub-dropdown-toggle');
+    const gradeClass = Array.from(toggle.classList).find(cls => cls.startsWith('sub-dropdown-toggle-g'));
+    const gradeNum = gradeClass.replace('sub-dropdown-toggle-g', '');
+    const typeValue = gradeNum === '11' ? 'Qualitative' : 'Quantitative';
+    filterArticles('research', strand, 'strand', 'type=' + typeValue);
+  }
+
+  function updateFilterSummary() {
+    let text = '';
+    
+    if (currentFilter.category === 'research') {
+      if (currentFilter.attribute === 'strand') {
+        const type = currentFilter.additional ? currentFilter.additional.split('=')[1] : '';
+        text = type + ' - ' + currentFilter.value;
+      } else if (currentFilter.attribute === 'type') {
+        text = currentFilter.value;
+      }
+    } else if (currentFilter.category === 'capstone') {
+      text = currentFilter.value;
+    }
+    if (currentFilters.year !== 'any') {
+      text += (text ? ' - ' : '') + currentFilters.year;
+    }
+    
+    // Show search term in summary if present
+    if (currentQuery && text) {
+      text = '"' + currentQuery + '" in ' + text;
+    } else if (currentQuery) {
+      text = '"' + currentQuery + '"';
+    }
+    
+    document.getElementById('filter-summary').textContent = text;
+    
+    // Update filter summary visibility
+    const filterSummary = document.getElementById('filter-summary');
+    if (text) {
+      filterSummary.style.display = 'block';
+    }
+  }
+
+  function filterArticles(category, value, attribute, additional) {
+    if (category === 'research' && attribute === 'type') {
+      lastGrade = value;
+    } else if (category === 'research' && attribute === 'strand') {
+      if (lastGrade) {
+        additional = 'type=' + lastGrade;
+      }
+    }
+    currentFilter = { category, value, attribute, additional };
+    applyAllFilters();
+  }
+
+  // === SHOW DEFAULT VIEW: ALL ARTICLES IN .main WITH PAGINATION ===
+  function showDefaultResearchView() {
+    const main = document.querySelector('.main');
+    const researchSection = document.querySelector('.research-section');
+    const capstoneSection = document.querySelector('.capstone-section');
+
+    // Hide structured sections
+    if (researchSection) researchSection.style.display = 'none';
+    if (capstoneSection) capstoneSection.style.display = 'none';
+
+    // Set base
+    originalAllSortedArticles = [...allArticles];
+    currentFilters = { year: 'any', sort: 'az', type: 'any' };
+    currentQuery = '';
+    currentFilter = { category: null, value: null, attribute: null, additional: null };
+    lastGrade = null;
+
+    // Read URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('category');
+    const strand = urlParams.get('strand');
+    const year = urlParams.get('year');
+    let search = urlParams.get('search'); // Support search parameter
+
+    // Check sessionStorage for homepage search (backward compatibility)
+    if (!search) {
+        const sessionSearch = sessionStorage.getItem('homepageSearch');
+        if (sessionSearch) {
+            search = sessionSearch;
+            sessionStorage.removeItem('homepageSearch'); // Clear after use
+        }
+    }
+
+    // Handle category filtering from homepage links (e.g., ?category=agriculture)
+    // This filters by topic and highlights the topic in the UI
+    if (category) {
+      // Use filterArticles with null category - we only want to filter by topic
+      filterArticles(null, category, 'both');
+      // Highlight the topic in both modals (delayed to ensure DOM is ready)
+      setTimeout(() => highlightTopicInUI(category), 100);
+      // Also save to localStorage for persistence
+      localStorage.setItem('librarySelectedTopic', category);
+    } else {
+      // Check for saved topic from previous session (localStorage)
+      const savedTopic = localStorage.getItem('librarySelectedTopic');
+      if (savedTopic) {
+        filterArticles(null, savedTopic, 'both');
+        // Highlight the topic in both modals (delayed to ensure DOM is ready)
+        setTimeout(() => highlightTopicInUI(savedTopic), 100);
+      }
+    }
+    
+    // Function to highlight topic in UI (case-insensitive)
+    function highlightTopicInUI(topic) {
+      const topicLower = topic.toLowerCase();
+      document.querySelectorAll('.topic-item').forEach(item => {
+        // Check if the onclick contains the topic name (case-insensitive)
+        const onclick = item.getAttribute('onclick') || '';
+        if (onclick.toLowerCase().includes(topicLower)) {
+          item.classList.add('selected');
+        }
+      });
+    }
+    
+    // Handle search parameter
+    if (search) {
+      currentQuery = search.toLowerCase().trim();
+      const searchInput = document.getElementById('articleSearch');
+      const mainSearchInput = document.getElementById('mainArticleSearch');
+      if (searchInput) searchInput.value = search;
+      if (mainSearchInput) mainSearchInput.value = search;
+    }
+    
+    if (strand) {
+      currentFilter.value = strand;
+      if (category === 'capstone') {
+        currentFilter.attribute = 'program';
+      } else if (strand === 'Qualitative' || strand === 'Quantitative') {
+        currentFilter.attribute = 'type';
+        lastGrade = strand;
+      } else {
+        currentFilter.attribute = 'strand';
+      }
+    }
+    if (year) currentFilters.year = year;
+
+    // Reset all filter options to default state
+    document.querySelectorAll('.filter-option').forEach(opt => opt.classList.remove('active'));
+    document.querySelector('.filter-option[data-filter="any"]').classList.add('active');
+    if (year) {
+      document.querySelector(`.filter-option[data-filter="${year}"]`).classList.add('active');
+      document.querySelector('.filter-option[data-filter="any"]').classList.remove('active');
+    }
+
+    // Apply filters
+    applyAllFilters();
+    updateDropdownActiveStates();
+    updateFilterSummary();
+  }
+
+  function ensureArticlesVisible() {
+    const main = document.querySelector('.main');
+    const existingArticles = main.querySelectorAll('.article');
+    if (existingArticles.length === 0) {
+      // If no articles are visible, show default view
+      showDefaultResearchView();
+    }
+  }
+
+  function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebarlft');
+    if (sidebar) {
+      if (window.innerWidth <= 798) {
+        sidebar.classList.toggle('open');
+      } else {
+        sidebar.classList.toggle('collapsed');
+      }
+    }
+  }
+
+  function toggleSearch() {
+    // Toggle search in navbar only
+    const navSearchContainer = document.getElementById('searchContainer');
+    navSearchContainer.style.display = navSearchContainer.style.display === 'none' ? 'block' : 'block'; // Always show when clicked
+  }
+
+  function renderPage(page) {
+    currentPage = page;
+    const articlesContainer = document.getElementById('articles-container');
+
+    articlesContainer.innerHTML = '';
+
+    // Check for no results and show appropriate message
+    if (allSortedArticles.length === 0) {
+      const noResultsMsg = document.createElement('div');
+      noResultsMsg.className = 'no-results-message';
+      noResultsMsg.style.cssText = 'text-align: center; padding: 40px 20px; color: #666;';
+      
+      let filterInfo = '';
+      if (currentFilter.value && currentFilter.attribute === 'topic') {
+        filterInfo = ` for topic "${currentFilter.value}"`;
+      } else if (currentFilter.category) {
+        filterInfo = ` in ${currentFilter.category} category`;
+      }
+      
+      if (currentQuery) {
+        noResultsMsg.innerHTML = `
+          <i class="fas fa-search" style="font-size: 48px; color: #ccc; margin-bottom: 20px;"></i>
+          <h3 style="color: #333; margin-bottom: 10px;">No results found</h3>
+          <p style="color: #666;">No articles match "${currentQuery}"${filterInfo}.</p>
+          <p style="color: #888; margin-top: 15px;">Try adjusting your search terms or clearing the filter.</p>
+          <button onclick="clearAllFilters()" style="margin-top: 20px; padding: 10px 20px; background: #0057b8; color: white; border: none; border-radius: 6px; cursor: pointer;">Clear Filters</button>
+        `;
+      } else {
+        noResultsMsg.innerHTML = `
+          <i class="fas fa-folder-open" style="font-size: 48px; color: #ccc; margin-bottom: 20px;"></i>
+          <h3 style="color: #333; margin-bottom: 10px;">No articles found</h3>
+          <p style="color: #666;">No articles available${filterInfo}.</p>
+          <button onclick="clearAllFilters()" style="margin-top: 20px; padding: 10px 20px; background: #0057b8; color: white; border: none; border-radius: 6px; cursor: pointer;">View All Articles</button>
+        `;
+      }
+      articlesContainer.appendChild(noResultsMsg);
+      
+      // Hide pagination when no results
+      const pagination = document.getElementById('pagination');
+      if (pagination) pagination.style.display = 'none';
+      
+      return;
+    }
+
+    // Show pagination if there are results
+    const paginationEl = document.getElementById('pagination');
+    if (paginationEl) paginationEl.style.display = 'flex';
+
+    const start = (page - 1) * articlesPerPage;
+    const end = start + articlesPerPage;
+    const articlesToShow = allSortedArticles.slice(start, end);
+
+    allSortedArticles.forEach(article => article.style.display = 'none');
+
+    articlesToShow.forEach(article => {
+      article.style.display = 'block';
+      articlesContainer.appendChild(article);
+    });
+
+    const main = document.querySelector('.main');
+    const pagination = document.getElementById('pagination');
+    if (pagination) {
+      main.appendChild(pagination);
+    }
+    
+    const pageMessage = document.getElementById('page-message');
+    if (pageMessage) {
+      pageMessage.textContent = `You are on page ${page}`;
+      // Only show page message on page 2 and above
+      pageMessage.style.display = page >= 2 ? 'block' : 'none';
+    }
+    
+    // Show/hide mnb based on page number and screen size - now mnb always shows
+    const mnb = document.getElementById('mnb');
+    const menuBtn = document.querySelector('.menu-btn');
+    const searchBtn = document.querySelector('.search-btn');
+    
+    // mnb is always visible now, just adjust menuBtn
+    if (window.innerWidth > 1059) { // Laptop screen and above
+      if (menuBtn) menuBtn.style.display = 'none';
+      if (searchBtn) searchBtn.style.display = 'block';
+    } else { // Mobile/tablet screens
+      if (menuBtn) menuBtn.style.display = 'block';
+    }
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  
+  // Handle search in navbar - mnb is always visible now
+  document.getElementById('articleSearch').addEventListener('input', function() {
+    const menuBtn = document.querySelector('.menu-btn');
+    if (window.innerWidth > 1140 && menuBtn) {
+      menuBtn.style.display = 'none';
+    }
+  });
+
+  // === CLEAR ALL FILTERS ===
+  function clearAllFilters() {
+    // Clear search inputs
+    const searchInput = document.getElementById('articleSearch');
+    const mainSearchInput = document.getElementById('mainArticleSearch');
+    const clearIcon = document.getElementById('clearIcon');
+    const mainClearIcon = document.getElementById('mainClearIcon');
+    
+    if (searchInput) searchInput.value = '';
+    if (mainSearchInput) mainSearchInput.value = '';
+    if (clearIcon) clearIcon.style.display = 'none';
+    if (mainClearIcon) mainClearIcon.style.display = 'none';
+    
+    currentQuery = '';
+    currentFilter = { category: null, value: null, attribute: null, additional: null };
+    currentFilters = { year: 'any', sort: 'az', type: 'any' };
+    
+    // Clear topic selections
+    document.querySelectorAll('.topic-item').forEach(item => {
+      item.classList.remove('selected');
+    });
+    
+    // Reset filter options
+    document.querySelectorAll('.filter-option').forEach(opt => opt.classList.remove('active'));
+    document.querySelector('.filter-option[data-filter="any"]').classList.add('active');
+    
+    // Clear URL params and reload
+    window.history.replaceState({}, document.title, window.location.pathname);
+    
+    // Re-apply filters
+    applyAllFilters();
+  }
+  
+  // Make clearAllFilters available globally
+  window.clearAllFilters = clearAllFilters;
+  
+  function renderPagination() {
+    const pagination = document.getElementById('pagination');
+    
+    // Check if pagination already exists to avoid recreation
+    if (!pagination) {
+      pagination = document.createElement('div');
+      pagination.id = 'pagination';
+      pagination.className = 'pagination';
+      pagination.style.cssText = 'display: flex; justify-content: center; gap: 10px; margin-top: 20px;';
+    }
+
+    pagination.innerHTML = '';
+
+    const totalPages = Math.ceil(allSortedArticles.length / articlesPerPage);
+
+    // Show page buttons dynamically
+    for (let i = 1; i <= totalPages; i++) {
+      const pageBtn = document.createElement('button');
+      pageBtn.textContent = i;
+      pageBtn.type = 'button';
+      pageBtn.style.cssText = 'padding: 8px 12px; background: white; color: #0057b8; border: 1px solid #0057b8; border-radius: 6px; cursor: pointer; font-size: 14px;';
+      if (currentPage === i) {
+        pageBtn.classList.add('active');
+        pageBtn.style.cssText = 'padding: 8px 12px; background: #0057b8; color: white; border: 1px solid #0057b8; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold;';
+      }
+       pageBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        renderPage(i);
+        renderPagination();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Show current page message
+        const message = document.getElementById('page-message');
+        if (message) {
+          message.textContent = `You are on page ${i}`;
+          // Only show page message on page 2 and above
+          message.style.display = i >= 2 ? 'block' : 'none';
+        }
+        return false;
+      });
+      pagination.appendChild(pageBtn);
+    }
+
+
+
+    // Append pagination to main only once
+    const main = document.querySelector('.main');
+    if (!main.contains(pagination)) {
+      main.appendChild(pagination);
+    }
+  }
+
+  // === TOPICS MODAL FUNCTIONS ===
+  function toggleTopicsModal(location) {
+    // Determine which modal to use based on screen size or explicit location
+    const isLargeScreen = window.innerWidth > 1140;
+    
+    let modal, filterBtn;
+    
+    if (location === 'navbar' || (isLargeScreen && location !== 'main')) {
+      modal = document.getElementById('topicsModalNavbar');
+      filterBtn = document.getElementById('filterIconBtnNavbar');
+    } else {
+      modal = document.getElementById('topicsModal');
+      filterBtn = document.getElementById('filterIconBtnMain');
+    }
+    
+    if (modal) modal.classList.toggle('show');
+    if (filterBtn) filterBtn.classList.toggle('active');
+  }
+  
+  function closeTopicsModal(location) {
+    // Directly close the modal without toggling
+    const isLargeScreen = window.innerWidth > 1140;
+    
+    let modal, filterBtn;
+    
+    if (location === 'navbar' || (isLargeScreen && location !== 'main')) {
+      modal = document.getElementById('topicsModalNavbar');
+      filterBtn = document.getElementById('filterIconBtnNavbar');
+    } else {
+      modal = document.getElementById('topicsModal');
+      filterBtn = document.getElementById('filterIconBtnMain');
+    }
+    
+    if (modal) modal.classList.remove('show');
+    if (filterBtn) filterBtn.classList.remove('active');
+  }
+
+  function selectTopic(element, topic, location) {
+    // Check if the clicked topic is already selected
+    const isAlreadySelected = element.classList.contains('selected');
+    
+    if (isAlreadySelected) {
+      // Remove selected class from clicked topic
+      element.classList.remove('selected');
+      // Clear the topic filter
+      clearTopicFilter();
+      // Clear from localStorage
+      localStorage.removeItem('librarySelectedTopic');
+    } else {
+      // Remove selected class from all topics in both modals
+      document.querySelectorAll('.topic-item').forEach(item => {
+        item.classList.remove('selected');
+      });
+      
+      // Add selected class to clicked topic
+      element.classList.add('selected');
+      
+      // Filter by checking both topic AND type attributes (use null for category)
+      filterArticles(null, topic, 'both');
+      
+      // Save to localStorage for persistence
+      localStorage.setItem('librarySelectedTopic', topic);
+    }
+    
+    // Keep modal open - don't close it
+  }
+  
+  function clearTopicFilter() {
+    // Clear filter by calling filterArticles with null values
+    filterArticles(null, null);
+    // Clear from localStorage
+    localStorage.removeItem('librarySelectedTopic');
+  }
+  
+  // Close modal when clicking outside (for main content modal)
+  document.getElementById('topicsModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeTopicsModal('main');
+    }
+  });
+  
+  // Close navbar modal when clicking outside
+  document.getElementById('topicsModalNavbar').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeTopicsModal('navbar');
+    }
+  });
+
+  // === TOGGLE CATEGORY FUNCTION ===
+  function toggleCategory(category) {
+    document.getElementById('filter-summary').style.display = 'block';
+    if (currentFilter.category === category && !currentFilter.value) {
+      lastGrade = null;
+      filterArticles(null, null);
+    } else {
+      lastGrade = null;
+      filterArticles(category, null);
+    }
+  }
+
+  // === SIDEBAR TOGGLE ===
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebar = document.querySelector('.sidebarlft');
+  if (sidebarToggle && sidebar) {
+    sidebarToggle.addEventListener('click', () => {
+      if (window.innerWidth <= 798) {
+        sidebar.classList.toggle('open');
+      } else {
+        sidebar.classList.toggle('collapsed');
+      }
+    });
+  }
+
+  function closeSidebar() {
+    const sidebar = document.querySelector('.sidebarlft');
+    if (sidebar) {
+      sidebar.classList.remove('open');
+    }
+  }
+
+  // === RESIZE LISTENER FOR SEARCH ===
+  window.addEventListener('resize', () => {
+    const sc = document.getElementById('searchContainer');
+    const main = document.querySelector('.main');
+    const searchFilterBar = document.querySelector('.search-filter-bar');
+    if (window.innerWidth > 1060) {
+      if (sc.parentElement !== searchFilterBar) {
+        searchFilterBar.appendChild(sc);
+        sc.classList.remove('in-main');
+      }
+      sc.style.display = 'block';
+    }
+  });
+
+  // === INIT ===
+  document.addEventListener('DOMContentLoaded', async () => {
+    await initializeArticles();
+    loadUploadedArticles(); // Create DOM elements from localStorage
+    showDefaultResearchView(); // Move them to .main
+
+    // Apply saved topic filter from localStorage (backup logic)
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryParam = urlParams.get('category');
+    
+    // If no category in URL, check localStorage for saved topic
+    if (!categoryParam) {
+      const savedTopic = localStorage.getItem('librarySelectedTopic');
+      if (savedTopic && allArticles && allArticles.length > 0) {
+        filterArticles(null, savedTopic, 'both');
+        // Highlight in UI
+        document.querySelectorAll('.topic-item').forEach(item => {
+          if (item.getAttribute('onclick') && item.getAttribute('onclick').toLowerCase().includes(savedTopic.toLowerCase())) {
+            item.classList.add('selected');
+          }
+        });
+      }
+    }
+
+    // Check if redirected from myspace - auto-show first article in PDF viewer
+    if (urlParams.get('from') === 'myspace') {
+      // Clear the URL parameter
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      // Get first article and display it
+      const articles = document.querySelectorAll('.article-card');
+      if (articles.length > 0) {
+        const firstArticle = articles[0];
+        const viewBtn = firstArticle.querySelector('.view-btn');
+        if (viewBtn) {
+          viewBtn.click();
+        }
+      }
+    }
+
+    // Initialize pagination container
+    const main = document.querySelector('.main');
+    let pagination = document.getElementById('pagination');
+    if (!pagination) {
+      pagination = document.createElement('div');
+      pagination.id = 'pagination';
+      pagination.className = 'pagination';
+      main.appendChild(pagination);
+    }
+
+    // Check for homepage search term after articles are loaded
+    const homepageSearch = sessionStorage.getItem('homepageSearch');
+    if (homepageSearch) {
+      sessionStorage.removeItem('homepageSearch'); // Clear it after use
+      document.getElementById('articleSearch').value = homepageSearch;
+      currentQuery = homepageSearch.toLowerCase().trim();
+      applyFilters(); // Apply the search filter
+    }
+
+    // Make articles clickable
+    document.querySelectorAll('.article').forEach(article => {
+      article.addEventListener('click', e => {
+        if (e.target.closest('.actions') || e.target.tagName === 'A') return;
+        const link = article.querySelector('h3 a');
+        if (link) window.location.href = link.href;
+      });
+    });
+
+    // Search functionality
+    const searchInput = document.getElementById('articleSearch');
+    const clearIcon = document.getElementById('clearIcon');
+    const mainSearchInput = document.getElementById('mainArticleSearch');
+    const mainClearIcon = document.getElementById('mainClearIcon');
+    
+    // Synchronize search inputs
+    const syncSearchInputs = function(sourceInput, targetInput, sourceClear, targetClear) {
+      currentQuery = sourceInput.value.toLowerCase().trim();
+      targetInput.value = sourceInput.value;
+      sourceClear.style.display = currentQuery ? 'block' : 'none';
+      targetClear.style.display = currentQuery ? 'block' : 'none';
+      applyAllFilters();
+    };
+    
+    searchInput.addEventListener('input', function() {
+      syncSearchInputs(this, mainSearchInput, clearIcon, mainClearIcon);
+    });
+    
+    mainSearchInput.addEventListener('input', function() {
+      syncSearchInputs(this, searchInput, mainClearIcon, clearIcon);
+    });
+
+    clearIcon.addEventListener('click', function() {
+      searchInput.value = '';
+      mainSearchInput.value = '';
+      this.style.display = 'none';
+      mainClearIcon.style.display = 'none';
+      currentQuery = '';
+      applyAllFilters();
+    });
+    
+    mainClearIcon.addEventListener('click', function() {
+      mainSearchInput.value = '';
+      searchInput.value = '';
+      this.style.display = 'none';
+      clearIcon.style.display = 'none';
+      currentQuery = '';
+      applyAllFilters();
+    });
+
+    // Clear search input on page refresh
+    window.addEventListener('beforeunload', function() {
+      searchInput.value = '';
+      currentQuery = '';
+      clearIcon.style.display = 'none';
+      applyAllFilters();
+    });
+
+    // Filter functionality
+    document.querySelectorAll('.filter-option').forEach(option => {
+      option.addEventListener('click', function() {
+        const group = this.closest('ul').getAttribute('data-filter-group');
+        let filter = this.getAttribute('data-filter');
+        currentFilters[group] = filter;
+        // Remove active from siblings
+        this.parentNode.querySelectorAll('.filter-option').forEach(sib => sib.classList.remove('active'));
+        this.classList.add('active');
+        // Show filter summary
+        document.getElementById('filter-summary').style.display = 'block';
+        // Always apply filters, but ensure articles are visible
+        applyAllFilters();
+        ensureArticlesVisible();
+      });
+    });
+
+    // Create alert - with null check
+    const createAlertBtn = document.querySelector('.create-alert');
+    if (createAlertBtn) {
+      createAlertBtn.addEventListener('click', () => {
+        alert('Create alert clicked');
+      });
+    }
+  });
+
+  // === MODAL FUNCTIONS ===
+  function openCitationModal(el) {
+    const article = el.closest('.article');
+    const title = article.querySelector('h3').textContent;
+    const meta = article.querySelector('.meta').textContent;
+    const citedCounter = el.closest('.cited-counter');
+
+    // Create citation modal
+    const modal = document.createElement('div');
+    modal.className = 'citation-modal';
+    // Store article data on modal element
+    modal._title = title;
+    modal._meta = meta;
+    modal._citedCounterElement = citedCounter;
+    modal.innerHTML = `
+      <div class="citation-modal-content">
+        <div class="citation-modal-header">
+          <h2>Cite This Article</h2>
+          <button class="citation-close" onclick="closeCitationModal()">&times;</button>
+        </div>
+        <div class="citation-format-tabs">
+          <button class="citation-tab active" onclick="switchCitationFormat('apa')">APA</button>
+          <button class="citation-tab" onclick="switchCitationFormat('mla')">MLA</button>
+          <button class="citation-tab" onclick="switchCitationFormat('chicago')">Chicago</button>
+        </div>
+        <div class="citation-content" id="citationContent">
+          <p>Loading citation...</p>
+        </div>
+        <button class="citation-copy-btn" onclick="copyCitation()">Copy Citation</button>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    modal.style.display = 'flex';
+
+    // Generate APA citation by default
+    generateCitation('apa', title, meta);
+  }
+
+  function closeCitationModal() {
+    const modal = document.querySelector('.citation-modal');
+    if (modal) modal.remove();
+  }
+
+  function switchCitationFormat(format) {
+    const tabs = document.querySelectorAll('.citation-tab');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    event.target.classList.add('active');
+
+    // Get the article from the modal's stored reference
+    const modal = document.querySelector('.citation-modal');
+    const title = modal._title;
+    const meta = modal._meta;
+
+    generateCitation(format, title, meta);
+  }
+
+  function generateCitation(format, title, meta) {
+    let citation = '';
+
+    // Extract author and year from meta
+    const metaParts = meta.split(' – ');
+    const author = metaParts[0] || 'Unknown Author';
+    const year = metaParts[1] || 'n.d.';
+
+    switch(format) {
+      case 'apa':
+        citation = `${author} (${year}). ${title}. STI College Calamba Archives.`;
+        break;
+      case 'mla':
+        citation = `${author}. "${title}." <i>STI College Calamba Archives</i>, ${year}.`;
+        break;
+      case 'chicago':
+        citation = `${author}. "${title}," STI College Calamba Archives, ${year}.`;
+        break;
+    }
+
+    document.getElementById('citationContent').innerHTML = `<code>${citation}</code>`;
+  }
+
+  function copyCitation() {
+    const citationText = document.querySelector('#citationContent code').textContent;
+    const modal = document.querySelector('.citation-modal');
+    
+    navigator.clipboard.writeText(citationText).then(() => {
+      const btn = document.querySelector('.citation-copy-btn');
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      
+      // Get the cited-counter element
+      const citedCounter = modal._citedCounterElement;
+      if (citedCounter) {
+        const valueSpan = citedCounter.querySelector('.counter-value');
+        if (valueSpan) {
+          // Check if this browser already copied for this article
+          const articleTitle = citedCounter.getAttribute('data-article-title');
+          const alreadyCopied = citedCounter.dataset.copied === 'true';
+          
+          if (!alreadyCopied) {
+            // First time copying - increase counter and add to cited list
+            let count = parseInt(valueSpan.textContent) || 0;
+            count++;
+            valueSpan.textContent = count;
+            
+            // Mark as copied so can't increase again
+            citedCounter.dataset.copied = 'true';
+            
+            // Add to cited list in localStorage (only if not already there)
+            const modalTitle = modal._title;
+            const modalMeta = modal._meta;
+            saveToCitedArticles(modalTitle, modalMeta);
+            
+            // Save to localStorage
+            if (articleTitle) {
+              setCitationCount(articleTitle, count);
+            }
+            
+            // Visual feedback
+            citedCounter.classList.add('modified');
+            setTimeout(() => {
+              citedCounter.classList.remove('modified');
+            }, 300);
+          }
+        }
+      }
+      
+      setTimeout(() => {
+        btn.textContent = 'Copy Citation';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  // Check if article has already been cited
+  function isArticleCited(articleTitle) {
+    const citedList = JSON.parse(localStorage.getItem('citedArticles')) || [];
+    // Compare both with trimmed and normalized strings
+    return citedList.some(article => article.title.trim() === articleTitle.trim());
+  }
+
+  // Save article to cited list
+  function saveToCitedArticles(title, meta) {
+    const citedArticles = JSON.parse(localStorage.getItem('citedArticles')) || [];
+    
+    // Check if article already exists in cited list
+    const exists = citedArticles.some(article => article.title === title);
+    
+    if (!exists) {
+      citedArticles.push({
+        title: title,
+        meta: meta,
+        citedDate: new Date().toISOString()
+      });
+      localStorage.setItem('citedArticles', JSON.stringify(citedArticles));
+    }
+  }
+
+  // Reset all citation data (for testing/development)
+  function resetCitationData() {
+    localStorage.removeItem('citedArticles');
+    localStorage.removeItem('citationCounts');
+    console.log('Citation data has been reset');
+    // Reload to reflect changes
+    location.reload();
+  }
+
+  // === CITATION COUNTER FUNCTIONS ===
+  function getCitationCount(articleTitle) {
+    const counts = JSON.parse(localStorage.getItem('citationCounts')) || {};
+    return counts[articleTitle] || 0;
+  }
+
+  function setCitationCount(articleTitle, count) {
+    const counts = JSON.parse(localStorage.getItem('citationCounts')) || {};
+    counts[articleTitle] = count;
+    localStorage.setItem('citationCounts', JSON.stringify(counts));
+  }
+
+  function incrementCitationCount(articleTitle) {
+    const currentCount = getCitationCount(articleTitle);
+    const newCount = currentCount + 1;
+    setCitationCount(articleTitle, newCount);
+    updateCitationCounterDisplay(articleTitle, newCount);
+  }
+
+  function updateCitationCounterDisplay(articleTitle, newCount) {
+    // Normalize the title for comparison (replace quotes with HTML entities)
+    const normalizedTitle = articleTitle.replace(/"/g, '&quot;');
+    
+    // Find all counters for this article
+    const counters = document.querySelectorAll('.cited-counter');
+    counters.forEach(counter => {
+      const title = counter.getAttribute('data-article-title');
+      if (title === articleTitle || title === normalizedTitle) {
+        const valueSpan = counter.querySelector('.counter-value');
+        if (valueSpan) {
+          valueSpan.textContent = newCount;
+        }
+        // Add visual feedback
+        counter.classList.add('modified');
+        setTimeout(() => {
+          counter.classList.remove('modified');
+        }, 300);
+      }
+    });
+  }
+
+  function showRelatedArticles(el) {
+    const article = el.closest('.article');
+    const currentTitle = article.querySelector('h3').textContent.toLowerCase();
+    const currentArticleTitle = article.querySelector('h3').textContent;
+
+    // Find related articles (simple keyword matching)
+    const allArticles = document.querySelectorAll('.article');
+    const relatedArticles = [];
+
+    allArticles.forEach(art => {
+      if (art !== article) {
+        const title = art.querySelector('h3').textContent.toLowerCase();
+        const summary = art.querySelector('.summary').textContent.toLowerCase();
+
+        // Check for common keywords
+        const keywords = currentTitle.split(' ').filter(word => word.length > 3);
+        const hasCommonKeywords = keywords.some(keyword =>
+          title.includes(keyword) || summary.includes(keyword)
+        );
+
+        if (hasCommonKeywords) {
+          relatedArticles.push({
+            title: art.querySelector('h3').textContent,
+            meta: art.querySelector('.meta').textContent,
+            summary: art.querySelector('.summary').textContent.substring(0, 100) + '...'
+          });
+        }
+      }
+    });
+
+    // Create related articles modal
+    const modal = document.createElement('div');
+    modal.className = 'citation-modal';
+    modal.innerHTML = `
+      <div class="citation-modal-content" style="max-width: 800px;">
+        <div class="citation-modal-header">
+          <h2>Related Articles</h2>
+          <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #666; font-weight: normal;">Articles related to: "${currentArticleTitle}"</p>
+          <button class="citation-close" onclick="closeRelatedModal()">&times;</button>
+        </div>
+        <div class="related-articles-content">
+          ${relatedArticles.length > 0 ?
+            relatedArticles.slice(0, 5).map(art => `
+              <div class="related-article-item" onclick="openRelatedArticle('${art.title.replace(/'/g, "\\'")}')">
+                <h4>${art.title}</h4>
+                <p class="related-meta">${art.meta}</p>
+                <p class="related-summary">${art.summary}</p>
+              </div>
+            `).join('')
+            :
+            '<p>No related articles found.</p>'
+          }
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    modal.style.display = 'flex';
+  }
+
+  function closeRelatedModal() {
+    const modal = document.querySelector('.citation-modal');
+    if (modal) modal.remove();
+  }
+
+  function openRelatedArticle(title) {
+    // Find the study ID for this article (same logic as in the main articles)
+    let studyId = title.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20);
+    if (title.includes('Lagundi')) studyId = 'lagundi_oil';
+    if (title.includes('Farmers')) studyId = 'perceptions';
+
+    // Close the modal and navigate to myspace
+    closeRelatedModal();
+    window.location.href = `myspace.html?study=${studyId}`;
+  }
+
+  // Save article functionality
+  function saveArticle(el) {
+      const article = el.closest('.article');
+      const title = article.querySelector('h3').textContent;
+      const meta = article.querySelector('.meta').textContent;
+      const summary = article.querySelector('.summary').textContent;
+      const category = article.getAttribute('data-category');
+      const strand = article.getAttribute('data-strand');
+      const level = article.getAttribute('data-level');
+      const program = article.getAttribute('data-program');
+      const year = article.getAttribute('data-year');
+
+      // Find the article data to get fileIds or gdrive_id from the actual article being saved
+      const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+      const articleData = allArticles.find(a => a.title === title);
+      const pdfUrl = articleData && (articleData.gdrive_id || (articleData.fileIds && articleData.fileIds.length > 0)) ? `https://drive.google.com/file/d/${articleData.gdrive_id || articleData.fileIds[0]}/preview` : null;
+      
+      // Get PDF ID from Couchbase if available
+      const pdfId = articleData && articleData.pdfId ? articleData.pdfId : null;
+
+      // Create saved article object
+      const savedArticle = {
+          title: title,
+          meta: meta,
+          summary: summary,
+          category: category,
+          strand: strand,
+          level: level,
+          program: program,
+          year: year,
+          pdfUrl: pdfUrl,
+          pdfId: pdfId,  // Store PDF ID from Couchbase
+          savedDate: new Date().toISOString(),
+          originalUrl: window.location.href
+      };
+
+      // Get existing saved articles from localStorage
+      let savedArticles = JSON.parse(localStorage.getItem('savedArticles')) || [];
+
+      // Check if article is already saved
+      const isAlreadySaved = savedArticles.some(saved => saved.title === title);
+
+      if (isAlreadySaved) {
+          alert('Article already saved!');
+          return;
+      }
+
+      // Add to saved articles
+      savedArticles.push(savedArticle);
+      localStorage.setItem('savedArticles', JSON.stringify(savedArticles));
+
+      // Save to Couchbase
+      fetch('/save_saved_articles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ articles: savedArticles })
+      }).catch(error => console.error('Error saving to Couchbase:', error));
+
+      // Show success message
+      alert('Article saved successfully!');
+
+      // Change star color to indicate saved
+      el.style.color = '#ffd700';
+      el.textContent = '★ Saved';
+  }
+
+  function toggleSearch() {
+    const sc = document.getElementById('searchContainer');
+    if (sc.classList.contains('in-main')) {
+      // Toggle display if already in main
+      sc.style.display = sc.style.display === 'none' ? 'block' : 'none';
+    } else {
+      // Move to main and show
+      const main = document.querySelector('.main');
+      main.insertBefore(sc, main.firstChild);
+      sc.classList.add('in-main');
+      sc.style.display = 'block';
+    }
+  }
+
+  // Load site settings from server and apply to page
+  document.addEventListener('DOMContentLoaded', function() {
+    loadSiteSettings();
+  });
+
+  async function loadSiteSettings() {
+    try {
+      const response = await fetch('http://localhost:3001/get_site_settings');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const settings = await response.json();
+      // Check if favicon is a blob URL and reset to default if so
+      if (settings.siteFavicon && settings.siteFavicon.startsWith('blob:')) {
+        settings.siteFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
+      }
+      updateDocumentTitle(settings.siteTitle);
+      updateDocumentFavicon(settings.siteFavicon);
+    } catch (error) {
+      console.error('Failed to load site settings:', error);
+      // Fallback to defaults
+      const defaultTitle = 'Library | STI Archives';
+      const defaultFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
+      updateDocumentTitle(defaultTitle);
+      updateDocumentFavicon(defaultFavicon);
+    }
+  }
+
+  function updateDocumentTitle(siteTitle) {
+    document.title = siteTitle;
+  }
+
+  function updateDocumentFavicon(faviconSrc) {
+      let faviconLink = document.querySelector('link[rel="icon"]');
+      if (!faviconLink) {
+          faviconLink = document.createElement('link');
+          faviconLink.rel = 'icon';
+          faviconLink.type = 'image/png';
+          document.head.appendChild(faviconLink);
+      }
+      // Add version parameter only for non-data URLs to avoid issues with base64
+      const href = faviconSrc.startsWith('data:') ? faviconSrc : faviconSrc + '?v=1';
+      faviconLink.href = href;
+  }
+
+  // Load profile picture from localStorage
+  function loadProfilePicture() {
+      const userIcon = document.getElementById('userIcon');
+      const savedProfilePic = localStorage.getItem('profilePicture');
+      if (savedProfilePic) {
+          userIcon.src = savedProfilePic;
+      } else {
+          userIcon.src = '/frontend/assets/images/Screenshot 2025-09-10 204105.png';
+      }
+  }
+
+  // Load profile picture on page load
+  document.addEventListener('DOMContentLoaded', function() {
+      loadProfilePicture();
+  });
+
+  // === DARK MODE SYNC ===
+  // Check for saved dark mode preference or system preference
+  function initDarkMode() {
+      const darkModeToggle = document.getElementById('darkModeToggle');
+      if (!darkModeToggle) return;
+      
+      const savedMode = localStorage.getItem('darkMode');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      // Apply dark mode if saved or system preference is dark
+      const isDark = savedMode === 'on' || (!savedMode && prefersDark);
+      
+      if (isDark) {
+          document.body.classList.add('dark-mode');
+          darkModeToggle.querySelector('i').className = 'fa fa-sun';
+      } else {
+          document.body.classList.remove('dark-mode');
+          darkModeToggle.querySelector('i').className = 'fa fa-moon';
+      }
+  }
+  
+  // Toggle dark mode function
+  function toggleDarkMode() {
+      const darkModeToggle = document.getElementById('darkModeToggle');
+      if (!darkModeToggle) return;
+      
+      const isDark = document.body.classList.toggle('dark-mode');
+      const icon = darkModeToggle.querySelector('i');
+      
+      if (isDark) {
+          icon.className = 'fa fa-sun';
+          localStorage.setItem('darkMode', 'on');
+      } else {
+          icon.className = 'fa fa-moon';
+          localStorage.setItem('darkMode', 'off');
+      }
+  }
+  
+  // Add event listener to dark mode toggle button
+  document.addEventListener('DOMContentLoaded', function() {
+      initDarkMode();
+      const darkModeToggle = document.getElementById('darkModeToggle');
+      if (darkModeToggle) {
+          darkModeToggle.addEventListener('click', toggleDarkMode);
+      }
+      
+      // Listen for storage changes from other tabs/windows
+      window.addEventListener('storage', function(e) {
+          if (e.key === 'darkMode') {
+              initDarkMode();
+          }
+      });
+      
+      // Listen for system preference changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+          // Only apply if no saved preference
+          if (!localStorage.getItem('darkMode')) {
+              initDarkMode();
+          }
+      });
+  });
+
+  // === PDF/WORD TOGGLE FUNCTION ===
+  // Track current view state: 'pdf' or 'word'
+  let currentDocView = 'pdf';
+  
+  function togglePdfWord() {
+      const toggleBtn = document.getElementById('toggleBtnMobile');
+      currentDocView = currentDocView === 'pdf' ? 'word' : 'pdf';
+      
+      // Toggle visual state
+      toggleBtn.classList.toggle('active');
+      
+      // Update button text based on current view
+      if (currentDocView === 'pdf') {
+          toggleBtn.innerHTML = '<span class="pdf-option"><i class="fas fa-file-pdf"></i> PDF</span><span class="word-option"><i class="fas fa-file-word"></i> Word</span>';
+          // Filter to show only PDFs
+          filterDocumentsByType('pdf');
+      } else {
+          toggleBtn.innerHTML = '<span class="word-option"><i class="fas fa-file-word"></i> Word</span><span class="pdf-option"><i class="fas fa-file-pdf"></i> PDF</span>';
+          // Filter to show only Word documents
+          filterDocumentsByType('word');
+      }
+      
+      // Save preference to localStorage
+      localStorage.setItem('docViewPreference', currentDocView);
+  }
+  
+  function filterDocumentsByType(type) {
+      // Get all article elements
+      const articles = document.querySelectorAll('.article');
+      
+      articles.forEach(function(article) {
+          // Get the file type from the article data or file icon
+          const actions = article.querySelector('.actions');
+          if (!actions) {
+              article.style.display = 'none';
+              return;
+          }
+          
+          // Check if article has PDF or Word file
+          const hasPdfLink = actions.querySelector('span[data-file-type="pdf"]') || 
+                            actions.innerHTML.includes('fa-file-pdf') ||
+                            actions.textContent.toLowerCase().includes('pdf');
+          const hasWordLink = actions.querySelector('span[data-file-type="word"]') || 
+                             actions.innerHTML.includes('fa-file-word') ||
+                             actions.textContent.toLowerCase().includes('word') ||
+                             actions.textContent.toLowerCase().includes('docx');
+          
+          if (type === 'pdf') {
+              // Show PDFs, hide Word docs
+              if (hasPdfLink || (!hasPdfLink && !hasWordLink)) {
+                  article.style.display = '';
+              } else {
+                  article.style.display = 'none';
+              }
+          } else if (type === 'word') {
+              // Show Word docs, hide PDFs
+              if (hasWordLink) {
+                  article.style.display = '';
+              } else {
+                  article.style.display = 'none';
+              }
+          }
+      });
+      
+      // Update result count
+      updateResultCount();
+  }
+  
+  function updateResultCount() {
+      const visibleArticles = document.querySelectorAll('.article[style=""], .article:not([style*="display: none"])');
+      const resultCountEl = document.querySelector('.result-count');
+      if (resultCountEl) {
+          resultCountEl.textContent = `Showing ${visibleArticles.length} document(s)`;
+      }
+  }
+  
+  // Initialize PDF/Word toggle preference on page load
+  document.addEventListener('DOMContentLoaded', function() {
+      const savedPreference = localStorage.getItem('docViewPreference');
+      const toggleBtn = document.getElementById('toggleBtnMobile');
+      
+      if (savedPreference && toggleBtn) {
+          currentDocView = savedPreference;
+          if (currentDocView === 'word') {
+              toggleBtn.classList.add('active');
+              toggleBtn.innerHTML = '<span class="word-option"><i class="fas fa-file-word"></i> Word</span><span class="pdf-option"><i class="fas fa-file-pdf"></i> PDF</span>';
+              filterDocumentsByType('word');
+          }
+      }
+  });
+</script>
+    <script src="/frontend/assets/js/pdf-viewer.js"></script>
+    <footer class="site-footer">
+        <div class="footer-content">
+            <span>&copy; 2025 STI Archives. All rights reserved.</span>
+            <span class="footer-links">
+                <a href="/frontend/pages/terms.html">Terms & Conditions</a> | 
+                <a href="/frontend/pages/privacy.html">Privacy Policy</a>
+            </span>
+            <span>Made for STI College Calamba | ITMAWD 21 G1</span>
+        </div>
+    </footer>
+</body>
+</html>

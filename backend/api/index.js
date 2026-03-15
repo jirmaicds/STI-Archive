@@ -125,17 +125,22 @@ async function handleAuthLogin(req, res, body) {
     if (!password) { res.statusCode = 400; res.end(JSON.stringify({ success: false, error: 'Password is required' })); return; }
 
     if (isSupabaseConfigured()) {
+      console.log('Supabase URL:', config.supabase.url);
+      console.log('Supabase Key set:', !!config.supabase.anonKey);
+      
       const supabase = getSupabase();
       let user = null;
       
       // Try fullname lookup first (since frontend sends fullname field)
-      const { data: nameUsers } = await supabase.from('users').select('*').eq('fullname', loginField);
+      const { data: nameUsers, error: nameError } = await supabase.from('users').select('*').eq('fullname', loginField);
+      console.log('Fullname lookup result:', nameUsers, nameError);
       
       if (nameUsers && nameUsers.length > 0) {
         user = nameUsers[0];
       } else {
         // Try email lookup
-        const { data: emailUsers } = await supabase.from('users').select('*').eq('email', loginField.toLowerCase());
+        const { data: emailUsers, error: emailError } = await supabase.from('users').select('*').eq('email', loginField.toLowerCase());
+        console.log('Email lookup result:', emailUsers, emailError);
         if (emailUsers && emailUsers.length > 0) {
           user = emailUsers[0];
         }

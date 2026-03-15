@@ -6348,7 +6348,7 @@ STI Archives Admin`;
             localStorage.setItem('users', JSON.stringify(users));
         }
         function refreshUsers() {
-            fetch('/get_users')
+            fetch('/api/users')
                 .then(response => response.json())
                 .then(data => {
                     if (data) {

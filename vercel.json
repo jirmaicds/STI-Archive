@@ -20,6 +20,14 @@
       "dest": "/backend/api/$1"
     },
     {
+      "src": "/get_users",
+      "dest": "/backend/api/users/index.js"
+    },
+    {
+      "src": "/get_site_settings",
+      "dest": "/backend/api/site-settings/index.js"
+    },
+    {
       "src": "/assets/(.*)",
       "dest": "/frontend/assets/$1"
     },

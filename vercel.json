@@ -20,6 +20,10 @@
       "dest": "/backend/api/$1"
     },
     {
+      "src": "/api/health",
+      "dest": "/backend/api/health.js"
+    },
+    {
       "src": "/get_users",
       "dest": "/backend/api/users/index.js"
     },

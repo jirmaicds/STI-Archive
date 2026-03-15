@@ -48,39 +48,21 @@ async function handleGetPdf(req, res) {
     if (isSupabaseConfigured()) {
       const supabase = getSupabase();
       
-      // Try to get from articles bucket first
-      const { data, error } = await supabase.storage
+      // Try to get from articles bucket - get public URL and redirect
+      const { data: urlData1 } = supabase.storage
+        .from('articles')
+        .getPublicUrl(pdfPath);
+      
+      // Check if file exists in articles bucket
+      const { data: articleData } = await supabase.storage
         .from('articles')
         .download(pdfPath);
-
-      if (error || !data) {
-        // Try user-uploads bucket
-        const { data: fallbackData, error: fallbackError } = await supabase.storage
-          .from('user-uploads')
-          .download(pdfPath);
-        
-        if (fallbackError || !fallbackData) {
-          // Try to get public URL and redirect
-          const { data: urlData } = supabase.storage
-            .from('user-uploads')
-            .getPublicUrl(pdfPath);
-          
-          if (urlData?.publicUrl) {
-            res.statusCode = 302;
-            res.setHeader('Location', urlData.publicUrl);
-            res.end();
-            return;
-          }
-          
-          res.statusCode = 404;
-          res.end(JSON.stringify({ success: false, error: 'PDF not found' }));
-          return;
-        }
-        
-        // Send the PDF from fallback bucket
+      
+      if (articleData) {
+        // Serve from articles bucket
         res.setHeader('Content-Type', 'application/pdf');
         const chunks = [];
-        for await (const chunk of fallbackData.stream()) {
+        for await (const chunk of articleData.stream()) {
           chunks.push(chunk);
         }
         const buffer = Buffer.concat(chunks);
@@ -89,15 +71,46 @@ async function handleGetPdf(req, res) {
         return;
       }
       
-      // Send the PDF
-      res.setHeader('Content-Type', 'application/pdf');
-      const chunks = [];
-      for await (const chunk of data.stream()) {
-        chunks.push(chunk);
+      // Try user-uploads bucket
+      const { data: uploadData } = await supabase.storage
+        .from('user-uploads')
+        .download(pdfPath);
+      
+      if (uploadData) {
+        res.setHeader('Content-Type', 'application/pdf');
+        const chunks = [];
+        for await (const chunk of uploadData.stream()) {
+          chunks.push(chunk);
+        }
+        const buffer = Buffer.concat(chunks);
+        res.setHeader('Content-Length', buffer.length);
+        res.end(buffer);
+        return;
       }
-      const buffer = Buffer.concat(chunks);
-      res.setHeader('Content-Length', buffer.length);
-      res.end(buffer);
+      
+      // If not found in either bucket, try getting public URL from articles
+      if (urlData1?.publicUrl) {
+        res.statusCode = 302;
+        res.setHeader('Location', urlData1.publicUrl);
+        res.end();
+        return;
+      }
+      
+      // Try user-uploads public URL
+      const { data: urlData2 } = supabase.storage
+        .from('user-uploads')
+        .getPublicUrl(pdfPath);
+      
+      if (urlData2?.publicUrl) {
+        res.statusCode = 302;
+        res.setHeader('Location', urlData2.publicUrl);
+        res.end();
+        return;
+      }
+      
+      res.statusCode = 404;
+      res.end(JSON.stringify({ success: false, error: 'PDF not found in storage' }));
+      return;
     } else {
       // Fallback - PDF not available
       res.statusCode = 404;

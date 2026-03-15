@@ -5852,7 +5852,7 @@ STI Archives Admin`;
             }
             // Try to update server
             console.log('updateUserStatus - userId:', userId, 'action:', action);
-            fetch('/update_user_status', {
+            fetch('/api/users/status', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ user_id: userId, action: action })
@@ -5946,7 +5946,7 @@ STI Archives Admin`;
                 });
 
                 // Also try server-side removal
-                fetch('/remove_user', {
+                fetch('/api/users/remove', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ user_id: userId })
@@ -8602,7 +8602,7 @@ STI Archives Admin`;
         async function acceptUser(userId) {
             if (confirm('Are you sure you want to accept this user? This will generate login credentials for them.')) {
                 try {
-                    const response = await fetch('/accept_user', {
+                    const response = await fetch('/api/auth/accept-user', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ user_id: userId })

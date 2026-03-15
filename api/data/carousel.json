@@ -1,0 +1,38 @@
+[
+    {
+        "id": "carousel-1",
+        "imageUrl": "/frontend/assets/images/paper2.png",
+        "title": "Urban vs. Rural perspective",
+        "author": "Santibanez, J. et al. - 2024 STI College Calamba",
+        "description": "A study compares urban and rural gasoline stations",
+        "pdfId": "article-1",
+        "pdfPath": "/Studies/Research/2023-2024/urban-rural.pdf"
+    },
+    {
+        "id": "carousel-2",
+        "imageUrl": "/frontend/assets/images/paper2.png",
+        "title": "Digital Library Management System",
+        "author": "ITMAWD 21 GROUP 1 — STI College Calamba",
+        "description": "A comprehensive web-based digital library system.",
+        "pdfId": "article-2",
+        "pdfPath": "/Studies/Research/2023-2024/digital-library.pdf"
+    },
+    {
+        "id": "carousel-3",
+        "imageUrl": "/frontend/assets/images/paper2.png",
+        "title": "Creative Design",
+        "author": "Pedro Reyes — Aug 25, 2025",
+        "description": "A UI/UX project showcasing modern school apps.",
+        "pdfId": "article-3",
+        "pdfPath": "/Studies/Research/2023-2024/creative-design.pdf"
+    },
+    {
+        "id": "carousel-4",
+        "imageUrl": "/frontend/assets/images/paper2.png",
+        "title": "Mobile App UI",
+        "author": "Anna Cruz — Aug 28, 2025",
+        "description": "A mobile app design for student productivity.",
+        "pdfId": "article-4",
+        "pdfPath": "/Studies/Research/2023-2024/mobile-app.pdf"
+    }
+]

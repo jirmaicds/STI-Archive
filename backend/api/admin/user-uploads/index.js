@@ -1,0 +1,178 @@
+/**
+ * STI Archives API - Admin User Uploads Routes
+ * Handles admin operations on user uploads
+ */
+
+const { getSupabase, isSupabaseConfigured } = require('../../services/supabase.js');
+
+function setCorsHeaders(res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+}
+
+function handleOptions(res) {
+  setCorsHeaders(res);
+  res.statusCode = 200;
+  res.end();
+}
+
+// GET /api/admin/user-uploads - Get all user uploads for admin
+async function handleGetUserUploads(req, res) {
+  setCorsHeaders(res);
+  
+  if (req.method === 'OPTIONS') {
+    handleOptions(res);
+    return;
+  }
+
+  if (req.method !== 'GET') {
+    res.statusCode = 405;
+    res.end(JSON.stringify({ success: false, error: 'Method not allowed' }));
+    return;
+  }
+
+  try {
+    if (isSupabaseConfigured()) {
+      const supabase = getSupabase();
+      const { data, error } = await supabase
+        .from('user_uploads')
+        .select('*')
+        .order('uploaded_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      res.statusCode = 200;
+      res.end(JSON.stringify({ success: true, uploads: data || [] }));
+    } else {
+      res.statusCode = 200;
+      res.end(JSON.stringify({ success: true, uploads: [], message: 'Supabase not configured' }));
+    }
+  } catch (error) {
+    console.error('Error getting user uploads:', error);
+    res.statusCode = 500;
+    res.end(JSON.stringify({ success: false, error: error.message }));
+  }
+}
+
+// PUT /api/admin/user-upload/[id] - Update user upload status
+async function handleUpdateUserUpload(req, res, uploadId) {
+  setCorsHeaders(res);
+  
+  if (req.method === 'OPTIONS') {
+    handleOptions(res);
+    return;
+  }
+
+  if (req.method !== 'PUT') {
+    res.statusCode = 405;
+    res.end(JSON.stringify({ success: false, error: 'Method not allowed' }));
+    return;
+  }
+
+  try {
+    const { status, topic, type } = req.body;
+    
+    if (isSupabaseConfigured()) {
+      const supabase = getSupabase();
+      
+      const updateData = {};
+      if (status) updateData.status = status;
+      if (topic) updateData.topic = topic;
+      if (type) updateData.type = type;
+      updateData.reviewed_at = new Date().toISOString();
+      
+      const { data, error } = await supabase
+        .from('user_uploads')
+        .update(updateData)
+        .eq('upload_id', uploadId)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      res.statusCode = 200;
+      res.end(JSON.stringify({ success: true, upload: data }));
+    } else {
+      res.statusCode = 500;
+      res.end(JSON.stringify({ success: false, error: 'Supabase not configured' }));
+    }
+  } catch (error) {
+    console.error('Error updating user upload:', error);
+    res.statusCode = 500;
+    res.end(JSON.stringify({ success: false, error: error.message }));
+  }
+}
+
+// DELETE /api/admin/user-upload/[id] - Delete user upload
+async function handleDeleteUserUpload(req, res, uploadId) {
+  setCorsHeaders(res);
+  
+  if (req.method === 'OPTIONS') {
+    handleOptions(res);
+    return;
+  }
+
+  if (req.method !== 'DELETE') {
+    res.statusCode = 405;
+    res.end(JSON.stringify({ success: false, error: 'Method not allowed' }));
+    return;
+  }
+
+  try {
+    if (isSupabaseConfigured()) {
+      const supabase = getSupabase();
+      const { error } = await supabase
+        .from('user_uploads')
+        .delete()
+        .eq('upload_id', uploadId);
+      
+      if (error) throw error;
+      
+      res.statusCode = 200;
+      res.end(JSON.stringify({ success: true }));
+    } else {
+      res.statusCode = 500;
+      res.end(JSON.stringify({ success: false, error: 'Supabase not configured' }));
+    }
+  } catch (error) {
+    console.error('Error deleting user upload:', error);
+    res.statusCode = 500;
+    res.end(JSON.stringify({ success: false, error: error.message }));
+  }
+}
+
+// Main handler
+module.exports = async function handler(req, res) {
+  setCorsHeaders(res);
+  
+  if (req.method === 'OPTIONS') {
+    handleOptions(res);
+    return;
+  }
+
+  // Parse URL to get upload ID if present
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const pathParts = url.pathname.split('/').filter(p => p);
+  
+  // Route: GET /api/admin/user-uploads
+  if (pathParts[2] === 'user-uploads' && req.method === 'GET') {
+    await handleGetUserUploads(req, res);
+    return;
+  }
+  
+  // Route: PUT/DELETE /api/admin/user-upload/[id]
+  if (pathParts[2] === 'user-upload' && pathParts[3]) {
+    const uploadId = pathParts[3];
+    if (req.method === 'PUT') {
+      await handleUpdateUserUpload(req, res, uploadId);
+      return;
+    } else if (req.method === 'DELETE') {
+      await handleDeleteUserUpload(req, res, uploadId);
+      return;
+    }
+  }
+  
+  res.statusCode = 404;
+  res.end(JSON.stringify({ success: false, error: 'Not found' }));
+};

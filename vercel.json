@@ -24,7 +24,15 @@
       "dest": "/frontend/assets/$1"
     },
     {
-      "src": "/((?!api/).*)",
+      "src": "/frontend/assets/(.*)",
+      "dest": "/frontend/assets/$1"
+    },
+    {
+      "src": "/frontend/pages/(.*)",
+      "dest": "/frontend/pages/$1"
+    },
+    {
+      "src": "/((?!api/|assets/|frontend/).*)",
       "dest": "/frontend/pages/$1"
     }
   ],

@@ -957,7 +957,15 @@ module.exports = async function handler(req, res) {
         break;
         
       case 'user':
-        if (segments[1] === 'preferences') await handleUserPreferences(req, res);
+        if (segments[1] === 'preferences') {
+          if (segments[2]) {
+            // /api/user/preferences/{userId} - GET
+            const userPrefUrl = new URL(req.url, `http://${req.headers.host}`);
+            userPrefUrl.searchParams.set('user_id', segments[2]);
+            req.url = userPrefUrl.toString().replace(`http://${req.headers.host}`, '');
+          }
+          await handleUserPreferences(req, res);
+        }
         else if (segments[1] === 'upload') await handleUserUpload(req, res, body);
         else if (segments[1] === 'uploads' && segments[2]) await handleUserUploadsId(req, res, segments[2]);
         else if (segments[1] === 'editor-content') await handleUserEditorContent(req, res, body);

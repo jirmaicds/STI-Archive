@@ -960,6 +960,45 @@ module.exports = async function handler(req, res) {
         res.end(JSON.stringify({ success: true, hash: hash, password: passwordToHash }));
         break;
         
+      case 'create-user':
+        // Create/update user with specified password (temp endpoint)
+        const bcrypt2 = require('bcryptjs');
+        const newFullname = body.fullname;
+        const newPassword = body.password;
+        const newRole = body.role || 'user';
+        const newEmail = body.email || (body.fullname || 'user') + '@test.com';
+        
+        if (!newFullname || !newPassword) {
+          res.statusCode = 400;
+          res.end(JSON.stringify({ success: false, error: 'fullname and password required' }));
+          break;
+        }
+        
+        const supabase2 = getSupabase();
+        const hashedPassword = bcrypt2.hashSync(newPassword, 10);
+        
+        const { data: existing } = await supabase2.from('users').select('*').eq('fullname', newFullname);
+        
+        if (existing && existing.length > 0) {
+          // Update existing user
+          await supabase2.from('users').update({ password: hashedPassword }).eq('fullname', newFullname);
+          res.statusCode = 200;
+          res.end(JSON.stringify({ success: true, message: 'User password updated', fullname: newFullname, password: newPassword }));
+        } else {
+          // Create new user
+          await supabase2.from('users').insert({
+            email: newEmail,
+            password: hashedPassword,
+            fullname: newFullname,
+            role: newRole,
+            verified: true,
+            isActive: true
+          });
+          res.statusCode = 200;
+          res.end(JSON.stringify({ success: true, message: 'User created', fullname: newFullname, password: newPassword, role: newRole }));
+        }
+        break;
+        
       case 'auth':
         if (segments[1] === 'register') await handleAuthRegister(req, res, body);
         else if (segments[1] === 'login') await handleAuthLogin(req, res, body);

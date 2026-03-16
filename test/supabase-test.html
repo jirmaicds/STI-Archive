@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Test</title>
+</head>
+<body>
+    <h1>Supabase Connection Test</h1>
+    <div id="result"></div>
+    
+    <!-- Load Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        const SUPABASE_URL = 'https://eopbqatvianrjkdbypvk.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJhdHZpYW5yamtkYnlwdmsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MjU0MzIwMCwiZXhwIjoxOTU4MTE5MjAwfQ.sb_publishable_4M4FhS5Mv8pFVQnAGJ5cPQ_eOZN-mdm';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        async function testConnection() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                // Test 1: Get users
+                const { data: users, error: usersError } = await supabase.from('users').select('*');
+                
+                if (usersError) {
+                    resultDiv.innerHTML = '<p style="color:red">Error fetching users: ' + usersError.message + '</p>';
+                    return;
+                }
+                
+                resultDiv.innerHTML = '<p style="color:green">✓ Connected to Supabase!</p>';
+                resultDiv.innerHTML += '<p>Users count: ' + users.length + '</p>';
+                resultDiv.innerHTML += '<pre>' + JSON.stringify(users, null, 2) + '</pre>';
+                
+            } catch (e) {
+                resultDiv.innerHTML = '<p style="color:red">Error: ' + e.message + '</p>';
+            }
+        }
+        
+        // Run test after page loads
+        setTimeout(testConnection, 1000);
+    </script>
+</body>
+</html>

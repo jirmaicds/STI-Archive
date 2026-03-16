@@ -14,7 +14,8 @@
         const SUPABASE_URL = 'https://eopbqatvianrjkdbypvk.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJhdHZpYW5yamtkYnlwdmsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MjU0MzIwMCwiZXhwIjoxOTU4MTE5MjAwfQ.sb_publishable_4M4FhS5Mv8pFVQnAGJ5cPQ_eOZN-mdm';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Use different variable name to avoid conflict
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
         async function testConnection() {
             const resultDiv = document.getElementById('result');
@@ -22,7 +23,7 @@
             
             try {
                 // Test 1: Get users
-                const { data: users, error: usersError } = await supabase.from('users').select('*');
+                const { data: users, error: usersError } = await supabaseClient.from('users').select('*');
                 
                 if (usersError) {
                     resultDiv.innerHTML = '<p style="color:red">Error fetching users: ' + usersError.message + '</p>';

@@ -5,7 +5,7 @@
  */
 
 const SUPABASE_URL = 'https://eopbqatvianrjkdbypvk.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJhdHZpYW5yamtkYnlwdmsiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MjU0MzIwMCwiZXhwIjoxOTU4MTE5MjAwfQ.sb_publishable_4M4FhS5Mv8pFVQnAGJ5cPQ_eOZN-mdm';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJxYXR2aWFucmprZGJ5cHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzA4OTIsImV4cCI6MjA4OTEwNjg5Mn0.k9_xTbjwRdwAQJ9UgGGsosjLWywzxHuYOq-JbGeII8g';
 
 // Create browser client if not already created
 if (typeof window.supabase === 'undefined') {

@@ -517,11 +517,37 @@ async function handleCarousel(req, res) {
       query = query.order('display_order', { ascending: true });
       const { data, error } = await query;
       if (error) throw error;
+      
+      // If no data in Supabase, use fallback carousel.json
+      if (!data || data.length === 0) {
+        const fs = require('fs');
+        const path = require('path');
+        try {
+          const carouselPath = path.join(__dirname, 'data/carousel.json');
+          const carouselData = JSON.parse(fs.readFileSync(carouselPath, 'utf8'));
+          res.statusCode = 200;
+          res.end(JSON.stringify({ success: true, carousel: carouselData }));
+          return;
+        } catch (e) {
+          // Fallback file not found, return empty array
+        }
+      }
+      
       res.statusCode = 200;
       res.end(JSON.stringify({ success: true, carousel: data || [] }));
     } else {
-      res.statusCode = 200;
-      res.end(JSON.stringify({ success: true, carousel: [] }));
+      // Fallback: return mock data from carousel.json
+      const fs = require('fs');
+      const path = require('path');
+      try {
+        const carouselPath = path.join(__dirname, 'data/carousel.json');
+        const carouselData = JSON.parse(fs.readFileSync(carouselPath, 'utf8'));
+        res.statusCode = 200;
+        res.end(JSON.stringify({ success: true, carousel: carouselData }));
+      } catch (e) {
+        res.statusCode = 200;
+        res.end(JSON.stringify({ success: true, carousel: [] }));
+      }
     }
   } catch (error) {
     res.statusCode = 500;

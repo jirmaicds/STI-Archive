@@ -2014,8 +2014,8 @@
                 
                 window.location.href = url + (params.length > 0 ? '&' + params.join('&') : '');
             } else {
-                // No PDF linked, show message or do nothing
-                alert('No PDF linked to this carousel item yet.');
+                // No PDF linked - just do nothing (don't show alert)
+                console.log('No PDF linked to this carousel item');
             }
         }
 

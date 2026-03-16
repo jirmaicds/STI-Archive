@@ -10,6 +10,10 @@
       "use": "@vercel/static"
     },
     {
+      "src": "backend/api/data/**",
+      "use": "@vercel/static"
+    },
+    {
       "src": "frontend/pages/**/*.html",
       "use": "@vercel/static"
     },
@@ -26,6 +30,10 @@
     {
       "src": "/test/(.*)",
       "dest": "/test/$1"
+    },
+    {
+      "src": "/backend/api/data/(.*)",
+      "dest": "/backend/api/data/$1"
     },
     {
       "src": "/frontend/assets/(.*)",

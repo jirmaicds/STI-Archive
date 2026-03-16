@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "carousel_id": "carousel-1",
+    "image_url": "/frontend/assets/images/carousel/carousel_1772632829.jpg",
+    "title": "STI Archives",
+    "author": "STI College",
+    "description": "Welcome to STI Archives - Your source for research papers",
+    "pdf_id": "",
+    "pdf_path": "",
+    "display_order": 1,
+    "is_active": true
+  },
+  {
+    "id": "2",
+    "carousel_id": "carousel-2",
+    "image_url": "/frontend/assets/images/carousel/carousel_1772632895.png",
+    "title": "Research Papers",
+    "author": "Students",
+    "description": "Browse our collection of research papers and studies",
+    "pdf_id": "",
+    "pdf_path": "",
+    "display_order": 2,
+    "is_active": true
+  }
+]

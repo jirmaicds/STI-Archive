@@ -1,11 +1,5 @@
--- Fix RLS for ALL tables
+-- Fix RLS for ALL tables (skip users - already fixed)
 -- Run this in Supabase SQL Editor
-
--- Fix users table
-ALTER TABLE users DISABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "allow_all_users" ON users;
-CREATE POLICY "allow_all_users" ON users FOR ALL USING (true) WITH CHECK (true);
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
 -- Fix carousel table
 ALTER TABLE carousel DISABLE ROW LEVEL SECURITY;

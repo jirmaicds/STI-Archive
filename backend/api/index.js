@@ -951,6 +951,15 @@ module.exports = async function handler(req, res) {
         await handleHealth(req, res);
         break;
         
+      case 'hash':
+        // Temporary endpoint to generate bcrypt hash
+        const bcrypt = require('bcryptjs');
+        const passwordToHash = body.password || 'test123';
+        const hash = bcrypt.hashSync(passwordToHash, 10);
+        res.statusCode = 200;
+        res.end(JSON.stringify({ success: true, hash: hash, password: passwordToHash }));
+        break;
+        
       case 'auth':
         if (segments[1] === 'register') await handleAuthRegister(req, res, body);
         else if (segments[1] === 'login') await handleAuthLogin(req, res, body);

@@ -126,16 +126,10 @@ async function handleAuthLogin(req, res, body) {
       const supabase = getSupabase();
       let user = null;
       
-      // Try fullname lookup first
+      // Only check fullname for login (email is only for password reset)
       const { data: nameUsers } = await supabase.from('users').select('*').eq('fullname', loginField);
       if (nameUsers && nameUsers.length > 0) {
         user = nameUsers[0];
-      } else {
-        // Try email lookup
-        const { data: emailUsers } = await supabase.from('users').select('*').eq('email', loginField.toLowerCase());
-        if (emailUsers && emailUsers.length > 0) {
-          user = emailUsers[0];
-        }
       }
       
       if (!user) {

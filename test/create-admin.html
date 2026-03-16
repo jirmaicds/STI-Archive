@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Admin</title>
+</head>
+<body>
+    <h1>Create Admin User</h1>
+    <form id="createForm">
+        <input type="text" name="fullname" value="Admin" placeholder="Fullname" required>
+        <input type="password" name="password" value="admin123" placeholder="Password" required>
+        <input type="text" name="role" value="admin" placeholder="Role">
+        <button type="submit">Create Admin</button>
+    </form>
+    <pre id="result"></pre>
+    
+    <script>
+        document.getElementById('createForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                fullname: formData.get('fullname'),
+                password: formData.get('password'),
+                role: formData.get('role')
+            };
+            
+            try {
+                const response = await fetch('/api/create-user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                document.getElementById('result').textContent = JSON.stringify(result, null, 2);
+            } catch (err) {
+                document.getElementById('result').textContent = 'Error: ' + err.message;
+            }
+        });
+    </script>
+</body>
+</html>

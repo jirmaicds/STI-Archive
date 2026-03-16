@@ -126,8 +126,12 @@ async function handleAuthLogin(req, res, body) {
       const supabase = getSupabase();
       let user = null;
       
+      console.log('Login attempt:', loginField, '| Supabase configured:', isSupabaseConfigured());
+      
       // Only check fullname for login (email is only for password reset)
-      const { data: nameUsers } = await supabase.from('users').select('*').eq('fullname', loginField);
+      const { data: nameUsers, error: nameError } = await supabase.from('users').select('*').eq('fullname', loginField);
+      console.log('Query result:', nameUsers, '| Error:', nameError);
+      
       if (nameUsers && nameUsers.length > 0) {
         user = nameUsers[0];
       }

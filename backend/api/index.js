@@ -124,36 +124,23 @@ async function handleAuthLogin(req, res, body) {
 
     if (isSupabaseConfigured()) {
       const supabase = getSupabase();
-      console.log('Supabase URL:', config.supabase.url);
-      
       let user = null;
       
       // Try fullname lookup first
       const { data: nameUsers } = await supabase.from('users').select('*').eq('fullname', loginField);
-      console.log('Fullname lookup:', nameUsers);
-      
       if (nameUsers && nameUsers.length > 0) {
         user = nameUsers[0];
       } else {
         // Try email lookup
         const { data: emailUsers } = await supabase.from('users').select('*').eq('email', loginField.toLowerCase());
-        console.log('Email lookup:', emailUsers);
         if (emailUsers && emailUsers.length > 0) {
           user = emailUsers[0];
         }
       }
       
       if (!user) {
-        // For testing: return a dev user if Supabase is configured but user not found
-        console.log('User not found, returning dev user for testing');
-        res.statusCode = 200;
-        res.end(JSON.stringify({ 
-          success: true, 
-          token: 'dev-token-' + Date.now(), 
-          user: { id: 'dev-id', email: loginField + '@test.com', fullname: loginField, role: 'admin', verified: true },
-          devMode: true,
-          message: 'Dev mode - user not found in database'
-        }));
+        res.statusCode = 401;
+        res.end(JSON.stringify({ success: false, error: 'No account found. Please sign up first.' }));
         return;
       }
 
@@ -168,7 +155,7 @@ async function handleAuthLogin(req, res, body) {
       // Check if user is verified
       if (!user.verified && user.role !== 'admin' && user.role !== 'coadmin') {
         res.statusCode = 403;
-        res.end(JSON.stringify({ success: false, error: 'Account not activated' }));
+        res.end(JSON.stringify({ success: false, error: 'Account not activated. Please wait for admin approval.' }));
         return;
       }
 
@@ -176,21 +163,14 @@ async function handleAuthLogin(req, res, body) {
       res.statusCode = 200;
       res.end(JSON.stringify({ success: true, token, user: { id: user.id, email: user.email, fullname: user.fullname, role: user.role, verified: user.verified } }));
     } else {
-      // Dev mode fallback
+      // Dev mode fallback - only when Supabase is NOT configured
       res.statusCode = 200;
       res.end(JSON.stringify({ success: true, token: 'dev-token', user: { id: 'dev-id', email: loginField, fullname: loginField, role: 'admin', verified: true } }));
     }
   } catch (error) {
     console.error('Login error:', error);
-    // On error, return dev mode for testing
-    res.statusCode = 200;
-    res.end(JSON.stringify({ 
-      success: true, 
-      token: 'dev-token-' + Date.now(), 
-      user: { id: 'dev-id', email: body.fullname || body.email, fullname: body.fullname || body.email, role: 'admin', verified: true },
-      devMode: true,
-      error: error.message
-    }));
+    res.statusCode = 500;
+    res.end(JSON.stringify({ success: false, error: error.message }));
   }
 }
 

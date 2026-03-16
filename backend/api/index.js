@@ -302,11 +302,9 @@ async function handleUsers(req, res) {
 
     if (isSupabaseConfigured()) {
       const supabase = getSupabase();
-      let query = supabase.from('users').select('id, email, fullname, role, verified, created_at, updated_at, section, strand, permissions, access_level, isActive, banned, rejected');
+      let query = supabase.from('users').select('id, email, fullname, role, verified, created_at, isActive');
       if (status === 'pending') query = query.eq('verified', false).eq('role', 'pending');
       else if (status === 'approved') query = query.eq('verified', true).neq('role', 'pending');
-      else if (status === 'banned') query = query.eq('banned', true);
-      else if (status === 'rejected') query = query.eq('rejected', true);
       if (role) query = query.eq('role', role);
       if (search) query = query.or(`fullname.ilike.%${search}%,email.ilike.%${search}%`);
       query = query.order('created_at', { ascending: false });

@@ -3801,6 +3801,7 @@
         }
 
         function updateDocumentFavicon(faviconSrc) {
+            if (!faviconSrc) return; // Exit if faviconSrc is undefined
             let faviconLink = document.querySelector('link[rel="icon"]');
             if (!faviconLink) {
                 faviconLink = document.createElement('link');

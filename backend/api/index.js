@@ -46,7 +46,8 @@ function verifyToken(token) {
 
 // Check if user is admin
 function isAdmin(user) {
-  return user && ['admin', 'coadmin'].includes(user.role);
+  const role = (user.role || '').toLowerCase();
+  return user && ['admin', 'coadmin'].includes(role);
 }
 
 // Parse request body
@@ -150,8 +151,11 @@ async function handleAuthLogin(req, res, body) {
         return;
       }
 
-      // Check if user is verified
-      if (!user.verified && user.role !== 'admin' && user.role !== 'coadmin') {
+      // Normalize role to lowercase for checking
+      const userRole = (user.role || '').toLowerCase();
+      
+      // Check if user is verified (admin/coadmin roles bypass verification)
+      if (!user.verified && userRole !== 'admin' && userRole !== 'coadmin') {
         res.statusCode = 403;
         res.end(JSON.stringify({ success: false, error: 'Account not activated. Please wait for admin approval.' }));
         return;

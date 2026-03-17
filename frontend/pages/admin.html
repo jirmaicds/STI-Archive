@@ -4246,15 +4246,17 @@
                     return response.json();
                 })
                 .then(data => {
-                    if (data.status === 'success') {
-                        const articles = data.articles;
+                    // Handle both 'success' (new) and 'status' (old) response formats
+                    const isSuccess = data.status === 'success' || data.success === true;
+                    if (isSuccess) {
+                        const articles = data.articles || [];
                         saveArticles(articles);
                         saveAdminArticles(articles);
                         localStorage.setItem('allArticles', JSON.stringify(articles));
                         renderAdminArticles();
                         updateDashboardCounts();
                     } else {
-                        console.error('✗ Failed to load articles:', data.error);
+                        console.error('✗ Failed to load articles:', data.error || 'Unknown error');
                     }
                 })
                 .catch(error => {

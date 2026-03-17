@@ -2185,7 +2185,7 @@
                         
                         // Redirect based on user role
                         setTimeout(() => {
-                            const userRole = data.user.role;
+                            const userRole = (data.user.role || '').toLowerCase();
                             if (userRole === 'admin') {
                                 window.location.href = 'admin.html';
                             } else if (userRole === 'coadmin') {
@@ -2197,6 +2197,11 @@
                             }
                         }, 1500);
                         return; // Login successful, stop here
+                    } else {
+                        // API returned error - show the actual error message
+                        messageDiv.innerHTML = '<span style="color: #dc3545;"><i class="fas fa-exclamation-circle"></i> ' + (data.error || 'Invalid credentials') + '</span>';
+                        messageDiv.style.display = 'block';
+                        return;
                     }
                 } catch (fetchError) {
                     clearTimeout(timeoutId);

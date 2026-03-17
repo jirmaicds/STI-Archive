@@ -1010,11 +1010,12 @@ module.exports = async function handler(req, res) {
         
       case 'create-user':
         // Create/update user with specified password (temp endpoint)
+        // Accepts query params or body
         const bcrypt2 = require('bcryptjs');
-        const newFullname = body.fullname;
-        const newPassword = body.password;
-        const newRole = body.role || 'user';
-        const newEmail = body.email || (body.fullname || 'user') + '@test.com';
+        const newFullname = body.fullname || url.searchParams.get('fullname');
+        const newPassword = body.password || url.searchParams.get('password');
+        const newRole = (body.role || url.searchParams.get('role')) || 'user';
+        const newEmail = (body.email || url.searchParams.get('email')) || ((newFullname || 'user') + '@test.com');
         
         if (!newFullname || !newPassword) {
           res.statusCode = 400;

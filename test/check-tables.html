@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check Tables</title>
+</head>
+<body>
+    <h1>Check Supabase Tables</h1>
+    <div id="result"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        const supabase = window.supabase.createClient(
+            'https://eopbqatvianrjkdbypvk.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJxYXR2aWFucmprZGJ5cHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzA4OTIsImV4cCI6MjA4OTEwNjg5Mn0.k9_xTbjwRdwAQJ9UgGGsosjLWywzxHuYOq-JbGeII8g'
+        );
+        
+        async function checkTables() {
+            const r = document.getElementById('result');
+            r.innerHTML = 'Checking tables...<br>';
+            
+            // Check users
+            const { data: users, error: usersError } = await supabase.from('users').select('*');
+            r.innerHTML += `Users: ${users?.length || 0} | Error: ${usersError?.message || 'none'}<br>`;
+            
+            // Check articles
+            const { data: articles, error: articlesError } = await supabase.from('articles').select('*');
+            r.innerHTML += `Articles: ${articles?.length || 0} | Error: ${articlesError?.message || 'none'}<br>`;
+            
+            // Check user_uploads
+            const { data: uploads, error: uploadsError } = await supabase.from('user_uploads').select('*');
+            r.innerHTML += `User Uploads: ${uploads?.length || 0} | Error: ${uploadsError?.message || 'none'}<br>`;
+        }
+        
+        setTimeout(checkTables, 1000);
+    </script>
+</body>
+</html>

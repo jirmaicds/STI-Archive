@@ -7105,7 +7105,9 @@ STI Archives Admin`;
             fetch('/api/articles')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.status === 'success') {
+                    // Handle both 'success' (new) and 'status' (old) response formats
+                    const isSuccess = data.status === 'success' || data.success === true;
+                    if (isSuccess) {
                         const articles = data.articles || [];
                         // Save to localStorage for other functions that might need it
                         localStorage.setItem('allArticles', JSON.stringify(articles));
@@ -7113,7 +7115,7 @@ STI Archives Admin`;
                         // Render the articles in admin uploads section
                         renderAdminUploadsFromServer(articles);
                     } else {
-                        console.error('Failed to load articles:', data.error);
+                        console.error('✗ Failed to load articles:', data.error || 'Unknown error');
                         document.getElementById('admin-uploaded-articles').innerHTML = '<p class="empty-state">Failed to load articles</p>';
                     }
                 })

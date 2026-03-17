@@ -1128,6 +1128,19 @@ module.exports = async function handler(req, res) {
         else { res.statusCode = 404; res.end(JSON.stringify({ success: false, error: 'User endpoint not found' })); }
         break;
         
+      case 'admin':
+        // Handle /api/admin/* routes
+        if (segments[1] === 'user-uploads') {
+          if (segments[2]) await handleAdminUserUploadId(req, res, segments[2], body);
+          else await handleAdminUserUploads(req, res);
+        } else if (segments[1] === 'articles') {
+          // Handle /api/admin/articles
+          if (req.method === 'GET') await handleArticles(req, res);
+          else if (req.method === 'POST') await handleCreateArticle(req, res, body);
+          else { res.statusCode = 404; res.end(JSON.stringify({ success: false, error: 'Admin articles endpoint not found' })); }
+        } else { res.statusCode = 404; res.end(JSON.stringify({ success: false, error: 'Admin endpoint not found' })); }
+        break;
+        
       case 'admin-user-uploads':
         if (segments[1]) await handleAdminUserUploadId(req, res, segments[1], body);
         else await handleAdminUserUploads(req, res);

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Auth Login Test</title>
+</head>
+<body>
+    <h1>Supabase Auth Login Test</h1>
+    <div id="result"></div>
+    
+    <!-- Load Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        const SUPABASE_URL = 'https://eopbqatvianrjkdbypvk.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJxYXR2aWFucmprZGJ5cHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzA4OTIsImV4cCI6MjA4OTEwNjg5Mn0.k9_xTbjwRdwAQJ9UgGGsosjLWywzxHuYOq-JbGeII8g';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        async function testLogin() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing Supabase Auth login...<br>';
+            
+            // First, let's try to sign in with email/password
+            // Note: Supabase Auth uses email, not fullname
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: 'admin@test.com',
+                password: 'admin123'
+            });
+            
+            if (error) {
+                resultDiv.innerHTML += '<p style="color:red">Auth Error: ' + error.message + '</p>';
+                resultDiv.innerHTML += '<p>This means the password in Supabase Auth is different.</p>';
+            } else {
+                resultDiv.innerHTML += '<p style="color:green">✓ Auth Login successful!</p>';
+                resultDiv.innerHTML += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            }
+        }
+        
+        setTimeout(testLogin, 1000);
+    </script>
+</body>
+</html>

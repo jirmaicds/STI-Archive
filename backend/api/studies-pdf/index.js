@@ -37,12 +37,19 @@ async function handleGetPdf(req, res) {
 
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
-    const pdfPath = url.searchParams.get('path');
+    let pdfPath = url.searchParams.get('path');
 
     if (!pdfPath) {
       res.statusCode = 400;
       res.end(JSON.stringify({ success: false, error: 'PDF path is required' }));
       return;
+    }
+
+    // Remove /Studies/ prefix if present since we're already accessing the Studies bucket
+    if (pdfPath.startsWith('/Studies/')) {
+      pdfPath = pdfPath.replace('/Studies/', '');
+    } else if (pdfPath.startsWith('Studies/')) {
+      pdfPath = pdfPath.replace('Studies/', '');
     }
 
     if (isSupabaseConfigured()) {

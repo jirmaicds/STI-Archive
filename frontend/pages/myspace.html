@@ -6011,7 +6011,7 @@ CURRICULUM VITAE`;
                 if (settings.siteFavicon && settings.siteFavicon.startsWith('blob:')) {
                     settings.siteFavicon = '/frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg';
                 }
-                updateDocumentTitle(settings.siteTitle);
+                updateDocumentTitle(settings.siteTitle || 'My Space STI ARCHIVES');
                 updateDocumentFavicon(settings.siteFavicon);
             } catch (error) {
                 console.error('Failed to load site settings:', error);
@@ -6028,6 +6028,9 @@ CURRICULUM VITAE`;
         }
 
         function updateDocumentFavicon(faviconSrc) {
+            if (!faviconSrc) {
+                faviconSrc = '/frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg';
+            }
             let faviconLink = document.querySelector('link[rel="icon"]');
             if (!faviconLink) {
                 faviconLink = document.createElement('link');

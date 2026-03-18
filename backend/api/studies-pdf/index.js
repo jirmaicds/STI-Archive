@@ -37,7 +37,7 @@ async function handleGetPdf(req, res) {
 
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
-    let pdfPath = url.searchParams.get('path');
+    const pdfPath = url.searchParams.get('path');
 
     if (!pdfPath) {
       res.statusCode = 400;
@@ -45,39 +45,10 @@ async function handleGetPdf(req, res) {
       return;
     }
 
-    // Remove /Studies/ prefix if present since we're already accessing the Studies bucket
-    if (pdfPath.startsWith('/Studies/')) {
-      pdfPath = pdfPath.replace('/Studies/', '');
-    } else if (pdfPath.startsWith('Studies/')) {
-      pdfPath = pdfPath.replace('Studies/', '');
-    }
-
     if (isSupabaseConfigured()) {
       const supabase = getSupabase();
       
-      // PDF is in Studies bucket → research/2023-2024/filename.pdf
-      // Path from frontend is: Research/2023-2024/Santibañez et al.pdf
-      // Need to prepend 'research/' to match folder structure
-      const folderPath = 'research/' + pdfPath;
-      
-      // Try to get from Studies bucket
-      const { data: studyData, error: studyError } = await supabase.storage
-        .from('Studies')
-        .download(folderPath);
-      
-      if (studyData && !studyError) {
-        // Serve from Studies bucket
-        res.setHeader('Content-Type', 'application/pdf');
-        const chunks = [];
-        for await (const chunk of studyData.stream()) {
-          chunks.push(chunk);
-        }
-        const buffer = Buffer.concat(chunks);
-        res.setHeader('Content-Length', buffer.length);
-        res.end(buffer);
-        return;
-      }
-      
+      // Path from frontend is already processed: Research/2023-2024/Santibañez et al.pdf
       // Try direct path in Studies bucket
       const { data: directData, error: directError } = await supabase.storage
         .from('Studies')
@@ -98,7 +69,7 @@ async function handleGetPdf(req, res) {
       // If download fails, try to redirect to public URL
       const { data: urlData } = supabase.storage
         .from('Studies')
-        .getPublicUrl(folderPath);
+        .getPublicUrl(pdfPath);
       
       if (urlData?.publicUrl) {
         res.statusCode = 302;
@@ -107,7 +78,7 @@ async function handleGetPdf(req, res) {
         return;
       }
       
-      console.error('PDF not found in Studies bucket:', { folderPath, pdfPath, studyError, directError });
+      console.error('PDF not found in Studies bucket:', { pdfPath, directError });
       res.statusCode = 404;
       res.end(JSON.stringify({ success: false, error: 'PDF not found in Studies bucket' }));
       return;

@@ -728,16 +728,9 @@ async function handleStudiesPdf(req, res) {
 
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
-    let pdfPath = url.searchParams.get('path') || url.searchParams.get('filename');
+    const pdfPath = url.searchParams.get('path') || url.searchParams.get('filename');
 
     if (!pdfPath) { res.statusCode = 400; res.end(JSON.stringify({ success: false, error: 'PDF path is required' })); return; }
-
-    // Remove /Studies/ prefix if present since we're already accessing the Studies bucket
-    if (pdfPath.startsWith('/Studies/')) {
-      pdfPath = pdfPath.replace('/Studies/', '');
-    } else if (pdfPath.startsWith('Studies/')) {
-      pdfPath = pdfPath.replace('Studies/', '');
-    }
 
     if (isSupabaseConfigured()) {
       const supabase = getSupabase();

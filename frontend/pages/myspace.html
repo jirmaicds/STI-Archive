@@ -1820,10 +1820,13 @@ color: #ffd700;
 
     /* Hide footer toggle on larger screens */
     @media (max-width: 1780px) {
+      .main-content {
+        padding-top: 0 !important;
+      }
       .file-viewer {
         flex: 0 0 100% !important;
         width: 100% !important;
-        height: calc(100vh - 100px) !important;
+        height: calc(100vh - 50px) !important;
         top: 50px !important;
       }
       .home-editor {

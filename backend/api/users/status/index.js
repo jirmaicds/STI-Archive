@@ -4,6 +4,7 @@
  */
 
 const { getSupabase, isSupabaseConfigured } = require('../../services/supabase.js');
+const emailService = require('../../services/EmailService.js');
 
 function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -67,10 +68,21 @@ async function handleUserStatus(req, res) {
       if (action === 'accept') {
         updateData.verified = true;
         updateData.role = role || 'user';
+        
+        // Send approval notification email
+        await emailService.sendApprovalNotification(user.email, user.fullname);
       } else if (action === 'reject') {
         updateData.rejected = true;
+        
+        // Send rejection notification email
+        const reason = req.body.reason || '';
+        await emailService.sendRejectionNotification(user.email, user.fullname, reason);
       } else if (action === 'ban') {
         updateData.banned = true;
+        
+        // Send ban notification email
+        const reason = req.body.reason || '';
+        await emailService.sendBanNotification(user.email, user.fullname, reason);
       }
       
       const { data, error } = await supabase

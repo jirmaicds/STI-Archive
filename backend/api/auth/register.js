@@ -82,6 +82,8 @@ async function handleRegister(req, res) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const userId = uuidv4();
+    // Note: activation_token is kept in DB but not used for activation
+    // Admin will manually approve users via /api/users/status
     const activationToken = uuidv4();
 
     // Create user object
@@ -106,13 +108,13 @@ async function handleRegister(req, res) {
 
       if (error) throw error;
       
-      // Send activation email
-      await emailService.sendActivationEmail(email, activationToken, fullname);
+      // Send welcome email (not activation - admin will manually approve)
+      await emailService.sendWelcomeEmail(email, fullname);
       
       res.statusCode = 201;
       res.end(JSON.stringify({
         success: true,
-        message: 'Registration successful. Please check your email to activate your account.',
+        message: 'Registration successful! Welcome to STI Archives. Please wait for admin approval.',
         user: { id: data.id, email: data.email, fullname: data.fullname, role: data.role }
       }));
     } else {

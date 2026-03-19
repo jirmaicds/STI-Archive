@@ -63,6 +63,37 @@ async function sendPasswordResetEmail(email, resetCode, resetToken) {
 }
 
 /**
+ * Send welcome email (on signup - no activation required)
+ */
+async function sendWelcomeEmail(email, userName) {
+  const siteUrl = process.env.SITE_URL || 'https://sti-archive.vercel.app';
+  
+  const mailOptions = {
+    from: `"STI Archives" <${emailConfig.auth.user}>`,
+    to: email,
+    subject: 'Welcome to STI Archives!',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #007bff;">Welcome to STI Archives, ${userName}!</h2>
+        <p>Thank you for registering to our website/mobile app.</p>
+        <p>Your account is pending approval. Our admin team will review your registration and verify your account shortly.</p>
+        <p>Once approved, you will receive a notification email with your login credentials.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+        <p style="color: #666; font-size: 12px;">STI Archives System</p>
+      </div>
+    `
+  };
+
+  try {
+    const result = await getTransporter().sendMail(mailOptions);
+    return { success: true, messageId: result.messageId };
+  } catch (error) {
+    console.error('Error sending welcome email:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
  * Send account activation email
  */
 async function sendActivationEmail(email, activationToken, userName) {
@@ -155,10 +186,42 @@ async function sendRejectionNotification(email, userName, reason) {
   }
 }
 
+/**
+ * Send ban notification
+ */
+async function sendBanNotification(email, userName, reason) {
+  const mailOptions = {
+    from: `"STI Archives" <${emailConfig.auth.user}>`,
+    to: email,
+    subject: 'Account Temporarily Banned - STI Archives',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #dc3545;">Account Banned Notice</h2>
+        <p>Hello ${userName},</p>
+        <p>You are temporarily banned in our website/mobile app.</p>
+        ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
+        <p>If you believe this is an error or would like to appeal, please contact the administrator.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+        <p style="color: #666; font-size: 12px;">STI Archives System</p>
+      </div>
+    `
+  };
+
+  try {
+    const result = await getTransporter().sendMail(mailOptions);
+    return { success: true, messageId: result.messageId };
+  } catch (error) {
+    console.error('Error sending ban notification:', error);
+    return { success: false, error: error.message };
+  }
+}
+
 module.exports = {
   getTransporter,
   sendPasswordResetEmail,
+  sendWelcomeEmail,
   sendActivationEmail,
   sendApprovalNotification,
-  sendRejectionNotification
+  sendRejectionNotification,
+  sendBanNotification
 };

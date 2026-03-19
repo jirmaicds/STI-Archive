@@ -738,25 +738,22 @@ async function handleStudiesPdf(req, res) {
       // Debug: log the path being used
       console.log('PDF Path received:', pdfPath);
       
-      // Serve PDF directly from Supabase Storage Studies bucket - no redirects
-      const { data: pdfData, error: pdfError } = await supabase.storage
+      // Get the public URL from Supabase Storage Studies bucket
+      const { data: urlData, error: urlError } = supabase.storage
         .from('Studies')
-        .download(pdfPath);
+        .getPublicUrl(pdfPath);
       
-      if (pdfData && !pdfError) {
-        // Serve the PDF directly
-        res.setHeader('Content-Type', 'application/pdf');
-        const chunks = [];
-        for await (const chunk of pdfData.stream()) {
-          chunks.push(chunk);
-        }
-        const buffer = Buffer.concat(chunks);
-        res.setHeader('Content-Length', buffer.length);
-        res.end(buffer);
+      console.log('PDF Public URL:', urlData?.publicUrl, 'Error:', urlError);
+      
+      if (urlData?.publicUrl) {
+        // Redirect to the direct Supabase public URL
+        res.statusCode = 302;
+        res.setHeader('Location', urlData.publicUrl);
+        res.end();
         return;
       }
       
-      console.error('PDF not found in Studies bucket:', { pdfPath, error: pdfError });
+      console.error('PDF not found in Studies bucket:', { pdfPath, urlError });
       res.statusCode = 404;
       res.end(JSON.stringify({ success: false, error: 'PDF not found in Studies bucket', debug: { pdfPath, supabaseConfigured: true } }));
     } else {

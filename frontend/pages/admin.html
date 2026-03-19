@@ -4218,6 +4218,38 @@
             isLoadingUsers = false;
             return localUsers;
         }
+        
+        // Function to fetch user counts from API
+        async function fetchUserCounts() {
+            try {
+                const token = localStorage.getItem('sti_auth_token');
+                const response = await fetch('/api/users/count', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.counts) {
+                        // Update dashboard cards with counts from Supabase
+                        document.getElementById('verified-users-count').textContent = data.counts.totalUsers || 0;
+                        document.getElementById('admin-users-count').textContent = data.counts.adminUsers || 0;
+                        document.getElementById('signing-up-users-count').textContent = data.counts.newSignups || 0;
+                        
+                        // Update pending badge
+                        const pendingBadge = document.getElementById('pending-requests-badge');
+                        if (pendingBadge) {
+                            pendingBadge.textContent = data.counts.newSignups || 0;
+                            pendingBadge.style.display = (data.counts.newSignups || 0) > 0 ? 'flex' : 'none';
+                        }
+                        console.log('DEBUG: Updated dashboard counts from Supabase:', data.counts);
+                    }
+                }
+            } catch (error) {
+                console.log('DEBUG: Could not fetch user counts:', error.message);
+            }
+        }
+        
         async function refreshUsers() {
             console.log('DEBUG: Force refreshing users from server...');
             await getUsers(true);
@@ -5666,12 +5698,15 @@
             console.log('DEBUG: Initializing admin page - defaulting to dashboard');
             showSection('dashboard');
             loadUsers().then(() => {
+                // Fetch counts from Supabase for accurate numbers
+                fetchUserCounts();
                 renderUserChart();
                 renderDashboardUploadsChart();
                 renderSigningUpChart('day', null);
                 renderSuggestionsChart();
             }).catch(() => {
                 // Fallback if async fails
+                fetchUserCounts(); // Try to fetch counts even if users fail
                 renderUserChart();
                 renderDashboardUploadsChart();
                 renderSigningUpChart('day');

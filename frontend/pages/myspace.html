@@ -1264,15 +1264,15 @@ color: #ffd700;
       position: relative !important;
     }
 
-    /* Editor fullscreen: complete coverage */
+    /* Editor fullscreen: not full coverage - leave space for navbar and toggle */
     .editor.fullscreen {
       position: fixed !important;
-      top: 50px !important;    /* Start below navbar */
-      left: 0 !important;      /* Cover from left edge */
-      right: 0 !important;     /* Cover to right edge */
-      bottom: 0 !important;    /* Cover to bottom edge */
-      width: 100vw !important; /* Full viewport width */
-      height: calc(100vh - 50px) !important; /* Full height minus navbar */
+      top: 70px !important;    /* Start below navbar (increased from 50px) */
+      left: 20px !important;  /* Add some left margin */
+      right: 20px !important; /* Add some right margin */
+      bottom: 20px !important; /* Add bottom margin */
+      width: calc(100vw - 40px) !important; /* Full width minus margins */
+      height: calc(100vh - 90px) !important; /* Full height minus navbar and margins */
       z-index: 999 !important; /* Below navbar but above everything else */
       background: #fff;
       margin: 0 !important;

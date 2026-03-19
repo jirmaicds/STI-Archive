@@ -66,18 +66,7 @@ async function handleGetPdf(req, res) {
         return;
       }
       
-      // If download fails, try to redirect to public URL
-      const { data: urlData } = supabase.storage
-        .from('Studies')
-        .getPublicUrl(pdfPath);
-      
-      if (urlData?.publicUrl) {
-        res.statusCode = 302;
-        res.setHeader('Location', urlData.publicUrl);
-        res.end();
-        return;
-      }
-      
+      // PDF not found - return 404 without any redirects
       console.error('PDF not found in Studies bucket:', { pdfPath, directError });
       res.statusCode = 404;
       res.end(JSON.stringify({ success: false, error: 'PDF not found in Studies bucket' }));

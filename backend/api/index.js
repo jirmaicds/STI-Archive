@@ -738,23 +738,25 @@ async function handleStudiesPdf(req, res) {
       // Debug: log the path being used
       console.log('PDF Path received:', pdfPath);
       
-      // Path from frontend is: Research/2023-2024/Juangco et al. (2024).pdf
-      // This matches directly with the Studies bucket
-      // No need to add 'research/' prefix
+      // Serve PDF directly from Supabase Storage Studies bucket - no redirects
+      const { data: pdfData, error: pdfError } = await supabase.storage
+        .from('Studies')
+        .download(pdfPath);
       
-      // Redirect to public URL directly
-      const { data: urlData } = supabase.storage.from('Studies').getPublicUrl(pdfPath);
-      
-      console.log('Supabase URL generated:', urlData?.publicUrl);
-      
-      if (urlData?.publicUrl) {
-        res.statusCode = 302;
-        res.setHeader('Location', urlData.publicUrl);
-        res.end();
+      if (pdfData && !pdfError) {
+        // Serve the PDF directly
+        res.setHeader('Content-Type', 'application/pdf');
+        const chunks = [];
+        for await (const chunk of pdfData.stream()) {
+          chunks.push(chunk);
+        }
+        const buffer = Buffer.concat(chunks);
+        res.setHeader('Content-Length', buffer.length);
+        res.end(buffer);
         return;
       }
       
-      console.error('PDF not found in Studies bucket:', { pdfPath });
+      console.error('PDF not found in Studies bucket:', { pdfPath, error: pdfError });
       res.statusCode = 404;
       res.end(JSON.stringify({ success: false, error: 'PDF not found in Studies bucket', debug: { pdfPath, supabaseConfigured: true } }));
     } else {

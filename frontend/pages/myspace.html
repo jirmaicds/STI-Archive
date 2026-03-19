@@ -1267,13 +1267,13 @@ color: #ffd700;
     /* Editor fullscreen: not full coverage - leave space for navbar and toggle */
     .editor.fullscreen {
       position: fixed !important;
-      top: 70px !important;    /* Start below navbar (increased from 50px) */
+      top: 90px !important;    /* Start below navbar */
       left: 20px !important;  /* Add some left margin */
       right: 20px !important; /* Add some right margin */
       bottom: 20px !important; /* Add bottom margin */
       width: calc(100vw - 40px) !important; /* Full width minus margins */
-      height: calc(100vh - 90px) !important; /* Full height minus navbar and margins */
-      z-index: 999 !important; /* Below navbar but above everything else */
+      height: calc(100vh - 110px) !important; /* Full height minus navbar and margins */
+      z-index: 500 !important; /* Below navbar (navbar has z-index 1000) */
       background: #fff;
       margin: 0 !important;
       padding: 0 !important;

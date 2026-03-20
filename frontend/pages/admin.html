@@ -4232,9 +4232,13 @@
                     const data = await response.json();
                     if (data.success && data.counts) {
                         // Update dashboard cards with counts from Supabase
-                        document.getElementById('verified-users-count').textContent = data.counts.totalUsers || 0;
-                        document.getElementById('admin-users-count').textContent = data.counts.adminUsers || 0;
-                        document.getElementById('signing-up-users-count').textContent = data.counts.newSignups || 0;
+                        const verifiedCountEl = document.getElementById('verified-users-count');
+                        const adminCountEl = document.getElementById('admin-users-count');
+                        const signupCountEl = document.getElementById('signing-up-users-count');
+                        
+                        if (verifiedCountEl) verifiedCountEl.textContent = data.counts.totalUsers || 0;
+                        if (adminCountEl) adminCountEl.textContent = data.counts.adminUsers || 0;
+                        if (signupCountEl) signupCountEl.textContent = data.counts.newSignups || 0;
                         
                         // Update pending badge
                         const pendingBadge = document.getElementById('pending-requests-badge');
@@ -4244,6 +4248,8 @@
                         }
                         console.log('DEBUG: Updated dashboard counts from Supabase:', data.counts);
                     }
+                } else {
+                    console.log('DEBUG: User count API returned error:', response.status);
                 }
             } catch (error) {
                 console.log('DEBUG: Could not fetch user counts:', error.message);
@@ -5763,6 +5769,7 @@ STI Archives Admin`;
             // Handle case where userId might be undefined
             if (typeof userId === 'undefined' || userId === null || userId === '') {
                 console.error('updateUserStatus called without userId');
+                alert('Error: User ID is missing. Please refresh the page and try again.');
                 return;
             }
             console.log('Updating user status for userId:', userId, 'action:', action);
@@ -6236,7 +6243,13 @@ STI Archives Admin`;
                 }
             });
             
-            const users = await getUsers();
+            let users = [];
+            try {
+                users = await getUsers();
+            } catch (error) {
+                console.error('DEBUG: Error loading users:', error);
+                users = JSON.parse(localStorage.getItem('users')) || [];
+            }
             console.log('DEBUG: loadUsers got users, count:', users.length);
             const removedUsers = JSON.parse(localStorage.getItem('removedUsers')) || [];
             const filteredUsers = users.filter(user => !removedUsers.includes(user.id));

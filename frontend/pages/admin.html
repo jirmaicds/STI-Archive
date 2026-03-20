@@ -5899,9 +5899,6 @@ STI Archives Admin`;
             }
             // Try to update server
             console.log('updateUserStatus - userId:', userId, 'action:', action);
-            if (!userId) {
-                console.error('userId is missing, aborting server update');
-            } else {
             fetch('/api/users/status', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -5922,7 +5919,6 @@ STI Archives Admin`;
             .catch(error => {
                 console.error('Error updating server:', error);
             });
-            } // End of else block for userId check
             // Always reload users
             loadUsers().then(() => {
                 console.log('Users reloaded');

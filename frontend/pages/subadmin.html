@@ -4167,6 +4167,12 @@ STI Archives Admin`;
             });
         }
         function updateUserStatus(userId, action) {
+            // Handle case where userId might be undefined
+            if (typeof userId === 'undefined' || userId === null || userId === '') {
+                console.error('updateUserStatus called without userId');
+                alert('Error: User ID is missing. Please refresh the page and try again.');
+                return;
+            }
             console.log('Updating user status for userId:', userId, 'action:', action);
             
             // Get user email first
@@ -4603,8 +4609,12 @@ STI Archives Admin`;
             const totalUsersCount = jsonUsers.length;
             // Signing up users = non-admin users who are active (isActive = true)
             const signingUpCount = jsonUsers.filter(u => u.isActive && !adminRoles.includes(u.role)).length;
-            document.getElementById('standard-users-count').textContent = totalUsersCount;
-            document.getElementById('signing-up-users-count').textContent = signingUpCount;
+            
+            // Update dashboard counts with null checks
+            const standardCountEl = document.getElementById('standard-users-count');
+            const signupCountEl = document.getElementById('signing-up-users-count');
+            if (standardCountEl) standardCountEl.textContent = totalUsersCount;
+            if (signupCountEl) signupCountEl.textContent = signingUpCount;
         }
 
         // === LOAD ADMINS FUNCTION ===

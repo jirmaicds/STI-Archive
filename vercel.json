@@ -44,12 +44,16 @@
       "dest": "/frontend/assets/$1"
     },
     {
-      "src": "/frontend/pages/(.*)",
-      "dest": "/frontend/pages/$1"
+      "src": "/(.*).html",
+      "dest": "/frontend/pages/$1.html"
+    },
+    {
+      "src": "/",
+      "dest": "/frontend/pages/index.html"
     },
     {
       "src": "/((?!api/|assets/|frontend/).*)",
-      "dest": "/frontend/pages/$1"
+      "dest": "/frontend/pages/index.html"
     }
   ],
   "env": {

@@ -5898,16 +5898,10 @@ STI Archives Admin`;
                 }
             }
             // Try to update server
-            try {
-                console.log('updateUserStatus - userId:', userId, 'action:', action);
-                if (!userId) {
-                    console.error('userId is missing, aborting server update');
-                    return;
-                }
-            } catch (e) {
-                console.error('Error in logging userId:', e);
-                return;
-            }
+            console.log('updateUserStatus - userId:', userId, 'action:', action);
+            if (!userId) {
+                console.error('userId is missing, aborting server update');
+            } else {
             fetch('/api/users/status', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -5928,7 +5922,7 @@ STI Archives Admin`;
             .catch(error => {
                 console.error('Error updating server:', error);
             });
-            } // End of try-catch for userId
+            } // End of else block for userId check
             // Always reload users
             loadUsers().then(() => {
                 console.log('Users reloaded');

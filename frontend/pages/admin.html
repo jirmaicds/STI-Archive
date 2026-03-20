@@ -4182,11 +4182,14 @@
                 // Get auth token from localStorage
                 const token = localStorage.getItem('sti_auth_token');
                 console.log('DEBUG: Auth token:', token ? 'present' : 'missing');
+                if (!token) {
+                    console.log('DEBUG: No auth token found, trying without authentication');
+                }
                 // Add cache-busting query parameter
                 const response = await fetch('/api/users?_=' + Date.now(), {
-                    headers: {
+                    headers: token ? {
                         'Authorization': `Bearer ${token}`
-                    }
+                    } : {}
                 });
                 console.log('DEBUG: Fetch response status:', response.status);
                 if (response.ok) {
@@ -5895,7 +5898,16 @@ STI Archives Admin`;
                 }
             }
             // Try to update server
-            console.log('updateUserStatus - userId:', userId, 'action:', action);
+            try {
+                console.log('updateUserStatus - userId:', userId, 'action:', action);
+                if (!userId) {
+                    console.error('userId is missing, aborting server update');
+                    return;
+                }
+            } catch (e) {
+                console.error('Error in logging userId:', e);
+                return;
+            }
             fetch('/api/users/status', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -5916,6 +5928,7 @@ STI Archives Admin`;
             .catch(error => {
                 console.error('Error updating server:', error);
             });
+            } // End of try-catch for userId
             // Always reload users
             loadUsers().then(() => {
                 console.log('Users reloaded');

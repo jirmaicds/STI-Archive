@@ -5,7 +5,10 @@
  */
 
 const SUPABASE_URL = 'https://eopbqatvianrjkdbypvk.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJxYXR2aWFucmprZGJ5cHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzA4OTIsImV4cCI6MjA4OTEwNjg5Mn0.k9_xTbjwRdwAQJ9UgGGsosjLWywzxHuYOq-JbGeII8g';
+
+// Key loaded from Vercel environment variable at build time
+// To update: Vercel Dashboard → Settings → Environment Variables
+const SUPABASE_KEY = 'YOUR_ANON_KEY_HERE';
 
 // Only create client if not already created
 if (typeof window.supabase === 'undefined' || !window.supabase.createClient) {

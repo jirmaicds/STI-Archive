@@ -744,8 +744,8 @@ class PDFSearcher {
                 top: ${result.y * scale}px;
                 width: ${Math.max(result.width * scale, 20)}px;
                 height: ${Math.max(result.height * scale, 14)}px;
-                background-color: rgba(255, 235, 59, 0.5);
-                border: 2px solid #ff9800;
+                background-color: rgba(255, 235, 59, 0.3);
+                border: 1px solid rgba(255, 152, 0, 0.6);
                 cursor: pointer;
                 z-index: 10;
                 pointer-events: auto;
@@ -773,8 +773,8 @@ class PDFSearcher {
         // Remove current highlight class from all
         const allHighlights = this.pagesContainer.querySelectorAll('.pdf-search-highlight');
         allHighlights.forEach(h => {
-            h.style.backgroundColor = 'rgba(255, 235, 59, 0.5)';
-            h.style.borderColor = '#ff9800';
+            h.style.backgroundColor = 'rgba(255, 235, 59, 0.3)';
+            h.style.borderColor = 'rgba(255, 152, 0, 0.6)';
             h.style.zIndex = '10';
         });
 
@@ -783,8 +783,8 @@ class PDFSearcher {
                 `.pdf-search-highlight[data-match-index="${this.currentMatchIndex}"]`
             );
             if (currentHighlight) {
-                currentHighlight.style.backgroundColor = 'rgba(255, 152, 0, 0.7)';
-                currentHighlight.style.borderColor = '#ff5722';
+                currentHighlight.style.backgroundColor = 'rgba(255, 152, 0, 0.4)';
+                currentHighlight.style.borderColor = 'rgba(255, 87, 34, 0.8)';
                 currentHighlight.style.zIndex = '20';
                 
                 // Scroll to the match

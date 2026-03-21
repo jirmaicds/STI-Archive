@@ -58,5 +58,7 @@
   ],
   "env": {
     "NODE_ENV": "production"
-  }
+  },
+  "framework": null,
+  "nodeVersion": "20"
 }

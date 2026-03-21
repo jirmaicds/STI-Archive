@@ -725,23 +725,31 @@ class PDFSearcher {
 
         // Get all canvas elements (one per page)
         const canvases = this.pagesContainer.querySelectorAll('canvas');
+        console.log('Found ' + canvases.length + ' canvases, ' + this.searchResults.length + ' results');
 
         this.searchResults.forEach((result, index) => {
             const canvas = canvases[result.pageNum - 1];
-            if (!canvas) return;
+            if (!canvas) {
+                console.log('No canvas for page ' + result.pageNum);
+                return;
+            }
 
             // Create highlight overlay
             const highlight = document.createElement('div');
             highlight.className = 'pdf-search-highlight';
             highlight.dataset.matchIndex = index;
+            highlight.dataset.pageNum = result.pageNum;
             
-            // Calculate position relative to canvas
+            // Calculate position relative to canvas using actual rendered canvas size
+            // Use scale 1 for the viewport since we stored positions at scale 1
             const scale = canvas.width / result.viewport.width;
+            const x = result.x * scale;
+            const y = result.y * scale;
             
             highlight.style.cssText = `
                 position: absolute;
-                left: ${result.x * scale}px;
-                top: ${result.y * scale}px;
+                left: ${x}px;
+                top: ${y}px;
                 width: ${Math.max(result.width * scale, 20)}px;
                 height: ${Math.max(result.height * scale, 14)}px;
                 background-color: rgba(255, 235, 59, 0.3);
@@ -871,6 +879,9 @@ function createPDFSearchUI(container, searcher) {
         background: #f8f9fa;
         border-bottom: 1px solid #ddd;
         flex-wrap: wrap;
+        position: sticky;
+        top: 0;
+        z-index: 100;
     `;
 
     // Search input

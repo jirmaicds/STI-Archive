@@ -3916,8 +3916,8 @@ CURRICULUM VITAE`;
             const editor = document.getElementById('editor');
             console.log('toggleHomeEditor called, current toggleState:', toggleState);
             
-            // Check if editor is active (visible and not hidden)
-            const isEditorActive = editor && editor.style.display !== 'none' && editor.classList.contains('visible');
+            // Check if editor is active (visible, fullscreen, or not hidden)
+            const isEditorActive = editor && (editor.style.display !== 'none' || editor.classList.contains('fullscreen') || editor.classList.contains('visible'));
             
             if (isEditorActive) {
                 // Editor is active - make it fullscreen

@@ -466,11 +466,20 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         // Container with search bar
         container.innerHTML = `
             <div style="display:flex;flex-direction:column;height:100%;">
-                <div style="padding:8px 12px;background:#f0f0f0;border-bottom:1px solid #ccc;display:flex;gap:8px;align-items:center;justify-content:center;">
+                <div style="padding:8px 12px;background:#f0f0f0;border-bottom:1px solid #ccc;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
                     <input type="text" id="pdf-search-input" placeholder="Search (Ctrl+F)..." 
-                           style="padding:6px 10px;border:1px solid #ccc;border-radius:4px;width:250px;font-size:14px;">
+                           style="padding:6px 10px;border:1px solid #ccc;border-radius:4px;width:200px;font-size:14px;">
                     <button id="pdf-search-btn" style="padding:6px 12px;background:#0057b8;color:white;border:none;border-radius:4px;cursor:pointer;">
-                        <i class="fas fa-search"></i> Find
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button id="pdf-search-clear" style="padding:6px 10px;background:#6c757d;color:white;border:none;border-radius:4px;cursor:pointer;" title="Clear">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <button id="pdf-search-prev" style="padding:6px 10px;background:#0057b8;color:white;border:none;border-radius:4px;cursor:pointer;" title="Previous match">
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+                    <button id="pdf-search-next" style="padding:6px 10px;background:#0057b8;color:white;border:none;border-radius:4px;cursor:pointer;" title="Next match">
+                        <i class="fas fa-chevron-down"></i>
                     </button>
                     <span id="pdf-search-count" style="font-size:13px;color:#333;"></span>
                 </div>
@@ -530,10 +539,18 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
             });
         }
         
+
+        
+        // Store all highlights for navigation
+        let allHighlights = [];
+        let currentHighlightIndex = -1;
+        
         // Search function
         function performSearch(query) {
             // Clear previous highlights
             document.querySelectorAll('.pdf-search-highlight').forEach(el => el.remove());
+            allHighlights = [];
+            currentHighlightIndex = -1;
             
             if (!query || !query.trim()) {
                 searchCount.textContent = '';
@@ -548,7 +565,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     if (item.str.toLowerCase().includes(searchTerm)) {
                         totalMatches++;
                         
-                        // Create highlight overlay - semi-transparent so text is visible
+                        // Create highlight - border only, no background
                         const transform = item.transform;
                         const x = transform[4] * page.scale;
                         const y = (page.viewport.height - transform[5] - item.height) * page.scale;
@@ -563,26 +580,81 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                             top: ${y}px;
                             width: ${Math.max(width, 10)}px;
                             height: ${Math.max(height, 10)}px;
-                            background-color: rgba(255, 235, 59, 0.35);
-                            border: 1px solid rgba(255, 152, 0, 0.6);
+                            border: 2px solid #ff6b00;
                             cursor: pointer;
                             z-index: 5;
                         `;
                         highlight.title = item.str;
+                        highlight.dataset.index = totalMatches - 1;
+                        
+                        highlight.onclick = () => {
+                            highlightMatch(parseInt(highlight.dataset.index));
+                        };
+                        
                         page.canvasWrapper.appendChild(highlight);
+                        allHighlights.push(highlight);
                     }
                 });
             });
             
             if (totalMatches > 0) {
-                searchCount.textContent = `${totalMatches} match${totalMatches > 1 ? 'es' : ''} found`;
+                currentHighlightIndex = 0;
+                highlightMatch(0);
+                searchCount.textContent = `1 of ${totalMatches}`;
             } else {
                 searchCount.textContent = 'No matches';
             }
         }
         
+        function highlightMatch(index) {
+            if (index < 0 || index >= allHighlights.length) return;
+            
+            // Reset all highlights
+            allHighlights.forEach(h => h.style.border = '2px solid #ff6b00');
+            
+            // Highlight current
+            currentHighlightIndex = index;
+            allHighlights[index].style.border = '3px solid #ff0000';
+            
+            // Scroll to highlight
+            allHighlights[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            searchCount.textContent = `${index + 1} of ${allHighlights.length}`;
+        }
+        
+        // Clear function
+        function clearSearch() {
+            searchInput.value = '';
+            document.querySelectorAll('.pdf-search-highlight').forEach(el => el.remove());
+            allHighlights = [];
+            currentHighlightIndex = -1;
+            searchCount.textContent = '';
+        }
+        
+        // Navigation functions
+        function goToNextMatch() {
+            if (allHighlights.length === 0) return;
+            currentHighlightIndex = (currentHighlightIndex + 1) % allHighlights.length;
+            highlightMatch(currentHighlightIndex);
+        }
+        
+        function goToPrevMatch() {
+            if (allHighlights.length === 0) return;
+            currentHighlightIndex = (currentHighlightIndex - 1 + allHighlights.length) % allHighlights.length;
+            highlightMatch(currentHighlightIndex);
+        }
+        
         // Search button click
         searchBtn.onclick = () => performSearch(searchInput.value);
+        
+        // Clear button click
+        document.getElementById('pdf-search-clear').onclick = clearSearch;
+        
+        // Previous button
+        document.getElementById('pdf-search-prev').onclick = goToPrevMatch;
+        
+        // Next button
+        document.getElementById('pdf-search-next').onclick = goToNextMatch;
         
         // Enter key to search
         searchInput.onkeypress = (e) => {

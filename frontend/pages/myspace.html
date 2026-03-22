@@ -3913,9 +3913,45 @@ CURRICULUM VITAE`;
         // Toggle HomeEditor: show/hide HomeEditor, toggle with file-viewer
         function toggleHomeEditor() {
             const homeEditor = document.getElementById('homeEditor');
+            const editor = document.getElementById('editor');
             console.log('toggleHomeEditor called, current toggleState:', toggleState);
             
-            if (toggleState === 'default') {
+            // Check if editor is active (visible and not hidden)
+            const isEditorActive = editor && editor.style.display !== 'none' && editor.classList.contains('visible');
+            
+            if (isEditorActive) {
+                // Editor is active - make it fullscreen
+                console.log('Expanding Editor to 100%');
+                toggleState = 'editor';
+                
+                editor.classList.add('fullscreen');
+                editor.style.flex = '0 0 100%';
+                editor.style.width = '100%';
+                editor.style.position = 'absolute';
+                editor.style.left = '0';
+                editor.style.right = 'auto';
+                
+                // Hide file-viewer
+                fileViewer.style.display = 'none';
+                
+                // Hide homeEditor
+                if (homeEditor) {
+                    homeEditor.style.display = 'none';
+                    homeEditor.classList.remove('visible');
+                }
+                
+                // Position toggle panel on LEFT side
+                togglePanel.classList.add('left', 'no-left-space');
+                togglePanel.classList.remove('right', 'no-right-space');
+                togglePanel.style.display = 'flex';
+                
+                // Show only left button with chevron-right icon
+                toggleBtn.style.width = '15px';
+                leftBtn.querySelector('i').className = 'fa fa-chevron-right';
+                rightBtn.style.display = 'none';
+                leftBtn.style.display = 'flex';
+                
+            } else if (toggleState === 'default') {
                 console.log('Expanding HomeEditor to 100%');
                 // Expand HomeEditor to 100%, hide file-viewer
                 toggleState = 'homeEditorExpanded';
@@ -3948,6 +3984,40 @@ CURRICULUM VITAE`;
                 // Collapse HomeEditor back to default (50% width)
                 toggleState = 'default';
                 
+                if (homeEditor) {
+                    homeEditor.style.display = 'flex';
+                    homeEditor.classList.add('visible');
+                    homeEditor.style.flex = '0 0 50%';
+                    homeEditor.style.width = '50%';
+                    homeEditor.style.position = 'absolute';
+                    homeEditor.style.right = '0';
+                    homeEditor.style.left = 'auto';
+                }
+                
+                fileViewer.style.display = 'flex';
+                
+                // Reset toggle panel to center
+                togglePanel.classList.remove('left', 'no-left-space', 'right', 'no-right-space');
+                toggleBtn.style.width = '30px';
+                
+                // Show both buttons
+                leftBtn.querySelector('i').className = 'fa fa-chevron-left';
+                rightBtn.querySelector('i').className = 'fa fa-chevron-right';
+                leftBtn.style.display = 'flex';
+                rightBtn.style.display = 'flex';
+            } else if (toggleState === 'editor') {
+                // Editor is already fullscreen, collapse to default (50% file-viewer, 50% editor)
+                console.log('Collapsing Editor to default');
+                toggleState = 'default';
+                
+                editor.classList.remove('fullscreen');
+                editor.style.flex = '0 0 50%';
+                editor.style.width = '50%';
+                editor.style.position = 'relative';
+                editor.style.left = 'auto';
+                editor.style.right = 'auto';
+                
+                // Show homeEditor
                 if (homeEditor) {
                     homeEditor.style.display = 'flex';
                     homeEditor.classList.add('visible');

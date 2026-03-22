@@ -4916,9 +4916,14 @@ CURRICULUM VITAE`;
               var homeEditor = document.getElementById('homeEditor');
               var editor = document.getElementById('editor');
               var fileViewer = document.querySelector('.file-viewer');
-              
+               
               console.log('showEditor called');
-              
+               
+              // Check if homeEditor is in fullscreen/expanded mode
+              var isHomeEditorFullscreen = (toggleState === 'homeEditorExpanded') || 
+                  (homeEditor && homeEditor.style.flex === '0 0 100%') ||
+                  (homeEditor && homeEditor.style.width === '100%');
+               
               // First hide homeEditor completely
               if (homeEditor) {
                   homeEditor.classList.add('hidden');
@@ -4927,19 +4932,37 @@ CURRICULUM VITAE`;
               if (editor) {
                   editor.classList.add('visible');
                   editor.style.display = 'flex';
-                  editor.style.flex = '0 0 50%';
-                  editor.style.position = 'relative';
+                  
+                  // If homeEditor was in fullscreen, editor should take full width
+                  if (isHomeEditorFullscreen) {
+                      editor.style.flex = '0 0 100%';
+                      editor.style.width = '100%';
+                      editor.style.position = 'absolute';
+                      editor.style.left = '0';
+                      editor.style.right = 'auto';
+                      // Hide file-viewer when homeEditor was in fullscreen
+                      if (fileViewer) {
+                          fileViewer.style.display = 'none';
+                      }
+                  } else {
+                      editor.style.flex = '0 0 50%';
+                      editor.style.width = '50%';
+                      editor.style.position = 'relative';
+                      editor.style.left = 'auto';
+                      editor.style.right = 'auto';
+                      // Ensure file-viewer is visible on left side
+                      if (fileViewer) {
+                          fileViewer.style.display = 'flex';
+                          fileViewer.style.flex = '0 0 50%';
+                      }
+                  }
+                  
                   editor.style.zIndex = '100';
                   // Initialize a new blank document if needed
                   var container = document.getElementById('documentContainer');
                   if (!container || container.children.length === 0) {
                       resetDocument();
                   }
-              }
-              // Ensure file-viewer is visible on left side
-              if (fileViewer) {
-                  fileViewer.style.display = 'flex';
-                  fileViewer.style.flex = '0 0 50%';
               }
           };
           

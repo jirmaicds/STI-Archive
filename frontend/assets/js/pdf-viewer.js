@@ -464,13 +464,117 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         // Create object URL for the blob
         const objectUrl = URL.createObjectURL(blob);
         
-        // Use browser's native PDF viewer via iframe
+        // Use PDF.js with custom minimal toolbar (Find, Page nav, Zoom only)
         container.innerHTML = `
-            <iframe src="${objectUrl}" 
-                    style="width: 100%; height: 100%; border: none;"
-                    title="PDF Viewer">
-            </iframe>
+            <div style="display: flex; flex-direction: column; height: 100%; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f0f0f0; border-bottom: 1px solid #ccc;">
+                    <button id="pdf-btn-prev" style="padding: 6px 10px; background: #0057b8; color: white; border: none; border-radius: 3px; cursor: pointer;"><i class="fas fa-chevron-left"></i></button>
+                    <span id="pdf-page-info" style="font-size: 13px; color: #333; min-width: 80px;">Loading...</span>
+                    <button id="pdf-btn-next" style="padding: 6px 10px; background: #0057b8; color: white; border: none; border-radius: 3px; cursor: pointer;"><i class="fas fa-chevron-right"></i></button>
+                    <span style="width:1px;height:20px;background:#ccc;margin:0 4px;"></span>
+                    <button id="pdf-btn-zoomout" style="padding: 6px 10px; background: #0057b8; color: white; border: none; border-radius: 3px; cursor: pointer;"><i class="fas fa-search-minus"></i></button>
+                    <span id="pdf-zoom-level" style="font-size:13px;color:#333;min-width:40px;">100%</span>
+                    <button id="pdf-btn-zoomin" style="padding: 6px 10px; background: #0057b8; color: white; border: none; border-radius: 3px; cursor: pointer;"><i class="fas fa-search-plus"></i></button>
+                    <span style="width:1px;height:20px;background:#ccc;margin:0 4px;"></span>
+                    <button onclick="window.pdfViewerFind()" title="Find" style="padding:6px 12px;background:#0057b8;color:white;border:none;border-radius:3px;cursor:pointer;"><i class="fas fa-search"></i> Find</button>
+                    <input type="text" id="pdf-find-input" placeholder="Search text..." style="display:none;padding:4px 8px;border:1px solid #ccc;border-radius:3px;width:200px;">
+                </div>
+                <div id="pdf-canvas-container" style="flex:1;overflow:auto;background:#525252;padding:20px;text-align:center;"></div>
+            </div>
         `;
+        
+        // Load PDF.js and render
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+        document.head.appendChild(script);
+        await new Promise(resolve => script.onload = resolve);
+        
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        
+        const pdfDoc = await window.pdfjsLib.getDocument(objectUrl).promise;
+        let currentPage = 1;
+        let currentScale = 1.0;
+        let allTextContent = [];
+        
+        // Extract all text for searching
+        for (let i = 1; i <= pdfDoc.numPages; i++) {
+            const page = await pdfDoc.getPage(i);
+            const textContent = await page.getTextContent();
+            allTextContent.push({ page: i, items: textContent.items });
+        }
+        
+        const canvasContainer = container.querySelector('#pdf-canvas-container');
+        
+        async function renderPage(pageNum, scale = currentScale) {
+            const page = await pdfDoc.getPage(pageNum);
+            const viewport = page.getViewport({ scale: scale });
+            const canvas = document.createElement('canvas');
+            canvas.style.display = 'block';
+            canvas.style.margin = '0 auto 10px auto';
+            canvas.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+            canvasContainer.innerHTML = '';
+            canvasContainer.appendChild(canvas);
+            container.querySelector('#pdf-page-info').textContent = 'Page ' + pageNum + ' of ' + pdfDoc.numPages;
+        }
+        
+        await renderPage(1);
+        
+        // Button handlers
+        container.querySelector('#pdf-btn-prev').onclick = async function() {
+            if (currentPage > 1) { currentPage--; await renderPage(currentPage); }
+        };
+        container.querySelector('#pdf-btn-next').onclick = async function() {
+            if (currentPage < pdfDoc.numPages) { currentPage++; await renderPage(currentPage); }
+        };
+        container.querySelector('#pdf-btn-zoomin').onclick = async function() {
+            currentScale = Math.min(currentScale + 0.25, 3.0);
+            container.querySelector('#pdf-zoom-level').textContent = Math.round(currentScale * 100) + '%';
+            await renderPage(currentPage);
+        };
+        container.querySelector('#pdf-btn-zoomout').onclick = async function() {
+            currentScale = Math.max(currentScale - 0.25, 0.5);
+            container.querySelector('#pdf-zoom-level').textContent = Math.round(currentScale * 100) + '%';
+            await renderPage(currentPage);
+        };
+        
+        // Find functions
+        window.pdfViewerFind = function() {
+            const input = container.querySelector('#pdf-find-input');
+            input.style.display = input.style.display === 'none' ? 'inline-block' : 'none';
+            if (input.style.display !== 'none') input.focus();
+        };
+        
+        window.pdfViewerDoFind = function(query) {
+            if (!query) return;
+            const q = query.toLowerCase();
+            for (let tc of allTextContent) {
+                for (let item of tc.items) {
+                    if (item.str.toLowerCase().includes(q)) {
+                        currentPage = tc.page;
+                        renderPage(currentPage);
+                        alert('Found on page ' + tc.page);
+                        return;
+                    }
+                }
+            }
+            alert('No matches found.');
+        };
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                window.pdfViewerFind();
+            }
+        });
+        
+        container.querySelector('#pdf-find-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                window.pdfViewerDoFind(this.value);
+            }
+        });
         
         console.log('PDF loaded in native viewer');
     } catch (error) {

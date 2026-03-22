@@ -3824,29 +3824,27 @@ CURRICULUM VITAE`;
             
             if (isEditorFullscreen) {
                 // When editor is fullscreen and user clicks toggle, go back to half/half
+                // Requirement: file viewer on left, editor on right
                 toggleState = 'default';
                 
-                // Reset editor from fullscreen to 50% width
+                // Reset editor from fullscreen to 50% width (right side)
                 editor.classList.remove('fullscreen');
+                editor.classList.add('visible');
+                editor.style.display = 'flex';
                 editor.style.flex = '0 0 50%';
                 editor.style.width = '50%';
-                editor.style.position = 'relative';
+                editor.style.position = 'absolute';
+                editor.style.right = '0';
                 editor.style.left = 'auto';
-                editor.style.right = 'auto';
                 
-                // Show file-viewer at 50% width
+                // Show file-viewer at 50% width (left side)
                 fileViewer.style.display = 'flex';
                 fileViewer.style.flex = '0 0 50%';
                 
-                // Show homeEditor
+                // Hide homeEditor when editor is visible
                 if (homeEditor) {
-                    homeEditor.style.display = 'flex';
-                    homeEditor.classList.add('visible');
-                    homeEditor.style.flex = '0 0 50%';
-                    homeEditor.style.width = '50%';
-                    homeEditor.style.position = 'absolute';
-                    homeEditor.style.right = '0';
-                    homeEditor.style.left = 'auto';
+                    homeEditor.style.display = 'none';
+                    homeEditor.classList.remove('visible');
                 }
                 
                 // Reset toggle panel

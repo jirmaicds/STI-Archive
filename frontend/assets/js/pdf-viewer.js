@@ -567,10 +567,12 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                         
                         // Create highlight - border only, no background
                         const transform = item.transform;
+                        // transform[4] = x from left, transform[5] = y from bottom
+                        // Convert to canvas coords (top-left origin)
                         const x = transform[4] * page.scale;
-                        const y = (page.viewport.height - transform[5] - item.height) * page.scale;
-                        const width = item.width * page.scale;
-                        const height = (item.height || 12) * page.scale;
+                        const y = (page.viewport.height - transform[5] - (item.height || 0)) * page.scale;
+                        const width = (item.width || item.str.length * 6) * page.scale;
+                        const height = ((item.height || 12) + 2) * page.scale;
                         
                         const highlight = document.createElement('div');
                         highlight.className = 'pdf-search-highlight';

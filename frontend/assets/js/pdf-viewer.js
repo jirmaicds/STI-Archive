@@ -454,14 +454,6 @@ function displayArticlePDF(pdfPath, title) {
 // Separate function to load PDF using PDF.js and render to canvas
 async function loadPDFWithPDFJS(pdfUrl, container, title) {
     try {
-        // Load PDF.js library
-        if (!window.pdfjsLib) {
-            console.log('Loading PDF.js library...');
-            await loadPDFJSLibrary();
-        }
-        
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        
         // Fetch the PDF
         const response = await fetch(pdfUrl);
         if (!response.ok) {
@@ -473,112 +465,21 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
             throw new Error('PDF blob is empty');
         }
         
-        // Load PDF document
+        // Create object URL for the blob
         const objectUrl = URL.createObjectURL(blob);
-        const loadingTask = pdfjsLib.getDocument(objectUrl);
-        const pdfDoc = await loadingTask.promise;
         
-        console.log('PDF loaded, pages:', pdfDoc.numPages);
-        
-        // Clear loading message and show progress
+        // Use browser's native PDF viewer via iframe
+        // This provides native search (Ctrl+F), zoom, and other browser features
         container.innerHTML = `
-            <style>
-                @keyframes spin {
-                    to { transform: rotate(360deg); }
-                }
-            </style>
-            <div style="
-                display: flex; 
-                flex-direction: column;
-                align-items: center; 
-                justify-content: center; 
-                height: 70vh; 
-                background: #525252;
-                color: white;
-            ">
-                <div style="
-                    width: 50px; 
-                    height: 50px; 
-                    border: 4px solid rgba(255,255,255,0.3);
-                    border-top-color: white;
-                    border-radius: 50%;
-                    animation: spin 1s linear infinite;
-                    margin-bottom: 20px;
-                "></div>
-                <p style="font-size: 16px; margin: 0;">Rendering page 1 of ${pdfDoc.numPages}...</p>
-            </div>
+            <iframe src="${objectUrl}" 
+                    style="width: 100%; height: 100%; border: none;"
+                    title="PDF Viewer">
+            </iframe>
         `;
         
-        // Create container for all pages
-        const pagesContainer = document.createElement('div');
-        pagesContainer.style.cssText = 'width: 100%; background: #525252;';
-        
-        // Disable right-click on the entire container
-        pagesContainer.oncontextmenu = function() { return false; };
-        
-        // Render all pages
-        for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
-            // Update progress
-            const progressEl = container.querySelector('p');
-            if (progressEl) {
-                progressEl.textContent = `Rendering page ${pageNum} of ${pdfDoc.numPages}...`;
-            }
-            
-            const page = await pdfDoc.getPage(pageNum);
-            // Calculate responsive scale based on container width
-            const containerWidth = container.clientWidth || 800;
-            const scale = Math.min(1.5, (containerWidth - 40) / page.getViewport({ scale: 1 }).width);
-            const viewport = page.getViewport({ scale: scale });
-            
-            // Create canvas for this page
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-            canvas.style.cssText = 'display: block; margin: 0 auto; box-shadow: 0 2px 10px rgba(0,0,0,0.3);';
-            
-            // Prevent copying/selection
-            canvas.style.userSelect = 'none';
-            canvas.style.webkitUserSelect = 'none';
-            canvas.oncontextmenu = function() { return false; };
-            canvas.ondragstart = function() { return false; };
-            canvas.onselectstart = function() { return false; };
-            
-            // Render page
-            await page.render({
-                canvasContext: context,
-                viewport: viewport
-            }).promise;
-            
-            pagesContainer.appendChild(canvas);
-        }
-        
-        // Wrap in scrollable container
-        const scrollContainer = document.createElement('div');
-        scrollContainer.style.cssText = 'width: 100%; height: 100%; overflow: auto; background: #525252; flex: 1;';
-        scrollContainer.oncontextmenu = function() { return false; };
-        scrollContainer.id = 'pdf-pages-scroll-container';
-        scrollContainer.appendChild(pagesContainer);
-        
-        // Clear loading indicator and show PDF
-        container.innerHTML = '';
-        container.appendChild(scrollContainer);
-
-        // Initialize PDF Search functionality
-        if (window.PDFSearcher && window.createPDFSearchUI) {
-            const pdfSearcher = new PDFSearcher(pdfDoc, pagesContainer);
-            createPDFSearchUI(container, pdfSearcher);
-            
-            // Store searcher for potential later use
-            window._currentPDFSearcher = pdfSearcher;
-            console.log('PDF Search initialized');
-        }
-        
-        // Clean up object URL
-        URL.revokeObjectURL(objectUrl);
-        
+        console.log('PDF loaded in native viewer');
     } catch (error) {
-        console.error('Error loading PDF with PDF.js:', error);
+        console.error('Error loading PDF:', error);
         container.innerHTML = `
             <div style="padding: 40px; text-align: center; color: #dc3545;">
                 <i class="fas fa-exclamation-circle" style="font-size: 48px; margin-bottom: 15px;"></i>
@@ -589,7 +490,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
     }
 }
 
-// Load PDF.js library dynamically
+// Load PDF.js library dynamically (kept for backward compatibility)
 function loadPDFJSLibrary() {
     return new Promise((resolve, reject) => {
         const script = document.createElement('script');
@@ -603,22 +504,6 @@ function loadPDFJSLibrary() {
 function closePDFModal() {
     const modal = document.getElementById('pdf-viewer-modal');
     if (modal) {
-        // Clean up if using PDF.js viewer
-        if (modal._pdfViewer && modal._pdfViewer.destroy) {
-            try {
-                modal._pdfViewer.destroy();
-            } catch (e) {
-                // Ignore cleanup errors
-            }
-            modal._pdfViewer = null;
-        }
-
-        // Clean up PDF searcher
-        if (window._currentPDFSearcher) {
-            window._currentPDFSearcher.clearHighlights();
-            window._currentPDFSearcher = null;
-        }
-
         modal.style.display = 'none';
         
         // Ensure the main content/articles are visible after closing PDF viewer
@@ -1040,5 +925,3 @@ function createPDFSearchUI(container, searcher) {
 // Make functions globally available
 window.displayArticlePDF = displayArticlePDF;
 window.closePDFModal = closePDFModal;
-window.PDFSearcher = PDFSearcher;
-window.createPDFSearchUI = createPDFSearchUI;

@@ -477,10 +477,13 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         const pdfDoc = await window.pdfjsLib.getDocument(objectUrl).promise;
         const canvasContainer = container.querySelector('#pdf-viewer-canvas-container');
         
-        // Render all pages
+        // Render all pages with width fit to container
+        const containerWidth = container.clientWidth - 40; // padding
         for (let i = 1; i <= pdfDoc.numPages; i++) {
             const page = await pdfDoc.getPage(i);
-            const viewport = page.getViewport({ scale: 1.2 });
+            const baseViewport = page.getViewport({ scale: 1 });
+            const scale = containerWidth / baseViewport.width;
+            const viewport = page.getViewport({ scale: scale });
             
             const canvas = document.createElement('canvas');
             canvas.style.display = 'block';

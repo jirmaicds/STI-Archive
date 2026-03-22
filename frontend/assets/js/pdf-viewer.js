@@ -463,18 +463,26 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         
         const objectUrl = URL.createObjectURL(blob);
         
-        // Detect dark mode
-        const isDarkMode = document.body.classList.contains('dark-mode') || document.querySelector('.dark-mode');
+        // Function to check dark mode dynamically
+        function checkDarkMode() {
+            return document.body.classList.contains('dark-mode') || 
+                   !!document.querySelector('.dark-mode') ||
+                   document.body.style.backgroundColor === 'rgb(33, 37, 41)' ||
+                   document.body.style.backgroundColor === '#212529';
+        }
         
-        const toolbarBg = isDarkMode ? '#2d2d2d' : '#f0f0f0';
+        // Detect dark mode
+        const isDarkMode = checkDarkMode();
+        
+        const toolbarBg = isDarkMode ? '#1a1a1a' : '#f0f0f0';
         const toolbarBorder = isDarkMode ? '#444' : '#ccc';
-        const inputBg = isDarkMode ? '#333' : '#fff';
+        const inputBg = isDarkMode ? '#2d2d2d' : '#fff';
         const inputBorder = isDarkMode ? '#555' : '#ccc';
         const inputColor = isDarkMode ? '#fff' : '#333';
         const btnBg = isDarkMode ? '#ffd700' : '#0057b8';
         const btnColor = isDarkMode ? '#1a1a1a' : '#fff';
-        const canvasBg = isDarkMode ? '#1a1a1a' : '#525252';
-        const countColor = isDarkMode ? '#ccc' : '#333';
+        const canvasBg = isDarkMode ? '#121212' : '#525252';
+        const countColor = isDarkMode ? '#aaa' : '#333';
         
         // Container with search bar - dark mode support
         container.innerHTML = `
@@ -771,31 +779,94 @@ class PDFSearcher {
         // Clear existing highlights
         this.clearHighlights();
 
-        // Search through all pages
+        // Search through all pages - build full text per page first
+        const pageTexts = {};
+        
         for (let pageNum = 1; pageNum <= this.pdfDoc.numPages; pageNum++) {
             const page = await this.pdfDoc.getPage(pageNum);
             const textContent = await page.getTextContent();
-            const viewport = page.getViewport({ scale: 1 });
-
+            
+            // Build full text and track item positions
+            let fullText = '';
+            const textItems = [];
+            
             for (const item of textContent.items) {
-                const text = item.str.toLowerCase();
-                if (text.includes(this.searchQuery)) {
-                    // Calculate highlight position
-                    const transform = item.transform;
-                    const x = transform[4];
-                    const y = viewport.height - transform[5] - item.height;
-                    const width = item.width;
-                    const height = item.height || 12;
-
-                    this.searchResults.push({
-                        pageNum: pageNum,
-                        text: item.str,
-                        x: x,
-                        y: y,
-                        width: width,
-                        height: height,
-                        viewport: viewport
+                if (item.str && item.str.trim()) {
+                    textItems.push({
+                        str: item.str,
+                        transform: item.transform,
+                        width: item.width,
+                        height: item.height || 10
                     });
+                    fullText += item.str + ' ';
+                }
+            }
+            
+            pageTexts[pageNum] = {
+                fullText: fullText.toLowerCase(),
+                items: textItems
+            };
+        }
+        
+        // Now search for exact matches in the full text
+        const queryLower = this.searchQuery.toLowerCase();
+        const queryWords = queryLower.split(/\s+/).filter(w => w.length > 0);
+        
+        for (let pageNum = 1; pageNum <= this.pdfDoc.numPages; pageNum++) {
+            const pageData = pageTexts[pageNum];
+            const page = await this.pdfDoc.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 1 });
+            
+            // Find exact matches using word boundary regex
+            const escapedQuery = queryLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp('\\b' + escapedQuery + '\\b', 'gi');
+            let match;
+            
+            while ((match = regex.exec(pageData.fullText)) !== null) {
+                const matchIndex = match.index;
+                const matchLength = match[0].length;
+                
+                // Find the text item that contains this match
+                let charCount = 0;
+                for (const item of pageData.items) {
+                    const itemLength = item.str.length;
+                    const itemStart = charCount;
+                    const itemEnd = charCount + itemLength;
+                    
+                    // Check if match overlaps with this item
+                    if (matchIndex < itemEnd && matchIndex + matchLength > itemStart) {
+                        // Calculate position within this item
+                        const transform = item.transform;
+                        
+                        // PDF coordinates: origin is bottom-left
+                        // Transform: [scaleX, skewY, skewX, scaleY, x, y]
+                        const x = transform[4];
+                        const y = transform[5];
+                        const width = item.width;
+                        const height = item.height || 10;
+                        
+                        // Only add if not already added for this position (avoid duplicates)
+                        const exists = this.searchResults.some(r => 
+                            r.pageNum === pageNum && 
+                            Math.abs(r.x - x) < 5 && 
+                            Math.abs(r.y - y) < 5
+                        );
+                        
+                        if (!exists) {
+                            this.searchResults.push({
+                                pageNum: pageNum,
+                                text: match[0],
+                                x: x,
+                                y: y,
+                                width: Math.max(width, matchLength * 6),
+                                height: height,
+                                viewport: viewport
+                            });
+                        }
+                        break; // Only match one item per occurrence
+                    }
+                    
+                    charCount += itemLength + 1; // +1 for space
                 }
             }
         }

@@ -3859,6 +3859,50 @@ CURRICULUM VITAE`;
         // Toggle file-viewer: implements the new toggle behavior
         function toggleFileViewer() {
             const homeEditor = document.getElementById('homeEditor');
+            
+            // Check if editor is in fullscreen mode (from creating blank document)
+            const isEditorFullscreen = editor.classList.contains('fullscreen');
+            
+            if (isEditorFullscreen) {
+                // When editor is fullscreen and user clicks toggle, go back to half/half
+                toggleState = 'default';
+                
+                // Reset editor from fullscreen to 50% width
+                editor.classList.remove('fullscreen');
+                editor.style.flex = '0 0 50%';
+                editor.style.width = '50%';
+                editor.style.position = 'relative';
+                editor.style.left = 'auto';
+                editor.style.right = 'auto';
+                
+                // Show file-viewer at 50% width
+                fileViewer.style.display = 'flex';
+                fileViewer.style.flex = '0 0 50%';
+                
+                // Show homeEditor
+                if (homeEditor) {
+                    homeEditor.style.display = 'flex';
+                    homeEditor.classList.add('visible');
+                    homeEditor.style.flex = '0 0 50%';
+                    homeEditor.style.width = '50%';
+                    homeEditor.style.position = 'absolute';
+                    homeEditor.style.right = '0';
+                    homeEditor.style.left = 'auto';
+                }
+                
+                // Reset toggle panel
+                togglePanel.classList.remove('left', 'no-left-space', 'right', 'no-right-space');
+                toggleBtn.style.width = '30px';
+                leftBtn.querySelector('i').className = 'fa fa-chevron-left';
+                rightBtn.querySelector('i').className = 'fa fa-chevron-right';
+                leftBtn.onclick = () => toggleHomeEditor();
+                rightBtn.onclick = () => toggleFileViewer();
+                leftBtn.style.display = 'flex';
+                rightBtn.style.display = 'flex';
+                
+                return;
+            }
+            
             if (toggleState === 'default') {
                 // Go to fileViewer toggled
                 toggleState = 'fileViewer';

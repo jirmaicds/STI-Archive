@@ -3938,16 +3938,18 @@ CURRICULUM VITAE`;
                     homeEditor.classList.remove('visible');
                 }
                 
-                // Position toggle panel on LEFT side
-                togglePanel.classList.add('left', 'no-left-space');
-                togglePanel.classList.remove('right', 'no-right-space');
+                // Show both buttons so user can toggle back to split view
+                // Left button: collapse to homeEditor
+                // Right button: collapse to editor + fileViewer split
+                togglePanel.classList.remove('left', 'no-left-space', 'right', 'no-right-space');
                 togglePanel.style.display = 'flex';
-                
-                // Show only left button with chevron-right icon
-                toggleBtn.style.width = '15px';
-                leftBtn.querySelector('i').className = 'fa fa-chevron-right';
-                rightBtn.style.display = 'none';
+                toggleBtn.style.width = '30px';
+                leftBtn.querySelector('i').className = 'fa fa-chevron-left';
+                rightBtn.querySelector('i').className = 'fa fa-chevron-left';
                 leftBtn.style.display = 'flex';
+                rightBtn.style.display = 'flex';
+                leftBtn.onclick = () => toggleHomeEditor();
+                rightBtn.onclick = () => toggleFileViewer();
                 
             } else if (toggleState === 'default') {
                 console.log('Expanding HomeEditor to 100%');
@@ -4004,29 +4006,29 @@ CURRICULUM VITAE`;
                 leftBtn.style.display = 'flex';
                 rightBtn.style.display = 'flex';
             } else if (toggleState === 'editor') {
-                // Editor is already fullscreen, collapse to default (50% file-viewer, 50% editor)
+                // Editor is in fullscreen, collapse to default (50% file-viewer, 50% editor)
                 console.log('Collapsing Editor to default');
                 toggleState = 'default';
                 
+                // Show editor (not homeEditor)
                 editor.classList.remove('fullscreen');
+                editor.classList.add('visible');
+                editor.style.display = 'flex';
                 editor.style.flex = '0 0 50%';
                 editor.style.width = '50%';
-                editor.style.position = 'relative';
+                editor.style.position = 'absolute';
+                editor.style.right = '0';
                 editor.style.left = 'auto';
-                editor.style.right = 'auto';
                 
-                // Show homeEditor
+                // Hide homeEditor
                 if (homeEditor) {
-                    homeEditor.style.display = 'flex';
-                    homeEditor.classList.add('visible');
-                    homeEditor.style.flex = '0 0 50%';
-                    homeEditor.style.width = '50%';
-                    homeEditor.style.position = 'absolute';
-                    homeEditor.style.right = '0';
-                    homeEditor.style.left = 'auto';
+                    homeEditor.style.display = 'none';
+                    homeEditor.classList.remove('visible');
                 }
                 
+                // Show fileViewer
                 fileViewer.style.display = 'flex';
+                fileViewer.style.flex = '0 0 50%';
                 
                 // Reset toggle panel to center
                 togglePanel.classList.remove('left', 'no-left-space', 'right', 'no-right-space');
@@ -4037,6 +4039,8 @@ CURRICULUM VITAE`;
                 rightBtn.querySelector('i').className = 'fa fa-chevron-right';
                 leftBtn.style.display = 'flex';
                 rightBtn.style.display = 'flex';
+                leftBtn.onclick = () => toggleHomeEditor();
+                rightBtn.onclick = () => toggleFileViewer();
             }
         }
         

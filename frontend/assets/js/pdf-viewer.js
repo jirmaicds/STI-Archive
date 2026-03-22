@@ -463,27 +463,40 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         
         const objectUrl = URL.createObjectURL(blob);
         
-        // Container with search bar
+        // Detect dark mode
+        const isDarkMode = document.body.classList.contains('dark-mode') || document.querySelector('.dark-mode');
+        
+        const toolbarBg = isDarkMode ? '#2d2d2d' : '#f0f0f0';
+        const toolbarBorder = isDarkMode ? '#444' : '#ccc';
+        const inputBg = isDarkMode ? '#333' : '#fff';
+        const inputBorder = isDarkMode ? '#555' : '#ccc';
+        const inputColor = isDarkMode ? '#fff' : '#333';
+        const btnBg = isDarkMode ? '#ffd700' : '#0057b8';
+        const btnColor = isDarkMode ? '#1a1a1a' : '#fff';
+        const canvasBg = isDarkMode ? '#1a1a1a' : '#525252';
+        const countColor = isDarkMode ? '#ccc' : '#333';
+        
+        // Container with search bar - dark mode support
         container.innerHTML = `
             <div style="display:flex;flex-direction:column;height:100%;">
-                <div style="padding:8px 12px;background:#f0f0f0;border-bottom:1px solid #ccc;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
+                <div style="padding:8px 12px;background:${toolbarBg};border-bottom:1px solid ${toolbarBorder};display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
                     <input type="text" id="pdf-search-input" placeholder="Search (Ctrl+F)..." 
-                           style="padding:6px 10px;border:1px solid #ccc;border-radius:4px;width:200px;font-size:14px;">
-                    <button id="pdf-search-btn" style="padding:6px 12px;background:#0057b8;color:white;border:none;border-radius:4px;cursor:pointer;">
+                           style="padding:6px 10px;border:1px solid ${inputBorder};border-radius:4px;width:200px;font-size:14px;background:${inputBg};color:${inputColor};">
+                    <button id="pdf-search-btn" style="padding:6px 12px;background:${btnBg};color:${btnColor};border:none;border-radius:4px;cursor:pointer;">
                         <i class="fas fa-search"></i>
                     </button>
-                    <button id="pdf-search-clear" style="padding:6px 10px;background:#6c757d;color:white;border:none;border-radius:4px;cursor:pointer;" title="Clear">
+                    <button id="pdf-search-clear" style="padding:6px 10px;background:${btnBg};color:${btnColor};border:none;border-radius:4px;cursor:pointer;" title="Clear">
                         <i class="fas fa-times"></i>
                     </button>
-                    <button id="pdf-search-prev" style="padding:6px 10px;background:#0057b8;color:white;border:none;border-radius:4px;cursor:pointer;" title="Previous match">
+                    <button id="pdf-search-prev" style="padding:6px 10px;background:${btnBg};color:${btnColor};border:none;border-radius:4px;cursor:pointer;" title="Previous match">
                         <i class="fas fa-chevron-up"></i>
                     </button>
-                    <button id="pdf-search-next" style="padding:6px 10px;background:#0057b8;color:white;border:none;border-radius:4px;cursor:pointer;" title="Next match">
+                    <button id="pdf-search-next" style="padding:6px 10px;background:${btnBg};color:${btnColor};border:none;border-radius:4px;cursor:pointer;" title="Next match">
                         <i class="fas fa-chevron-down"></i>
                     </button>
-                    <span id="pdf-search-count" style="font-size:13px;color:#333;"></span>
+                    <span id="pdf-search-count" style="font-size:13px;color:${countColor};"></span>
                 </div>
-                <div id="pdf-viewer-canvas-container" style="flex:1;overflow:auto;background:#525252;text-align:center;padding:20px;"></div>
+                <div id="pdf-viewer-canvas-container" style="flex:1;overflow:auto;background:${canvasBg};text-align:center;padding:20px;"></div>
             </div>`;
         
         // Load PDF.js

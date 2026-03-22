@@ -1344,34 +1344,6 @@ color: #ffd700;
       color: #ffd700;
     }
 
-    #writerModal > div {
-      background: white;
-      color: black;
-    }
-
-    .dark-mode #writerModal > div {
-      background: #232f41;
-      color: white;
-    }
-
-
-    /* Show writer modal only when editor is fullscreen */
-    .editor.fullscreen ~ #writerModal {
-      display: block !important;
-    }
-
-    .editor:not(.fullscreen) ~ #writerModal {
-      display: none !important;
-    }
-
-    .file-viewer.expanded ~ #writerModal {
-      display: none !important;
-    }
-
-    .editor.collapsed ~ #writerModal {
-      display: none !important;
-    }
-
 
     /* Hide toolbar and document when collapsed */
     .editor.collapsed .toolbar,
@@ -2436,14 +2408,6 @@ color: #ffd700;
       <span class="close" onclick="closePdfModal(); return false;" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
       <h2 style="margin-top: 0;">PDF Editor</h2>
       <canvas id="pdfCanvas" style="width: 100%; height: 90%; border: 1px solid #ccc;"></canvas>
-    </div>
-  </div>
-
-  <!-- Writer Modal -->
-  <div id="writerModal" style="position: absolute; left: calc(3% + 15px); top: calc(50% - 100px); background: rgba(0,0,0,0.3); width: auto; height: auto; border-radius: 5px;">
-    <div style="padding: 10px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); position: relative;">
-      <span style="padding-right: 20px;">Document Writer here</span>
-      <span onclick="closeWriterModal()" style="position: absolute; top: 5px; right: 5px; cursor: pointer; font-weight: bold;">&times;</span>
     </div>
   </div>
 
@@ -3663,11 +3627,6 @@ CURRICULUM VITAE`;
         // Close modal
         function closeSavedDocumentsModal() {
             document.getElementById('savedDocumentsModal').style.display = 'none';
-        }
-
-        // Close writer modal
-        function closeWriterModal() {
-            document.getElementById('writerModal').style.display = 'none';
         }
 
         // Load document

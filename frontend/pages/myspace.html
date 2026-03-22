@@ -5050,27 +5050,61 @@ CURRICULUM VITAE`;
               
               console.log('closeEditor called');
               
+              // Check if editor is in fullscreen mode
+              var isEditorFullscreen = editor && (editor.classList.contains('fullscreen') || toggleState === 'editor');
+              
               if (editor) {
-                  editor.classList.remove('visible');
+                  editor.classList.remove('visible', 'fullscreen');
                   editor.style.display = 'none';
+                  editor.style.flex = '0 0 50%';
+                  editor.style.width = '50%';
+                  editor.style.position = 'relative';
+                  editor.style.left = 'auto';
+                  editor.style.right = 'auto';
               }
+              
               if (homeEditor) {
                   homeEditor.classList.remove('hidden');
-                  homeEditor.style.display = 'flex';
-                  homeEditor.style.flex = '0 0 50%';
-                  homeEditor.style.position = 'absolute';
-                  homeEditor.style.right = '0';
-                  homeEditor.style.top = '0';
+                  
+                  if (isEditorFullscreen) {
+                      // Requirement #5: Show homeEditor in fullscreen (not half-half)
+                      toggleState = 'homeEditorExpanded';
+                      homeEditor.style.display = 'flex';
+                      homeEditor.style.flex = '0 0 100%';
+                      homeEditor.style.width = '100%';
+                      homeEditor.style.position = 'absolute';
+                      homeEditor.style.left = '0';
+                      homeEditor.style.right = 'auto';
+                      homeEditor.style.top = '0';
+                      
+                      // Hide file-viewer when homeEditor is fullscreen
+                      if (fileViewer) {
+                          fileViewer.style.display = 'none';
+                      }
+                  } else {
+                      // Default: Show homeEditor at 50% with fileViewer
+                      toggleState = 'default';
+                      homeEditor.style.display = 'flex';
+                      homeEditor.style.flex = '0 0 50%';
+                      homeEditor.style.width = '50%';
+                      homeEditor.style.position = 'absolute';
+                      homeEditor.style.right = '0';
+                      homeEditor.style.left = 'auto';
+                      homeEditor.style.top = '0';
+                      
+                      // Show fileViewer at 50%
+                      if (fileViewer) {
+                          fileViewer.style.display = 'flex';
+                          fileViewer.style.flex = '0 0 50%';
+                      }
+                  }
               }
+              
               // Hide current document display
               if (currentDocDisplay) {
                   currentDocDisplay.style.display = 'none';
               }
-              // Make sure file-viewer is visible on left side
-              if (fileViewer) {
-                  fileViewer.style.display = 'flex';
-                  fileViewer.style.flex = '0 0 50%';
-              }
+              
               // Refresh recent documents
               loadRecentDocuments();
           };

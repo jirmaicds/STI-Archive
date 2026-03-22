@@ -451,42 +451,192 @@ function displayArticlePDF(pdfPath, title) {
     modal._pdfViewer = { close: function() { } };
 }
 
-// Separate function to load PDF using PDF.js and render to canvas
+// Custom PDF Viewer with minimal toolbar using PDF.js
 async function loadPDFWithPDFJS(pdfUrl, container, title) {
+    // Load PDF.js library
+    if (!window.pdfjsLib) {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+        document.head.appendChild(script);
+        await new Promise(resolve => script.onload = resolve);
+    }
+    
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    
     try {
         // Fetch the PDF
         const response = await fetch(pdfUrl);
-        if (!response.ok) {
-            throw new Error('Failed to fetch PDF: ' + response.status);
-        }
+        if (!response.ok) throw new Error('Failed to fetch PDF: ' + response.status);
         
         const blob = await response.blob();
-        if (blob.size === 0) {
-            throw new Error('PDF blob is empty');
-        }
+        if (blob.size === 0) throw new Error('PDF blob is empty');
         
-        // Create object URL for the blob
         const objectUrl = URL.createObjectURL(blob);
+        const pdfDoc = await window.pdfjsLib.getDocument(objectUrl).promise;
         
-        // Use browser's native PDF viewer via iframe
-        // This provides native search (Ctrl+F), zoom, and other browser features
-        container.innerHTML = `
-            <iframe src="${objectUrl}" 
-                    style="width: 100%; height: 100%; border: none;"
-                    title="PDF Viewer">
-            </iframe>
-        `;
+        // Custom PDF viewer state
+        let currentPage = 1;
+        let currentScale = 1.0;
+        let renderedPages = {};
         
-        console.log('PDF loaded in native viewer');
-    } catch (error) {
-        console.error('Error loading PDF:', error);
+        // Create container structure
         container.innerHTML = `
-            <div style="padding: 40px; text-align: center; color: #dc3545;">
-                <i class="fas fa-exclamation-circle" style="font-size: 48px; margin-bottom: 15px;"></i>
-                <p style="font-size: 16px;">Error loading PDF</p>
-                <p style="font-size: 14px; color: #666;">${error.message}</p>
+            <div style="display: flex; flex-direction: column; height: 100%; width: 100%; background: #525252;">
+                <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f0f0f0; border-bottom: 1px solid #ccc; flex-wrap: wrap;">
+                    <button id="pdf-btn-prev" title="Previous Page" style="padding: 6px 10px; background: #0057b8; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 14px;"><i class="fas fa-chevron-left"></i></button>
+                    <span id="pdf-page-info" style="font-size: 13px; color: #333; min-width: 80px;">Page 1 of ${pdfDoc.numPages}</span>
+                    <button id="pdf-btn-next" title="Next Page" style="padding: 6px 10px; background: #0057b8; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 14px;"><i class="fas fa-chevron-right"></i></button>
+                    <span style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></span>
+                    <button id="pdf-btn-zoomout" title="Zoom Out" style="padding: 6px 10px; background: #0057b8; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 14px;"><i class="fas fa-search-minus"></i></button>
+                    <span id="pdf-zoom-info" style="font-size: 13px; color: #333; min-width: 50px; text-align: center;">100%</span>
+                    <button id="pdf-btn-zoomin" title="Zoom In" style="padding: 6px 10px; background: #0057b8; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 14px;"><i class="fas fa-search-plus"></i></button>
+                    <button id="pdf-btn-fitwidth" title="Fit Width" style="padding: 6px 10px; background: #0057b8; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 14px;"><i class="fas fa-arrows-alt-h"></i></button>
+                    <span style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></span>
+                    <button id="pdf-btn-find" title="Find in Document (Ctrl+F)" style="padding: 6px 10px; background: #0057b8; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 14px;"><i class="fas fa-search"></i></button>
+                    <input type="text" id="pdf-search-input" placeholder="Find..." style="display:none; padding: 4px 8px; border: 1px solid #ccc; border-radius: 3px; width: 150px;">
+                </div>
+                <div id="pdf-viewer-container" style="flex: 1; overflow: auto; padding: 20px; text-align: center;"></div>
             </div>
         `;
+        
+        const viewerContainer = container.querySelector('#pdf-viewer-container');
+        const pageInfo = container.querySelector('#pdf-page-info');
+        const zoomInfo = container.querySelector('#pdf-zoom-info');
+        const searchInput = container.querySelector('#pdf-search-input');
+        
+        // Render a page
+        async function renderPage(pageNum, scale = currentScale) {
+            if (renderedPages[pageNum] && renderedPages[pageNum].scale === scale) {
+                return renderedPages[pageNum].canvas;
+            }
+            
+            const page = await pdfDoc.getPage(pageNum);
+            const viewport = page.getViewport({ scale: scale });
+            
+            const canvas = document.createElement('canvas');
+            canvas.style.display = 'block';
+            canvas.style.margin = '0 auto 10px auto';
+            canvas.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+            
+            // Clear and re-render all visible pages
+            viewerContainer.innerHTML = '';
+            for (let i = 1; i <= pdfDoc.numPages; i++) {
+                if (i >= pageNum - 1 && i <= pageNum + 1) {
+                    const p = await pdfDoc.getPage(i);
+                    const v = p.getViewport({ scale: scale });
+                    const c = document.createElement('canvas');
+                    c.style.display = 'block';
+                    c.style.margin = '0 auto 10px auto';
+                    c.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+                    c.height = v.height;
+                    c.width = v.width;
+                    await p.render({ canvasContext: c.getContext('2d'), viewport: v }).promise;
+                    viewerContainer.appendChild(c);
+                }
+            }
+            
+            renderedPages[pageNum] = { canvas, scale };
+            return canvas;
+        }
+        
+        // Initial render
+        await renderPage(1);
+        
+        // Navigation functions
+        container.querySelector('#pdf-btn-prev').onclick = async function() {
+            if (currentPage > 1) {
+                currentPage--;
+                await renderPage(currentPage);
+                pageInfo.textContent = 'Page ' + currentPage + ' of ' + pdfDoc.numPages;
+            }
+        };
+        
+        container.querySelector('#pdf-btn-next').onclick = async function() {
+            if (currentPage < pdfDoc.numPages) {
+                currentPage++;
+                await renderPage(currentPage);
+                pageInfo.textContent = 'Page ' + currentPage + ' of ' + pdfDoc.numPages;
+            }
+        };
+        
+        container.querySelector('#pdf-btn-zoomin').onclick = async function() {
+            currentScale = Math.min(currentScale + 0.25, 3.0);
+            zoomInfo.textContent = Math.round(currentScale * 100) + '%';
+            await renderPage(currentPage);
+        };
+        
+        container.querySelector('#pdf-btn-zoomout').onclick = async function() {
+            currentScale = Math.max(currentScale - 0.25, 0.5);
+            zoomInfo.textContent = Math.round(currentScale * 100) + '%';
+            await renderPage(currentPage);
+        };
+        
+        container.querySelector('#pdf-btn-fitwidth').onclick = async function() {
+            const containerWidth = viewerContainer.clientWidth - 40;
+            const page = await pdfDoc.getPage(currentPage);
+            const viewport = page.getViewport({ scale: 1 });
+            currentScale = containerWidth / viewport.width;
+            zoomInfo.textContent = 'Fit';
+            await renderPage(currentPage);
+        };
+        
+        // Find functionality
+        let searchResults = [];
+        let currentResultIndex = -1;
+        
+        container.querySelector('#pdf-btn-find').onclick = function() {
+            if (searchInput.style.display === 'none') {
+                searchInput.style.display = 'inline-block';
+                searchInput.focus();
+            } else {
+                searchInput.style.display = 'none';
+            }
+        };
+        
+        searchInput.addEventListener('keypress', async function(e) {
+            if (e.key === 'Enter') {
+                const query = searchInput.value.toLowerCase().trim();
+                if (!query) return;
+                
+                searchResults = [];
+                for (let i = 1; i <= pdfDoc.numPages; i++) {
+                    const page = await pdfDoc.getPage(i);
+                    const textContent = await page.getTextContent();
+                    for (const item of textContent.items) {
+                        if (item.str.toLowerCase().includes(query)) {
+                            searchResults.push({ page: i, text: item.str });
+                        }
+                    }
+                }
+                
+                if (searchResults.length > 0) {
+                    currentResultIndex = 0;
+                    currentPage = searchResults[0].page;
+                    await renderPage(currentPage);
+                    pageInfo.textContent = 'Page ' + currentPage + ' of ' + pdfDoc.numPages + ' (' + searchResults.length + ' matches)';
+                    alert('Found ' + searchResults.length + ' matches. Go to page ' + currentPage + ' to see them.');
+                } else {
+                    alert('No matches found.');
+                }
+            }
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                container.querySelector('#pdf-btn-find').click();
+            }
+        });
+        
+        console.log('PDF loaded with custom minimal toolbar');
+    } catch (error) {
+        console.error('Error loading PDF:', error);
+        container.innerHTML = '<div style="padding: 40px; text-align: center; color: #dc3545;"><i class="fas fa-exclamation-circle" style="font-size: 48px;"></i><p>Error: ' + error.message + '</p></div>';
     }
 }
 

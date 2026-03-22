@@ -4588,7 +4588,8 @@ CURRICULUM VITAE`;
          let currentPdfPage = 1;
          let currentPdfFileId = ''; // Store current file ID for search
          let pdfDoc = null; // PDF.js document
-         let pdfTextContent = null; // Extracted text from PDF
+         let pdfTextContent = null; // Extracted text from PDF (plain string)
+        let pdfPagesTextContent = null; // Per-page text content with position data
 
          // ============================================
          // User Preferences System - Persist editor settings
@@ -5336,7 +5337,9 @@ CURRICULUM VITAE`;
                  currentPdfFileId = fileId;
                  
                  // Extract text for searching
-                 pdfTextContent = await extractAllText(pdfDoc);
+                 const textResult = await extractAllText(pdfDoc);
+                 pdfTextContent = textResult.fullText;
+                 pdfPagesTextContent = textResult.pagesTextContent;
                  
                  // Render all pages
                  container.innerHTML = '';
@@ -5356,11 +5359,39 @@ CURRICULUM VITAE`;
              let fullText = '';
              for (let i = 1; i <= doc.numPages; i++) {
                  const page = await doc.getPage(i);
+                 const viewport = page.getViewport({ scale: 1 });
                  const textContent = await page.getTextContent();
                  const pageText = textContent.items.map(item => item.str).join(' ');
                  fullText += pageText + '\n';
+                 
+                 // Store text items with position data
+                 let pageItems = [];
+                 for (let j = 0; j < textContent.items.length; j++) {
+                     const item = textContent.items[j];
+                     const transform = item.transform;
+                     const x = transform[4];
+                     const y = transform[5];
+                     const width = item.width || 0;
+                     const height = item.height || 0;
+                     
+                     pageItems.push({
+                         text: item.str,
+                         x: x,
+                         y: y,
+                         width: width,
+                         height: height,
+                         transform: transform
+                     });
+                 }
+                 
+                 pagesTextContent.push({
+                     pageNum: i,
+                     viewport: viewport,
+                     items: pageItems
+                 });
              }
-             return fullText;
+             
+             return { fullText: fullText, pagesTextContent: pagesTextContent };
          }
 
          // Render a single page
@@ -5371,6 +5402,7 @@ CURRICULUM VITAE`;
 
              // Create wrapper
              const pageWrapper = document.createElement('div');
+             pageWrapper.className = 'pdf-page-wrapper';
              pageWrapper.style.cssText = 'position:relative;margin-bottom:10px;box-shadow:0 2px 5px rgba(0,0,0,0.3);';
 
              // Create canvas
@@ -5397,14 +5429,38 @@ CURRICULUM VITAE`;
              if (!searchTerm) return;
 
              const pdfContainer = document.getElementById('pdfContainer1');
-             if (!pdfContainer || !pdfTextContent) {
+             if (!pdfContainer || !pdfTextContent || !pdfPagesTextContent) {
                  alert('No PDF loaded. Please open a document first.');
                  return;
              }
 
-             // Search in extracted text
-             const regex = new RegExp(searchTerm, 'gi');
-             const matches = [...pdfTextContent.matchAll(regex)];
+             // Search in extracted text with position data
+             const searchLower = searchTerm.toLowerCase();
+             const matches = [];
+             
+             // Search through each page's text items
+             for (let pageIdx = 0; pageIdx < pdfPagesTextContent.length; pageIdx++) {
+                 const pageData = pdfPagesTextContent[pageIdx];
+                 for (let itemIdx = 0; itemIdx < pageData.items.length; itemIdx++) {
+                     const item = pageData.items[itemIdx];
+                     if (item.text && item.text.toLowerCase().includes(searchLower)) {
+                         // Check for exact match at position within the text
+                         const itemTextLower = item.text.toLowerCase();
+                         let matchStart = itemTextLower.indexOf(searchLower);
+                         while (matchStart !== -1) {
+                             matches.push({
+                                 pageNum: pageData.pageNum,
+                                 pageIdx: pageIdx,
+                                 itemIdx: itemIdx,
+                                 item: item,
+                                 matchStart: matchStart,
+                                 matchLength: searchTerm.length
+                             });
+                             matchStart = itemTextLower.indexOf(searchLower, matchStart + 1);
+                         }
+                     }
+                 }
+             }
              
              if (matches.length === 0) {
                  alert('No matches found for "' + searchTerm + '"');
@@ -5429,9 +5485,81 @@ CURRICULUM VITAE`;
              const container = document.getElementById('pdfContainer1');
              if (!container) return;
 
-             // Simple approach: scroll through pages and highlight
-             // For now, just scroll to show we found matches
-             container.scrollTop = 0;
+             // Clear existing highlights
+             const existingHighlights = container.querySelectorAll('.pdf-highlight');
+             existingHighlights.forEach(el => el.remove());
+
+             const currentMatch = pdfSearchMatches[currentMatchIndex];
+             if (!currentMatch) return;
+
+             // Get the page data for this match
+             const pageData = pdfPagesTextContent[currentMatch.pageIdx];
+             if (!pageData) return;
+
+             // The PDF is rendered at scale 1.5
+             const scale = 1.5;
+             
+             // Find the page wrapper element
+             const pageWrappers = container.querySelectorAll('.pdf-page-wrapper');
+             if (pageWrappers.length < currentMatch.pageNum) return;
+             
+             const pageWrapper = pageWrappers[currentMatch.pageNum - 1];
+             
+             // Get the canvas to calculate offset
+             const canvas = pageWrapper.querySelector('canvas');
+             if (!canvas) return;
+
+             // Calculate highlight position using viewport
+             const item = currentMatch.item;
+             const viewport = pageData.viewport.clone({ scale: scale });
+             
+             // Use PDF.js viewport conversion for accurate positioning
+             // Convert from PDF coordinates to viewport coordinates
+             // PDF coordinates: origin at bottom-left
+             // Viewport coordinates: origin at top-left (after conversion)
+             const [viewportX, viewportY] = viewport.convertToViewportPoint(item.x, item.y);
+             
+             // Get item dimensions in viewport coordinates
+             const [width, height] = viewport.convertToViewportRectangle([item.x, item.y, item.x + (item.width || 10), item.y + (item.height || 10)]);
+             const itemWidth = Math.abs(width[1] - width[0]);
+             const itemHeight = Math.abs(height[1] - height[0]);
+
+             // Adjust for the fact that viewportY is from top
+             // The text item's transform includes its position from bottom
+             const canvasX = viewportX;
+             const canvasY = viewportY - itemHeight; // Adjust for top-left origin
+
+             // Create highlight overlay
+             const highlight = document.createElement('div');
+             highlight.className = 'pdf-highlight';
+             
+             // Handle partial matches within the text item
+             let highlightLeft = canvasX;
+             let highlightWidth = itemWidth;
+             
+             if (currentMatch.matchStart > 0 || currentMatch.matchLength < item.text.length) {
+                 // Calculate proportional position within the text item
+                 const charWidth = itemWidth / item.text.length;
+                 highlightLeft = canvasX + (currentMatch.matchStart * charWidth);
+                 highlightWidth = currentMatch.matchLength * charWidth;
+             }
+             
+             highlight.style.cssText = `
+                 position: absolute;
+                 left: ${highlightLeft}px;
+                 top: ${canvasY}px;
+                 width: ${highlightWidth}px;
+                 height: ${itemHeight}px;
+                 background-color: rgba(255, 255, 0, 0.5);
+                 border: 2px solid #ff9900;
+                 pointer-events: none;
+                 z-index: 10;
+             `;
+             
+             pageWrapper.appendChild(highlight);
+
+             // Scroll to the match
+             pageWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
          }
 
          function pdfSearchNavigate(direction) {
@@ -5466,6 +5594,7 @@ CURRICULUM VITAE`;
              currentPdfFileId = '';
              pdfDoc = null;
              pdfTextContent = null;
+             pdfPagesTextContent = null;
              pdfSearchMatches = [];
              currentMatchIndex = 0;
              
@@ -6267,6 +6396,7 @@ CURRICULUM VITAE`;
                 const loadingTask = pdfjsLib.getDocument(pdfUrl);
                 const pdf = await loadingTask.promise;
                 let fullText = '';
+              let pagesTextContent = [];
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const textContent = await page.getTextContent();

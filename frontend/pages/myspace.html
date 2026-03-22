@@ -3938,17 +3938,16 @@ CURRICULUM VITAE`;
                     homeEditor.classList.remove('visible');
                 }
                 
-                // Show both buttons so user can toggle back to split view
-                // Left button: collapse to homeEditor
-                // Right button: collapse to editor + fileViewer split
-                togglePanel.classList.remove('left', 'no-left-space', 'right', 'no-right-space');
+                // Position toggle panel on LEFT side
+                togglePanel.classList.add('left', 'no-left-space');
+                togglePanel.classList.remove('right', 'no-right-space');
                 togglePanel.style.display = 'flex';
-                toggleBtn.style.width = '30px';
-                leftBtn.querySelector('i').className = 'fa fa-chevron-left';
-                rightBtn.querySelector('i').className = 'fa fa-chevron-left';
-                leftBtn.style.display = 'flex';
+                
+                // Show only right button with chevron-right icon (to collapse back to split)
+                toggleBtn.style.width = '15px';
+                rightBtn.querySelector('i').className = 'fa fa-chevron-right';
+                leftBtn.style.display = 'none';
                 rightBtn.style.display = 'flex';
-                leftBtn.onclick = () => toggleHomeEditor();
                 rightBtn.onclick = () => toggleFileViewer();
                 
             } else if (toggleState === 'default') {
@@ -5018,6 +5017,16 @@ CURRICULUM VITAE`;
                       editor.classList.add('fullscreen');
                       // Set toggleState so toggleFileViewer knows editor is in fullscreen
                       toggleState = 'editor';
+                      // Update toggle panel for editor fullscreen
+                      // Position toggle panel on LEFT side
+                      togglePanel.classList.add('left', 'no-left-space');
+                      togglePanel.classList.remove('right', 'no-right-space');
+                      togglePanel.style.display = 'flex';
+                      // Show only right button with chevron-right icon
+                      toggleBtn.style.width = '15px';
+                      rightBtn.querySelector('i').className = 'fa fa-chevron-right';
+                      leftBtn.style.display = 'none';
+                      rightBtn.style.display = 'flex';
                       // Hide file-viewer when homeEditor was in fullscreen
                       if (fileViewer) {
                           fileViewer.style.display = 'none';

@@ -451,7 +451,7 @@ function displayArticlePDF(pdfPath, title) {
     modal._pdfViewer = { close: function() { } };
 }
 
-// Load PDF using browser's native PDF viewer via iframe
+// Load PDF using PDF.js - plain viewer without toolbar
 async function loadPDFWithPDFJS(pdfUrl, container, title) {
     try {
         // Fetch the PDF
@@ -461,41 +461,39 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         const blob = await response.blob();
         if (blob.size === 0) throw new Error('PDF blob is empty');
         
-        // Create object URL for the blob
         const objectUrl = URL.createObjectURL(blob);
         
-        // Use browser's native PDF viewer with full toolbar
-        // Add overlay to block tools except Find
-        container.innerHTML = `
-            <div style="position: relative; width: 100%; height: 100%;">
-                <iframe src="${objectUrl}" style="width: 100%; height: 100%; border: none;" title="PDF Viewer"></iframe>
-                
-                <!-- Blocker overlay for toolbar (allows scrolling, blocks toolbar) -->
-                <div style="position: absolute; top: 0; left: 0; right: 0; height: 42px; background: transparent; pointer-events: none;"></div>
-                
-                <!-- Custom Find button overlay (positioned where Chrome Find usually is) -->
-                <div style="position: absolute; top: 8px; left: 10px; pointer-events: auto; z-index: 9999;">
-                    <button id="custom-find-btn" onclick="window.showNativeFind()" style="padding: 4px 10px; background: rgba(0,0,0,0.7); color: white; border: 1px solid #555; border-radius: 3px; cursor: pointer; font-size: 12px;">
-                        <i class=\"fas fa-search\"></i> Find (Ctrl+F)
-                    </button>
-                </div>
-            </div>
-        `;
+        // Plain container for PDF rendering - no toolbar
+        container.innerHTML = '<div id="pdf-viewer-canvas-container" style="width:100%;height:100%;overflow:auto;background:#525252;text-align:center;padding:20px;"></div>';
         
-        // Show native find using keyboard shortcut
-        window.showNativeFind = function() {
-            const iframe = container.querySelector('iframe');
-            try {
-                // Try to trigger native find
-                iframe.contentWindow.focus();
-                // Send keypress for Ctrl+F
-                const evt = new KeyboardEvent('keydown', { key: 'f', ctrlKey: true, bubbles: true });
-                iframe.contentDocument.dispatchEvent(evt);
-            } catch(e) {
-                console.log('Cannot trigger native find');
-            }
-        };
-        console.log('PDF loaded with native viewer and Find access');
+        // Load PDF.js
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+        document.head.appendChild(script);
+        await new Promise(resolve => script.onload = resolve);
+        
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        
+        const pdfDoc = await window.pdfjsLib.getDocument(objectUrl).promise;
+        const canvasContainer = container.querySelector('#pdf-viewer-canvas-container');
+        
+        // Render all pages
+        for (let i = 1; i <= pdfDoc.numPages; i++) {
+            const page = await pdfDoc.getPage(i);
+            const viewport = page.getViewport({ scale: 1.2 });
+            
+            const canvas = document.createElement('canvas');
+            canvas.style.display = 'block';
+            canvas.style.margin = '0 auto 10px auto';
+            canvas.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+            canvasContainer.appendChild(canvas);
+        }
+        
+        console.log('PDF loaded with PDF.js');
     } catch (error) {
         console.error('Error loading PDF:', error);
         container.innerHTML = '<div style="padding: 40px; text-align: center; color: #dc3545;"><i class="fas fa-exclamation-circle" style="font-size: 48px;"></i><p>Error: ' + error.message + '</p></div>';

@@ -2241,7 +2241,7 @@ color: #ffd700;
     </div>
     
     <!-- Create Document Button -->
-    <button onclick="showEditor(); console.log('Button clicked');" style="padding: 20px 40px; font-size: 1.2rem; background: #667eea; color: white; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s, box-shadow 0.3s; display: flex; align-items: center; gap: 10px; margin-bottom: 40px;">
+    <button onclick="showEditor(); resetDocument(); console.log('Button clicked');" style="padding: 20px 40px; font-size: 1.2rem; background: #667eea; color: white; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s, box-shadow 0.3s; display: flex; align-items: center; gap: 10px; margin-bottom: 40px;">
       <i class="fas fa-plus-circle" style="font-size: 1.5rem;"></i>
       Create a blank document
     </button>
@@ -2307,10 +2307,10 @@ color: #ffd700;
 
        <input type="color" onchange="format('foreColor', this.value)" title="Text Color" />
 
-       <button onclick="format('justifyLeft')">⬅️</button>
-       <button onclick="format('justifyCenter')">↔️</button>
-       <button onclick="format('justifyRight')">➡️</button>
-       <button onclick="format('justifyFull')">📄</button>
+       <button onclick="format('justifyLeft')" title="Align Left"><i class="fas fa-align-left"></i></button>
+       <button onclick="format('justifyCenter')" title="Align Center"><i class="fas fa-align-center"></i></button>
+       <button onclick="format('justifyRight')" title="Align Right"><i class="fas fa-align-right"></i></button>
+       <button onclick="format('justifyFull')" title="Justify"><i class="fas fa-align-justify"></i></button>
 
        <select onchange="setLineHeight(this.value)">
          <option value="1.2">Line spacing: 1.2</option>
@@ -2331,8 +2331,7 @@ color: #ffd700;
          <i class="fas fa-cloud" style="font-size: 1rem; color: #333;"></i>
          <i class="fas fa-sync-alt" id="cloudSyncIcon" style="font-size: 0.6rem; color: #2196F3; position: absolute; bottom: -2px; right: -2px; background: white; border-radius: 50%; padding: 2px;"></i>
        </span>
-       <button onclick="resetDocument()" title="Reset to defaults"><i class="fas fa-undo"></i> Reset</button>
-       <button onclick="openTemplateModal()" title="Templates"><i class="fas fa-file-alt"></i> Template</button>
+       <button onclick="saveDocumentNow()" title="Save Document"><i class="fas fa-save"></i> Save</button>
        <button onclick="openSavedDocumentsModal()" title="Saved Documents"><i class="fas fa-folder-open"></i> Menu</button>
        <button onclick="downloadDocument()" title="Download Document"><i class="fas fa-download"></i></button>
        <button onclick="addNewPage()" title="Add New Page"><i class="fas fa-plus"></i> New Page</button>
@@ -4933,10 +4932,79 @@ CURRICULUM VITAE`;
               return null;
           }
           
+          // Manual save function - triggered by Save button in toolbar
+          window.saveDocumentNow = async function() {
+              const cloudStatus = document.getElementById('cloudSaveStatus');
+              
+              // Show syncing animation
+              if (cloudStatus) {
+                  cloudStatus.classList.add('cloud-syncing');
+                  cloudStatus.classList.remove('cloud-saved');
+              }
+              
+              // Save to cloud
+              if (typeof saveEditorContentToCloud === 'function') {
+                  await saveEditorContentToCloud();
+              }
+              
+              // Also save to local storage and API
+              const title = document.getElementById('docTitle')?.value || 'Untitled';
+              const content = Array.from(document.querySelectorAll('.page')).map(p => {
+                  const contentDiv = p.querySelector('.page-content');
+                  return contentDiv ? contentDiv.innerHTML : '';
+              }).join('<hr>');
+              
+              // Save to localStorage
+              let savedDocuments = JSON.parse(localStorage.getItem('savedDocuments')) || [];
+              const docId = currentLoadedDocId || 'doc_' + Date.now();
+              const existingIndex = savedDocuments.findIndex(d => d.id === docId);
+              
+              const docData = {
+                  id: docId,
+                  title: title,
+                  content: content,
+                  date: new Date().toISOString(),
+                  lastModified: new Date().toISOString()
+              };
+              
+              if (existingIndex >= 0) {
+                  savedDocuments[existingIndex] = docData;
+              } else {
+                  savedDocuments.push(docData);
+              }
+              
+              localStorage.setItem('savedDocuments', JSON.stringify(savedDocuments));
+              currentLoadedDocId = docId;
+              
+              // Save to API if user is logged in
+              const userId = getCurrentUserId();
+              if (userId && typeof saveDocumentToAPI === 'function') {
+                  try {
+                      await saveDocumentToAPI(docData);
+                  } catch (e) {
+                      console.log('API save failed, using local storage only');
+                  }
+              }
+              
+              // Show saved animation after successful save
+              setTimeout(() => {
+                  if (cloudStatus) {
+                      cloudStatus.classList.remove('cloud-syncing');
+                      cloudStatus.classList.add('cloud-saved');
+                  }
+                  // Refresh recent documents in HomeEditor after manual save
+                  if (typeof loadRecentDocuments === 'function') {
+                      loadRecentDocuments();
+                  }
+              }, 500);
+              
+              console.log('Document saved manually');
+          };
+          
           // Auto-save to cloud every 30 seconds while editing
           setInterval(() => {
               const hasContent = document.querySelector('.page-content')?.textContent?.trim();
-              if (hasContent && hasContent.length > 0 && typeof saveEditorContentToCloud !== 'undefined') {
+              if (hasContent && hasContent.length > 0) {
                   // Show syncing animation
                   const cloudStatus = document.getElementById('cloudSaveStatus');
                   if (cloudStatus) {
@@ -4944,7 +5012,38 @@ CURRICULUM VITAE`;
                       cloudStatus.classList.remove('cloud-saved');
                   }
                   
-                  saveEditorContentToCloud().then(() => {
+                  // Save to localStorage first (this is what loadRecentDocuments reads from)
+                  const title = document.getElementById('docTitle')?.value || 'Untitled';
+                  const content = Array.from(document.querySelectorAll('.page')).map(p => {
+                      const contentDiv = p.querySelector('.page-content');
+                      return contentDiv ? contentDiv.innerHTML : '';
+                  }).join('<hr>');
+                  
+                  let savedDocuments = JSON.parse(localStorage.getItem('savedDocuments')) || [];
+                  const docId = currentLoadedDocId || 'doc_' + Date.now();
+                  const existingIndex = savedDocuments.findIndex(d => d.id === docId);
+                  
+                  const docData = {
+                      id: docId,
+                      title: title,
+                      content: content,
+                      date: new Date().toISOString(),
+                      lastModified: new Date().toISOString()
+                  };
+                  
+                  if (existingIndex >= 0) {
+                      savedDocuments[existingIndex] = docData;
+                  } else {
+                      savedDocuments.push(docData);
+                  }
+                  
+                  localStorage.setItem('savedDocuments', JSON.stringify(savedDocuments));
+                  currentLoadedDocId = docId;
+                  
+                  // Also save to cloud if user is logged in
+                  const savePromise = (typeof saveEditorContentToCloud !== 'undefined') ? saveEditorContentToCloud() : Promise.resolve();
+                  
+                  savePromise.then(() => {
                       // Show saved animation after successful save
                       setTimeout(() => {
                           if (cloudStatus) {

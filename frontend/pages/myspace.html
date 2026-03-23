@@ -3512,7 +3512,7 @@ CURRICULUM VITAE`;
                   // Also save to cloud
                   if (typeof saveEditorContentToCloud === 'function') {
                       saveEditorContentToCloud();
-                  }
+                  }\n                   // Also save to API documents endpoint for recent documents to work\n                   if (typeof saveDocumentToAPI === 'function') {\n                       const userId = getCurrentUserId();\n                       if (userId) {\n                           const currentDoc = savedDocuments.find(d => d.id === currentLoadedDocId);\n                           if (currentDoc) {\n                               saveDocumentToAPI({\n                                   user_id: userId,\n                                   title: currentDoc.title,\n                                   content: currentDoc.content,\n                                   doc_id: currentDoc.id\n                               });\n                           }\n                       }\n                   }
 
                   // Refresh recent documents in HomeEditor
                   if (typeof loadRecentDocuments === 'function') {
@@ -4934,53 +4934,15 @@ CURRICULUM VITAE`;
                           if (cloudStatus) {
                               cloudStatus.classList.remove('cloud-syncing');
                               cloudStatus.classList.add('cloud-saved');
-                          }
-                          // Refresh recent documents in HomeEditor after auto-save
-                          if (typeof loadRecentDocuments === 'function') {
-                              loadRecentDocuments();
-                          }
-                      }, 500);
+                           }
+                           // Refresh recent documents in HomeEditor after auto-save
+                           if (typeof loadRecentDocuments === 'function') {
+                               loadRecentDocuments();
+                           }
+                       }, 500);
                   });
               }
           }, 30000);
-          
-          // Function to trigger cloud sync animation on any content change
-          function triggerCloudSync() {
-              const cloudStatus = document.getElementById('cloudSaveStatus');
-              if (cloudStatus) {
-                  cloudStatus.classList.add('cloud-syncing');
-                  cloudStatus.classList.remove('cloud-saved');
-              }
-          }
-          
-          // Add event listeners to trigger cloud sync on content changes
-          function initCloudSyncListeners() {
-              const container = document.getElementById('documentContainer');
-              if (container) {
-                  // Listen for input on the container (includes typing in contenteditable)
-                  container.addEventListener('input', function(e) {
-                      // Check if the event came from a page-content element
-                      if (e.target && e.target.classList.contains('page-content')) {
-                          triggerCloudSync();
-                      }
-                  });
-                  container.addEventListener('paste', triggerCloudSync);
-                  container.addEventListener('cut', triggerCloudSync);
-                  container.addEventListener('keyup', triggerCloudSync);
-              }
-              
-              const docTitle = document.getElementById('docTitle');
-              if (docTitle) {
-                  docTitle.addEventListener('input', triggerCloudSync);
-              }
-              
-              // Also add to page-content elements directly
-              document.querySelectorAll('.page-content').forEach(function(el) {
-                  el.addEventListener('input', triggerCloudSync);
-                  el.addEventListener('keyup', triggerCloudSync);
-                  el.addEventListener('paste', triggerCloudSync);
-              });
-          }
           
           // Initialize after DOM is ready
           if (document.readyState === 'loading') {
@@ -7023,3 +6985,6 @@ CURRICULUM VITAE`;
     </script>
 </body>
 </html>
+
+
+

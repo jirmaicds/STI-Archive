@@ -4935,6 +4935,10 @@ CURRICULUM VITAE`;
                               cloudStatus.classList.remove('cloud-syncing');
                               cloudStatus.classList.add('cloud-saved');
                           }
+                          // Refresh recent documents in HomeEditor after auto-save
+                          if (typeof loadRecentDocuments === 'function') {
+                              loadRecentDocuments();
+                          }
                       }, 500);
                   });
               }

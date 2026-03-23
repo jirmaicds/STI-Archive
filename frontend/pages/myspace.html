@@ -3582,6 +3582,13 @@ CURRICULUM VITAE`;
         function openSavedDocumentsModal() {
             const modal = document.getElementById('savedDocumentsModal');
             const modalContent = document.querySelector('#savedDocumentsModal .modal-content');
+            
+            // Hide toggle button when modal is open
+            const togglePanel = document.querySelector('.toggle-panel');
+            if (togglePanel) {
+                togglePanel.style.display = 'none';
+            }
+            
             modal.style.display = 'block';
             modalContent.style.position = 'absolute';
             modalContent.style.top = '50%';
@@ -3612,7 +3619,6 @@ CURRICULUM VITAE`;
                                 <span style="font-size: 10px; color: #666;">${new Date(doc.date).toLocaleDateString()}</span>
                             </div>
                             <button onclick="loadDocument(${doc.id})" style="padding: 4px 8px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 5px;">Load</button>
-                            <button onclick="sendToPfp(${doc.id})" style="padding: 4px 8px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 5px;">Send to PFP</button>
                             <button onclick="deleteDocument(${doc.id})" style="padding: 4px 8px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">Delete</button>
                         </div>
                         <div class="document" style="border: 1px solid #ccc; border-radius: 0; padding: 8px; height: 200px; width: 150px; overflow: hidden; font-size: 10px; color: #333; background: #fff; margin: 0 auto;">${contentPreview}</div>
@@ -3626,6 +3632,11 @@ CURRICULUM VITAE`;
         // Close modal
         function closeSavedDocumentsModal() {
             document.getElementById('savedDocumentsModal').style.display = 'none';
+            // Show toggle button when modal is closed
+            const togglePanel = document.querySelector('.toggle-panel');
+            if (togglePanel) {
+                togglePanel.style.display = 'flex';
+            }
         }
 
         // Load document
@@ -6992,7 +7003,6 @@ CURRICULUM VITAE`;
                                     </p>
                                 </div>
                                 <button onclick="loadDocument('${docId}')" style="padding: 4px 8px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 5px;">Load</button>
-                                <button onclick="sendToPfp('${docId}')" style="padding: 4px 8px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 5px;">Send to PFP</button>
                                 <button onclick="deleteDocument('${docId}')" style="padding: 4px 8px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">Delete</button>
                             </div>
                         `;

@@ -4987,6 +4987,19 @@ CURRICULUM VITAE`;
               localStorage.setItem('savedDocuments', JSON.stringify(savedDocuments));
               currentLoadedDocId = docId;
               
+              // Also save to pfpDocuments for pfp.html visibility
+              let pfpDocuments = JSON.parse(localStorage.getItem('pfpDocuments')) || [];
+              const pfpExistingIndex = pfpDocuments.findIndex(d => d.id === docId);
+              if (pfpExistingIndex >= 0) {
+                  pfpDocuments[pfpExistingIndex] = docData;
+              } else {
+                  pfpDocuments.push(docData);
+              }
+              localStorage.setItem('pfpDocuments', JSON.stringify(pfpDocuments));
+              
+              // Trigger storage event for pfp.html to update
+              localStorage.setItem('documentUpdateTrigger', Date.now().toString());
+              
               // Save to API if user is logged in
               const userId = getCurrentUserId();
               if (userId && typeof saveDocumentToAPI === 'function') {
@@ -5050,6 +5063,19 @@ CURRICULUM VITAE`;
                   
                   localStorage.setItem('savedDocuments', JSON.stringify(savedDocuments));
                   currentLoadedDocId = docId;
+                  
+                  // Also save to pfpDocuments for pfp.html visibility
+                  let pfpDocuments = JSON.parse(localStorage.getItem('pfpDocuments')) || [];
+                  const pfpExistingIndex = pfpDocuments.findIndex(d => d.id === docId);
+                  if (pfpExistingIndex >= 0) {
+                      pfpDocuments[pfpExistingIndex] = docData;
+                  } else {
+                      pfpDocuments.push(docData);
+                  }
+                  localStorage.setItem('pfpDocuments', JSON.stringify(pfpDocuments));
+                  
+                  // Trigger storage event for pfp.html to update
+                  localStorage.setItem('documentUpdateTrigger', Date.now().toString());
                   
                   // Also save to cloud if user is logged in
                   const savePromise = (typeof saveEditorContentToCloud !== 'undefined') ? saveEditorContentToCloud() : Promise.resolve();

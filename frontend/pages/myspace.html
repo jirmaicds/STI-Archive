@@ -5302,13 +5302,13 @@ CURRICULUM VITAE`;
                   
                   console.log('Total unique documents:', uniqueDocs.length);
                   
-                  // Show only 5 most recent documents in HomeEditor - sort by date descending
+                  // Show only 1 most recent document in HomeEditor - sort by date descending
                   const sortedDocs = uniqueDocs.sort((a, b) => {
                       const dateA = new Date(a.lastModified || a.date || 0);
                       const dateB = new Date(b.lastModified || b.date || 0);
                       return dateB - dateA;
                   });
-                  const recentDocs = sortedDocs.slice(0, 5);
+                  const recentDocs = sortedDocs.slice(0, 1);
                   console.log('Recent docs to display:', recentDocs.length);
                   
                   if (recentDocs.length === 0) {

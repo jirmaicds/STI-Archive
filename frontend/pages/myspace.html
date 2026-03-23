@@ -3893,6 +3893,10 @@ CURRICULUM VITAE`;
                 if (homeEditor) {
                     homeEditor.style.display = 'flex';
                     homeEditor.classList.add('visible');
+                    // Load recent documents when homeEditor is shown
+                    if (typeof loadRecentDocuments === 'function') {
+                        loadRecentDocuments();
+                    }
                 }
                 
                 togglePanel.classList.remove('right', 'no-right-space');
@@ -3963,6 +3967,10 @@ CURRICULUM VITAE`;
                     homeEditor.style.position = 'absolute';
                     homeEditor.style.left = '0';
                     homeEditor.style.right = 'auto';
+                    // Load recent documents when homeEditor is shown
+                    if (typeof loadRecentDocuments === 'function') {
+                        loadRecentDocuments();
+                    }
                 }
                 
                 fileViewer.style.display = 'none';
@@ -3991,6 +3999,10 @@ CURRICULUM VITAE`;
                     homeEditor.style.position = 'absolute';
                     homeEditor.style.right = '0';
                     homeEditor.style.left = 'auto';
+                    // Load recent documents when homeEditor is shown
+                    if (typeof loadRecentDocuments === 'function') {
+                        loadRecentDocuments();
+                    }
                 }
                 
                 fileViewer.style.display = 'flex';
@@ -4067,6 +4079,10 @@ CURRICULUM VITAE`;
                     homeEditor.style.right = 'auto';
                     homeEditor.style.top = '60px';
                     homeEditor.style.height = 'calc(100% - 60px)';
+                    // Load recent documents when homeEditor is shown
+                    if (typeof loadRecentDocuments === 'function') {
+                        loadRecentDocuments();
+                    }
                 }
                 
                 if (fileViewer) {

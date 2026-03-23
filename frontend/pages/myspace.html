@@ -5168,15 +5168,52 @@ CURRICULUM VITAE`;
               }
               
               try {
-                  const savedDocuments = JSON.parse(localStorage.getItem('savedDocuments')) || [];
-                  console.log('Loading recent documents:', savedDocuments);
+                  // First try to get from localStorage
+                  let savedDocuments = JSON.parse(localStorage.getItem('savedDocuments')) || [];
+                  console.log('Loading recent documents from localStorage:', savedDocuments.length);
                   
-                  // Show only 5 most recent documents in HomeEditor
-                  const recentDocs = savedDocuments.slice(-5).reverse();
-                  console.log('Recent docs to display:', recentDocs);
+                  // Also check pfpDocuments
+                  const pfpDocuments = JSON.parse(localStorage.getItem('pfpDocuments')) || [];
+                  if (pfpDocuments.length > 0) {
+                      console.log('Found pfpDocuments:', pfpDocuments.length);
+                      savedDocuments = [...savedDocuments, ...pfpDocuments];
+                  }
+                  
+                  // If still empty, check other possible storage keys
+                  if (savedDocuments.length === 0) {
+                      // Check for any other document-related keys
+                      for (let i = 0; i < localStorage.length; i++) {
+                          const key = localStorage.key(i);
+                          if (key && key.toLowerCase().includes('doc') && key !== 'savedDocuments') {
+                              const data = localStorage.getItem(key);
+                              try {
+                                  const parsed = JSON.parse(data);
+                                  if (Array.isArray(parsed)) {
+                                      savedDocuments = [...savedDocuments, ...parsed];
+                                  }
+                              } catch(e) {}
+                          }
+                      }
+                  }
+                  
+                  // Remove duplicates based on id
+                  const uniqueDocs = savedDocuments.filter((doc, index, self) =>
+                      index === self.findIndex(d => d.id === doc.id)
+                  );
+                  
+                  console.log('Total unique documents:', uniqueDocs.length);
+                  
+                  // Show only 5 most recent documents in HomeEditor - sort by date descending
+                  const sortedDocs = uniqueDocs.sort((a, b) => {
+                      const dateA = new Date(a.lastModified || a.date || 0);
+                      const dateB = new Date(b.lastModified || b.date || 0);
+                      return dateB - dateA;
+                  });
+                  const recentDocs = sortedDocs.slice(0, 5);
+                  console.log('Recent docs to display:', recentDocs.length);
                   
                   if (recentDocs.length === 0) {
-                      recentList.innerHTML = '<p id="noRecentDocuments" style="color: #666; text-align: center; padding: 20px;">No recent documents</p>';
+                      recentList.innerHTML = '<p id="noRecentDocuments" style="color: #666; text-align: center; padding: 20px;">No recent documents. Create a new document or save an existing one.</p>';
                       return;
                   }
                   
@@ -5192,6 +5229,7 @@ CURRICULUM VITAE`;
                   console.log('Recent documents rendered');
               } catch (e) {
                   console.error('Error loading recent documents:', e);
+                  recentList.innerHTML = '<p id="noRecentDocuments" style="color: #666; text-align: center; padding: 20px;">Error loading documents.</p>';
               }
           }
           
@@ -6744,33 +6782,44 @@ CURRICULUM VITAE`;
                 return;
             }
             
-            const userId = getCurrentUserId();
-            
             try {
-                // Get local documents
-                const savedDocuments = JSON.parse(localStorage.getItem('savedDocuments')) || [];
+                // Get local documents first
+                let savedDocuments = JSON.parse(localStorage.getItem('savedDocuments')) || [];
+                const pfpDocuments = JSON.parse(localStorage.getItem('pfpDocuments')) || [];
+                
+                // Merge local documents
+                let mergedDocs = [...savedDocuments, ...pfpDocuments];
                 
                 // Try to fetch from API
-                let apiDocs = [];
+                const userId = getCurrentUserId();
                 if (userId) {
-                    apiDocs = await fetchDocumentsFromAPI(userId);
+                    try {
+                        const apiDocs = await fetchDocumentsFromAPI(userId);
+                        if (apiDocs && apiDocs.length > 0) {
+                            mergedDocs = [...mergedDocs, ...apiDocs];
+                        }
+                    } catch (apiError) {
+                        console.log('API fetch failed, using local documents only');
+                    }
                 }
                 
-                // Merge documents
-                const mergedDocs = mergeDocuments(savedDocuments, apiDocs);
+                // Remove duplicates based on id
+                const uniqueDocs = mergedDocs.filter((doc, index, self) =>
+                    index === self.findIndex(d => d.id === doc.id)
+                );
                 
                 // Sort by date, newest first
-                mergedDocs.sort((a, b) => {
+                uniqueDocs.sort((a, b) => {
                     const dateA = new Date(a.lastModified || a.date || a.updated_at || 0);
                     const dateB = new Date(b.lastModified || b.date || b.updated_at || 0);
                     return dateB - dateA;
                 });
                 
                 // Show only 5 most recent
-                const recentDocs = mergedDocs.slice(0, 5);
+                const recentDocs = uniqueDocs.slice(0, 5);
                 
                 if (recentDocs.length === 0) {
-                    recentList.innerHTML = '<p id="noRecentDocuments" style="color: #666; text-align: center; padding: 20px;">No recent documents</p>';
+                    recentList.innerHTML = '<p id="noRecentDocuments" style="color: #666; text-align: center; padding: 20px;">No recent documents. Create a new document or save an existing one.</p>';
                     return;
                 }
                 
@@ -6786,7 +6835,7 @@ CURRICULUM VITAE`;
                 console.log('Recent documents rendered from merged sources');
             } catch (e) {
                 console.error('Error loading recent documents:', e);
-                // Fallback to localStorage only
+                // Fallback to original function
                 if (originalLoadRecentDocuments) {
                     originalLoadRecentDocuments();
                 }

@@ -1322,6 +1322,7 @@
             font-size: 18px;
             margin: 0;
             padding: 20px;
+            background: transparent !important;
         }
         
         .dark-mode .no-items-message {
@@ -2282,10 +2283,13 @@
                         </label>
                         <input type="file" id="profileUpload" accept="image/*" onchange="changeProfile(event)" style="display: none;" />
                     </div>
+                    <div class="username-overlay" style="position: absolute; top: 290px; left: 50%; transform: translateX(-50%); text-align: center; z-index: 10;">
+                        <div class="full-name" style="background: rgba(0,0,0,0.5); color: white; padding: 8px 20px; border-radius: 20px; font-size: 18px; font-weight: bold;">Username</div>
+                    </div>
                 </div>
 
                 <div class="profile-info-block" style="text-align: center;">
-                    <div class="full-name">Username</div>
+                    <div class="full-name" style="display: none;">Username</div>
                     
                     <!-- Tab Navigation -->
                     <div class="profile-tabs">
@@ -2321,7 +2325,7 @@
                     <!-- My Uploads Container -->
                     <div id="myuploads-list-container" style="display: block;">
                         <div id="uploaded-files-container" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
-                            <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold;">No uploaded files yet</p>
+                            <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet</p>
                         </div>
                     </div>
                     
@@ -2346,7 +2350,7 @@
                     <!-- Cited Articles Container -->
                     <div id="cited-articles-container" style="display: none;">
                         <div id="cited-articles-list" style="display: flex; flex-direction: column; gap: 20px; padding: 20px; min-height: 500px; background-color: #f4f6f8;">
-                            <p class="no-items-message" style="font-size: 24px; text-align: center; color: #666; width: 100%;">No cited articles yet</p>
+                            <p class="no-items-message" style="font-size: 24px; text-align: center; color: #666; width: 100%; background: transparent;">No cited articles yet</p>
                         </div>
                     </div>
                 </div>
@@ -2357,7 +2361,7 @@
         <div id="p-n-b" class="profile-section" style="display:none;">
 
             <div id="saved-articles-container" style="display: flex; flex-direction: column; gap: 20px; padding: 20px; min-height: 500px; background-color: #f4f6f8;">
-                <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold;">No saved articles yet</p>
+                <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No saved articles yet</p>
             </div>
             <div id="articles-pagination" style="display: none; justify-content: center; align-items: center; gap: 10px; padding: 20px; background-color: #f4f6f8;">
                 <button id="prev-page-btn" class="pagination-btn" style="padding: 8px 16px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer;">Previous</button>
@@ -2368,7 +2372,7 @@
         </div>
         <div id="p-n-docs" class="profile-section" style="display:none;">
             <div id="saved-documents-container" style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; min-height: 500px; background-color: #f4f6f8;">
-                <p class="no-items-message" style="font-size: 24px; text-align: center; color: #666; width: 100%;">No saved documents yet</p>
+                <p class="no-items-message" style="font-size: 24px; text-align: center; color: #666; width: 100%; background: transparent;">No saved documents yet</p>
             </div>
         </div>
               
@@ -2434,6 +2438,30 @@
             </div>
         </div>
     </section>
+
+    <!-- Saved Documents Modal -->
+    <div id="savedDocumentsModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000;">
+        <div class="modal-content document-modal-content" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 15px; width: 90%; max-width: 800px; max-height: 80vh; overflow-y: auto; position: relative; margin: auto; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <button onclick="closeSavedDocumentsModalPfp()" class="close" style="position: absolute; top: 15px; right: 15px; background: transparent; border: none; cursor: pointer; font-size: 1.5rem; color: white;">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 style="font-size: 1.8rem; margin-bottom: 20px; color: white;">Saved Documents</h2>
+            <div id="savedDocumentsListPfp" style="display: flex; flex-direction: column; gap: 10px;">
+            </div>
+        </div>
+    </div>
+
+    <!-- All Documents Modal -->
+    <div id="allDocumentsModalPfp" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000;">
+        <div class="modal-content document-modal-content" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 15px; width: 90%; max-width: 800px; max-height: 80vh; overflow-y: auto; position: relative; margin: auto; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <button onclick="closeAllDocumentsModalPfp()" class="close" style="position: absolute; top: 15px; right: 15px; background: transparent; border: none; cursor: pointer; font-size: 1.5rem; color: white;">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 style="font-size: 1.8rem; margin-bottom: 20px; color: white;">All Documents</h2>
+            <div id="allDocumentsListPfp" style="display: flex; flex-direction: column; gap: 10px;">
+            </div>
+        </div>
+    </div>
 
     <!-- Change Password Modal -->
     <div id="changePasswordModal" class="modal" style="display: none;">
@@ -3042,7 +3070,7 @@
 
             function displayArticles(articles) {
                 if (articles.length === 0) {
-                    container.innerHTML = '<p class="no-items-message" style="font-size: 24px; text-align: center; color: #666;">No saved articles yet.</p>';
+                    container.innerHTML = '<p class="no-items-message" style="font-size: 24px; text-align: center; color: #666; background: transparent;">No saved articles yet.</p>';
                     document.getElementById('articles-pagination').style.display = 'none';
                     return;
                 }
@@ -3165,7 +3193,7 @@
                 .then(data => {
                     const files = data.files || [];
                     if (files.length === 0) {
-                        container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold;">No uploaded files yet</p>';
+                        container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet</p>';
                         return;
                     }
 
@@ -3240,7 +3268,7 @@
                 console.log('Loading saved documents:', uniqueDocuments); // Debug log
 
                 if (uniqueDocuments.length === 0) {
-                    container.innerHTML = '<p class="no-items-message" style="font-size: 24px; text-align: center; color: #666;">No saved documents yet.</p>';
+                    container.innerHTML = '<p class="no-items-message" style="font-size: 24px; text-align: center; color: #666; background: transparent;">No saved documents yet.</p>';
                     return;
                 }
 
@@ -3278,6 +3306,93 @@
             }
         }
 
+        // Open saved documents modal
+        window.openSavedDocumentsModalPfp = function() {
+            const modal = document.getElementById('savedDocumentsModal');
+            const listContainer = document.getElementById('savedDocumentsListPfp');
+            if (!modal || !listContainer) return;
+
+            const savedDocuments = JSON.parse(localStorage.getItem('savedDocuments')) || [];
+            const pfpDocuments = JSON.parse(localStorage.getItem('pfpDocuments')) || [];
+            const allDocuments = [...savedDocuments, ...pfpDocuments];
+            const uniqueDocuments = allDocuments.filter((doc, index, self) =>
+                index === self.findIndex(d => d.id === doc.id)
+            );
+
+            if (uniqueDocuments.length === 0) {
+                listContainer.innerHTML = '<p style="color: white; text-align: center; padding: 30px;">No saved documents</p>';
+            } else {
+                const sortedDocs = uniqueDocuments.sort((a, b) => {
+                    const dateA = new Date(a.lastModified || a.date || 0);
+                    const dateB = new Date(b.lastModified || b.date || 0);
+                    return dateB - dateA;
+                });
+
+                listContainer.innerHTML = sortedDocs.map(doc => `
+                    <div onclick="window.location.href='myspace.html?from=pfp&doc=${doc.id}'" 
+                         style="background: white; padding: 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: transform 0.2s, box-shadow 0.2s;">
+                        <i class="fas fa-file-alt" style="color: #667eea; font-size: 1.5rem;"></i>
+                        <div style="flex: 1;">
+                            <p style="margin: 0; color: #333; font-weight: bold;">${doc.title || 'Untitled'}</p>
+                            <p style="margin: 5px 0 0; color: #666; font-size: 0.8rem;">${new Date(doc.lastModified || doc.date || Date.now()).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            modal.style.display = 'flex';
+        };
+
+        // Close saved documents modal
+        window.closeSavedDocumentsModalPfp = function() {
+            const modal = document.getElementById('savedDocumentsModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        // Open all documents modal
+        window.openAllDocumentsModalPfp = function() {
+            const modal = document.getElementById('allDocumentsModalPfp');
+            const listContainer = document.getElementById('allDocumentsListPfp');
+            if (!modal || !listContainer) return;
+
+            const savedDocuments = JSON.parse(localStorage.getItem('savedDocuments')) || [];
+            const pfpDocuments = JSON.parse(localStorage.getItem('pfpDocuments')) || [];
+            const allDocuments = [...savedDocuments, ...pfpDocuments];
+
+            if (allDocuments.length === 0) {
+                listContainer.innerHTML = '<p style="color: white; text-align: center; padding: 30px;">No documents found</p>';
+            } else {
+                const sortedDocs = allDocuments.sort((a, b) => {
+                    const dateA = new Date(a.lastModified || a.date || 0);
+                    const dateB = new Date(b.lastModified || b.date || 0);
+                    return dateB - dateA;
+                });
+
+                listContainer.innerHTML = sortedDocs.map(doc => `
+                    <div onclick="window.location.href='myspace.html?from=pfp&doc=${doc.id}'" 
+                         style="background: white; padding: 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: transform 0.2s, box-shadow 0.2s;">
+                        <i class="fas fa-file-alt" style="color: #667eea; font-size: 1.5rem;"></i>
+                        <div style="flex: 1;">
+                            <p style="margin: 0; color: #333; font-weight: bold;">${doc.title || 'Untitled'}</p>
+                            <p style="margin: 5px 0 0; color: #666; font-size: 0.8rem;">${new Date(doc.lastModified || doc.date || Date.now()).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            modal.style.display = 'flex';
+        };
+
+        // Close all documents modal
+        window.closeAllDocumentsModalPfp = function() {
+            const modal = document.getElementById('allDocumentsModalPfp');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        };
+
         // Load cited articles from localStorage
         function loadCitedArticles() {
             const container = document.getElementById('cited-articles-list');
@@ -3289,7 +3404,7 @@
             const citedArticles = JSON.parse(localStorage.getItem('citedArticles')) || [];
 
             if (citedArticles.length === 0) {
-                container.innerHTML = '<p class="no-items-message" style="font-size: 24px; text-align: center; color: #666; width: 100%;">No cited articles yet</p>';
+                container.innerHTML = '<p class="no-items-message" style="font-size: 24px; text-align: center; color: #666; width: 100%; background: transparent;">No cited articles yet</p>';
                 return;
             }
 
@@ -6311,7 +6426,7 @@
         const container = document.getElementById('uploaded-files-container');
         
         if (!uploads || uploads.length === 0) {
-            container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold;">No uploaded files yet</p>';
+            container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet</p>';
             return;
         }
         

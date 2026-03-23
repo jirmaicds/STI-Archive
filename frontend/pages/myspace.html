@@ -539,6 +539,26 @@
       border: 1px solid #555;
     }
 
+    /* Doc title input dark mode */
+    .dark-mode .doc-title-input {
+      background: #333 !important;
+      color: white !important;
+      border-color: #555 !important;
+    }
+    
+    /* Active state for toolbar selects */
+    .toolbar select.active {
+      background: #0057b8 !important;
+      color: white !important;
+      border-color: #0057b8 !important;
+    }
+    
+    .dark-mode .toolbar select.active {
+      background: #ffd700 !important;
+      color: #333 !important;
+      border-color: #ffd700 !important;
+    }
+
     .dark-mode .toolbar button:hover {
       background: #444;
     }
@@ -2297,13 +2317,7 @@ color: #ffd700;
        <button onclick="format('bold')"><b>B</b></button>
        <button onclick="format('italic')"><i>I</i></button>
 
-       <select onchange="applyUnderlineStyle(this.value)">
-         <option value="underline">Underline: Solid</option>
-         <option value="dotted">Dotted</option>
-         <option value="dashed">Dashed</option>
-         <option value="wavy">Wavy</option>
-         <option value="none">None</option>
-       </select>
+       <button onclick="format('underline')" title="Underline" class="underline-btn"><u>U</u></button>
 
        <input type="color" onchange="format('foreColor', this.value)" title="Text Color" />
 
@@ -2312,12 +2326,7 @@ color: #ffd700;
        <button onclick="format('justifyRight')" title="Align Right"><i class="fas fa-align-right"></i></button>
        <button onclick="format('justifyFull')" title="Justify"><i class="fas fa-align-justify"></i></button>
 
-       <select onchange="setLineHeight(this.value)">
-         <option value="1.2">Line spacing: 1.2</option>
-         <option value="1.5">1.5</option>
-         <option value="2">2.0</option>
-         <option value="2.5">2.5</option>
-       </select>
+       <button onclick="setLineHeight('1.5')" title="Line Spacing" class="line-spacing-btn"><i class="fas fa-list"></i></button>
 
        <select id="paperSizeSelect" onchange="setPaperSize(this.value)">
          <option value="letter">Letter</option>
@@ -2326,13 +2335,12 @@ color: #ffd700;
          <option value="legal">Legal</option>
        </select>
 
-       <input type="text" id="docTitle" placeholder="Untitled document" style="padding: 6px 10px; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9; margin-right: 10px; width: 200px;" />
-       <span id="cloudSaveStatus" onclick="openSavedDocumentsModal()" style="display: inline-flex; align-items: center; margin-right: 10px; position: relative; cursor: pointer; background: white; border: 2px solid #333; border-radius: 50%; width: 32px; height: 32px; justify-content: center; box-shadow: 2px 2px 5px rgba(0,0,0,0.3);" title="Click to view saved documents">
-         <i class="fas fa-cloud" style="font-size: 1rem; color: #333;"></i>
+       <input type="text" id="docTitle" placeholder="Untitled document" class="doc-title-input" style="padding: 6px 10px; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9; margin-right: 10px; width: 200px; color: #333;" />
+       <span id="cloudSaveStatus" style="display: inline-flex; align-items: center; margin-right: 10px; position: relative; background: white; border: none; border-radius: 50%; width: 32px; height: 32px; justify-content: center; box-shadow: 2px 2px 5px rgba(0,0,0,0.3);" title="Cloud Status">
+         <i class="fas fa-cloud" style="font-size: 1rem; color: #0057b8;"></i>
          <i class="fas fa-sync-alt" id="cloudSyncIcon" style="font-size: 0.6rem; color: #2196F3; position: absolute; bottom: -2px; right: -2px; background: white; border-radius: 50%; padding: 2px;"></i>
        </span>
        <button onclick="saveDocumentNow()" title="Save Document"><i class="fas fa-save"></i> Save</button>
-       <button onclick="openSavedDocumentsModal()" title="Saved Documents"><i class="fas fa-folder-open"></i> Menu</button>
        <button onclick="downloadDocument()" title="Download Document"><i class="fas fa-download"></i></button>
        <button onclick="addNewPage()" title="Add New Page"><i class="fas fa-plus"></i> New Page</button>
        <button onclick="removeCurrentPage()" title="Remove Current Page"><i class="fas fa-minus"></i> Remove Page</button>
@@ -2364,7 +2372,7 @@ color: #ffd700;
     </div>
   </div>
 
-  <!-- Saved Documents Modal -->
+  
   <div id="savedDocumentsModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
     <div class="modal-content" style="background-color: #fff; padding: 20px; width: 80%; max-width: 800px; border-radius: 8px;">
       <span class="close" onclick="closeSavedDocumentsModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>

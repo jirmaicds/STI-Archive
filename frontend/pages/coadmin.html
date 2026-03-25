@@ -7707,12 +7707,12 @@ STI Archives Admin`;
                 const pdfUrl = upload.filePath || upload.pdfUrl || upload.url || '';
                 const hasPdf = pdfUrl && (pdfUrl.startsWith('http') || pdfUrl.includes('.pdf'));
                 
-                // Create onclick handler
-                const cardClick = hasPdf ? `onclick="viewUserUploadPDF('${encodeURIComponent(pdfUrl)}', '${encodeURIComponent(upload.title)}')" style="cursor: pointer;"` : '';
+                // Create onclick handler - directly open PDF in new window as fallback
+                const cardClick = hasPdf ? `window.open('${pdfUrl}', '_blank')` : '';
                 
                 return `
-                <div class="uploaded-article" data-id="${upload.id}" ${cardClick}>
-                    <h3 ${hasPdf ? "onclick=\"event.stopPropagation(); viewUserUploadPDF('" + encodeURIComponent(pdfUrl) + "', '" + encodeURIComponent(upload.title) + "')\"" : ''}>${upload.title}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : ''}</h3>
+                <div class="uploaded-article" data-id="${upload.id}" ${hasPdf ? "onclick=\"" + cardClick + "\" style=\"cursor: pointer;\"" : ''}>
+                    <h3>${upload.title}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : ''}</h3>
                     <div class="summary">${upload.abstract || 'N/A'}</div>
                     <div class="meta">
                         <strong>Uploaded by:</strong> ${upload.userName}<br>
@@ -7727,26 +7727,20 @@ STI Archives Admin`;
                         <strong>Status:</strong> <span style="color: ${upload.status === 'approved' ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">${upload.status}</span><br>
                         <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}
                     </div>
-                    <div class="actions" onclick="event.stopPropagation();">
+                    <div class="actions">
                         ${hasPdf ? `
-                        <button class="view-pdf-btn" onclick="viewUserUploadPDF('${encodeURIComponent(pdfUrl)}', '${encodeURIComponent(upload.title)}')">
+                        <button class="view-pdf-btn" onclick="event.stopPropagation(); window.open('${pdfUrl}', '_blank')">
                             <i class="fas fa-eye"></i> View PDF
                         </button>
                         ` : ''}
-                        <button class="upload-btn" onclick="editUserUploadTopicCoadmin('${upload.id}')">
-                            <i class="fas fa-check"></i> accept
-                        </button>
                         ${upload.status === 'pending' ? `
                             <button class="upload-btn" onclick="approveUserUploadCoadmin('${upload.id}')">
                                 <i class="fas fa-check"></i> Approve
                             </button>
                             <button class="delete-btn" onclick="rejectUserUploadCoadmin('${upload.id}')">
-                                <i class="fas fa-times"></i> reject
+                                <i class="fas fa-times"></i> Reject
                             </button>
                         ` : ''}
-                        <button class="delete-btn" onclick="deleteUserUploadCoadmin('${upload.id}')">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
                     </div>
                 </div>
             `}).join('');

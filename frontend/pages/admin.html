@@ -4419,9 +4419,13 @@
                 const pdfUrl = upload.filePath || upload.pdfUrl || upload.url || '';
                 const hasPdf = pdfUrl && (pdfUrl.startsWith('http') || pdfUrl.includes('.pdf'));
                 
+                // Create onclick handler for title
+                const titleOnclick = hasPdf ? `viewUserUploadPDF('${encodeURIComponent(pdfUrl)}', '${encodeURIComponent(upload.title)}')` : '';
+                const titleStyle = hasPdf ? 'cursor: pointer;' : '';
+                
                 return `
                 <div class="uploaded-article" data-id="${upload.id}">
-                    <h3 ${hasPdf ? "onclick=\"viewUserUploadPDF('" + pdfUrl.replace(/'/g, "\\'") + "', '" + upload.title.replace(/'/g, "\\'") + "')\"" : ''}>${upload.title}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : ''}</h3>
+                    <h3 onclick="${titleOnclick}" style="${titleStyle}">${upload.title}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : ''}</h3>
                     <div class="summary">${upload.abstract || 'N/A'}</div>
                     <div class="meta">
                         <strong>Uploaded by:</strong> ${upload.userName}<br>
@@ -4438,7 +4442,7 @@
                     </div>
                     <div class="actions">
                         ${hasPdf ? `
-                        <button class="view-pdf-btn" onclick="viewUserUploadPDF('${pdfUrl.replace(/'/g, "\\'")}', '${upload.title.replace(/'/g, "\\'")}')">
+                        <button class="view-pdf-btn" onclick="viewUserUploadPDF('${encodeURIComponent(pdfUrl)}', '${encodeURIComponent(upload.title)}')">
                             <i class="fas fa-eye"></i> View PDF
                         </button>
                         ` : ''}
@@ -4463,7 +4467,12 @@
         
         // View PDF for user upload
         function viewUserUploadPDF(pdfUrl, title) {
+            // Decode URL-encoded parameters
+            pdfUrl = decodeURIComponent(pdfUrl);
+            title = decodeURIComponent(title);
+            
             console.log('Opening PDF:', pdfUrl, 'Title:', title);
+            
             if (typeof displayArticlePDF === 'function') {
                 displayArticlePDF(pdfUrl, title);
             } else if (typeof openPdfModal === 'function') {

@@ -4426,8 +4426,8 @@
                 const pdfUrl = testPdfUrl;
                 const hasPdf = pdfUrl && pdfUrl.length > 0;
                 
-                // Create onclick handler - directly open PDF in new window
-                const cardClick = "window.open('" + testPdfUrl + "', '_blank')";
+                // Create onclick handler - call the modal PDF viewer function
+                const cardClick = "displayArticlePDF('" + testPdfUrl + "', '" + upload.title + "')";
                 
                 return `
                 <div class="uploaded-article" data-id="${upload.id}" ${hasPdf ? "onclick=\"" + cardClick + "\" style=\"cursor: pointer;\"" : ''}>
@@ -4448,7 +4448,7 @@
                     </div>
                     <div class="actions">
                         ${hasPdf ? `
-                        <button class="view-pdf-btn" onclick="event.stopPropagation(); window.open('${pdfUrl}', '_blank')">
+                        <button class="view-pdf-btn" onclick="event.stopPropagation(); displayArticlePDF('${testPdfUrl}', '${upload.title}')">
                             <i class="fas fa-eye"></i> View PDF
                         </button>
                         ` : ''}

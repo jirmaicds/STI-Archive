@@ -4322,55 +4322,28 @@ CURRICULUM VITAE`;
          }
 
         function loadStudy(studyId, pdfPath, pdfId) {
-             // First, check if it's a predefined study
-             const predefinedStudies = {
-                 'professional_perspective': {
-                     title: 'Professionals Perspective on the Structural Relialibility of Bamboo in Philippines Housing Projects',
-                     pdfPath: '/Studies/Research/2023-2024/Moe et al.pdf'
-                 },
-                 'perceptions': {
-                      title: 'Farmers Perceptions on the Effectiveness of Ventilation to Hinder Pesticide Exposure',
-                      pdfPath: '/Studies/Research/2023-2024/Eliserio et al.pdf'
-                  },
-                 'safety_measure': {
-                     title: 'Exploring Public Awareness and Safety Measures for Microplastic Consumption in Fish',
-                     pdfPath: '/Studies/Research/2023-2024/Santibanez et al.pdf'
-                 },
-                 'safety_protocols': {
-                     title: 'Analyzing Safety Protocals Adherence in Gasoline Stations: Urban vs. Rural Perspectives',
-                     pdfPath: '/Studies/Research/2023-2024/Cejes et al.pdf'
-                 },
-                 'trash_treasure': {
-                     title: 'Trash to Treasure: The Role of Recycling Technologies in Sustainable Future',
-                     pdfPath: '/Studies/Research/2023-2024/Juangco et al. (2024).pdf'
-                 },
-                 'lagundi_oil': {
-                      title: 'The Effectiveness of Lagundi Essential Oil as an Inhaler in Terms of Marketability Among Selected Grade-11 Senior High School Students in STI College Calamba',
-                      pdfPath: '/Studies/Research/2023-2024/Espiritu et al.pdf'
-                  }
-             };
+             // Get articles from database via localStorage
+             const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+             
+             // Find article by matching studyId
+             const normalizedStudyId = studyId.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20);
+             const article = allArticles.find(a => {
+                 const articleStudyId = a.title.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20);
+                 return articleStudyId === normalizedStudyId;
+             });
 
-             let study = predefinedStudies[studyId];
-
-             if (!study) {
-                 const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
-                 const normalizedStudyId = studyId.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20);
-                 const article = allArticles.find(a => {
-                     const articleStudyId = a.title.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20);
-                     return articleStudyId === normalizedStudyId;
-                 });
-
-                 if (article) {
-                     study = {
-                         title: article.title,
-                         authors: article.authors,
-                         summary: article.summary,
-                         meta: article.meta,
-                         fileIds: article.fileIds || [],
-                         pdfId: pdfId ? decodeURIComponent(pdfId) : (article.pdfId || null),
-                          pdfPath: pdfPath ? decodeURIComponent(pdfPath) : (article.pdfPath || null) || null
-                     };
-                 }
+             let study = null;
+             
+             if (article) {
+                 study = {
+                     title: article.title,
+                     authors: article.authors,
+                     summary: article.summary,
+                     meta: article.meta,
+                     fileIds: article.fileIds || [],
+                     pdfId: pdfId ? decodeURIComponent(pdfId) : (article.pdfId || null),
+                     pdfPath: pdfPath ? decodeURIComponent(pdfPath) : (article.pdfPath || article.pdf_path || null) || null
+                 };
              }
 
              if (study) {

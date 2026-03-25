@@ -2421,47 +2421,10 @@
       console.error('Failed to load articles from server:', error);
     }
 
-    // Fallback to local articles if server fails
-    const existingArticles = [
-        { title: 'Exploring Public Awareness And Safety Measures For Microplastic Consumption In Fish', authors: 'Caluya, C. I. L., Cejes, M. T. H. M., Habacon, K. L. R., Oliva, J. R. E., & Villegas, J. D.', meta: 'Caluya, C. I. L., Cejes, M. T. H. M., Habacon, K. L. R., Oliva, J. R. E., & Villegas, J. D. – 2024–2025', summary: 'This qualitative phenomenological study investigates public awareness, vendor practices, and government measures on microplastic contamination in fish, revealing low public knowledge, lack of standardized safety checks, and insufficient resources for proper monitoring...', category: 'research', strand: 'STEM', level: 'Senior High School', program: 'Grade 11', year: '2024', type: 'research', pdfPath: '/Studies/Research/2023-2024/Cejes et al.pdf' },
-        { title: 'Farmers\' Perceptions On The Effectiveness Of Ventilation To Hinder Pesticide Exposure', authors: 'Aquino, B. R. A., Burgos, F. E. D., Eliserio, C. A. C., Inoc, J. V. H., & Magbato, E. Y.', meta: 'Aquino, B. R. A., Burgos, F. E. D., Eliserio, C. A. C., Inoc, J. V. H., & Magbato, E. Y. – 2025', summary: 'This qualitative phenomenological study explores farmers\' perceptions of greenhouse ventilation as a strategy to reduce pesticide exposure, highlighting that proper airflow can improve crop health, reduce pesticide dependence, and promote safer and more sustainable farming practices...', category: 'research', strand: 'STEM', level: 'Senior High School', program: 'Grade 12', year: '2025', type: 'research', pdfPath: '/Studies/Research/2023-2024/Eliserio et al.pdf' },
-        { title: 'The Effectiveness of Lagundi Essential Oil as an Inhaler in Terms of Marketability Among Selected Grade-11 Senior High School Students in STI College Calamba', authors: 'Grade 11 Students', meta: 'Grade 11 Students – 2025 – STI College Calamba', summary: 'This study examines the marketability and effectiveness of lagundi essential oil as an inhaler product among selected Grade-11 students, evaluating consumer preferences, product viability, and potential market acceptance...', category: 'research', strand: 'STEM', level: 'Senior High School', program: 'Grade 11', year: '2025', type: 'research', pdfPath: '/Studies/Research/2023-2024/Espiritu et al.pdf' },
-        { title: 'Analyzing Safety Protocols Adherence In Gasoline Stations: Urban vs. Rural Perspectives', authors: 'Santibañez, J., et al.', meta: 'Santibañez, J., et al. – 2024 – STI College Calamba', summary: 'This study compares urban and rural gasoline stations to examine workers\' adherence to Department of Labor and Employment (DOLE) safety protocols, finding both compliance and lapses that impact health, safety, and emergency preparedness...', category: 'research', strand: 'ABM', level: 'college', program: 'BSBA', year: '2024', type: 'research', pdfPath: '/Studies/Research/2023-2024/Santibanez et al.pdf' },
-        { title: 'Ethereal Blossom: Floral Scented Cologne Balm', authors: 'Baloloy, Winona Ashley I. Belda, Eldrich Seann T. Cubano, Rednz Nhorween C. Lulu, Kurl Angela C. Mendoza, Aizeiya N.', meta: 'Baloloy, Winona Ashley I. Belda, Eldrich Seann T. Cubano, Rednz Nhorween C. Lulu, Kurl Angela C. Mendoza, Aizeiya N. — 2025 STI College Calamba', summary: 'This feasibility study examines the market demand, financial viability, and marketing strategies for Ethereal Blossom, a floral cologne balm designed to combine elegance, skin-friendliness, and eco-consciousness for fragrance consumers...', category: 'research', strand: 'ABM', level: 'college', program: 'BSBA', year: '2025', type: 'research', fileIds: [] },
-        { title: 'Trash to Treasure: The Role of Recycling Technologies in Sustainable Future', authors: 'Awid, Christa Belle L., Barerra, Tamiya Judea A., De Torres, Kent Hervey L., Gonzales, Christine Anne M., and Tuazon, Rancel G.', meta: 'Awid, Christa Belle L., Barerra, Tamiya Judea A., De Torres, Kent Hervey L., Gonzales, Christine Anne M., and Tuazon, Rancel G. – 2025 – STI College Calamba', summary: 'This study explores the perspectives of local government units on recycling technologies, highlighting their role in reducing waste, promoting sustainability, addressing implementation challenges, and balancing environmental goals with financial constraints...', category: 'research', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', pdfPath: '/Studies/Research/2023-2024/Juangco et al. (2024).pdf' },
-        { title: 'STI Archives: Digital Library Management System', authors: 'ITMAWD 21 Group', meta: 'ITMAWD 21 Group – 2025 – STI College Calamba', summary: 'A comprehensive web-based digital library system designed to manage and showcase student research papers and capstone projects...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', fileIds: [] },
-        { title: 'AI-Powered Student Performance Analytics', authors: 'Computer Science Department', meta: 'Computer Science Department – 2025 – STI College Calamba', summary: 'An intelligent system that analyzes student performance data using machine learning algorithms...', category: 'capstone', strand: 'STEM', level: 'college', program: 'BSCS', year: '2025', type: 'research', fileIds: [] },
-        { title: 'Sustainable Urban Farming Practices', authors: 'Environmental Science Team', meta: 'Environmental Science Team – 2025 – STI College Calamba', summary: 'This study explores innovative urban farming techniques that promote sustainability and food security in densely populated areas...', category: 'research', strand: 'STEM', level: 'Senior High School', program: 'Grade 11', year: '2025', type: 'research', fileIds: [] },
-        { title: 'Mobile Health Monitoring App', authors: 'IT Development Group', meta: 'IT Development Group – 2025 – STI College Calamba', summary: 'A comprehensive mobile application for real-time health monitoring and telemedicine services...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', fileIds: [] },
-        { title: 'E-Commerce Platform for Local Businesses', authors: 'Business Informatics Team', meta: 'Business Informatics Team – 2025 – STI College Calamba', summary: 'A scalable e-commerce solution designed to help local businesses establish online presence and manage digital sales...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', fileIds: [] },
-        { title: 'Smart Campus Security System', authors: 'Security Systems Group', meta: 'Security Systems Group – 2025 – STI College Calamba', summary: 'An integrated security system utilizing IoT devices and AI for comprehensive campus surveillance and access control...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', fileIds: [] },
-        { title: 'Virtual Reality Learning Environment', authors: 'Educational Technology Dept', meta: 'Educational Technology Dept – 2025 – STI College Calamba', summary: 'An immersive VR platform for interactive learning experiences across various academic disciplines...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', fileIds: [] },
-        { title: 'Blockchain-Based Voting System', authors: 'Cybersecurity Research Team', meta: 'Cybersecurity Research Team – 2025 – STI College Calamba', summary: 'A secure and transparent voting system leveraging blockchain technology for elections and organizational decisions...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', fileIds: [] },
-        { title: 'AI-Driven Financial Advisor', authors: 'Finance Technology Group', meta: 'Finance Technology Group – 2025 – STI College Calamba', summary: 'An intelligent financial planning tool that uses AI to provide personalized investment advice and portfolio management...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', fileIds: [] },
-        { title: 'Engaging Learning, Letter by Letter an Interactive Spell it! Game for Preschool', authors: 'ITMAWD 21 Group', meta: 'ITMAWD 21 Group – 2025 – STI College Calamba', summary: 'An interactive educational game designed to teach preschool children spelling through engaging letter-by-letter gameplay, promoting early literacy skills in a fun and interactive environment...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSIT', year: '2025', type: 'research', fileIds: [] },
-        { title: 'Smart Agriculture Monitoring System Using IoT Sensors', authors: 'Computer Science Department', meta: 'Computer Science Department – 2023 – STI College Calamba', summary: 'A comprehensive IoT-based system for monitoring soil moisture, temperature, and humidity in agricultural fields, providing real-time data to farmers for optimized crop management and water conservation...', category: 'capstone', strand: 'ITMAWD', level: 'college', program: 'BSCS', year: '2023', type: 'research', fileIds: [] }
-      ];
-      // Filter to only include articles with PDFs (fileIds with content or pdfPath)
-      const articlesWithPDFs = existingArticles.filter(article => 
-        (article.fileIds && article.fileIds.length > 0) || 
-        (article.pdfPath && article.pdfPath.length > 0)
-      );
-      localStorage.setItem('allArticles', JSON.stringify(articlesWithPDFs));
-
-      // Save to server as well
-      try {
-        await fetch('/save_articles', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ articles: existingArticles })
-        });
-      } catch (error) {
-        console.error('Failed to save articles to server:', error);
-      }
-
-      return existingArticles;
+    // No fallback - articles come from database only
+    const existingArticles = [];
+    localStorage.setItem('allArticles', JSON.stringify(existingArticles));
+    return existingArticles;
     }
   
 

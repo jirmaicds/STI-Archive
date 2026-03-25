@@ -2493,6 +2493,71 @@
             border-left: 4px solid #ffd700; /* Default: Research */
             transition: border-left-color 0.3s;
         }
+        /* === UPLOADED ARTICLE STYLES (for User Uploads section) === */
+        .uploaded-article {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-left: 4px solid #ffd700;
+        }
+        .uploaded-article h3 {
+            color: #0057b8;
+            font-size: 18px;
+            margin: 0 0 10px 0;
+        }
+        .uploaded-article .meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .uploaded-article .summary {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .uploaded-article .source-tag {
+            display: none;
+        }
+        .uploaded-article .actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: flex-end;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            margin-top: 15px;
+        }
+        .uploaded-article .actions .upload-btn {
+            background: #28a745 !important;
+            color: white !important;
+            border: none !important;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .uploaded-article .actions .delete-btn {
+            background-color: #dc3545 !important;
+            color: white !important;
+            border: none !important;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        body.dark-mode .uploaded-article {
+            background-color: #2d2d2d;
+        }
+        body.dark-mode .uploaded-article h3 {
+            color: #667eea;
+        }
+        body.dark-mode .uploaded-article .meta {
+            color: #aaa;
+        }
+        body.dark-mode .uploaded-article .summary {
+            color: #ddd;
+        }
         /* === ARTICLE STYLES (for Admin Uploads section) === */
         .article {
             background: white;

@@ -433,8 +433,8 @@ function displayArticlePDF(pdfPath, title) {
     
     console.log('Final PDF URL:', pdfUrl);
     
-    // If it's a Studies folder path, use our API endpoint instead
-    if (pdfPath && pdfPath.includes('/Studies/')) {
+    // Only use API endpoint for relative paths, not for full URLs (like Supabase)
+    if (pdfPath && pdfPath.includes('/Studies/') && !pdfPath.startsWith('http')) {
         const relativePath = pdfPath.replace('/Studies/', '');
         pdfUrl = '/api/studies-pdf?path=' + encodeURIComponent(relativePath);
         console.log('Using Studies API:', pdfUrl);

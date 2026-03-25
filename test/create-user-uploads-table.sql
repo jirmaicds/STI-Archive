@@ -45,10 +45,10 @@ CREATE POLICY "Admins can update uploads" ON user_uploads
 CREATE POLICY "Admins can delete uploads" ON user_uploads
   FOR DELETE USING (auth.jwt()->>'role' IN ('admin', 'coadmin'));
 
--- Insert a test upload
-INSERT INTO user_uploads (id, user_id, title, description, file_type, status, created_at)
+-- Insert test uploads with file_path
+INSERT INTO user_uploads (id, user_id, title, description, file_path, file_type, status, created_at)
 VALUES 
-  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'Test Article', 'This is a test article', 'pdf', 'approved', NOW());
+  ('00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'Test Article', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry''s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.', 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Research/2023-2024/Cejes%20et%20al.pdf', 'pdf', 'approved', NOW());
 
 -- Add RLS policy for anon access (for testing)
 DROP POLICY IF EXISTS "Anon can read uploads" ON user_uploads;

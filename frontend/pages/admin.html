@@ -2670,6 +2670,10 @@
             color: #0057b8;
             font-size: 18px;
             margin: 0 0 10px 0;
+            cursor: pointer;
+        }
+        .uploaded-article h3:hover {
+            text-decoration: underline;
         }
         .uploaded-article .meta {
             font-size: 14px;
@@ -2709,6 +2713,17 @@
             padding: 5px 10px;
             border-radius: 4px;
             cursor: pointer;
+        }
+        .uploaded-article .actions .view-pdf-btn {
+            background-color: #0057b8 !important;
+            color: white !important;
+            border: none !important;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .uploaded-article .actions .view-pdf-btn:hover {
+            background-color: #003f8a !important;
         }
         body.dark-mode .uploaded-article {
             background-color: #2d2d2d;
@@ -4401,23 +4416,20 @@
             
             container.innerHTML = uploads.map(upload => {
                 // Determine PDF URL from various possible fields
-                const pdfUrl = upload.filePath || upload.pdfUrl || upload.url || upload.filename || '';
+                const pdfUrl = upload.filePath || upload.pdfUrl || upload.url || '';
                 const hasPdf = pdfUrl && (pdfUrl.startsWith('http') || pdfUrl.includes('.pdf'));
                 
                 return `
                 <div class="uploaded-article" data-id="${upload.id}">
-                    <h3 onclick="${hasPdf ? "viewUserUploadPDF('" + pdfUrl.replace(/'/g, "\\'") + "', '" + upload.title.replace(/'/g, "\\'") + "')" : ''}" style="${hasPdf ? 'cursor: pointer;' : ''}">${upload.title}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;" title="Click to view PDF"></i>' : ''}</h3>
+                    <h3 ${hasPdf ? "onclick=\"viewUserUploadPDF('" + pdfUrl.replace(/'/g, "\\'") + "', '" + upload.title.replace(/'/g, "\\'") + "')\"" : ''}>${upload.title}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : ''}</h3>
+                    <div class="summary">${upload.abstract || 'N/A'}</div>
                     <div class="meta">
-                        <strong>Author(s):</strong> ${upload.authors || 'N/A'}<br>
                         <strong>Uploaded by:</strong> ${upload.userName}<br>
                         <strong>Category:</strong> ${upload.category}<br>
                         <strong>Topic:</strong> ${upload.topic ? upload.topic.charAt(0).toUpperCase() + upload.topic.slice(1) : 'Not set'}<br>
                         <strong>Type:</strong> ${upload.type ? upload.type.charAt(0).toUpperCase() + upload.type.slice(1) : 'Not set'}<br>
                         <strong>Level:</strong> ${upload.level}<br>
                         <strong>Year:</strong> ${upload.year}
-                    </div>
-                    <div class="summary">
-                        <strong>Abstract:</strong> ${upload.abstract || 'N/A'}
                     </div>
                     <div class="source-tag">
                         <strong>File:</strong> ${upload.filename}<br>
@@ -4426,22 +4438,22 @@
                     </div>
                     <div class="actions">
                         ${hasPdf ? `
-                        <button class="view-pdf-btn" onclick="viewUserUploadPDF('${pdfUrl.replace(/'/g, "\\'")}', '${upload.title.replace(/'/g, "\\'")}')" style="margin-right: 5px; padding: 5px 10px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        <button class="view-pdf-btn" onclick="viewUserUploadPDF('${pdfUrl.replace(/'/g, "\\'")}', '${upload.title.replace(/'/g, "\\'")}')">
                             <i class="fas fa-eye"></i> View PDF
                         </button>
                         ` : ''}
-                        <button class="upload-btn" onclick="editUserUploadTopic('${upload.id}')" style="margin-right: 5px; padding: 5px 10px; background: #28a745;">
+                        <button class="upload-btn" onclick="editUserUploadTopic('${upload.id}')">
                             <i class="fas fa-check"></i> accept
                         </button>
                         ${upload.status === 'pending' ? `
-                            <button class="upload-btn" onclick="approveUserUpload('${upload.id}')" style="margin-right: 5px; padding: 5px 10px; background: #28a745;">
+                            <button class="upload-btn" onclick="approveUserUpload('${upload.id}')">
                                 <i class="fas fa-check"></i> Approve
                             </button>
-                            <button class="delete-btn" onclick="rejectUserUpload('${upload.id}')" style="margin-right: 5px; padding: 5px 10px;">
+                            <button class="delete-btn" onclick="rejectUserUpload('${upload.id}')">
                                 <i class="fas fa-times"></i> reject
                             </button>
                         ` : ''}
-                        <button class="delete-btn" onclick="deleteUserUpload('${upload.id}')" style="padding: 5px 10px;">
+                        <button class="delete-btn" onclick="deleteUserUpload('${upload.id}')">
                             <i class="fas fa-trash"></i> Delete
                         </button>
                     </div>
@@ -4451,6 +4463,7 @@
         
         // View PDF for user upload
         function viewUserUploadPDF(pdfUrl, title) {
+            console.log('Opening PDF:', pdfUrl, 'Title:', title);
             if (typeof displayArticlePDF === 'function') {
                 displayArticlePDF(pdfUrl, title);
             } else if (typeof openPdfModal === 'function') {

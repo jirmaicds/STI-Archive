@@ -35,15 +35,60 @@ async function handleGetUserUploads(req, res) {
   try {
     if (isSupabaseConfigured()) {
       const supabase = getSupabase();
-      const { data, error } = await supabase
+      
+      // Get uploads with user info
+      const { data: uploads, error } = await supabase
         .from('user_uploads')
         .select('*')
-        .order('uploaded_at', { ascending: false });
+        .order('created_at', { ascending: false });
       
       if (error) throw error;
       
+      // Transform data to match frontend expected field names and join with users
+      let transformedUploads = [];
+      if (uploads && uploads.length > 0) {
+        // Get all user IDs
+        const userIds = [...new Set(uploads.map(u => u.user_id).filter(Boolean))];
+        
+        // Fetch user names
+        let usersMap = {};
+        if (userIds.length > 0) {
+          const { data: users } = await supabase
+            .from('users')
+            .select('id, full_name, first_name, last_name')
+            .in('id', userIds);
+          
+          if (users) {
+            users.forEach(user => {
+              usersMap[user.id] = user.full_name || (user.first_name + ' ' + user.last_name) || 'Unknown User';
+            });
+          }
+        }
+        
+        // Transform each upload
+        transformedUploads = uploads.map(upload => ({
+          id: upload.id,
+          title: upload.title,
+          authors: upload.description || 'N/A',
+          abstract: upload.description || 'N/A',
+          category: upload.category || 'N/A',
+          topic: upload.topic || '',
+          type: upload.type || '',
+          level: upload.category || 'N/A',
+          year: new Date(upload.created_at).getFullYear().toString(),
+          filename: upload.file_name || 'N/A',
+          filePath: upload.file_path || '',
+          pdfUrl: upload.file_path || '',
+          url: upload.file_path || '',
+          status: upload.status || 'pending',
+          userId: upload.user_id,
+          userName: usersMap[upload.user_id] || 'Unknown User',
+          uploadedAt: upload.created_at
+        }));
+      }
+      
       res.statusCode = 200;
-      res.end(JSON.stringify({ success: true, uploads: data || [] }));
+      res.end(JSON.stringify({ success: true, uploads: transformedUploads }));
     } else {
       res.statusCode = 200;
       res.end(JSON.stringify({ success: true, uploads: [], message: 'Supabase not configured' }));

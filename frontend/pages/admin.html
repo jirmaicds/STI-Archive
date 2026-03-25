@@ -4399,9 +4399,14 @@
                 return;
             }
             
-            container.innerHTML = uploads.map(upload => `
+            container.innerHTML = uploads.map(upload => {
+                // Determine PDF URL from various possible fields
+                const pdfUrl = upload.filePath || upload.pdfUrl || upload.url || upload.filename || '';
+                const hasPdf = pdfUrl && (pdfUrl.startsWith('http') || pdfUrl.includes('.pdf'));
+                
+                return `
                 <div class="uploaded-article" data-id="${upload.id}">
-                    <h3>${upload.title}</h3>
+                    <h3 onclick="${hasPdf ? "viewUserUploadPDF('" + pdfUrl.replace(/'/g, "\\'") + "', '" + upload.title.replace(/'/g, "\\'") + "')" : ''}" style="${hasPdf ? 'cursor: pointer;' : ''}">${upload.title}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;" title="Click to view PDF"></i>' : ''}</h3>
                     <div class="meta">
                         <strong>Author(s):</strong> ${upload.authors || 'N/A'}<br>
                         <strong>Uploaded by:</strong> ${upload.userName}<br>
@@ -4420,6 +4425,11 @@
                         <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}
                     </div>
                     <div class="actions">
+                        ${hasPdf ? `
+                        <button class="view-pdf-btn" onclick="viewUserUploadPDF('${pdfUrl.replace(/'/g, "\\'")}', '${upload.title.replace(/'/g, "\\'")}')" style="margin-right: 5px; padding: 5px 10px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-eye"></i> View PDF
+                        </button>
+                        ` : ''}
                         <button class="upload-btn" onclick="editUserUploadTopic('${upload.id}')" style="margin-right: 5px; padding: 5px 10px; background: #28a745;">
                             <i class="fas fa-check"></i> accept
                         </button>
@@ -4436,7 +4446,19 @@
                         </button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
+        }
+        
+        // View PDF for user upload
+        function viewUserUploadPDF(pdfUrl, title) {
+            if (typeof displayArticlePDF === 'function') {
+                displayArticlePDF(pdfUrl, title);
+            } else if (typeof openPdfModal === 'function') {
+                openPdfModal(pdfUrl, title);
+            } else {
+                // Fallback: open in new window
+                window.open(pdfUrl, '_blank');
+            }
         }
         
         // Edit user upload topic and type

@@ -2447,8 +2447,8 @@
       }
       
       // Store PDF path for Studies folder PDFs
-      if (article.pdfPath) {
-        articleDiv.setAttribute('data-pdf-path', article.pdfPath);
+      if (article.pdfPath || article.pdf_path) {
+        articleDiv.setAttribute('data-pdf-path', article.pdfPath || article.pdf_path);
       }
       
       // Set type based on grade level
@@ -2464,16 +2464,16 @@
       if (article.title.includes('Lagundi')) studyId = 'lagundi_oil';
       if (article.title.includes('Farmers')) studyId = 'perceptions';
 
-      // Add PDF indicator if article has PDF (pdfId for Couchbase or pdfPath for Studies)
-      const hasPDF = article.pdfId || article.pdfPath;
+      // Add PDF indicator if article has PDF (pdfId for Couchbase, pdfPath/pdf_path for Studies)
+      const hasPDF = article.pdfId || article.pdfPath || article.pdf_path;
       const pdfIndicator = hasPDF ? 
         `<span style="color: #dc3545; margin-left: 10px;" title="PDF available"><i class="fas fa-file-pdf"></i></span>` : 
         '';
 
       // Build URL parameters for myspace
       let myspaceUrl = 'myspace.html?study=' + studyId;
-      if (article.pdfPath) {
-        myspaceUrl += '&pdfPath=' + encodeURIComponent(article.pdfPath);
+      if (article.pdfPath || article.pdf_path) {
+        myspaceUrl += '&pdfPath=' + encodeURIComponent(article.pdfPath || article.pdf_path);
       } else if (article.pdfId) {
         myspaceUrl += '&pdfId=' + encodeURIComponent(article.pdfId);
       }

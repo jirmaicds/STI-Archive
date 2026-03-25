@@ -4869,11 +4869,11 @@
             function setViewMode() {
                 template.classList.remove('editing');
                 // Escape special characters for onclick handler
-                const safePdfPath = (articleData.pdfPath || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const safePdfPath = (articleData.pdfPath || articleData.pdf_path || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 const safeTitle = (articleData.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 console.log('Creating View button for article:', articleData.id, 'Title:', safeTitle);
-                const pdfButton = (articleData.pdfPath || articleData.pdfId) ? 
-                    `<button class="view-pdf-btn" onclick="event.preventDefault(); displayArticlePDF('${articleData.pdfPath ? safePdfPath : '/api/pdf/' + articleData.pdfId}', '${safeTitle}')">View PDF</button>` : '';
+                const pdfButton = (articleData.pdfPath || articleData.pdf_path || articleData.pdfId) ? 
+                    `<button class="view-pdf-btn" onclick="event.preventDefault(); displayArticlePDF('${articleData.pdfPath || articleData.pdf_path ? safePdfPath : '/api/pdf/' + articleData.pdfId}', '${safeTitle}')">View PDF</button>` : '';
                 template.innerHTML = `
                     <h3><a href="#" style="text-decoration: none; color: inherit;">${articleData.title}</a></h3>
                     <div class="meta">${articleData.meta}</div>
@@ -4905,15 +4905,15 @@
                     </div>
                     <div class="pdf-management" style="margin: 10px 0; padding: 10px; border: 1px dashed #ccc; border-radius: 4px;">
                         <label style="font-weight: bold; color: #0057b8;">PDF Document:</label>
-                        ${(articleData.pdfPath || articleData.pdfId) ? `
+                        ${(articleData.pdfPath || articleData.pdf_path || articleData.pdfId) ? `
                         <div class="current-pdf" style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
-                            <span style="flex: 1; color: #333; word-break: break-all;">${articleData.pdfPath || 'PDF ID: ' + articleData.pdfId}</span>
+                            <span style="flex: 1; color: #333; word-break: break-all;">${articleData.pdfPath || articleData.pdf_path || 'PDF ID: ' + articleData.pdfId}</span>
                             <button type="button" onclick="removeArticlePDF(this, '${articleData.id || articleData.title}')" style="background: #dc3545; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; font-size: 16px;">&times;</button>
                         </div>
                         ` : '<p style="color: #666; margin: 5px 0;">No PDF uploaded</p>'}
                         <div class="pdf-upload" style="margin-top: 10px;">
                             <input type="file" id="pdf-upload-${articleData.id || articleData.title}" accept=".pdf" style="display: none;" onchange="handleArticlePDFUpload(this, '${articleData.id || articleData.title}')">
-                            <button type="button" onclick="document.getElementById('pdf-upload-${articleData.id || articleData.title}').click()" style="background: #0057b8; color: white; border: none; border-radius: 4px; padding: 8px 15px; cursor: pointer;">${(articleData.pdfPath || articleData.pdfId) ? 'Replace PDF' : 'Upload PDF'}</button>
+                            <button type="button" onclick="document.getElementById('pdf-upload-${articleData.id || articleData.title}').click()" style="background: #0057b8; color: white; border: none; border-radius: 4px; padding: 8px 15px; cursor: pointer;">${(articleData.pdfPath || articleData.pdf_path || articleData.pdfId) ? 'Replace PDF' : 'Upload PDF'}</button>
                         </div>
                     </div>
                     <div class="actions">

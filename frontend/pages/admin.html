@@ -4447,11 +4447,6 @@
                         <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}
                     </div>
                     <div class="actions">
-                        ${hasPdf ? `
-                        <button class="view-pdf-btn" onclick="event.stopPropagation(); displayArticlePDF('${testPdfUrl}', '${upload.title}')">
-                            <i class="fas fa-eye"></i> View PDF
-                        </button>
-                        ` : ''}
                         ${upload.status === 'pending' ? `
                             <button class="upload-btn" onclick="approveUserUpload('${upload.id}')">
                                 <i class="fas fa-check"></i> Approve

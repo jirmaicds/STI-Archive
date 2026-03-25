@@ -4346,6 +4346,8 @@
 
             // Load articles from server
             loadArticlesFromServer();
+            // Load user uploads for co-admin
+            loadUserUploadsForCoadmin();
             // Load settings
             const savedSettings = JSON.parse(localStorage.getItem('adminSettings')) || {};
             document.getElementById('site-title').value = savedSettings.siteTitle || 'STI Archives';
@@ -7584,6 +7586,170 @@ STI Archives Admin`;
                 console.error('Error updating article in server:', error);
             });
         }
+        
+        // Load user uploads for co-admin
+        function loadUserUploadsForCoadmin() {
+            return fetch('/api/admin/user-uploads')
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        window.userUploadsData = data.uploads;
+                        renderUserUploadsForCoadmin(data.uploads);
+                    } else {
+                        console.error('✗ Failed to load user uploads:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('✗ Error fetching user uploads:', error);
+                });
+        }
+
+        // Render user uploads in co-admin
+        function renderUserUploadsForCoadmin(uploads) {
+            const container = document.getElementById('user-uploaded-articles');
+            
+            if (!uploads || uploads.length === 0) {
+                container.innerHTML = '<p class="empty-state">No articles uploaded by users yet.</p>';
+                return;
+            }
+            
+            container.innerHTML = uploads.map(upload => `
+                <div class="uploaded-article" data-id="${upload.id}">
+                    <h3>${upload.title}</h3>
+                    <div class="meta">
+                        <strong>Author(s):</strong> ${upload.authors || 'N/A'}<br>
+                        <strong>Uploaded by:</strong> ${upload.userName}<br>
+                        <strong>Category:</strong> ${upload.category}<br>
+                        <strong>Topic:</strong> ${upload.topic ? upload.topic.charAt(0).toUpperCase() + upload.topic.slice(1) : 'Not set'}<br>
+                        <strong>Type:</strong> ${upload.type ? upload.type.charAt(0).toUpperCase() + upload.type.slice(1) : 'Not set'}<br>
+                        <strong>Level:</strong> ${upload.level}<br>
+                        <strong>Year:</strong> ${upload.year}
+                    </div>
+                    <div class="summary">
+                        <strong>Abstract:</strong> ${upload.abstract || 'N/A'}
+                    </div>
+                    <div class="source-tag">
+                        <strong>File:</strong> ${upload.filename}<br>
+                        <strong>Status:</strong> <span style="color: ${upload.status === 'approved' ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">${upload.status}</span><br>
+                        <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}
+                    </div>
+                    <div class="actions">
+                        <button class="upload-btn" onclick="editUserUploadTopicCoadmin('${upload.id}')" style="margin-right: 5px; padding: 5px 10px; background: #28a745;">
+                            <i class="fas fa-check"></i> accept
+                        </button>
+                        ${upload.status === 'pending' ? `
+                            <button class="upload-btn" onclick="approveUserUploadCoadmin('${upload.id}')" style="margin-right: 5px; padding: 5px 10px; background: #28a745;">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button class="delete-btn" onclick="rejectUserUploadCoadmin('${upload.id}')" style="margin-right: 5px; padding: 5px 10px;">
+                                <i class="fas fa-times"></i> reject
+                            </button>
+                        ` : ''}
+                        <button class="delete-btn" onclick="deleteUserUploadCoadmin('${upload.id}')" style="padding: 5px 10px;">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Edit user upload topic and type for coadmin
+        function editUserUploadTopicCoadmin(id) {
+            const uploads = window.userUploadsData || [];
+            const upload = uploads.find(u => u.id === id);
+            if (!upload) return;
+            
+            const topic = prompt('Enter topic for this article:', upload.topic || '');
+            if (topic !== null) {
+                const type = prompt('Enter type (qualitative/quantitative):', upload.type || '');
+                fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic: topic, type: type })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        alert('Topic and Type updated successfully!');
+                        loadUserUploadsForCoadmin();
+                    } else {
+                        alert('Failed to update: ' + result.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating:', error);
+                    alert('Failed to update');
+                });
+            }
+        }
+        
+        // Approve user upload for coadmin
+        async function approveUserUploadCoadmin(id) {
+            try {
+                const response = await fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'approved' })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Upload approved successfully!');
+                    loadUserUploadsForCoadmin();
+                } else {
+                    alert('Failed to approve: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error approving upload:', error);
+                alert('Failed to approve upload');
+            }
+        }
+        
+        // Reject user upload for coadmin
+        async function rejectUserUploadCoadmin(id) {
+            try {
+                const response = await fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'rejected' })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Upload rejected successfully!');
+                    loadUserUploadsForCoadmin();
+                } else {
+                    alert('Failed to reject: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error rejecting upload:', error);
+                alert('Failed to reject upload');
+            }
+        }
+        
+        // Delete user upload for coadmin
+        async function deleteUserUploadCoadmin(id) {
+            if (!confirm('Are you sure you want to delete this upload? This action cannot be undone.')) {
+                return;
+            }
+            try {
+                const response = await fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Upload deleted successfully!');
+                    loadUserUploadsForCoadmin();
+                } else {
+                    alert('Failed to delete: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error deleting upload:', error);
+                alert('Failed to delete upload');
+            }
+        }
     </script>
     <script>
         // === GLOBAL FUNCTION BINDINGS ===
@@ -7598,6 +7764,11 @@ STI Archives Admin`;
         if (typeof removeUser === 'function') window.removeUser = removeUser;
         if (typeof rejectUser === 'function') window.rejectUser = rejectUser;
         if (typeof previewRaf === 'function') window.previewRaf = previewRaf;
+        if (typeof loadUserUploadsForCoadmin === 'function') window.loadUserUploadsForCoadmin = loadUserUploadsForCoadmin;
+        if (typeof editUserUploadTopicCoadmin === 'function') window.editUserUploadTopicCoadmin = editUserUploadTopicCoadmin;
+        if (typeof approveUserUploadCoadmin === 'function') window.approveUserUploadCoadmin = approveUserUploadCoadmin;
+        if (typeof rejectUserUploadCoadmin === 'function') window.rejectUserUploadCoadmin = rejectUserUploadCoadmin;
+        if (typeof deleteUserUploadCoadmin === 'function') window.deleteUserUploadCoadmin = deleteUserUploadCoadmin;
         console.log('Global functions bound to window');
     </script>
 </body>

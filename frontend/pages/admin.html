@@ -4335,11 +4335,11 @@
             }
             
             container.innerHTML = uploads.map(upload => `
-                <div class="article-template" data-id="${upload.id}">
+                <div class="uploaded-article" data-id="${upload.id}">
                     <h3>${upload.title}</h3>
                     <div class="meta">
                         <strong>Author(s):</strong> ${upload.authors || 'N/A'}<br>
-                        <strong>Uploaded by:</strong> ${upload.userName} (${upload.userEmail})<br>
+                        <strong>Uploaded by:</strong> ${upload.userName}<br>
                         <strong>Category:</strong> ${upload.category}<br>
                         <strong>Topic:</strong> ${upload.topic ? upload.topic.charAt(0).toUpperCase() + upload.topic.slice(1) : 'Not set'}<br>
                         <strong>Type:</strong> ${upload.type ? upload.type.charAt(0).toUpperCase() + upload.type.slice(1) : 'Not set'}<br>
@@ -4355,15 +4355,15 @@
                         <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}
                     </div>
                     <div class="actions">
-                        <button class="upload-btn" onclick="editUserUploadTopic('${upload.id}')" style="margin-right: 5px; padding: 5px 10px; background: #0057b8;">
-                            <i class="fas fa-edit"></i> Edit Topic/Type
+                        <button class="upload-btn" onclick="editUserUploadTopic('${upload.id}')" style="margin-right: 5px; padding: 5px 10px; background: #28a745;">
+                            <i class="fas fa-check"></i> accept
                         </button>
                         ${upload.status === 'pending' ? `
                             <button class="upload-btn" onclick="approveUserUpload('${upload.id}')" style="margin-right: 5px; padding: 5px 10px; background: #28a745;">
                                 <i class="fas fa-check"></i> Approve
                             </button>
                             <button class="delete-btn" onclick="rejectUserUpload('${upload.id}')" style="margin-right: 5px; padding: 5px 10px;">
-                                <i class="fas fa-times"></i> Reject
+                                <i class="fas fa-times"></i> reject
                             </button>
                         ` : ''}
                         <button class="delete-btn" onclick="deleteUserUpload('${upload.id}')" style="padding: 5px 10px;">

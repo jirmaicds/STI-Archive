@@ -4421,12 +4421,13 @@
             }
             
             container.innerHTML = uploads.map(upload => {
-                // Determine PDF URL from various possible fields
-                const pdfUrl = upload.filePath || upload.pdfUrl || upload.url || '';
-                const hasPdf = pdfUrl && (pdfUrl.startsWith('http') || pdfUrl.includes('.pdf'));
+                // Test PDF URL - hardcoded for testing
+                const testPdfUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Research/2023-2024/Cejes%20et%20al.pdf';
+                const pdfUrl = testPdfUrl;
+                const hasPdf = pdfUrl && pdfUrl.length > 0;
                 
-                // Create onclick handler - directly open PDF in new window as fallback
-                const cardClick = hasPdf ? `window.open('${pdfUrl}', '_blank')` : '';
+                // Create onclick handler - directly open PDF in new window
+                const cardClick = "window.open('" + testPdfUrl + "', '_blank')";
                 
                 return `
                 <div class="uploaded-article" data-id="${upload.id}" ${hasPdf ? "onclick=\"" + cardClick + "\" style=\"cursor: pointer;\"" : ''}>

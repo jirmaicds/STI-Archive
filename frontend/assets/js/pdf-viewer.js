@@ -497,7 +497,7 @@ function displayArticlePDF(pdfPath, title) {
     modal._pdfViewer = { close: function() { } };
 }
 
-// Load PDF using PDF.js - plain viewer with search
+// Load PDF using PDF.js - plain viewer with search, zoom, and page navigation
 async function loadPDFWithPDFJS(pdfUrl, container, title) {
     try {
         // Fetch the PDF
@@ -530,7 +530,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         const canvasBg = isDarkMode ? '#121212' : '#525252';
         const countColor = isDarkMode ? '#aaa' : '#333';
         
-        // Container with search bar - dark mode support
+        // Container with search bar, zoom controls, and page navigation - dark mode support
         container.innerHTML = `
             <div style="display:flex;flex-direction:column;height:100%;">
                 <div style="padding:8px 12px;background:${toolbarBg};border-bottom:1px solid ${toolbarBorder};display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
@@ -549,6 +549,25 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <span id="pdf-search-count" style="font-size:13px;color:${countColor};"></span>
+                    <span style="color:${countColor};margin-left:10px;">|</span>
+                    <button id="pdf-zoom-out" style="padding:6px 10px;background:${btnBg};color:${btnColor};border:none;border-radius:4px;cursor:pointer;" title="Zoom Out">
+                        <i class="fas fa-search-minus"></i>
+                    </button>
+                    <span id="pdf-zoom-level" style="font-size:13px;color:${countColor};min-width:50px;text-align:center;">100%</span>
+                    <button id="pdf-zoom-in" style="padding:6px 10px;background:${btnBg};color:${btnColor};border:none;border-radius:4px;cursor:pointer;" title="Zoom In">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                    <button id="pdf-fit-width" style="padding:6px 10px;background:${btnBg};color:${btnColor};border:none;border-radius:4px;cursor:pointer;" title="Fit to Width">
+                        <i class="fas fa-arrows-alt-h"></i>
+                    </button>
+                    <span style="color:${countColor};margin-left:10px;">|</span>
+                    <button id="pdf-prev-page" style="padding:6px 10px;background:${btnBg};color:${btnColor};border:none;border-radius:4px;cursor:pointer;" title="Previous Page">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span id="pdf-page-indicator" style="font-size:13px;color:${countColor};min-width:80px;text-align:center;">Page 1 of 1</span>
+                    <button id="pdf-next-page" style="padding:6px 10px;background:${btnBg};color:${btnColor};border:none;border-radius:4px;cursor:pointer;" title="Next Page">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
                 <div id="pdf-viewer-canvas-container" style="flex:1;overflow:auto;background:${canvasBg};text-align:center;padding:20px;"></div>
             </div>`;
@@ -566,45 +585,131 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         const searchInput = container.querySelector('#pdf-search-input');
         const searchBtn = container.querySelector('#pdf-search-btn');
         const searchCount = container.querySelector('#pdf-search-count');
+        const zoomLevelSpan = container.querySelector('#pdf-zoom-level');
+        const pageIndicator = container.querySelector('#pdf-page-indicator');
         
         // Store page data and canvases for search
         const pageData = [];
         const containerWidth = container.clientWidth - 40;
         
-        // Render all pages with width fit to container and store text content
-        for (let i = 1; i <= pdfDoc.numPages; i++) {
-            const page = await pdfDoc.getPage(i);
-            const textContent = await page.getTextContent();
-            const baseViewport = page.getViewport({ scale: 1 });
-            const scale = containerWidth / baseViewport.width;
-            const viewport = page.getViewport({ scale: scale });
+        // Default scale (not fit to width)
+        let currentScale = 1.0;
+        
+        // Function to render all pages with current scale
+        async function renderAllPages() {
+            canvasContainer.innerHTML = '';
+            pageData.length = 0;
             
-            const canvasWrapper = document.createElement('div');
-            canvasWrapper.style.position = 'relative';
-            canvasWrapper.style.display = 'inline-block';
-            canvasWrapper.style.marginBottom = '10px';
+            for (let i = 1; i <= pdfDoc.numPages; i++) {
+                const page = await pdfDoc.getPage(i);
+                const textContent = await page.getTextContent();
+                const baseViewport = page.getViewport({ scale: 1 });
+                const viewport = page.getViewport({ scale: currentScale });
+                
+                const canvasWrapper = document.createElement('div');
+                canvasWrapper.style.position = 'relative';
+                canvasWrapper.style.display = 'inline-block';
+                canvasWrapper.style.marginBottom = '10px';
+                
+                const canvas = document.createElement('canvas');
+                canvas.style.display = 'block';
+                canvas.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                canvas.dataset.pageNum = i;
+                
+                await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+                
+                canvasWrapper.appendChild(canvas);
+                canvasContainer.appendChild(canvasWrapper);
+                
+                // Store text items with position info for highlighting
+                pageData.push({
+                    pageNum: i,
+                    items: textContent.items,
+                    scale: currentScale,
+                    viewport: viewport,
+                    canvasWrapper: canvasWrapper
+                });
+            }
             
-            const canvas = document.createElement('canvas');
-            canvas.style.display = 'block';
-            canvas.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-            canvas.dataset.pageNum = i;
+            // Update zoom level display
+            zoomLevelSpan.textContent = Math.round(currentScale * 100) + '%';
             
-            await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
-            
-            canvasWrapper.appendChild(canvas);
-            canvasContainer.appendChild(canvasWrapper);
-            
-            // Store text items with position info for highlighting
-            pageData.push({
-                pageNum: i,
-                items: textContent.items,
-                scale: scale,
-                viewport: viewport,
-                canvasWrapper: canvasWrapper
-            });
+            // Update page indicator
+            pageIndicator.textContent = `Page 1 of ${pdfDoc.numPages}`;
         }
+        
+        // Initial render with default scale
+        await renderAllPages();
+        
+        // Zoom controls
+        container.querySelector('#pdf-zoom-in').addEventListener('click', () => {
+            currentScale = Math.min(currentScale + 0.25, 3.0);
+            renderAllPages();
+        });
+        
+        container.querySelector('#pdf-zoom-out').addEventListener('click', () => {
+            currentScale = Math.max(currentScale - 0.25, 0.5);
+            renderAllPages();
+        });
+        
+        container.querySelector('#pdf-fit-width').addEventListener('click', () => {
+            // Calculate fit-to-width scale
+            const firstPage = pageData[0];
+            if (firstPage) {
+                const baseViewport = firstPage.viewport;
+                currentScale = containerWidth / baseViewport.width;
+                renderAllPages();
+            }
+        });
+        
+        // Page navigation
+        container.querySelector('#pdf-prev-page').addEventListener('click', () => {
+            const currentPage = getCurrentVisiblePage();
+            if (currentPage > 1) {
+                scrollToPage(currentPage - 1);
+            }
+        });
+        
+        container.querySelector('#pdf-next-page').addEventListener('click', () => {
+            const currentPage = getCurrentVisiblePage();
+            if (currentPage < pdfDoc.numPages) {
+                scrollToPage(currentPage + 1);
+            }
+        });
+        
+        // Get currently visible page
+        function getCurrentVisiblePage() {
+            const containerRect = canvasContainer.getBoundingClientRect();
+            const containerTop = containerRect.top;
+            const containerBottom = containerRect.bottom;
+            
+            for (let i = 0; i < pageData.length; i++) {
+                const canvasWrapper = pageData[i].canvasWrapper;
+                const rect = canvasWrapper.getBoundingClientRect();
+                
+                if (rect.top >= containerTop && rect.top <= containerBottom) {
+                    return pageData[i].pageNum;
+                }
+            }
+            return 1;
+        }
+        
+        // Scroll to specific page
+        function scrollToPage(pageNum) {
+            const pageDataItem = pageData.find(p => p.pageNum === pageNum);
+            if (pageDataItem) {
+                pageDataItem.canvasWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                pageIndicator.textContent = `Page ${pageNum} of ${pdfDoc.numPages}`;
+            }
+        }
+        
+        // Update page indicator on scroll
+        canvasContainer.addEventListener('scroll', () => {
+            const currentPage = getCurrentVisiblePage();
+            pageIndicator.textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
+        });
         
 
         

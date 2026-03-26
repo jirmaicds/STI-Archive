@@ -293,6 +293,34 @@ function displayArticlePDF(pdfPath, title) {
     const isDarkMode = document.body.classList.contains('dark-mode') || 
                        document.documentElement.classList.contains('dark-mode');
     
+    // Calculate sidebar and header offsets
+    function getModalPosition() {
+        const sidebar = document.getElementById('sidebar');
+        const header = document.querySelector('.header');
+        
+        let leftOffset = 0;
+        let topOffset = 0;
+        
+        // Check if sidebar exists and is collapsed
+        if (sidebar) {
+            if (sidebar.classList.contains('collapsed')) {
+                leftOffset = 0;
+            } else {
+                leftOffset = 200; // Sidebar width
+            }
+        }
+        
+        // Check if header exists
+        if (header) {
+            topOffset = 80; // Header height approx
+        }
+        
+        return { left: leftOffset, top: topOffset };
+    }
+    
+    // Get current position
+    const pos = getModalPosition();
+    
     // Create modal if not exists
     let modal = document.getElementById('pdf-viewer-modal');
     if (!modal) {
@@ -301,10 +329,10 @@ function displayArticlePDF(pdfPath, title) {
         modal.style.cssText = `
             display: none;
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: ${pos.top}px;
+            left: ${pos.left}px;
+            width: calc(100% - ${pos.left}px);
+            height: calc(100% - ${pos.top}px);
             background: ${isDarkMode ? 'rgba(0, 0, 0, 0.95)' : 'rgba(0, 0, 0, 0.9)'};
             z-index: 100;
             overflow: auto;
@@ -374,6 +402,24 @@ function displayArticlePDF(pdfPath, title) {
                 closePDFModal();
             }
         });
+        
+        // Listen for sidebar toggle to adjust modal position
+        const toggleBtn = document.getElementById('toggle-btn');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', function() {
+                if (modal.style.display === 'block') {
+                    const newPos = getModalPosition();
+                    modal.style.left = newPos.left + 'px';
+                    modal.style.width = 'calc(100% - ' + newPos.left + 'px)';
+                }
+            });
+        }
+    } else {
+        // Update existing modal position
+        modal.style.top = pos.top + 'px';
+        modal.style.left = pos.left + 'px';
+        modal.style.width = 'calc(100% - ' + pos.left + 'px)';
+        modal.style.height = 'calc(100% - ' + pos.top + 'px)';
     }
     
     // Show modal

@@ -569,7 +569,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                         <i class="fas fa-chevron-right"></i>
                     </button>
                 </div>
-                <div id="pdf-viewer-canvas-container" style="flex:1;overflow:auto;background:${canvasBg};text-align:center;padding:20px;"></div>
+                <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${canvasBg};text-align:center;padding:20px;"></div>
             </div>`;
         
         // Load PDF.js
@@ -600,6 +600,9 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
             canvasContainer.innerHTML = '';
             pageData.length = 0;
             
+            // Check if we should use two-column layout (desktop/laptop screens)
+            const useTwoColumn = window.innerWidth >= 1024;
+            
             for (let i = 1; i <= pdfDoc.numPages; i++) {
                 const page = await pdfDoc.getPage(i);
                 const textContent = await page.getTextContent();
@@ -610,6 +613,22 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                 canvasWrapper.style.position = 'relative';
                 canvasWrapper.style.display = 'inline-block';
                 canvasWrapper.style.marginBottom = '10px';
+                canvasWrapper.style.verticalAlign = 'top';
+                
+                // Add page number label
+                const pageLabel = document.createElement('div');
+                pageLabel.className = 'pdf-page-label';
+                pageLabel.textContent = `Page ${i}`;
+                pageLabel.style.cssText = `
+                    text-align: center;
+                    padding: 5px;
+                    font-size: 12px;
+                    color: ${isDarkMode ? '#aaa' : '#666'};
+                    background: ${isDarkMode ? '#2d2d2d' : '#f0f0f0'};
+                    border-radius: 4px 4px 0 0;
+                    margin-bottom: 2px;
+                `;
+                canvasWrapper.appendChild(pageLabel);
                 
                 const canvas = document.createElement('canvas');
                 canvas.style.display = 'block';
@@ -636,35 +655,60 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
             // Update zoom level display
             zoomLevelSpan.textContent = Math.round(currentScale * 100) + '%';
             
-            // Update page indicator
-            pageIndicator.textContent = `Page 1 of ${pdfDoc.numPages}`;
+            // Update page indicator to show current visible page
+            const currentPage = getCurrentVisiblePage();
+            pageIndicator.textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
         }
         
         // Initial render with default scale
         await renderAllPages();
         
-        // Zoom controls
+        // Handle window resize for responsive layout
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const currentPage = getCurrentVisiblePage();
+                renderAllPages().then(() => {
+                    setTimeout(() => scrollToPage(currentPage), 100);
+                });
+            }, 250);
+        });
+        
+        // Zoom controls with proper page numbering
         container.querySelector('#pdf-zoom-in').addEventListener('click', () => {
+            const currentPage = getCurrentVisiblePage();
             currentScale = Math.min(currentScale + 0.25, 3.0);
-            renderAllPages();
+            renderAllPages().then(() => {
+                // Restore to the same page after zoom
+                setTimeout(() => scrollToPage(currentPage), 100);
+            });
         });
         
         container.querySelector('#pdf-zoom-out').addEventListener('click', () => {
+            const currentPage = getCurrentVisiblePage();
             currentScale = Math.max(currentScale - 0.25, 0.5);
-            renderAllPages();
+            renderAllPages().then(() => {
+                // Restore to the same page after zoom
+                setTimeout(() => scrollToPage(currentPage), 100);
+            });
         });
         
         container.querySelector('#pdf-fit-width').addEventListener('click', () => {
             // Calculate fit-to-width scale
+            const currentPage = getCurrentVisiblePage();
             const firstPage = pageData[0];
             if (firstPage) {
                 const baseViewport = firstPage.viewport;
                 currentScale = containerWidth / baseViewport.width;
-                renderAllPages();
+                renderAllPages().then(() => {
+                    // Restore to the same page after zoom
+                    setTimeout(() => scrollToPage(currentPage), 100);
+                });
             }
         });
         
-        // Page navigation
+        // Page navigation with improved page detection
         container.querySelector('#pdf-prev-page').addEventListener('click', () => {
             const currentPage = getCurrentVisiblePage();
             if (currentPage > 1) {
@@ -679,36 +723,58 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
             }
         });
         
-        // Get currently visible page
+        // Get currently visible page (improved accuracy)
         function getCurrentVisiblePage() {
             const containerRect = canvasContainer.getBoundingClientRect();
             const containerTop = containerRect.top;
             const containerBottom = containerRect.bottom;
+            const containerCenter = containerTop + (containerRect.height / 2);
+            
+            let closestPage = 1;
+            let closestDistance = Infinity;
             
             for (let i = 0; i < pageData.length; i++) {
                 const canvasWrapper = pageData[i].canvasWrapper;
                 const rect = canvasWrapper.getBoundingClientRect();
                 
-                if (rect.top >= containerTop && rect.top <= containerBottom) {
-                    return pageData[i].pageNum;
+                // Check if page is visible in container
+                if (rect.bottom >= containerTop && rect.top <= containerBottom) {
+                    // Calculate distance from center of container
+                    const pageCenter = rect.top + (rect.height / 2);
+                    const distance = Math.abs(pageCenter - containerCenter);
+                    
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestPage = pageData[i].pageNum;
+                    }
                 }
             }
-            return 1;
+            
+            return closestPage;
         }
         
-        // Scroll to specific page
+        // Scroll to specific page with proper indicator update
         function scrollToPage(pageNum) {
             const pageDataItem = pageData.find(p => p.pageNum === pageNum);
             if (pageDataItem) {
-                pageDataItem.canvasWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                pageDataItem.canvasWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Update page indicator immediately and after scroll
                 pageIndicator.textContent = `Page ${pageNum} of ${pdfDoc.numPages}`;
+                // Also update after scroll completes
+                setTimeout(() => {
+                    pageIndicator.textContent = `Page ${pageNum} of ${pdfDoc.numPages}`;
+                }, 500);
             }
         }
         
-        // Update page indicator on scroll
+        // Update page indicator on scroll with debouncing
+        let scrollTimeout;
         canvasContainer.addEventListener('scroll', () => {
-            const currentPage = getCurrentVisiblePage();
-            pageIndicator.textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const currentPage = getCurrentVisiblePage();
+                pageIndicator.textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
+            }, 100);
         });
         
 

@@ -573,67 +573,81 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         // Default scale (not fit to width)
         let currentScale = 1.0;
         
-        // Function to render all pages with current scale
-        async function renderAllPages() {
-            canvasContainer.innerHTML = '';
-            pageData.length = 0;
-            
+        let renderAllPagesLock = false;
+        let renderAllPagesPending = false;
 
-            
-            // Render pages sequentially to maintain correct order
-            for (let i = 1; i <= pdfDoc.numPages; i++) {
-                const page = await pdfDoc.getPage(i);
-                const textContent = await page.getTextContent();
-                const baseViewport = page.getViewport({ scale: 1 });
-                const viewport = page.getViewport({ scale: currentScale });
-                
-                const canvasWrapper = document.createElement('div');
-                canvasWrapper.style.position = 'relative';
-                canvasWrapper.style.display = 'inline-block';
-                canvasWrapper.style.marginBottom = '10px';
-                canvasWrapper.style.verticalAlign = 'top';
-                
-                // Add page number label
-                const pageLabel = document.createElement('div');
-                pageLabel.className = 'pdf-page-label';
-                pageLabel.textContent = `Page ${i}`;
-                pageLabel.style.cssText = `
-                    text-align: center;
-                    padding: 5px;
-                    font-size: 12px;
-                    color: ${isDarkMode ? '#aaa' : '#666'};
-                    background: ${isDarkMode ? '#2d2d2d' : '#f0f0f0'};
-                    border-radius: 4px 4px 0 0;
-                    margin-bottom: 2px;
-                `;
-                canvasWrapper.appendChild(pageLabel);
-                
-                const canvas = document.createElement('canvas');
-                canvas.style.display = 'block';
-                canvas.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-                canvas.dataset.pageNum = i;
-                
-                // Render the page and wait for completion before proceeding
-                await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
-                
-                canvasWrapper.appendChild(canvas);
-                canvasContainer.appendChild(canvasWrapper);
-                
-                // Store text items with position info for highlighting
-                pageData.push({
-                    pageNum: i,
-                    items: textContent.items,
-                    scale: currentScale,
-                    viewport: viewport,
-                    canvasWrapper: canvasWrapper
-                });
+        // Function to render all pages with current scale (with lock + fragment)
+        async function renderAllPages() {
+            if (renderAllPagesLock) {
+                renderAllPagesPending = true;
+                return;
             }
-            
-            // Update page indicator to show current visible page
-            const currentPage = getCurrentVisiblePage();
-            pageIndicator.textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
+
+            renderAllPagesLock = true;
+            try {
+                canvasContainer.innerHTML = '';
+                pageData.length = 0;
+
+                const fragment = document.createDocumentFragment();
+
+                // Render pages sequentially to maintain correct order
+                for (let i = 1; i <= pdfDoc.numPages; i++) {
+                    const page = await pdfDoc.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const viewport = page.getViewport({ scale: currentScale });
+
+                    const canvasWrapper = document.createElement('div');
+                    canvasWrapper.style.position = 'relative';
+                    canvasWrapper.style.display = 'inline-block';
+                    canvasWrapper.style.marginBottom = '10px';
+                    canvasWrapper.style.verticalAlign = 'top';
+
+                    const pageLabel = document.createElement('div');
+                    pageLabel.className = 'pdf-page-label';
+                    pageLabel.textContent = `Page ${i}`;
+                    pageLabel.style.cssText = `
+                        text-align: center;
+                        padding: 5px;
+                        font-size: 12px;
+                        color: ${isDarkMode ? '#aaa' : '#666'};
+                        background: ${isDarkMode ? '#2d2d2d' : '#f0f0f0'};
+                        border-radius: 4px 4px 0 0;
+                        margin-bottom: 2px;
+                    `;
+                    canvasWrapper.appendChild(pageLabel);
+
+                    const canvas = document.createElement('canvas');
+                    canvas.style.display = 'block';
+                    canvas.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    canvas.dataset.pageNum = i;
+
+                    await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+
+                    canvasWrapper.appendChild(canvas);
+                    fragment.appendChild(canvasWrapper);
+
+                    pageData.push({
+                        pageNum: i,
+                        items: textContent.items,
+                        scale: currentScale,
+                        viewport: viewport,
+                        canvasWrapper: canvasWrapper
+                    });
+                }
+
+                canvasContainer.appendChild(fragment);
+
+                const currentPage = getCurrentVisiblePage();
+                pageIndicator.textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
+            } finally {
+                renderAllPagesLock = false;
+                if (renderAllPagesPending) {
+                    renderAllPagesPending = false;
+                    await renderAllPages();
+                }
+            }
         }
         
         // Initial render with default scale

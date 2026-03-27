@@ -546,13 +546,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     </button>
                     <span id="pdf-search-count" style="font-size:13px;color:${countColor};"></span>
                     <span style="color:${countColor};margin-left:10px;">|</span>
-                    <button id="pdf-prev-page" style="padding:6px 10px;background:${btnBg};color:${btnColor};border:none;border-radius:4px;cursor:pointer;" title="Previous Page">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
                     <span id="pdf-page-indicator" style="font-size:13px;color:${countColor};min-width:80px;text-align:center;">Page 1 of 1</span>
-                    <button id="pdf-next-page" style="padding:6px 10px;background:${btnBg};color:${btnColor};border:none;border-radius:4px;cursor:pointer;" title="Next Page">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
                 </div>
                 <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${canvasBg};text-align:center;padding:20px;"></div>
             </div>`;
@@ -658,20 +652,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         
 
         
-        // Page navigation with improved page detection
-        container.querySelector('#pdf-prev-page').addEventListener('click', () => {
-            const currentPage = getCurrentVisiblePage();
-            if (currentPage > 1) {
-                scrollToPage(currentPage - 1);
-            }
-        });
-        
-        container.querySelector('#pdf-next-page').addEventListener('click', () => {
-            const currentPage = getCurrentVisiblePage();
-            if (currentPage < pdfDoc.numPages) {
-                scrollToPage(currentPage + 1);
-            }
-        });
+
         
         // Get currently visible page (improved accuracy)
         function getCurrentVisiblePage() {

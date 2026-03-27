@@ -560,6 +560,9 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     <button id="pdf-fit-width" style="padding:6px 10px;background:${btnBg};color:${btnColor};border:none;border-radius:4px;cursor:pointer;" title="Fit to Width">
                         <i class="fas fa-arrows-alt-h"></i>
                     </button>
+                    <button id="pdf-zoom-reset" style="padding:6px 10px;background:${btnBg};color:${btnColor};border:none;border-radius:4px;cursor:pointer;" title="Reset Zoom to 100%">
+                        <i class="fas fa-undo"></i>
+                    </button>
                     <span style="color:${countColor};margin-left:10px;">|</span>
                     <button id="pdf-prev-page" style="padding:6px 10px;background:${btnBg};color:${btnColor};border:none;border-radius:4px;cursor:pointer;" title="Previous Page">
                         <i class="fas fa-chevron-left"></i>
@@ -675,37 +678,90 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
             }, 250);
         });
         
-        // Zoom controls with proper page numbering
+        // Get current scroll position relative to the visible page
+        function getScrollPositionRelativeToPage() {
+            const containerRect = canvasContainer.getBoundingClientRect();
+            const containerTop = containerRect.top;
+            const containerHeight = containerRect.height;
+            
+            for (let i = 0; i < pageData.length; i++) {
+                const canvasWrapper = pageData[i].canvasWrapper;
+                const rect = canvasWrapper.getBoundingClientRect();
+                
+                // Check if page is visible in container
+                if (rect.bottom >= containerTop && rect.top <= containerTop + containerHeight) {
+                    // Calculate scroll position relative to this page
+                    const scrollTop = canvasContainer.scrollTop;
+                    const pageTop = canvasWrapper.offsetTop;
+                    const relativeScroll = scrollTop - pageTop;
+                    const pageHeight = rect.height;
+                    const scrollPercentage = relativeScroll / pageHeight;
+                    
+                    return {
+                        pageNum: pageData[i].pageNum,
+                        scrollPercentage: scrollPercentage,
+                        pageHeight: pageHeight
+                    };
+                }
+            }
+            
+            return { pageNum: 1, scrollPercentage: 0, pageHeight: 0 };
+        }
+        
+        // Restore scroll position relative to a page
+        function restoreScrollPositionRelativeToPage(position) {
+            const pageDataItem = pageData.find(p => p.pageNum === position.pageNum);
+            if (pageDataItem) {
+                const canvasWrapper = pageDataItem.canvasWrapper;
+                const newPageHeight = canvasWrapper.offsetHeight;
+                const newScrollTop = canvasWrapper.offsetTop + (position.scrollPercentage * newPageHeight);
+                
+                canvasContainer.scrollTop = newScrollTop;
+                pageIndicator.textContent = `Page ${position.pageNum} of ${pdfDoc.numPages}`;
+            }
+        }
+        
+        // Zoom controls with proper scroll position preservation
         container.querySelector('#pdf-zoom-in').addEventListener('click', () => {
-            const currentPage = getCurrentVisiblePage();
+            const scrollPosition = getScrollPositionRelativeToPage();
             currentScale = Math.min(currentScale + 0.25, 3.0);
             renderAllPages().then(() => {
-                // Restore to the same page after zoom
-                setTimeout(() => scrollToPage(currentPage), 100);
+                // Restore scroll position relative to the same page
+                setTimeout(() => restoreScrollPositionRelativeToPage(scrollPosition), 100);
             });
         });
         
         container.querySelector('#pdf-zoom-out').addEventListener('click', () => {
-            const currentPage = getCurrentVisiblePage();
+            const scrollPosition = getScrollPositionRelativeToPage();
             currentScale = Math.max(currentScale - 0.25, 0.5);
             renderAllPages().then(() => {
-                // Restore to the same page after zoom
-                setTimeout(() => scrollToPage(currentPage), 100);
+                // Restore scroll position relative to the same page
+                setTimeout(() => restoreScrollPositionRelativeToPage(scrollPosition), 100);
             });
         });
         
         container.querySelector('#pdf-fit-width').addEventListener('click', () => {
             // Calculate fit-to-width scale
-            const currentPage = getCurrentVisiblePage();
+            const scrollPosition = getScrollPositionRelativeToPage();
             const firstPage = pageData[0];
             if (firstPage) {
                 const baseViewport = firstPage.viewport;
                 currentScale = containerWidth / baseViewport.width;
                 renderAllPages().then(() => {
-                    // Restore to the same page after zoom
-                    setTimeout(() => scrollToPage(currentPage), 100);
+                    // Restore scroll position relative to the same page
+                    setTimeout(() => restoreScrollPositionRelativeToPage(scrollPosition), 100);
                 });
             }
+        });
+        
+        // Reset zoom to 100%
+        container.querySelector('#pdf-zoom-reset').addEventListener('click', () => {
+            const scrollPosition = getScrollPositionRelativeToPage();
+            currentScale = 1.0;
+            renderAllPages().then(() => {
+                // Restore scroll position relative to the same page
+                setTimeout(() => restoreScrollPositionRelativeToPage(scrollPosition), 100);
+            });
         });
         
         // Page navigation with improved page detection

@@ -3965,7 +3965,7 @@
             fetch('/api/articles')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.status === 'success') {
+                    if (data.success === true) {
                         const articles = data.articles;
                         saveArticles(articles);
                         saveAdminArticles(articles);

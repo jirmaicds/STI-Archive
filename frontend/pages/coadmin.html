@@ -4827,6 +4827,10 @@
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     const section = this.getAttribute('data-section');
+                    // Close PDF viewer modal when navigating
+                    if (typeof closePDFModal === 'function') {
+                        closePDFModal();
+                    }
                     // Remove active from all sidebar items
                     document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
                     // Add active to clicked item
@@ -6149,7 +6153,7 @@ STI Archives Admin`;
             fetch('/api/articles')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.status === 'success') {
+                    if (data.success === true) {
                         const articles = data.articles || [];
                         renderCoadminUploadsFromServer(articles);
                     } else {

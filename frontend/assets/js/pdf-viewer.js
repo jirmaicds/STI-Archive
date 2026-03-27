@@ -592,6 +592,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                 canvasContainer.classList.remove('two-column-layout');
             }
             
+            // Render pages sequentially to maintain correct order
             for (let i = 1; i <= pdfDoc.numPages; i++) {
                 const page = await pdfDoc.getPage(i);
                 const textContent = await page.getTextContent();
@@ -626,6 +627,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                 canvas.width = viewport.width;
                 canvas.dataset.pageNum = i;
                 
+                // Render the page and wait for completion before proceeding
                 await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
                 
                 canvasWrapper.appendChild(canvas);

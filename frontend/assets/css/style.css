@@ -858,9 +858,9 @@ body.dark-mode {
     max-width: 100%;
 }
 
-/* Two-column layout for desktop/laptop screens (>= 1024px) */
+/* Two-column layout for desktop/laptop screens (>= 1024px) - Admin pages only */
 @media (min-width: 1024px) {
-    .pdf-canvas-container {
+    .pdf-canvas-container.two-column-layout {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 25px;
@@ -869,12 +869,12 @@ body.dark-mode {
         margin: 0 auto;
     }
     
-    .pdf-canvas-container > div {
+    .pdf-canvas-container.two-column-layout > div {
         width: 100%;
         max-width: 100%;
     }
     
-    .pdf-canvas-container canvas {
+    .pdf-canvas-container.two-column-layout canvas {
         width: 100% !important;
         height: auto !important;
         max-width: 100%;

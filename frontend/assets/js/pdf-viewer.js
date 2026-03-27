@@ -578,8 +578,19 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
             canvasContainer.innerHTML = '';
             pageData.length = 0;
             
-            // Check if we should use two-column layout (desktop/laptop screens)
-            const useTwoColumn = window.innerWidth >= 1024;
+            // Check if we should use two-column layout (desktop/laptop screens and admin pages only)
+            const isAdminPage = window.location.pathname.includes('admin.html') || 
+                               window.location.pathname.includes('coadmin.html') ||
+                               window.location.pathname.includes('/admin/') ||
+                               window.location.pathname.includes('/coadmin/');
+            const useTwoColumn = window.innerWidth >= 1024 && isAdminPage;
+            
+            // Apply two-column layout class if needed
+            if (useTwoColumn) {
+                canvasContainer.classList.add('two-column-layout');
+            } else {
+                canvasContainer.classList.remove('two-column-layout');
+            }
             
             for (let i = 1; i <= pdfDoc.numPages; i++) {
                 const page = await pdfDoc.getPage(i);

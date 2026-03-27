@@ -858,28 +858,7 @@ body.dark-mode {
     max-width: 100%;
 }
 
-/* Two-column layout for desktop/laptop screens (>= 1024px) - Admin pages only */
-@media (min-width: 1024px) {
-    .pdf-canvas-container.two-column-layout {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 25px;
-        padding: 25px;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-    
-    .pdf-canvas-container.two-column-layout > div {
-        width: 100%;
-        max-width: 100%;
-    }
-    
-    .pdf-canvas-container.two-column-layout canvas {
-        width: 100% !important;
-        height: auto !important;
-        max-width: 100%;
-    }
-}
+
 
 /* Single column layout for tablets and mobile (< 1024px) */
 @media (max-width: 1023px) {

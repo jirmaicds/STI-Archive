@@ -5297,10 +5297,6 @@
                 if (e.key === 'users' && !isReloadingUsers) {
                     console.log('DEBUG: Users changed in another tab, reloading...');
                     isReloadingUsers = true;
-            window.addEventListener('storage', function(e) {
-                if (e.key === 'users' && !isReloadingUsers) {
-                    console.log('DEBUG: Users changed in another tab, reloading...');
-                    isReloadingUsers = true;
                     loadUsers().then(() => {
                         // DON'T switch to users section - just reload data
                         console.log('DEBUG: User tables refreshed (section unchanged)');

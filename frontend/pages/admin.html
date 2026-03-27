@@ -5926,12 +5926,14 @@ STI Archives Admin`;
             });
         }
         function updateUserStatus(userId, action) {
-            // Handle case where userId might be undefined
-            if (typeof userId === 'undefined' || userId === null || userId === '') {
-                console.error('updateUserStatus called without userId');
-                alert('Error: User ID is missing. Please refresh the page and try again.');
+            // Harden userId handling to prevent ReferenceError and ensure id is consistent
+            const normalizedUserId = (userId !== null && userId !== undefined && userId !== '') ? String(userId) : '';
+            if (!normalizedUserId) {
+                console.error('updateUserStatus called without valid userId', { userId, action });
+                alert('Error: User ID is missing or invalid. Please refresh the page and try again.');
                 return;
             }
+            userId = normalizedUserId;
             console.log('Updating user status for userId:', userId, 'action:', action);
             
             // Get user email first

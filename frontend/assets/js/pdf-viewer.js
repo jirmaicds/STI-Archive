@@ -486,12 +486,8 @@ function displayArticlePDF(pdfPath, title) {
         console.log('Using Studies API:', pdfUrl);
     }
     
-    // Add cache buster (don't encode the full URL, just add the parameter)
-    const cacheBuster = '_=' + Date.now();
-    const finalPdfUrl = pdfUrl + (pdfUrl.includes('?') ? '&' : '?') + cacheBuster;
-    
     // Use PDF.js to render PDF pages as canvas (no browser toolbar)
-    loadPDFWithPDFJS(finalPdfUrl, container, title);
+    loadPDFWithPDFJS(pdfUrl, container, title);
     
     // Store viewer instance for cleanup
     modal._pdfViewer = { close: function() { } };

@@ -3260,16 +3260,6 @@
                             </tr>
                         </thead>
                         <tbody id="admins-tbody">
-                            <tr>
-                                <td><input type="checkbox" class="user-checkbox" data-user-id="2"></td>
-                                <td>2</td>
-                                <td>-</td>
-                                <td>Admin User</td>
-                                <td>Full Access</td>
-                                <td>Sept 30, 2025 10:00 AM</td>
-                                <td>Active</td>
-                                <td><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '2')">Edit</button></td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -3355,18 +3345,6 @@
                         <table id="verified-users-table">
                             <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Section</th><th>Date Verified</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
                             <tbody id="verified-users-tbody">
-                                <tr>
-                                <td><input type="checkbox" class="user-checkbox" data-user-id="1"></td>
-                                <td>1</td>
-                                <td>Test User</td>
-                                <td>user@clmb.sti.archives</td>
-                                <td>SHS</td>
-                                <td>Grade 11</td>
-                                <td>Nov 6, 2025 10:49 AM</td>
-                                <td>Verified</td>
-                                <td><button type="button" class="btn btn-sm" onclick="previewRaf('uploads/test_user_raf.pdf')">Preview</button></td>
-                                <td><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '1')">Edit</button><button class="btn btn-warning btn-sm" onclick="updateUserStatus('1', 'reject')">Reject</button><button class="btn btn-danger btn-sm" onclick="updateUserStatus('1', 'ban')">Ban</button><button class="btn btn-danger btn-sm" onclick="removeUser('1', 'Test User')">Remove</button></td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -4349,52 +4327,16 @@
 
         // === INIT ===
         document.addEventListener('DOMContentLoaded', function() {
-            // Restore users from users.json to localStorage for display, preserving existing signups
-            const usersData = [
-                {
-                    "id": "1",
-                    "student_id": "2021000",
-                    "name": "Test User",
-                    "email": "user@clmb.sti.archives",
-                    "personal_email": "user@example.com",
-                    "password": "usertesting",
-                    "role": "senior_high",
-                    "section": "Grade 11",
-                    "strand": "STEM",
-                    "created_at": "2025-11-06T02:49:46.207Z",
-                    "verified": true,
-                    "rejected": false,
-                    "banned": false,
-                    "status": "verified",
-                    "raf_path": "uploads/test_user_raf.pdf"
-                },
-                {
-                    "id": "2",
-                    "student_id": "none",
-                    "name": "STI Admin",
-                    "email": "admin@clmb.sti.archives",
-                    "personal_email": "admin@example.com",
-                    "password": "admin123",
-                    "role": "admin",
-                    "section": "Admin Section",
-                    "created_at": "Sept 30, 2025 10:00 AM",
-                    "verified": true,
-                    "rejected": false,
-                    "banned": false,
-                    "status": "verified",
-                    "raf_path": null
-                }
-            ];
-            let existingUsers = JSON.parse(localStorage.getItem('users')) || [];
-            // Add restored users if not already present
-            for (const user of usersData) {
-                if (!existingUsers.find(u => u.id === user.id)) {
-                    existingUsers.push(user);
-                }
-            }
-            localStorage.setItem('users', JSON.stringify(existingUsers));
-
             // Listen for user data changes from other admin tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'users') {
+                    console.log('DEBUG: Users changed in another tab, reloading data silently...');
+                    // Just reload users data without switching sections
+                    loadUsers().then(() => {
+                        console.log('DEBUG: User data refreshed after sync');
+                    });
+                }
+            });
             window.addEventListener('storage', function(e) {
                 if (e.key === 'users') {
                     console.log('DEBUG: Users changed in another tab, reloading data silently...');

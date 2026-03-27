@@ -5292,10 +5292,11 @@
         
         // === INIT ===
         document.addEventListener('DOMContentLoaded', async function() {
-            // Users are loaded from server via getUsers() function
-            // No hardcoded users needed - data comes from backend/data/users.json
-
             // Listen for user data changes from other admin tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'users' && !isReloadingUsers) {
+                    console.log('DEBUG: Users changed in another tab, reloading...');
+                    isReloadingUsers = true;
             window.addEventListener('storage', function(e) {
                 if (e.key === 'users' && !isReloadingUsers) {
                     console.log('DEBUG: Users changed in another tab, reloading...');
@@ -5413,7 +5414,7 @@
             ];
             const suggestions = [
                 { action: 'Suggestion by admin: Implement dark mode', time: '2023-10-01 11:30 AM' },
-                { action: 'Suggestion by user John Doe: Add search filters', time: '2023-10-02 04:45 PM' }
+                { action: 'Suggestion by user: Add search filters', time: '2023-10-02 04:45 PM' }
             ];
             const bugs = [
                 { action: 'Bug report: Login page not loading on mobile', time: '2023-10-04 01:00 PM' },
@@ -5605,8 +5606,8 @@
             }).catch(() => {
                 // Fallback
                 notifications = [
-                    { id: 'fallback-1', type: 'new-user', typeText: 'New User Access Request', content: 'John Doe signed up!', time: '2 hours ago', timestamp: Date.now() - (2 * 60 * 60 * 1000) },
-                    { id: 'fallback-2', type: 'new-user', typeText: 'New User Access Request', content: 'Jane Smith signed up!', time: '1 hour ago', timestamp: Date.now() - (1 * 60 * 60 * 1000) },
+                    { id: 'fallback-1', type: 'new-user', typeText: 'New User Access Request', content: 'New user signed up!', time: '2 hours ago', timestamp: Date.now() - (2 * 60 * 60 * 1000) },
+                    { id: 'fallback-2', type: 'new-user', typeText: 'New User Access Request', content: 'New user signed up!', time: '1 hour ago', timestamp: Date.now() - (1 * 60 * 60 * 1000) },
                     { id: 'fallback-3', type: 'upload', typeText: 'Co-Admin Upload', content: 'Co-Admin uploaded a new research article.', time: '30 minutes ago', timestamp: Date.now() - (30 * 60 * 1000) },
                     { id: 'fallback-4', type: 'suggestion', typeText: 'User Suggestion', content: 'User suggested adding a bookmark feature.', time: '45 minutes ago', timestamp: Date.now() - (45 * 60 * 1000) },
                     { id: 'fallback-5', type: 'bug', typeText: 'Sub-Admin Bug Report', content: 'Sub-Admin reported a bug in the login system.', time: '20 minutes ago', timestamp: Date.now() - (20 * 60 * 1000) }

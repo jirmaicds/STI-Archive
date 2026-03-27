@@ -4312,13 +4312,16 @@
         async function fetchUserCounts() {
             try {
                 const token = localStorage.getItem('sti_auth_token');
+                console.log('DEBUG: fetchUserCounts - token present:', !!token);
                 const response = await fetch('/api/users/count', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
+                console.log('DEBUG: fetchUserCounts - response status:', response.status);
                 if (response.ok) {
                     const data = await response.json();
+                    console.log('DEBUG: fetchUserCounts - response data:', data);
                     if (data.success && data.counts) {
                         // Update dashboard cards with counts from Supabase
                         const verifiedCountEl = document.getElementById('verified-users-count');
@@ -4336,12 +4339,14 @@
                             pendingBadge.style.display = (data.counts.newSignups || 0) > 0 ? 'flex' : 'none';
                         }
                         console.log('DEBUG: Updated dashboard counts from Supabase:', data.counts);
+                    } else {
+                        console.log('DEBUG: fetchUserCounts - no success or counts in response');
                     }
                 } else {
-                    console.log('DEBUG: User count API returned error:', response.status);
+                    console.log('DEBUG: fetchUserCounts - response not ok:', response.status, response.statusText);
                 }
             } catch (error) {
-                console.log('DEBUG: Could not fetch user counts:', error.message);
+                console.log('DEBUG: fetchUserCounts - error:', error.message);
             }
         }
         
@@ -5712,6 +5717,10 @@
                     e.preventDefault();
                     const section = this.getAttribute('data-section');
                     console.log('DEBUG: Sidebar clicked, section:', section);
+                    // Close PDF viewer modal when navigating
+                    if (typeof closePDFModal === 'function') {
+                        closePDFModal();
+                    }
                     showSection(section);
                 });
             });
@@ -6394,7 +6403,7 @@ STI Archives Admin`;
                         </div>
                     `;
                 }
-                let emailToUse = user.email;
+                let emailToUse = user.personal_email || user.email;
                 const rowWithEmail = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                     <td>${user.user_id || user.id}</td>
@@ -6868,6 +6877,8 @@ STI Archives Admin`;
                 document.getElementById('btn-pdf-upload').classList.add('active');
             }
             if (sectionId === 'dashboard') {
+                // Refresh dashboard counts when showing dashboard
+                fetchUserCounts();
                 setTimeout(() => {
                     renderUserChart();
                     renderSigningUpChart();
@@ -7753,6 +7764,9 @@ STI Archives Admin`;
             // Load data for specific sections
             if (section === 'admins') {
                 loadAdmins();
+            } else if (section === 'verified') {
+                // Ensure verified users table is populated
+                loadUsers();
             } else if (section === 'activity') {
                 loadActivityLogs();
             }

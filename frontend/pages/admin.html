@@ -4265,12 +4265,10 @@
             isLoadingUsers = true;
             console.log('DEBUG: Attempting to fetch users from server...');
             try {
-                // Get auth token from localStorage
+                // Get auth token from localStorage (optional for admin)
                 const token = localStorage.getItem('sti_auth_token');
                 console.log('DEBUG: Auth token:', token ? 'present' : 'missing');
-                if (!token) {
-                    console.log('DEBUG: No auth token found, trying without authentication');
-                }
+                
                 // Add cache-busting query parameter
                 const response = await fetch('/api/users?_=' + Date.now(), {
                     headers: token ? {
@@ -4317,10 +4315,12 @@
             try {
                 const token = localStorage.getItem('sti_auth_token');
                 console.log('DEBUG: fetchUserCounts - token present:', !!token);
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
                 const response = await fetch('/api/users/count', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    headers: headers
                 });
                 console.log('DEBUG: fetchUserCounts - response status:', response.status);
                 if (response.ok) {

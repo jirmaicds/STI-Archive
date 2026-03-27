@@ -4344,14 +4344,53 @@
                         }
                         console.log('DEBUG: Updated dashboard counts from Supabase:', data.counts);
                     } else {
-                        console.log('DEBUG: No counts from API - dashboard will show 0');
+                        console.log('DEBUG: No counts from API - calculating from local data');
+                        calculateCountsFromLocalData();
                     }
                 } else {
                     console.log('DEBUG: fetchUserCounts - response not ok:', response.status, response.statusText);
+                    calculateCountsFromLocalData();
                 }
             } catch (error) {
                 console.log('DEBUG: fetchUserCounts - error:', error.message);
+                calculateCountsFromLocalData();
             }
+        }
+        
+        // Add this helper function
+        function calculateCountsFromLocalData() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const adminRoles = ['admin', 'coadmin', 'subadmin'];
+            
+            const totalUsers = users.filter(u => 
+                (u.isActive || u.verified) && 
+                !adminRoles.includes(u.role)
+            ).length;
+            
+            const adminUsers = users.filter(u => 
+                adminRoles.includes(u.role)
+            ).length;
+            
+            const newSignups = users.filter(u => 
+                !u.isActive && !u.verified && !u.rejected && !u.banned && 
+                !adminRoles.includes(u.role)
+            ).length;
+            
+            const verifiedCountEl = document.getElementById('verified-users-count');
+            const adminCountEl = document.getElementById('admin-users-count');
+            const signupCountEl = document.getElementById('signing-up-users-count');
+            
+            if (verifiedCountEl) verifiedCountEl.textContent = totalUsers;
+            if (adminCountEl) adminCountEl.textContent = adminUsers;
+            if (signupCountEl) signupCountEl.textContent = newSignups;
+            
+            const pendingBadge = document.getElementById('pending-requests-badge');
+            if (pendingBadge) {
+                pendingBadge.textContent = newSignups;
+                pendingBadge.style.display = newSignups > 0 ? 'flex' : 'none';
+            }
+            
+            console.log('DEBUG: Calculated counts from local data:', { totalUsers, adminUsers, newSignups });
         }
         
         async function refreshUsers() {

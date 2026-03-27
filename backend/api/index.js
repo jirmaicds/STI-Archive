@@ -454,6 +454,73 @@ async function handleUsersAdd(req, res, body) {
   }
 }
 
+async function handleUsersCount(req, res) {
+  setCorsHeaders(res);
+  if (req.method === 'OPTIONS') { handleOptions(res); return; }
+  if (req.method !== 'GET') {
+    res.statusCode = 405;
+    res.end(JSON.stringify({ success: false, error: 'Method not allowed' }));
+    return;
+  }
+
+  try {
+    if (isSupabaseConfigured()) {
+      const supabase = getSupabase();
+      
+      // Get total users (verified or active, excluding admin roles)
+      const { data: allUsers, error: allError } = await supabase
+        .from('users')
+        .select('id, role, verified, isActive, banned, rejected');
+      
+      if (allError) throw allError;
+      
+      // Calculate counts
+      const totalUsers = allUsers.filter(u => 
+        (u.isActive || u.verified) && 
+        !['admin', 'coadmin', 'subadmin'].includes(u.role)
+      ).length;
+      
+      const adminUsers = allUsers.filter(u => 
+        ['admin', 'coadmin', 'subadmin'].includes(u.role)
+      ).length;
+      
+      const newSignups = allUsers.filter(u => 
+        !u.isActive && !u.verified && !u.rejected && !u.banned && 
+        !['admin', 'coadmin', 'subadmin'].includes(u.role)
+      ).length;
+      
+      const bannedUsers = allUsers.filter(u => u.banned).length;
+      
+      res.statusCode = 200;
+      res.end(JSON.stringify({
+        success: true,
+        counts: {
+          totalUsers,
+          adminUsers,
+          newSignups,
+          bannedUsers
+        }
+      }));
+    } else {
+      res.statusCode = 200;
+      res.end(JSON.stringify({
+        success: true,
+        counts: {
+          totalUsers: 0,
+          adminUsers: 0,
+          newSignups: 0,
+          bannedUsers: 0
+        },
+        message: 'Supabase not configured'
+      }));
+    }
+  } catch (error) {
+    console.error('Error getting user counts:', error);
+    res.statusCode = 500;
+    res.end(JSON.stringify({ success: false, error: error.message }));
+  }
+}
+
 // ============ ARTICLES ROUTES ============
 async function handleArticles(req, res) {
   setCorsHeaders(res);
@@ -1065,6 +1132,7 @@ module.exports = async function handler(req, res) {
         else if (segments[1] === 'remove') await handleUsersRemove(req, res, body);
         else if (segments[1] === 'update') await handleUsersUpdate(req, res, body);
         else if (segments[1] === 'add') await handleUsersAdd(req, res, body);
+        else if (segments[1] === 'count') await handleUsersCount(req, res);  // <-- Add this line
         else if (segments[1]) await handleUsersId(req, res, segments[1]);
         else await handleUsers(req, res);
         break;

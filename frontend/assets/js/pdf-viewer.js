@@ -570,7 +570,6 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         const searchInput = container.querySelector('#pdf-search-input');
         const searchBtn = container.querySelector('#pdf-search-btn');
         const searchCount = container.querySelector('#pdf-search-count');
-        const zoomLevelSpan = container.querySelector('#pdf-zoom-level');
         const pageIndicator = container.querySelector('#pdf-page-indicator');
         
         // Store page data and canvases for search
@@ -636,9 +635,6 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     canvasWrapper: canvasWrapper
                 });
             }
-            
-            // Update zoom level display
-            zoomLevelSpan.textContent = Math.round(currentScale * 100) + '%';
             
             // Update page indicator to show current visible page
             const currentPage = getCurrentVisiblePage();

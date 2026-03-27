@@ -4294,7 +4294,7 @@
                     // Save to localStorage for offline use
                     localStorage.setItem('users', JSON.stringify(userData));
                     isLoadingUsers = false;
-                    return users;
+                    return userData;
                 } else {
                     console.log('DEBUG: Server returned error:', response.status, 'falling back to localStorage');
                 }

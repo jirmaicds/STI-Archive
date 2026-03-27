@@ -4281,10 +4281,14 @@
                 if (response.ok) {
                     console.log('DEBUG: Server responded successfully, parsing JSON...');
                     const usersData = await response.json();
+                    console.log('DEBUG: Raw API response:', usersData);
                     // Handle {success: true, users: []} format from API
                     const users = usersData.success ? usersData.users : usersData;
+                    console.log('DEBUG: Extracted users array:', users);
                     // Handle both array and {users: []} response formats
                     const userData = Array.isArray(users) ? users : (users.users || []);
+                    console.log('DEBUG: Final userData array, count:', userData.length);
+                    console.log('DEBUG: First user sample:', userData[0]);
                     // Add backward compatibility: map fullname to name
                     userData.forEach(user => {
                         if (user.fullname && !user.name) {
@@ -4340,7 +4344,7 @@
                         }
                         console.log('DEBUG: Updated dashboard counts from Supabase:', data.counts);
                     } else {
-                        console.log('DEBUG: fetchUserCounts - no success or counts in response');
+                        console.log('DEBUG: No counts from API - dashboard will show 0');
                     }
                 } else {
                     console.log('DEBUG: fetchUserCounts - response not ok:', response.status, response.statusText);
@@ -6363,9 +6367,11 @@ STI Archives Admin`;
             let users = [];
             try {
                 users = await getUsers();
+                console.log('DEBUG: getUsers returned:', users);
             } catch (error) {
                 console.error('DEBUG: Error loading users:', error);
                 users = JSON.parse(localStorage.getItem('users')) || [];
+                console.log('DEBUG: Fallback to localStorage users:', users);
             }
             console.log('DEBUG: loadUsers got users, count:', users.length);
             const removedUsers = JSON.parse(localStorage.getItem('removedUsers')) || [];
@@ -6375,6 +6381,7 @@ STI Archives Admin`;
             document.querySelectorAll('#users tbody').forEach(tbody => tbody.innerHTML = '');
             let signingUpUsers = [];
             filteredUsers.forEach(user => {
+                console.log('DEBUG: Processing user:', user.id, user.name, user.role, user.email, user.personal_email, user.verified, user.isActive);
                 const date = formatDate(user.verified_at || user.created_at);
                 let actions = '';
                 const userId = user.user_id || user.id;
@@ -6447,6 +6454,7 @@ STI Archives Admin`;
                 }
                 // status
                 if (user.role === 'admin' || user.role === 'coadmin' || user.role === 'subadmin' || user.admin_role === 'admin' || user.admin_role === 'coadmin' || user.admin_role === 'subadmin') {
+                    console.log('DEBUG: Adding admin user to table:', user.name, user.email);
                     // Determine role display based on admin_role field or default to full access
                     const roleDisplay = user.role_display || (user.admin_role === 'coadmin' ? 'Co-Admin' : user.admin_role === 'subadmin' ? 'Sub-Admin' : 'Admin');
                     const badgeClass = user.admin_role === 'coadmin' ? 'badge-coadmin' : user.admin_role === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
@@ -6468,6 +6476,7 @@ STI Archives Admin`;
                     </tr>`;
                     document.getElementById('admins-tbody').innerHTML += adminRow;
                 } else if (user.isActive || user.verified === true) {
+                    console.log('DEBUG: Adding verified user to table:', user.name, user.email, user.personal_email);
                     document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
                 } else if (user.banned) {
                     document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;

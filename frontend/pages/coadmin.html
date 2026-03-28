@@ -4107,8 +4107,16 @@
             wrapper.appendChild(actionButtons);
             function setViewMode() {
                 template.classList.remove('editing');
+                // Escape special characters for onclick handler
+                const safePdfPath = (articleData.pdfPath || articleData.pdf_path || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const safeTitle = (articleData.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                console.log('Creating View button for article:', articleData.id, 'Title:', safeTitle);
+                const hasPdf = articleData.pdfPath || articleData.pdf_path || articleData.pdfId;
+                const pdfUrl = hasPdf ? (articleData.pdfPath || articleData.pdf_path ? safePdfPath : '/api/pdf/' + articleData.pdfId) : '';
+                // Make article title clickable to show PDF when clicked
+                const titleClickHandler = hasPdf ? `onclick="event.preventDefault(); displayArticlePDF('${pdfUrl}', '${safeTitle}')" style="cursor: pointer;"` : '';
                 template.innerHTML = `
-                    <h3><a href="#" style="text-decoration: none; color: inherit;">${articleData.title}</a></h3>
+                    <h3><a href="#" ${titleClickHandler}>${articleData.title}</a></h3>
                     <div class="meta">${articleData.meta}</div>
                     <div class="summary">${articleData.summary}</div>
                     <div class="actions">
@@ -7653,8 +7661,12 @@ STI Archives Admin`;
                 const pdfUrl = upload.filePath || upload.pdfUrl || upload.url || '';
                 const hasPdf = pdfUrl && (pdfUrl.startsWith('http') || pdfUrl.includes('.pdf'));
                 
-                // Create onclick handler - directly open PDF in new window as fallback
-                const cardClick = hasPdf ? `window.open('${pdfUrl}', '_blank')` : '';
+                // Escape special characters for onclick handler
+                const safePdfUrl = pdfUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const safeTitle = (upload.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                
+                // Create onclick handler - call displayArticlePDF for inline viewing
+                const cardClick = hasPdf ? `displayArticlePDF('${safePdfUrl}', '${safeTitle}')` : '';
                 
                 return `
                 <div class="uploaded-article" data-id="${upload.id}" ${hasPdf ? "onclick=\"" + cardClick + "\" style=\"cursor: pointer;\"" : ''}>
@@ -7675,7 +7687,7 @@ STI Archives Admin`;
                     </div>
                     <div class="actions">
                         ${hasPdf ? `
-                        <button class="view-pdf-btn" onclick="event.stopPropagation(); window.open('${pdfUrl}', '_blank')">
+                        <button class="view-pdf-btn" onclick="event.stopPropagation(); displayArticlePDF('${safePdfUrl}', '${safeTitle}')">
                             <i class="fas fa-eye"></i> View PDF
                         </button>
                         ` : ''}

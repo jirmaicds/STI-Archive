@@ -3228,9 +3228,6 @@
                     <button class="nav-btn" onclick="showUserSection('signing-up')">
                         <i class="fas fa-clock" style="margin-right: 8px;"></i>Signups
                     </button>
-                    <button class="nav-btn" onclick="showUserSection('draft')">
-                        <i class="fas fa-clock" style="margin-right: 8px;"></i>Draft
-                    </button>
                     <button class="nav-btn" onclick="showUserSection('banned')">
                         <i class="fas fa-ban" style="margin-right: 8px;"></i>Banned
                     </button>
@@ -3337,7 +3334,6 @@
                     <button class="btn" onclick="openAddUserModal()">Add New User</button>
                     <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
                         <input type="checkbox" id="select-all-verified-main" onclick="toggleSelectAll('verified')"> Select All
-                        <button class="btn btn-warning" onclick="bulkAction('verified', 'reject')">Reject</button>
                         <button class="btn btn-danger" onclick="bulkAction('verified', 'ban')">Ban</button>
                         <button class="btn btn-danger" onclick="bulkAction('verified', 'remove')">Remove</button>
                     </div>
@@ -3423,7 +3419,6 @@
                     <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
                         <input type="checkbox" id="select-all-signing-up-main" onclick="toggleSelectAll('signing-up')"> Select All
                         <button class="btn btn-success" onclick="bulkAction('signing-up', 'accept')">Accept</button>
-                        <button class="btn btn-warning" onclick="bulkAction('signing-up', 'reject')">Reject</button>
                         <button class="btn btn-danger" onclick="bulkAction('signing-up', 'ban')">Ban</button>
                         <button class="btn btn-danger" onclick="bulkAction('signing-up', 'remove')">Remove</button>
                     </div>
@@ -3431,34 +3426,6 @@
                         <table id="signing-up-users-table">
                             <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Str/B.S.</th><th>Date Signed Up</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
                             <tbody id="signing-up-users-tbody"></tbody>
-                        </table>
-                    </div>
-                </div>
-                <!-- Draft Users Section -->
-                <div id="draft-section" class="user-subsection" style="--border-color: #ffc107; --header-color: #ffc107;">
-                    <h3 style="color: var(--header-color);">⏳ Draft Users</h3>
-                    <p style="margin-bottom: 20px;">Users sorted by subadmin, awaiting approval.</p>
-                    <!-- Filter by Category above table -->
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="margin: 0 0 10px 0; color: #ffc107;">Filter by Category:</h4>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="radio" id="draft-shs" name="draft-category" value="shs" onclick="openFilterModal('draft', 'shs')">
-                            <label for="draft-shs" style="cursor: pointer;">SHS</label>
-                            <input type="radio" id="draft-college" name="draft-category" value="college" onclick="openFilterModal('draft', 'college')">
-                            <label for="draft-college" style="cursor: pointer;">College</label>
-                        </div>
-                    </div>
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-draft-main" onclick="toggleSelectAll('draft')"> Select All
-                        <button class="btn btn-success" onclick="bulkAction('draft', 'accept')">Accept</button>
-                        <button class="btn btn-warning" onclick="bulkAction('draft', 'reject')">Reject</button>
-                        <button class="btn btn-danger" onclick="bulkAction('draft', 'ban')">Ban</button>
-                        <button class="btn btn-danger" onclick="bulkAction('draft', 'remove')">Remove</button>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table id="draft-users-table">
-                            <thead><tr><th><input type="checkbox" id="select-all-draft" onclick="toggleSelectAll('draft')"></th><th>Full Name</th><th>Email</th><th>Role</th><th>Str/B.S.</th><th>Date Sorted</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
-                            <tbody id="draft-users-tbody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -3535,7 +3502,6 @@
                     <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
                         <input type="checkbox" id="select-all-banned-main" onclick="toggleSelectAll('banned')"> Select All
                         <button class="btn btn-success" onclick="bulkAction('banned', 'accept')">Accept</button>
-                        <button class="btn btn-warning" onclick="bulkAction('banned', 'reject')">Reject</button>
                         <button class="btn btn-danger" onclick="bulkAction('banned', 'remove')">Remove</button>
                     </div>
                     <div style="overflow-x: auto;">

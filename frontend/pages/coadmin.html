@@ -4488,12 +4488,7 @@
                     });
                 });
 
-                // Add some static notifications for other types with unique IDs
-                notifications.push(
-                    { id: 'upload-coadmin', type: 'upload', typeText: 'Co-Admin Upload', content: 'Co-Admin uploaded a new research article.', time: '30 minutes ago' },
-                    { id: 'suggestion-bookmark', type: 'suggestion', typeText: 'User Suggestion', content: 'User suggested adding a bookmark feature.', time: '45 minutes ago' },
-                    { id: 'bug-login', type: 'bug', typeText: 'Sub-Admin Bug Report', content: 'Sub-Admin reported a bug in the login system.', time: '20 minutes ago' }
-                );
+                // No pre-coded static notifications - only dynamic notifications from users
 
                 // Filter out deleted notifications
                 const deletedNotifications = JSON.parse(localStorage.getItem('deletedNotifications')) || [];

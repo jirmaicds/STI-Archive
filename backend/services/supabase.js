@@ -4,7 +4,7 @@
  */
 
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 // Import Supabase client
 let supabase;
@@ -14,7 +14,7 @@ if (supabaseUrl && supabaseKey) {
   const { createClient } = require('@supabase/supabase-js');
   supabase = createClient(supabaseUrl, supabaseKey);
 } else {
-  console.warn('Supabase credentials not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY environment variables.');
+  console.warn('Supabase credentials not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.');
   supabase = null;
 }
 

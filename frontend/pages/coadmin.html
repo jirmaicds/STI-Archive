@@ -5321,7 +5321,7 @@ STI Archives Admin`;
                     actions = `
                         <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'accept')">Accept</button>
                         <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'reject')">Reject</button>
-                        <button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name}')">Remove</button>
+                        <button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.fullname}')">Remove</button>
                     `;
                 } else {
                     actions = `
@@ -5334,7 +5334,7 @@ STI Archives Admin`;
                 const rowWithEmail = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                     <td>${user.id}</td>
-                    <td>${user.name}</td>
+                    <td>${user.fullname}</td>
                     <td>${emailToUse}</td>
                     <td>${formatRole(user.role)}</td>
                     <td>${date}</td>
@@ -5345,7 +5345,7 @@ STI Archives Admin`;
                 const rowWithoutEmail = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                     <td>${user.id}</td>
-                    <td>${user.name}</td>
+                    <td>${user.fullname}</td>
                     <td>${emailToUse}</td>
                     <td>${formatRole(user.role)}</td>
                     <td>${date}</td>
@@ -5379,7 +5379,7 @@ STI Archives Admin`;
                     const adminRow = `<tr>
                         <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                         <td>${user.id}</td>
-                        <td>${user.name}</td>
+                        <td>${user.fullname}</td>
                         <td>${user.email}</td>
                         <td>${roleDisplay}</td>
                         <td>${user.created_at}</td>
@@ -5390,7 +5390,7 @@ STI Archives Admin`;
                     const row = `<tr>
                         <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                         <td>${user.id}</td>
-                        <td>${user.name}</td>
+                        <td>${user.fullname}</td>
                         <td>${emailToUse}</td>
                         <td>${formatRole(user.role)}</td>
                         <td>${date}</td>
@@ -5403,7 +5403,7 @@ STI Archives Admin`;
                     const row = `<tr>
                         <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                         <td>${user.id}</td>
-                        <td>${user.name}</td>
+                        <td>${user.fullname}</td>
                         <td>${emailToUse}</td>
                         <td>${formatRole(user.role)}</td>
                         <td>${date}</td>

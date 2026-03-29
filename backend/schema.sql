@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
   reset_code VARCHAR(10),
   reset_expires TIMESTAMP,
   created_at TIMESTAMP DEFAULT NOW(),
+  auth_id UUID,
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -66,6 +67,21 @@ CREATE POLICY "Users can update own data" ON users
 
 CREATE POLICY "Anyone can register" ON users
   FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Admin can view all users" ON users
+  FOR SELECT USING (
+    (SELECT role FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
+  );
+
+CREATE POLICY "Admin can update all users" ON users
+  FOR UPDATE USING (
+    (SELECT role FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
+  );
+
+CREATE POLICY "Admin can delete users" ON users
+  FOR DELETE USING (
+    (SELECT role FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
+  );
 
 -- Create policies for activity_logs table
 CREATE POLICY "Admin can view all logs" ON activity_logs

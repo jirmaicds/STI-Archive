@@ -78,19 +78,29 @@ async function handleGetUsers(req, res) {
         res.end(JSON.stringify({ success: false, error: 'Supabase service client not initialized. Check SUPABASE_SERVICE_ROLE_KEY.' }));
         return;
       }
+      const selectFields = 'id, email, fullname, role, verified, created_at, updated_at, section, strand, permissions, access_level';
       let query = supabase
         .from('users')
-        .select('id, email, fullname, role, verified, created_at, updated_at, section, strand, permissions, access_level, isActive, banned, rejected');
+        .select(selectFields);
       
-      // Apply filters
+      // Apply filters (banned/rejected may not exist in some schemas)
       if (status === 'pending') {
         query = query.eq('verified', false).eq('role', 'pending');
       } else if (status === 'approved') {
         query = query.eq('verified', true).neq('role', 'pending');
       } else if (status === 'banned') {
-        query = query.eq('banned', true);
+        try {
+          query = query.eq('banned', true);
+        } catch (err) {
+          // Column may not exist; produce no rows for banned if unsupported
+          query = query.eq('id', '');
+        }
       } else if (status === 'rejected') {
-        query = query.eq('rejected', true);
+        try {
+          query = query.eq('rejected', true);
+        } catch (err) {
+          query = query.eq('id', '');
+        }
       }
       
       if (role) {

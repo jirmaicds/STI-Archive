@@ -8,14 +8,33 @@ class AuthService {
 
   async login(identifier, password) {
     try {
-      // Support both email and fullname login
-      const credentials = identifier.includes('@') 
-        ? { email: identifier, password } 
-        : { fullname: identifier, password };
-      const response = await this.api.login(credentials);
-      this.setSession(response.token);
-      this.currentUser = response.user;
-      return response;
+      // Use Supabase Auth for login (email/password)
+      const email = identifier.includes('@') ? identifier : undefined;
+      if (!email) {
+        throw new Error('Please provide email for Supabase login');
+      }
+
+      if (!window.supabase || !window.supabase.auth) {
+        throw new Error('Supabase client not initialized');
+      }
+
+      const { data, error } = await window.supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        throw error;
+      }
+
+      const session = data.session;
+      if (!session) {
+        throw new Error('No Supabase session returned');
+      }
+
+      // Set token for backend requests (optional): uses Supabase JWT for backend auth
+      this.setSession(session.access_token);
+
+      // Attempt to read user info from local app table
+      const profileResponse = await this.api.request('/api/auth/profile', { headers: { Authorization: `Bearer ${session.access_token}` } });
+      this.currentUser = profileResponse.user || { email };
+      return { success: true, user: this.currentUser, session };
     } catch (error) {
       throw new Error(`Login failed: ${error.message}`);
     }
@@ -23,13 +42,40 @@ class AuthService {
 
   async register(userData) {
     try {
-      const response = await this.api.register(userData);
-      // Only set session if token is provided (user is pre-activated like admin/coadmin)
-      if (response.token) {
-        this.setSession(response.token);
-        this.currentUser = response.user;
+      if (!window.supabase || !window.supabase.auth) {
+        throw new Error('Supabase client not initialized');
       }
-      return response;
+
+      const { data, error } = await window.supabase.auth.signUp({
+        email: userData.email,
+        password: userData.password
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      const user = data.user;
+
+      // Save into app table as well (roles, profile extras)
+      const saveResponse = await this.api.request('/api/users', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${data.session?.access_token || ''}` },
+        body: {
+          id: user?.id || undefined,
+          email: userData.email,
+          fullname: userData.fullname,
+          role: userData.role || 'pending'
+        }
+      });
+
+      this.currentUser = saveResponse.user || { email: userData.email, fullname: userData.fullname };
+
+      if (data.session) {
+        this.setSession(data.session.access_token);
+      }
+
+      return { success: true, user: this.currentUser, supabase: data, save: saveResponse };
     } catch (error) {
       throw new Error(`Registration failed: ${error.message}`);
     }

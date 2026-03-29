@@ -46,7 +46,23 @@ function verifyToken(token) {
   }
 }
 
-// Middleware to check auth
+// Verify Supabase Auth token via Service Role client
+async function verifySupabaseToken(token) {
+  if (!token) {
+    return null;
+  }
+  if (!isSupabaseConfigured()) {
+    return null;
+  }
+  const supabase = getServiceSupabase();
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error || !data || !data.user) {
+    return null;
+  }
+  return data.user;
+}
+
+// Middleware to check auth (custom app JWT)
 function checkAuth(req, res) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -261,18 +277,28 @@ async function handleProfile(req, res) {
 
   try {
     const auth = checkAuth(req, res);
+    let profile = null;
+
     if (!auth) {
-      res.statusCode = 401;
-      res.end(JSON.stringify({ success: false, error: 'Unauthorized' }));
-      return;
+      // Try Supabase Auth token
+      const authHeader = req.headers.authorization;
+      const supabaseToken = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+      const result = await verifySupabaseToken(supabaseToken);
+      if (!result) {
+        res.statusCode = 401;
+        res.end(JSON.stringify({ success: false, error: 'Unauthorized' }));
+        return;
+      }
+      profile = result;
     }
 
     if (isSupabaseConfigured()) {
       const supabase = getServiceSupabase();
+      const userId = profile ? profile.id : auth.id;
       const { data, error } = await supabase
         .from('users')
         .select('id, email, fullname, role, verified, created_at')
-        .eq('id', auth.id)
+        .eq('id', userId)
         .single();
 
       if (error) throw error;

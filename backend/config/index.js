@@ -44,7 +44,7 @@ const config = {
 
 // Helper to check if Supabase is configured
 function isSupabaseConfigured() {
-  return !!(config.supabase.url && config.supabase.anonKey);
+  return !!(config.supabase.url && config.supabase.anonKey && config.supabase.serviceKey);
 }
 
 module.exports = {

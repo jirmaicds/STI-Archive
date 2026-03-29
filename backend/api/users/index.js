@@ -73,6 +73,11 @@ async function handleGetUsers(req, res) {
 
     if (isSupabaseConfigured()) {
       const supabase = getServiceSupabase();
+      if (!supabase) {
+        res.statusCode = 500;
+        res.end(JSON.stringify({ success: false, error: 'Supabase service client not initialized. Check SUPABASE_SERVICE_ROLE_KEY.' }));
+        return;
+      }
       let query = supabase
         .from('users')
         .select('id, email, fullname, role, verified, created_at, updated_at, section, strand, permissions, access_level, isActive, banned, rejected');

@@ -4749,7 +4749,6 @@
                 let actions = `
                     <div style="display: flex; flex-direction: column; gap: 4px;">
                         <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'accept')">Accept</button>
-                        <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'reject')">Reject</button>
                         <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'ban')">Ban</button>
                     </div>
                 `;
@@ -5923,24 +5922,21 @@ STI Archives Admin`;
             });
         }
         function updateUserStatus(userId, action) {
-            // Ultra-safe guard: avoid ReferenceError in all cases by defining a local id reference
-            let safeUserId = typeof userId !== 'undefined' ? userId : '';
-            if (!safeUserId) {
+            // Handle case where userId might be undefined
+            if (typeof userId === 'undefined' || userId === null || userId === '') {
                 // fallback to selected checkbox id if any
                 const selectedCheckbox = document.querySelector('#users .user-checkbox:checked');
                 if (selectedCheckbox) {
-                    safeUserId = selectedCheckbox.getAttribute('data-user-id') || '';
+                    userId = selectedCheckbox.getAttribute('data-user-id') || '';
                 }
             }
 
-            safeUserId = safeUserId !== null && safeUserId !== undefined ? String(safeUserId).trim() : '';
-            if (!safeUserId) {
+            userId = userId !== null && userId !== undefined ? String(userId).trim() : '';
+            if (!userId) {
                 console.error('updateUserStatus called without valid userId', { userId, action });
                 alert('Error: User ID is missing or invalid. Please refresh the page and try again.');
                 return;
             }
-
-            userId = safeUserId;
             console.log('Updating user status for userId:', userId, 'action:', action);
             
             // Get user email first
@@ -6339,7 +6335,6 @@ STI Archives Admin`;
                     if (status === 'verified') {
                         actions = `
                             <div style="display: flex; flex-direction: column; gap: 4px;">
-                                <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'reject')">Reject</button>
                                 <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'ban')">Ban</button>
                                 <button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name}')">Remove</button>
                             </div>
@@ -6348,7 +6343,6 @@ STI Archives Admin`;
                         actions = `
                             <div style="display: flex; flex-direction: column; gap: 4px;">
                                 <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'accept')">Accept</button>
-                                <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'reject')">Reject</button>
                                 <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'ban')">Ban</button>
                                 <button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name}')">Remove</button>
                             </div>
@@ -6357,7 +6351,6 @@ STI Archives Admin`;
                         actions = `
                             <div style="display: flex; flex-direction: column; gap: 4px;">
                                 <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'accept')">Accept</button>
-                                <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'reject')">Reject</button>
                                 <button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name}')">Remove</button>
                             </div>
                         `;
@@ -6437,7 +6430,6 @@ STI Archives Admin`;
                     actions = `
                         <div style="display: flex; flex-direction: column; gap: 4px;">
                             <button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button>
-                            <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button>
                             <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
                         </div>
                     `;
@@ -6453,7 +6445,6 @@ STI Archives Admin`;
                     actions = `
                         <div style="display: flex; flex-direction: column; gap: 4px;">
                             <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
-                            <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button>
                             <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
                         </div>
                     `;

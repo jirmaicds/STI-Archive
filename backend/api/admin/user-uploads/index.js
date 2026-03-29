@@ -3,7 +3,7 @@
  * Handles admin operations on user uploads
  */
 
-const { getSupabase, isSupabaseConfigured } = require('../../services/supabase.js');
+const { getServiceSupabase, isSupabaseConfigured } = require('../../services/supabase.js');
 
 function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -34,7 +34,7 @@ async function handleGetUserUploads(req, res) {
 
   try {
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       
       // Get uploads with user info
       const { data: uploads, error } = await supabase
@@ -119,7 +119,7 @@ async function handleUpdateUserUpload(req, res, uploadId) {
     const { status, topic, type } = req.body;
     
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       
       const updateData = {};
       if (status) updateData.status = status;
@@ -166,7 +166,7 @@ async function handleDeleteUserUpload(req, res, uploadId) {
 
   try {
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       const { error } = await supabase
         .from('user_uploads')
         .delete()

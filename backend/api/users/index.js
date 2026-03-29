@@ -6,7 +6,7 @@
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs');
 const { config, isSupabaseConfigured } = require('../../config/index.js');
-const { getSupabase } = require('../../services/supabase.js');
+const { getServiceSupabase } = require('../../services/supabase.js');
 
 // Helper to set CORS headers
 function setCorsHeaders(res) {
@@ -72,7 +72,7 @@ async function handleGetUsers(req, res) {
     const search = url.searchParams.get('search');
 
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       let query = supabase
         .from('users')
         .select('id, email, fullname, role, verified, created_at, updated_at, section, strand, permissions, access_level, isActive, banned, rejected');
@@ -168,7 +168,7 @@ async function handleCreateUser(req, res) {
     };
 
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       
       // Check if user already exists
       const { data: existing } = await supabase
@@ -255,7 +255,7 @@ async function handleGetUserCounts(req, res) {
 
   try {
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       
       // Get total users (verified or active, excluding admin roles)
       const { data: allUsers, error: allError } = await supabase

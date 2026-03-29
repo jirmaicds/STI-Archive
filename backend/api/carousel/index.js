@@ -5,7 +5,7 @@
 
 const { v4: uuidv4 } = require('uuid');
 const { config, isSupabaseConfigured } = require('../../config/index.js');
-const { getSupabase } = require('../../services/supabase.js');
+const { getServiceSupabase } = require('../../services/supabase.js');
 
 // Helper to set CORS headers
 function setCorsHeaders(res) {
@@ -57,7 +57,7 @@ async function handleGetCarousel(req, res) {
     const activeOnly = url.searchParams.get('active') !== 'false';
 
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       let query = supabase
         .from('carousel')
         .select('*');
@@ -168,7 +168,7 @@ async function handleCreateCarousel(req, res) {
     };
 
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       
       const { data, error } = await supabase
         .from('carousel')

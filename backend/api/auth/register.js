@@ -7,7 +7,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const { config, isSupabaseConfigured } = require('../config/index.js');
-const { getSupabase } = require('../services/supabase.js');
+const { getServiceSupabase } = require('../../services/supabase.js');
 const emailService = require('../services/EmailService.js');
 
 // Helper to set CORS headers
@@ -99,7 +99,7 @@ async function handleRegister(req, res) {
     };
 
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       const { data, error } = await supabase
         .from('users')
         .insert([newUser])
@@ -161,7 +161,7 @@ async function handleLogin(req, res) {
     }
 
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       
       // Find user by email or fullname
       let query = supabase
@@ -268,7 +268,7 @@ async function handleProfile(req, res) {
     }
 
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       const { data, error } = await supabase
         .from('users')
         .select('id, email, fullname, role, verified, created_at')
@@ -327,7 +327,7 @@ async function handleForgotPassword(req, res) {
     const resetToken = uuidv4();
 
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       
       // Update user with reset token
       const { error } = await supabase
@@ -382,7 +382,7 @@ async function handleResetPassword(req, res) {
     }
 
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       
       // Find user with reset code
       const { data: users, error } = await supabase
@@ -464,7 +464,7 @@ async function handleVerifyResetCode(req, res) {
     }
 
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       
       const { data: users, error } = await supabase
         .from('users')
@@ -519,7 +519,7 @@ async function handleActivate(req, res) {
     }
 
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       
       const { data: users, error } = await supabase
         .from('users')
@@ -602,7 +602,7 @@ async function handleApproveUser(req, res) {
     }
 
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       
       const { data: users, error } = await supabase
         .from('users')

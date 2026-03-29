@@ -4,7 +4,7 @@
  */
 
 const { config, isSupabaseConfigured } = require('../../../config/index.js');
-const { getSupabase } = require('../../../services/supabase.js');
+const { getServiceSupabase } = require('../../../services/supabase.js');
 
 // Helper to set CORS headers
 function setCorsHeaders(res) {
@@ -63,7 +63,7 @@ async function handleGetCarouselItem(req, res, carouselId) {
 
   try {
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       
       const { data, error } = await supabase
         .from('carousel')
@@ -153,7 +153,7 @@ async function handleUpdateCarousel(req, res, carouselId) {
     if (is_active !== undefined) updateData.is_active = is_active;
 
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       
       const { data, error } = await supabase
         .from('carousel')
@@ -219,7 +219,7 @@ async function handleDeleteCarousel(req, res, carouselId) {
     }
 
     if (isSupabaseConfigured()) {
-      const supabase = getSupabase();
+      const supabase = getServiceSupabase();
       
       const { error } = await supabase
         .from('carousel')

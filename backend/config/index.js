@@ -42,9 +42,9 @@ const config = {
   }
 };
 
-// Helper to check if Supabase is configured
+// Helper to check if Supabase is configured (table read/write only, no auth required)
 function isSupabaseConfigured() {
-  return !!(config.supabase.url && config.supabase.anonKey && config.supabase.serviceKey);
+  return !!(config.supabase.url && config.supabase.serviceKey);
 }
 
 module.exports = {

@@ -45,9 +45,10 @@ function getServiceSupabase() {
 
 /**
  * Check if Supabase is configured
+ * Only requires service client for direct users table management in admin mode.
  */
 function isSupabaseConfigured() {
-  return anonClient !== null && serviceClient !== null;
+  return serviceClient !== null;
 }
 
 module.exports = {

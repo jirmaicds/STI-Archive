@@ -17,7 +17,6 @@ CREATE TABLE IF NOT EXISTS users (
   reset_code VARCHAR(10),
   reset_expires TIMESTAMP,
   created_at TIMESTAMP DEFAULT NOW(),
-  auth_id UUID,
   updated_at TIMESTAMP DEFAULT NOW()
 );
 

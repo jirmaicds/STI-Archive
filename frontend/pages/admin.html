@@ -6015,52 +6015,51 @@ STI Archives Admin`;
                 // Clone the row
                 const clonedRow = currentRow.cloneNode(true);
                 console.log('Cloned row');
-                    // Update the actions in clonedRow
-                    const actionsTd = clonedRow.querySelector('td:last-child');
-                    let newActions = '';
-                    if (action === 'accept') {
-                        newActions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button><button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button><button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button><button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${user.name}')">Remove</button></div>`;
-                    } else if (action === 'reject') {
-                        newActions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button><button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button><button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button><button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${user.name}')">Remove</button></div>`;
-                    } else if (action === 'ban') {
-                        newActions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button><button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button><button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button><button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${user.name}')">Remove</button></div>`;
-                    }
-                    actionsTd.innerHTML = newActions;
-                    console.log('Updated actions');
-                    // Update the date in clonedRow
-                    const dateTd = clonedRow.cells[7];
-                    dateTd.textContent = formatDate(new Date().toISOString());
-                    // Remove extra columns for target table
-                    if (action === 'reject') {
-                        clonedRow.removeChild(clonedRow.cells[8]); // status
-                        clonedRow.removeChild(clonedRow.cells[4]); // email
-                    } else if (action === 'ban') {
-                        clonedRow.removeChild(clonedRow.cells[8]); // status
-                        clonedRow.removeChild(clonedRow.cells[4]); // email
-                        clonedRow.removeChild(clonedRow.cells[0]); // checkbox
-                    }
-                    // Determine target tbody
-                    let targetTbodyId = '';
-                    if (action === 'accept') {
-                        targetTbodyId = 'verified-users-tbody';
-                    } else if (action === 'reject') {
-                        // Just remove the row, don't move to rejected table
-                        currentRow.remove();
-                        console.log('Removed rejected user from current table');
-                        return;
-                    } else if (action === 'ban') {
-                        targetTbodyId = 'banned-users-tbody';
-                    }
-                    // Append to target tbody
-                    const targetTbody = document.getElementById(targetTbodyId);
-                    if (targetTbody) {
-                        targetTbody.appendChild(clonedRow);
-                        console.log('Appended to target tbody:', targetTbodyId);
-                    }
-                    // Remove from current
-                    currentRow.remove();
-                    console.log('Removed from current');
+                // Update the actions in clonedRow
+                const actionsTd = clonedRow.querySelector('td:last-child');
+                let newActions = '';
+                if (action === 'accept') {
+                    newActions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button><button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button><button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button><button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${user.name}')">Remove</button></div>`;
+                } else if (action === 'reject') {
+                    newActions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button><button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button><button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button><button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${user.name}')">Remove</button></div>`;
+                } else if (action === 'ban') {
+                    newActions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button><button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button><button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button><button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${user.name}')">Remove</button></div>`;
                 }
+                actionsTd.innerHTML = newActions;
+                console.log('Updated actions');
+                // Update the date in clonedRow
+                const dateTd = clonedRow.cells[7];
+                dateTd.textContent = formatDate(new Date().toISOString());
+                // Remove extra columns for target table
+                if (action === 'reject') {
+                    clonedRow.removeChild(clonedRow.cells[8]); // status
+                    clonedRow.removeChild(clonedRow.cells[4]); // email
+                } else if (action === 'ban') {
+                    clonedRow.removeChild(clonedRow.cells[8]); // status
+                    clonedRow.removeChild(clonedRow.cells[4]); // email
+                    clonedRow.removeChild(clonedRow.cells[0]); // checkbox
+                }
+                // Determine target tbody
+                let targetTbodyId = '';
+                if (action === 'accept') {
+                    targetTbodyId = 'verified-users-tbody';
+                } else if (action === 'reject') {
+                    // Just remove the row, don't move to rejected table
+                    currentRow.remove();
+                    console.log('Removed rejected user from current table');
+                    return;
+                } else if (action === 'ban') {
+                    targetTbodyId = 'banned-users-tbody';
+                }
+                // Append to target tbody
+                const targetTbody = document.getElementById(targetTbodyId);
+                if (targetTbody) {
+                    targetTbody.appendChild(clonedRow);
+                    console.log('Appended to target tbody:', targetTbodyId);
+                }
+                // Remove from current
+                currentRow.remove();
+                console.log('Removed from current');
             }
             // Try to update server
             console.log('updateUserStatus - userId:', userId, 'action:', action);

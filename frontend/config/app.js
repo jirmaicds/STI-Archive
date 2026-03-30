@@ -2,9 +2,8 @@
 const config = {
   // API Configuration
   api: {
-    // Use empty string for relative URLs (works in both dev and production)
-    // For production Vercel deployment, this will be your vercel.app domain
-    baseUrl: '',
+    // For local development, use localhost. For production, use empty string for relative URLs
+    baseUrl: 'http://localhost:3001',
     timeout: 10000,
     endpoints: {
       register: '/api/auth/register',

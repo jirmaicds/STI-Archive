@@ -4394,10 +4394,13 @@
         }
         
         async function refreshUsers() {
-            console.log('DEBUG: Force refreshing users from server...');
-            await getUsers(true);
-            loadUsers();
-            alert('Users refreshed from server!');
+            console.log('DEBUG: Auto refreshing users from server...');
+            try {
+                await getUsers(true);
+                await loadUsers();
+            } catch (error) {
+                console.error('Error auto-refreshing users:', error);
+            }
         }
         function saveUsers(users) {
             localStorage.setItem('users', JSON.stringify(users));
@@ -6119,6 +6122,7 @@ STI Archives Admin`;
                 // Fallback if async fails
                 location.reload();
             });
+        }
         
         function removeUser(userId, userName, event) {
             if (confirm(`Are you sure you want to remove ${userName}'s information? This action cannot be undone.`)) {
@@ -6148,7 +6152,7 @@ STI Archives Admin`;
                 // This catches any remaining rows that might have the userId in the onclick
                 const allRows = document.querySelectorAll('tr');
                 allRows.forEach(row => {
-                    const removeButton = row.querySelector(`button[onclick*="removeUser('${userId}'"]`);
+                    const removeButton = row.querySelector(`button[onclick*="removeUser('${userId}')"]`);
                     if (removeButton) {
                         row.remove();
                     }

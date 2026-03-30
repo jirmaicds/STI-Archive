@@ -3820,7 +3820,12 @@
 
         // === UTILS ===
         let isLoadingUsers = false;
-        async function getUsers() {
+        async function getUsers(forceRefresh = false) {
+            if (forceRefresh) {
+                localStorage.removeItem('users');
+                isLoadingUsers = false;
+                console.log('DEBUG: Force refresh requested for users');
+            }
             if (isLoadingUsers) return JSON.parse(localStorage.getItem('users')) || [];
             isLoadingUsers = true;
             console.log('DEBUG: Attempting to fetch users from server...');
@@ -3831,6 +3836,7 @@
                     console.log('DEBUG: Server responded successfully, parsing JSON...');
                     const users = await response.json();
                     isLoadingUsers = false;
+                    localStorage.setItem('users', JSON.stringify(users));
                     return users;
                 } else {
                     console.log('DEBUG: Server returned error:', response.status, 'falling back to localStorage');
@@ -4301,6 +4307,17 @@
 
         // === INIT ===
         document.addEventListener('DOMContentLoaded', function() {
+            // Auto-update users every 5 seconds
+            async function autoRefreshUsers() {
+                try {
+                    await refreshUsers();
+                } catch (error) {
+                    console.error('Auto user refresh failed:', error);
+                }
+            }
+            autoRefreshUsers();
+            setInterval(autoRefreshUsers, 5000);
+
             // Listen for user data changes from other admin tabs
             window.addEventListener('storage', function(e) {
                 if (e.key === 'users') {
@@ -6389,22 +6406,15 @@ STI Archives Admin`;
         function saveUsers(users) {
             localStorage.setItem('users', JSON.stringify(users));
         }
-        function refreshUsers() {
-            fetch('/api/users')
-                .then(response => response.json())
-                .then(data => {
-                    if (data) {
-                        localStorage.setItem('users', JSON.stringify(data));
-                        loadUsers();
-                        alert('Users list refreshed successfully!');
-                    } else {
-                        alert('Failed to refresh users: ' + (data.error || 'Unknown error'));
-                    }
-                })
-                .catch(error => {
-                    console.error('Error refreshing users:', error);
-                    alert('Failed to refresh users. Please check your connection.');
-                });
+        async function refreshUsers() {
+            console.log('DEBUG: Auto refreshing users data from server...');
+            try {
+                const users = await getUsers(true);
+                saveUsers(users);
+                await loadUsers();
+            } catch (error) {
+                console.error('Error auto-refreshing users:', error);
+            }
         }
         function previewRaf(rafPath) {
             if (!rafPath || rafPath === '') {

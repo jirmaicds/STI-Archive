@@ -315,15 +315,23 @@ async function handleGetUserCounts(req, res) {
       }
       
       // Get total users (verified or active, excluding admin roles)
-      const { data: allUsers, error: allError } = await supabase
+      let { data: allUsers, error: allError } = await supabase
         .from('users')
         .select('id, role, verified, isActive, banned, rejected');
       
+      if (allError && allError.code === '42703') {
+        // isActive field may not exist in older/newer schemas; fall back to verified + admin roles
+        console.warn('Supabase users count query missing isActive; falling back to verified-only logic');
+        ({ data: allUsers, error: allError } = await supabase
+          .from('users')
+          .select('id, role, verified, banned, rejected'));
+      }
+
       if (allError) throw allError;
       
       // Calculate counts based on the same logic as frontend
       const totalUsers = allUsers.filter(u => 
-        (u.isActive || u.verified) && 
+        ((u.isActive === true) || u.verified) && 
         !['admin', 'coadmin', 'subadmin'].includes(u.role)
       ).length;
       
@@ -332,7 +340,7 @@ async function handleGetUserCounts(req, res) {
       ).length;
       
       const newSignups = allUsers.filter(u => 
-        !u.isActive && !u.verified && !u.rejected && !u.banned && 
+        (!u.isActive || false) && !u.verified && !u.rejected && !u.banned && 
         !['admin', 'coadmin', 'subadmin'].includes(u.role)
       ).length;
       

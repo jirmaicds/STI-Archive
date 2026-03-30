@@ -4362,19 +4362,20 @@
             const users = JSON.parse(localStorage.getItem('users')) || [];
             const adminRoles = ['admin', 'coadmin', 'subadmin'];
             
-            const totalUsers = users.filter(u => 
-                (u.isActive || u.verified) && 
-                !adminRoles.includes(u.role)
-            ).length;
+            const totalUsers = users.filter(u => {
+                const roleLower = (u.role || '').toLowerCase();
+                return u.verified && !adminRoles.includes(roleLower);
+            }).length;
             
-            const adminUsers = users.filter(u => 
-                adminRoles.includes(u.role)
-            ).length;
+            const adminUsers = users.filter(u => {
+                const roleLower = (u.role || '').toLowerCase();
+                return adminRoles.includes(roleLower);
+            }).length;
             
-            const newSignups = users.filter(u => 
-                !u.isActive && !u.verified && !u.rejected && !u.banned && 
-                !adminRoles.includes(u.role)
-            ).length;
+            const newSignups = users.filter(u => {
+                const roleLower = (u.role || '').toLowerCase();
+                return !u.verified && !adminRoles.includes(roleLower);
+            }).length;
             
             const verifiedCountEl = document.getElementById('verified-users-count');
             const adminCountEl = document.getElementById('admin-users-count');
@@ -6491,13 +6492,15 @@ STI Archives Admin`;
                         tbody.innerHTML += rowWithEmail;
                     }
                 }
-                // status
-                if (user.role === 'admin' || user.role === 'coadmin' || user.role === 'subadmin' || user.admin_role === 'admin' || user.admin_role === 'coadmin' || user.admin_role === 'subadmin') {
-                    console.log('DEBUG: Adding admin user to table:', user.name, user.email);
+                // status - check admin role first (case-insensitive)
+                const roleLower = (user.role || '').toLowerCase();
+                const adminRoleLower = (user.admin_role || '').toLowerCase();
+                if (roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || adminRoleLower === 'admin' || adminRoleLower === 'coadmin' || adminRoleLower === 'subadmin') {
+                    console.log('DEBUG: Adding admin user to table:', user.fullname, user.email);
                     // Determine role display based on admin_role field or default to full access
-                    const roleDisplay = user.role_display || (user.admin_role === 'coadmin' ? 'Co-Admin' : user.admin_role === 'subadmin' ? 'Sub-Admin' : 'Admin');
-                    const badgeClass = user.admin_role === 'coadmin' ? 'badge-coadmin' : user.admin_role === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
-                    const permissions = user.permissions || (user.admin_role === 'admin' ? 'Full Access - All Features' : user.admin_role === 'coadmin' ? 'Limited Access - User & File Management' : user.admin_role === 'subadmin' ? 'Content Moderator - Articles & Documents' : 'Full Access');
+                    const roleDisplay = user.role_display || (adminRoleLower === 'coadmin' ? 'Co-Admin' : adminRoleLower === 'subadmin' ? 'Sub-Admin' : 'Admin');
+                    const badgeClass = adminRoleLower === 'coadmin' ? 'badge-coadmin' : adminRoleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
+                    const permissions = user.permissions || (adminRoleLower === 'admin' ? 'Full Access - All Features' : adminRoleLower === 'coadmin' ? 'Limited Access - User & File Management' : adminRoleLower === 'subadmin' ? 'Content Moderator - Articles & Documents' : 'Full Access');
                     const adminRow = `<tr>
                         <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                         <td>${user.user_id || user.id}</td>
@@ -6554,12 +6557,22 @@ STI Archives Admin`;
 
             // Update dashboard counts
             const filteredForCount = users.filter(u => !removedUsers.includes(u.user_id || u.id));
-            // Total Users = all users with isActive=true OR verified=true EXCEPT admin/coadmin/subadmin roles
-            const verifiedCount = filteredForCount.filter(u => (u.isActive || u.verified) && u.role !== 'admin' && u.role !== 'coadmin' && u.role !== 'subadmin' && u.admin_role !== 'admin' && u.admin_role !== 'coadmin' && u.admin_role !== 'subadmin').length;
+            // Total Users = all users with verified=true EXCEPT admin/coadmin/subadmin roles
+            const verifiedCount = filteredForCount.filter(u => {
+                const roleLower = (u.role || '').toLowerCase();
+                return u.verified && roleLower !== 'admin' && roleLower !== 'coadmin' && roleLower !== 'subadmin';
+            }).length;
             // Admin Users = users with admin, coadmin, or subadmin role OR admin_role
-            const adminCount = filteredForCount.filter(u => u.role === 'admin' || u.role === 'coadmin' || u.role === 'subadmin' || u.admin_role === 'admin' || u.admin_role === 'coadmin' || u.admin_role === 'subadmin').length;
-            // Signing up = users who are not active/rejected/banned and not admin
-            const signingUpCount = filteredForCount.filter(u => !u.isActive && !u.verified && !u.rejected && !u.banned && u.role !== 'admin' && u.role !== 'coadmin' && u.role !== 'subadmin' && u.admin_role !== 'admin' && u.admin_role !== 'coadmin' && u.admin_role !== 'subadmin').length;
+            const adminCount = filteredForCount.filter(u => {
+                const roleLower = (u.role || '').toLowerCase();
+                const adminRoleLower = (u.admin_role || '').toLowerCase();
+                return roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || adminRoleLower === 'admin' || adminRoleLower === 'coadmin' || adminRoleLower === 'subadmin';
+            }).length;
+            // Signing up = users who are not verified and not admin
+            const signingUpCount = filteredForCount.filter(u => {
+                const roleLower = (u.role || '').toLowerCase();
+                return !u.verified && roleLower !== 'admin' && roleLower !== 'coadmin' && roleLower !== 'subadmin';
+            }).length;
             document.getElementById('verified-users-count').textContent = verifiedCount;
             document.getElementById('admin-users-count').textContent = adminCount;
             document.getElementById('signing-up-users-count').textContent = signingUpCount;

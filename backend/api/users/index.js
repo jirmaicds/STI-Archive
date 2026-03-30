@@ -66,13 +66,15 @@ async function handleGetUsers(req, res) {
   }
 
   try {
-    // Parse query params for filtering
-    const url = new URL(req.url, `http://${req.headers.host}`);
-    const status = url.searchParams.get('status'); // pending, approved, rejected, banned
-    const role = url.searchParams.get('role');
-    const search = url.searchParams.get('search');
+      // Parse query params for filtering from Vercel/Edge where host may not be present
+      const protocol = req.headers['x-forwarded-proto'] || 'https';
+      const host = req.headers.host || process.env.VERCEL_URL || 'localhost:3001';
+      const url = new URL(req.url || '/', `${protocol}://${host}`);
+      const status = url.searchParams.get('status'); // pending, approved, rejected, banned
+      const role = url.searchParams.get('role');
+      const search = url.searchParams.get('search');
 
-    if (isSupabaseConfigured()) {
+      if (isSupabaseConfigured()) {
       const supabase = getServiceSupabase();
       if (!supabase) {
         // Fallback: return empty array if service client is not available
@@ -135,9 +137,18 @@ async function handleGetUsers(req, res) {
       }));
     }
   } catch (error) {
-    console.error('Error getting users:', error);
+    console.error('Error getting users:', {
+      message: error.message,
+      stack: error.stack,
+      url: req.url,
+      headers: req.headers
+    });
     res.statusCode = 500;
-    res.end(JSON.stringify({ success: false, error: error.message }));
+    res.end(JSON.stringify({
+      success: false,
+      error: error.message,
+      details: (process.env.NODE_ENV !== 'production') ? error.stack : undefined
+    }));
   }
 }
 

@@ -3791,7 +3791,7 @@
                 if (settings.siteFavicon && settings.siteFavicon.startsWith('blob:')) {
                     settings.siteFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
                 }
-                updateDocumentTitle(settings.siteTitle);
+                updateDocumentTitle(settings.siteTitle || 'LogIn | STI Archives');
                 updateDocumentFavicon(settings.siteFavicon);
             } catch (error) {
                 console.error('Failed to load site settings:', error);

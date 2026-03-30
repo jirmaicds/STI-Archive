@@ -5,8 +5,8 @@
 
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs');
-const { config, isSupabaseConfigured } = require('../../config/index.js');
-const { getServiceSupabase } = require('../../services/supabase.js');
+const { config } = require('../../config/index.js');
+const { getServiceSupabase, isSupabaseConfigured } = require('../../services/supabase.js');
 
 // Helper to set CORS headers
 function setCorsHeaders(res) {
@@ -74,8 +74,13 @@ async function handleGetUsers(req, res) {
     if (isSupabaseConfigured()) {
       const supabase = getServiceSupabase();
       if (!supabase) {
-        res.statusCode = 500;
-        res.end(JSON.stringify({ success: false, error: 'Supabase service client not initialized. Check SUPABASE_SERVICE_ROLE_KEY.' }));
+        // Fallback: return empty array if service client is not available
+        res.statusCode = 200;
+        res.end(JSON.stringify({ 
+          success: true, 
+          users: [],
+          message: 'Supabase service client not configured. Set SUPABASE_SERVICE_ROLE_KEY in Vercel environment variables.'
+        }));
         return;
       }
       const selectFields = 'id, email, fullname, role, verified, created_at, updated_at, section, strand, permissions, access_level';
@@ -271,6 +276,22 @@ async function handleGetUserCounts(req, res) {
   try {
     if (isSupabaseConfigured()) {
       const supabase = getServiceSupabase();
+      
+      if (!supabase) {
+        // Fallback: return zeros if service client is not available
+        res.statusCode = 200;
+        res.end(JSON.stringify({
+          success: true,
+          counts: {
+            totalUsers: 0,
+            adminUsers: 0,
+            newSignups: 0,
+            bannedUsers: 0
+          },
+          message: 'Supabase service client not configured. Set SUPABASE_SERVICE_ROLE_KEY in Vercel environment variables.'
+        }));
+        return;
+      }
       
       // Get total users (verified or active, excluding admin roles)
       const { data: allUsers, error: allError } = await supabase

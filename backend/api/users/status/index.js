@@ -45,6 +45,13 @@ async function handleUserStatus(req, res) {
     if (isSupabaseConfigured()) {
       const supabase = getSupabase();
       
+      if (!supabase) {
+        // Fallback: return error if anon client is not available
+        res.statusCode = 500;
+        res.end(JSON.stringify({ success: false, error: 'Supabase client not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY in Vercel environment variables.' }));
+        return;
+      }
+      
       // Find user by email or id
       let query = supabase.from('users').select('*');
       if (email) {

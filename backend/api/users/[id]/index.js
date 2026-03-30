@@ -5,8 +5,8 @@
 
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs');
-const { config, isSupabaseConfigured } = require('../../../config/index.js');
-const { getSupabase } = require('../../../services/supabase.js');
+const { config } = require('../../../config/index.js');
+const { getSupabase, isSupabaseAnonConfigured } = require('../../../services/supabase.js');
 
 // Helper to set CORS headers
 function setCorsHeaders(res) {
@@ -65,7 +65,7 @@ async function handleGetUser(req, res, userId) {
   }
 
   try {
-    if (isSupabaseConfigured()) {
+    if (isSupabaseAnonConfigured()) {
       const supabase = getSupabase();
       
       const { data, error } = await supabase
@@ -175,7 +175,7 @@ async function handleUpdateUser(req, res, userId) {
       updateData.password = await bcrypt.hash(req.body.password, 10);
     }
 
-    if (isSupabaseConfigured()) {
+    if (isSupabaseAnonConfigured()) {
       const supabase = getSupabase();
       
       const { data, error } = await supabase
@@ -248,7 +248,7 @@ async function handleDeleteUser(req, res, userId) {
       return;
     }
 
-    if (isSupabaseConfigured()) {
+    if (isSupabaseAnonConfigured()) {
       const supabase = getSupabase();
       
       const { error } = await supabase

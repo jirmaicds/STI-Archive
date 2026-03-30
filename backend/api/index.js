@@ -7,8 +7,8 @@
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { config, isSupabaseConfigured } = require('../config/index.js');
-const { getSupabase } = require('../services/supabase.js');
+const { config } = require('../config/index.js');
+const { getSupabase, isSupabaseConfigured } = require('../services/supabase.js');
 
 // Helper to set CORS headers
 function setCorsHeaders(res) {

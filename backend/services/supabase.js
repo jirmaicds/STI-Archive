@@ -51,11 +51,20 @@ function isSupabaseConfigured() {
   return serviceClient !== null;
 }
 
+/**
+ * Check if Supabase anon client is configured
+ * For public data access (articles, public user info, etc.)
+ */
+function isSupabaseAnonConfigured() {
+  return anonClient !== null;
+}
+
 module.exports = {
   getSupabase,
   getServiceSupabase,
   anonClient,
   serviceClient,
   isSupabaseConfigured,
+  isSupabaseAnonConfigured,
   supabase: serviceClient // backward compatibility
 };

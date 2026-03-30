@@ -3,8 +3,8 @@
  * Handles get/update/delete for a specific carousel item
  */
 
-const { config, isSupabaseConfigured } = require('../../../config/index.js');
-const { getServiceSupabase } = require('../../../services/supabase.js');
+const { config } = require('../../../config/index.js');
+const { getServiceSupabase, isSupabaseConfigured } = require('../../../services/supabase.js');
 
 // Helper to set CORS headers
 function setCorsHeaders(res) {

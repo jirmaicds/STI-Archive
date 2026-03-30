@@ -86,11 +86,12 @@ async function handleGetUsers(req, res) {
         }));
         return;
       }
-      const selectFields = 'id, email, fullname, role, verified, created_at, updated_at';
+      const defaultSelectFields = 'id, email, fullname, role, verified, created_at, updated_at';
+      const noMetaSelectFields = 'id, email, fullname, role, verified';
       let query = supabase
         .from('users')
-        .select(selectFields);
-      
+        .select(defaultSelectFields);
+
       // Apply filters (banned/rejected may not exist in some schemas)
       if (status === 'pending') {
         query = query.eq('verified', false).eq('role', 'pending');
@@ -121,7 +122,15 @@ async function handleGetUsers(req, res) {
       
       query = query.order('created_at', { ascending: false });
       
-      const { data, error } = await query;
+      let data, error;
+      ({ data, error } = await query);
+      
+      if (error && error.code === '42703') {
+        // Missing column in schema: retry with reduced projection
+        console.warn('Supabase users query 42703; retrying with less fields', error.message);
+        query = supabase.from('users').select(noMetaSelectFields).order('created_at', { ascending: false });
+        ({ data, error } = await query);
+      }
       
       if (error) throw error;
       

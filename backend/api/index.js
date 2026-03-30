@@ -323,7 +323,8 @@ async function handleUsers(req, res) {
 
     if (isSupabaseConfigured()) {
       const supabase = getSupabase();
-      let query = supabase.from('users').select('id, email, fullname, role, verified, created_at, isActive');
+      const baseSelect = 'id, email, fullname, role, verified, created_at';
+      let query = supabase.from('users').select(`${baseSelect}`);
       if (status === 'pending') query = query.eq('verified', false).eq('role', 'pending');
       else if (status === 'approved') query = query.eq('verified', true).neq('role', 'pending');
       if (role) query = query.eq('role', role);

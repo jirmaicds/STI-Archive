@@ -71,7 +71,7 @@ async function handleGetUser(req, res, userId) {
       
       const { data, error } = await supabase
         .from('users')
-        .select('id, email, fullname, role, verified, created_at, updated_at, section, strand, permissions, access_level, isActive, banned, rejected')
+        .select('id, email, fullname, role, verified, created_at, updated_at, section, strand, permissions, access_level, banned, rejected')
         .eq('id', userId)
         .single();
       

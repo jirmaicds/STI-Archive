@@ -351,25 +351,27 @@
         }
         
         // Dark mode toggle functionality
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const body = document.body;
-        
-        // Load saved dark mode preference
-        if (localStorage.getItem('darkMode') === 'enabled') {
-            body.classList.add('dark-mode');
-            darkModeToggle.innerHTML = '<i class="fa fa-sun"></i>';
-        }
-        
-        // Toggle dark mode on button click
-        darkModeToggle.addEventListener('click', function() {
-            body.classList.toggle('dark-mode');
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('darkMode', 'enabled');
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const body = document.body;
+            
+            // Load saved dark mode preference
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                body.classList.add('dark-mode');
                 darkModeToggle.innerHTML = '<i class="fa fa-sun"></i>';
-            } else {
-                localStorage.setItem('darkMode', 'disabled');
-                darkModeToggle.innerHTML = '<i class="fa fa-moon"></i>';
             }
+            
+            // Toggle dark mode on button click
+            darkModeToggle.addEventListener('click', function() {
+                body.classList.toggle('dark-mode');
+                if (body.classList.contains('dark-mode')) {
+                    localStorage.setItem('darkMode', 'enabled');
+                    darkModeToggle.innerHTML = '<i class="fa fa-sun"></i>';
+                } else {
+                    localStorage.setItem('darkMode', 'disabled');
+                    darkModeToggle.innerHTML = '<i class="fa fa-moon"></i>';
+                }
+            });
         });
     </script>
     <nav class="main-navbar" id="main-navbar">

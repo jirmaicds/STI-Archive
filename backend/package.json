@@ -5,6 +5,7 @@
   "main": "backend/api/index.js",
   "scripts": {
     "dev": "vercel dev",
+    "dev:local": "node server.js",
     "start": "vercel dev",
     "build": "echo 'No build step required for serverless functions'",
     "deploy": "vercel --prod",
@@ -15,6 +16,8 @@
     "@supabase/supabase-js": "^2.39.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.8",
     "uuid": "^9.0.1"

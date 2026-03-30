@@ -5,7 +5,8 @@
 
 const { v4: uuidv4 } = require('uuid');
 const { config } = require('../../config/index.js');
-const { getServiceSupabase, isSupabaseConfigured } = require('../../services/supabase.js');
+const path = require('path');
+const { getServiceSupabase, isSupabaseConfigured } = require(path.resolve(__dirname, '../../services/supabase.js'));
 
 // Helper to set CORS headers
 function setCorsHeaders(res) {

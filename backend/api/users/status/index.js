@@ -3,8 +3,9 @@
  * Handles user status changes (accept, reject, ban)
  */
 
-const { getSupabase, isSupabaseConfigured } = require('../../services/supabase.js');
-const emailService = require('../../services/EmailService.js');
+const path = require('path');
+const { getSupabase, isSupabaseConfigured } = require(path.resolve(__dirname, '../../../services/supabase.js'));
+const emailService = require(path.resolve(__dirname, '../../../services/EmailService.js'));
 
 function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

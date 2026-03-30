@@ -4,7 +4,8 @@
  */
 
 const { config, isSupabaseConfigured } = require('../../config/index.js');
-const { getSupabase } = require('../../services/supabase.js');
+const path = require('path');
+const { getSupabase } = require(path.resolve(__dirname, '../../services/supabase.js'));
 
 // Helper to set CORS headers
 function setCorsHeaders(res) {

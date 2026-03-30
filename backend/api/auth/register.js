@@ -7,8 +7,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const { config, isSupabaseConfigured } = require('../config/index.js');
-const { getServiceSupabase } = require('../../services/supabase.js');
-const emailService = require('../services/EmailService.js');
+const path = require('path');
+const { getServiceSupabase } = require(path.resolve(__dirname, '../../services/supabase.js'));
+const emailService = require(path.resolve(__dirname, '../services/EmailService.js'));
 
 // Helper to set CORS headers
 function setCorsHeaders(res) {

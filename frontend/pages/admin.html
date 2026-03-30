@@ -1133,7 +1133,7 @@
             transition: background-color 0.2s;
             display: flex;
             align-items: flex-start;
-            gap: 10px;
+            
         }
         .notification-details {
             display: flex;
@@ -6608,16 +6608,18 @@ STI Archives Admin`;
                 admin: 5
             };
             const barColors = [
-                '#007bff', // SHS blue
-                '#28a745', // College green
-                '#ffc107', // Teacher yellow
-                '#dc3545'  // Admin red
+                '#003366', // SHS dark blue
+                '#FFD700', // College gold/yellow
+                '#00CED1', // Teacher light blue/cyan
+                '#808080'  // Admin gray
             ];
             const labels = ['SHS', 'COLLEGE', 'TEACHER', 'ADMIN'];
             const ctx = document.getElementById('user-chart').getContext('2d');
             if (window.userChart) {
                 window.userChart.destroy();
             }
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const textColor = isDarkMode ? '#ffffff' : '#000000';
             window.userChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -6639,14 +6641,14 @@ STI Archives Admin`;
                     scales: {
                         x: {
                             ticks: {
-                                color: '#000000'
+                                color: textColor
                             }
                         },
                         y: {
                             beginAtZero: true,
                             max: 400,
                             ticks: {
-                                color: '#000000'
+                                color: textColor
                             }
                         }
                     }
@@ -6722,10 +6724,10 @@ STI Archives Admin`;
             }
 
             const barColors = [
-                '#6f42c1',
-                '#dc3545',
-                '#007bff',
-                '#28a745'
+                '#808080', // Admin gray
+                '#00CED1', // Teacher light blue/cyan
+                '#003366', // SHS dark blue
+                '#FFD700'  // College gold/yellow
             ];
             const labels = ['ADMIN', 'TEACHER', 'SHS', 'COLLEGE'];
             const data = [1, 1, 1, 1]; // Demo data

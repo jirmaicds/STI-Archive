@@ -6085,39 +6085,36 @@ STI Archives Admin`;
                 console.error('Error updating server:', error);
             });
             // Always reload users
-            loadUsers().then(() => {
+            loadUsers().then(function() {
                 console.log('Users reloaded');
                 if (action === 'accept' && user) {
-                    const email = user.personal_email || user.email;
-                    const subject = 'Account Verified';
-                    const message = `Dear ${user.name},
-
-Your account has been verified by the admin.
-
-You can now log in using your registered email:
-
-Email: ${email}
-
-If you did not set a password yet, please use the verification code sent to your email to create one.
-
-Best regards,
-STI Archives Admin`;
+                    var email = user.personal_email || user.email;
+                    var subject = 'Account Verified';
+                    var message = 'Dear ' + user.name + ',\n\n' +
+                        'Your account has been verified by the admin.\n\n' +
+                        'You can now log in using your registered email:\n\n' +
+                        'Email: ' + email + '\n\n' +
+                        'If you did not set a password yet, please use the verification code sent to your email to create one.\n\n' +
+                        'Best regards,\n' +
+                        'STI Archives Admin';
      
                     fetch('/send_update_email', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ to_email: email, subject: subject, message: message })
-                    }).then(response => response.json()).then(result => {
+                    }).then(function(response) {
+                        return response.json();
+                    }).then(function(result) {
                         if (result.message) {
                             console.log('Verification email sent successfully');
                         } else {
                             console.error('Failed to send verification email:', result.error);
                         }
-                    }).catch(error => {
+                    }).catch(function(error) {
                         console.error('Error sending verification email:', error);
                     });
                 }
-            }).catch(() => {
+            }).catch(function() {
                 console.log('Load users failed, reloading page');
                 // Fallback if async fails
                 location.reload();

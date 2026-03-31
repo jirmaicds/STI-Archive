@@ -435,8 +435,9 @@ body {
             /* Mobile-specific layout */
             .main-content.mobile-layout {
                 flex-direction: column;
-                height: 100vh;
-                overflow-y: hidden;
+                min-height: 100vh;
+                height: auto;
+                overflow-y: auto;
                 overflow-x: hidden;
             }
             
@@ -450,16 +451,14 @@ body {
             
             .file-viewer {
                 flex: 1 1 auto;
-                max-height: 50vh;
-                min-height: 0;
+                min-height: 300px;
                 transition: all 0.3s ease;
                 overflow: hidden;
             }
             
             .editor {
                 flex: 1 1 auto;
-                max-height: 50vh;
-                min-height: 0;
+                min-height: 300px;
                 transition: all 0.3s ease;
                 overflow: hidden;
             }

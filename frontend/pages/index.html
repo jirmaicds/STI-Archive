@@ -346,6 +346,15 @@
                     overflow-y: auto;
                 }
             }
+            /* Mobile - main-content no scroll */
+            @media (max-width: 766px) {
+                .main-content {
+                    min-height: auto !important;
+                    height: auto !important;
+                    overflow: hidden !important;
+                    padding: 20px 5vw 80px 5vw !important;
+                }
+            }
             body::before {
                 content: "";
                 position: fixed;

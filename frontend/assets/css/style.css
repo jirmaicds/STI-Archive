@@ -442,6 +442,14 @@ body {
                 position: relative !important;
             }
             
+            /* When mobile-layout is outside stiBuildingSection */
+            .main-content.mobile-layout:not(#stiBuildingSection .main-content) {
+                position: relative !important;
+                width: 100% !important;
+                left: auto !important;
+                top: auto !important;
+            }
+            
             /* Override inline styles for adsContentContainer on mobile */
             .main-content.mobile-layout #adsContentContainer {
                 position: relative !important;

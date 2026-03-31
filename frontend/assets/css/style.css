@@ -439,6 +439,18 @@ body {
                 height: auto;
                 overflow-y: auto;
                 overflow-x: hidden;
+                position: relative !important;
+            }
+            
+            /* Override inline styles for adsContentContainer on mobile */
+            .main-content.mobile-layout #adsContentContainer {
+                position: relative !important;
+                width: 100% !important;
+                right: auto !important;
+                top: auto !important;
+                transform: none !important;
+                display: block !important;
+                margin-bottom: 20px;
             }
             
             .file-viewer.mobile-hidden {

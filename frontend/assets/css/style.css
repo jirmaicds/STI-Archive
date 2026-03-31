@@ -436,7 +436,8 @@ body {
             .main-content.mobile-layout {
                 flex-direction: column;
                 height: 100vh;
-                overflow-y: auto;
+                overflow-y: hidden;
+                overflow-x: hidden;
             }
             
             .file-viewer.mobile-hidden {
@@ -448,15 +449,19 @@ body {
             }
             
             .file-viewer {
-                flex: 0 0 100%;
+                flex: 1 1 50%;
                 max-height: 50vh;
+                min-height: 0;
                 transition: all 0.3s ease;
+                overflow: hidden;
             }
             
             .editor {
-                flex: 0 0 100%;
+                flex: 1 1 50%;
                 max-height: 50vh;
+                min-height: 0;
                 transition: all 0.3s ease;
+                overflow: hidden;
             }
             
             /* Ensure PDF canvas is visible on mobile */

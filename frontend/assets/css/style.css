@@ -440,6 +440,18 @@ body {
                 overflow-x: hidden;
             }
             
+            /* Ensure adsContentContainer is visible at top of mobile layout */
+            .main-content.mobile-layout #adsContentContainer {
+                position: relative !important;
+                top: 0 !important;
+                right: auto !important;
+                transform: none !important;
+                width: 100% !important;
+                max-height: 30vh;
+                order: -1;
+                margin-bottom: 10px;
+            }
+            
             .file-viewer.mobile-hidden {
                 display: none !important;
             }

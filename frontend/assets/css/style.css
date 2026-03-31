@@ -440,16 +440,16 @@ body {
                 overflow-x: hidden;
             }
             
-            /* Ensure adsContentContainer is visible at top of mobile layout */
+            /* Ensure adsContentContainer is visible in mobile layout */
             .main-content.mobile-layout #adsContentContainer {
                 position: relative !important;
-                top: 0 !important;
+                top: auto !important;
                 right: auto !important;
                 transform: none !important;
                 width: 100% !important;
-                max-height: 30vh;
-                order: -1;
-                margin-bottom: 10px;
+                flex: 0 0 auto;
+                max-height: 25vh;
+                margin-bottom: 5px;
             }
             
             .file-viewer.mobile-hidden {
@@ -461,16 +461,16 @@ body {
             }
             
             .file-viewer {
-                flex: 1 1 50%;
-                max-height: 50vh;
+                flex: 1 1 auto;
+                max-height: 37.5vh;
                 min-height: 0;
                 transition: all 0.3s ease;
                 overflow: hidden;
             }
             
             .editor {
-                flex: 1 1 50%;
-                max-height: 50vh;
+                flex: 1 1 auto;
+                max-height: 37.5vh;
                 min-height: 0;
                 transition: all 0.3s ease;
                 overflow: hidden;

@@ -685,7 +685,7 @@ body.dark-mode {
 }
 
 .dark-mode #adsContentContainer {
-    background: rgba(35, 47, 65, 0.85) !important;
+    background-color: #232f41 !important;
     border-radius: 8px;
     padding: 10px;
 }

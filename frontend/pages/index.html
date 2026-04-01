@@ -388,7 +388,7 @@
                 .main-content {
                     min-height: auto !important;
                     height: auto !important;
-                    overflow: hidden !important;
+                    overflow: visible !important;
                     padding: 20px 5vw 80px 5vw !important;
                 }
                 /* Hide navbar login button on mobile */
@@ -480,17 +480,27 @@
                     background: #1a2538 !important;
                 }
                 .auth-container {
+                    position: fixed !important;
+                    top: 50% !important;
+                    left: 50% !important;
+                    transform: translate(-50%, -50%) !important;
+                    z-index: 9999 !important;
                     width: 90vw;
                     max-width: 380px;
-                    max-height: none;
+                    max-height: 80vh;
                     height: auto;
                     min-height: 280px;
                     overflow-y: auto;
                 }
                 .auth-container.auth-container--signup {
+                    position: fixed !important;
+                    top: 50% !important;
+                    left: 50% !important;
+                    transform: translate(-50%, -50%) !important;
+                    z-index: 9999 !important;
                     width: 90vw;
                     max-width: 380px;
-                    max-height: none;
+                    max-height: 80vh;
                     overflow-y: auto;
                 }
             }

@@ -1452,6 +1452,11 @@
                 #adsContentContainer img {
                     max-height: 280px;
                 }
+                #loginNavBtnMobile {
+                    margin: 0;
+                    position: relative;
+                    top: -20px;
+                }
             }
             
             @media (max-width: 480px) {
@@ -3990,6 +3995,12 @@
         let slideInterval;
         let isPaused = false;
         const slideDuration = 5000; // 5 seconds
+
+        // Dragging variables
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+        let slides = document.querySelectorAll('.slider-wrapper img');
         
         function startSlideshow() {
             slideInterval = setInterval(function() {
@@ -4008,24 +4019,56 @@
         // Pause on hover
         document.querySelector('.image-slider').addEventListener('mouseenter', stopSlideshow);
         document.querySelector('.image-slider').addEventListener('mouseleave', startSlideshow);
+
+        // Touch events for dragging
+        const slider = document.querySelector('.image-slider');
+        slider.addEventListener('touchstart', (e) => {
+            stopSlideshow();
+            startX = e.touches[0].clientX;
+            isDragging = true;
+        });
+
+        slider.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            currentX = e.touches[0].clientX;
+            const diff = startX - currentX;
+            const percentage = (diff / slider.offsetWidth) * 100;
+            const currentTransform = (slideIndex - 1) * 100;
+            const newTransform = Math.max(0, Math.min((slides.length - 1) * 100, currentTransform + percentage));
+            document.querySelector('.slider-wrapper').style.transform = `translateX(-${newTransform}%)`;
+        });
+
+        slider.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            const diff = startX - currentX;
+            const threshold = slider.offsetWidth * 0.2;
+            if (Math.abs(diff) > threshold) {
+                if (diff > 0 && slideIndex < slides.length) {
+                    slideIndex++;
+                } else if (diff < 0 && slideIndex > 1) {
+                    slideIndex--;
+                }
+            }
+            showSlides(slideIndex);
+            startSlideshow();
+        });
         
         function showSlides(n) {
-            let i;
-            let slides = document.querySelectorAll('.slider-wrapper img');
             let dots = document.querySelectorAll('.dot');
-            
+
             if (n > slides.length) { slideIndex = 1; }
             if (n < 1) { slideIndex = slides.length; }
-            
-            for (i = 0; i < slides.length; i++) {
-                slides[i].style.display = 'none';
-            }
-            for (i = 0; i < dots.length; i++) {
+
+            const sliderWrapper = document.querySelector('.slider-wrapper');
+            sliderWrapper.style.transform = `translateX(-${(slideIndex - 1) * 100}%)`;
+
+            for (let i = 0; i < dots.length; i++) {
                 dots[i].style.opacity = '0.7';
                 dots[i].style.backgroundColor = 'white';
             }
-            
-            slides[slideIndex - 1].style.display = 'block';
+
             dots[slideIndex - 1].style.opacity = '1';
             dots[slideIndex - 1].style.backgroundColor = 'gray';
         }

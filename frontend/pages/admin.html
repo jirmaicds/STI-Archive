@@ -3504,74 +3504,16 @@
                 </div>
                 <!-- Verified Users Section -->
                 <div id="verified-section" class="user-subsection" style="--border-color: #28a745; --header-color: #28a745;">
-                    <!-- Filter by Category above table -->
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="margin: 0 0 10px 0; color: #007bff;">Filter by Category:</h4>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="radio" id="verified-shs" name="verified-category" value="shs" onclick="openFilterModal('verified', 'shs')">
-                            <label for="verified-shs" style="cursor: pointer;">SHS</label>
-                            <input type="radio" id="verified-college" name="verified-category" value="college" onclick="openFilterModal('verified', 'college')">
-                            <label for="verified-college" style="cursor: pointer;">College</label>
-                            <input type="radio" id="verified-teacher" name="verified-category" value="teacher" onclick="openFilterModal('verified', 'teacher')">
-                            <label for="verified-teacher" style="cursor: pointer;">Teacher</label>
-                        </div>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <select id="search-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="unified">Unified Search</option>
+                            <option value="fullname" selected>Full Name</option>
+                            <option value="userid">User ID</option>
+                            <option value="email">Email</option>
+                        </select>
+                        <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'verified', document.getElementById('search-filter-verified').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                        <button class="btn" onclick="openAddUserModal()">Add New User</button>
                     </div>
-                    <!-- SHS Specification -->
-                    <div id="shs-spec" style="display: none; margin-top: 20px;">
-                        <h4>Grade:</h4>
-                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                            <button class="btn btn-info" onclick="showGrade('11')">Grade 11</button>
-                            <button class="btn btn-info" onclick="showGrade('12')">Grade 12</button>
-                        </div>
-                        <div id="grade-selection" style="display: none;">
-                            <h5 id="grade-title"></h5>
-                            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                                <button class="btn btn-secondary" onclick="showStrand('abm')">ABM</button>
-                                
-                                <button class="btn btn-secondary" onclick="showStrand('itmawd')">ITMAWD</button>
-                                <button class="btn btn-secondary" onclick="showStrand('stem')">STEM</button>
-                            </div>
-                        </div>
-                        <div id="strand-table" style="display: none; margin-top: 20px; overflow-x: auto;">
-                            <h6 id="strand-title"></h6>
-                            <table id="strand-users-table">
-                                <thead><tr><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Section</th><th>Date Verified</th><th>Status</th><th>RAF Preview</th><th>Strand</th><th>Actions</th></tr></thead>
-                                <tbody id="strand-users-tbody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <!-- College Specification -->
-                    <div id="college-spec" style="display: none; margin-top: 20px;">
-                        <h4>Degree:</h4>
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-success" onclick="showDegree('bsba')">BSBA</button>
-                            <button class="btn btn-success" onclick="showDegree('bscs')">BSCS</button>
-                            <button class="btn btn-success" onclick="showDegree('bsit')">BSIT</button>
-                        </div>
-                        <div id="degree-table" style="display: none; margin-top: 20px; overflow-x: auto;">
-                            <h5 id="degree-title"></h5>
-                            <table id="degree-users-table">
-                                <thead><tr><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Section</th><th>Date Verified</th><th>Status</th><th>RAF Preview</th><th>Degree</th><th>Actions</th></tr></thead>
-                                <tbody id="degree-users-tbody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <!-- Teacher Specification -->
-                    <div id="teacher-spec" style="display: none; margin-top: 20px;">
-                        <h4>Department:</h4>
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-danger" onclick="showDepartment('shs')">SHS</button>
-                            <button class="btn btn-danger" onclick="showDepartment('college')">College</button>
-                        </div>
-                        <div id="department-table" style="display: none; margin-top: 20px; overflow-x: auto;">
-                            <h5 id="department-title"></h5>
-                            <table id="department-users-table">
-                                <thead><tr><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Section</th><th>Date Verified</th><th>Status</th><th>RAF Preview</th><th>Department</th><th>Actions</th></tr></thead>
-                                <tbody id="department-users-tbody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <button class="btn" onclick="openAddUserModal()">Add New User</button>
                     <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
                         <input type="checkbox" id="select-all-verified-main" onclick="toggleSelectAll('verified')">
                         <button class="btn btn-danger" onclick="bulkAction('verified', 'ban')">Ban</button>

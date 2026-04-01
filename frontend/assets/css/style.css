@@ -621,7 +621,7 @@ body.dark-mode {
     background: #181f2a;
 }
 .dark-mode .main-navbar {
-    background: #232f41;
+    background: transparent;
     color: #ffd700;
     box-shadow: 0 2px 8px #0006;
 }

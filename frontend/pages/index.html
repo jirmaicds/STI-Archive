@@ -250,6 +250,12 @@
                 #adsContentContainer .image-slider {
                     height: 350px !important;
                 }
+                #slider-controls {
+                    display: flex !important;
+                }
+                #loginNavBtnMobile {
+                    display: none !important;
+                }
             }
             
             /* Laptop to Desktop - Center aligned to image */
@@ -1445,6 +1451,7 @@
                     height: 380px;
                     padding: 5px;
                     right: auto !important;
+                    top: calc(50% + 30px) !important;
                 }
                 #adsContentContainer .image-slider {
                     height: 280px !important;
@@ -1465,6 +1472,9 @@
                     width: 80%;
                     position: relative;
                     top: 0;
+                }
+                #slider-controls {
+                    display: none !important;
                 }
             }
             
@@ -1632,6 +1642,17 @@
             <button id="loginNavBtnMobile" class="login-nav-btn" onclick="toggleAuthContainer()" style="display: none; margin: 10px 0; background: #0057b8; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; width: calc(100% - 20px); font-size: 18px; font-weight: bold;">
                 Login
             </button>
+            <div id="slider-controls" style="display: flex; justify-content: center; align-items: center; gap: 15px;">
+                <button id="pauseBtn" onclick="toggleSlideshow()" style="background: transparent; border: none; cursor: pointer; font-size: 20px; color: gray;">
+                    <i class="fa fa-pause" id="pauseIcon"></i>
+                </button>
+                <div class="slider-dots" style="display: flex; justify-content: center; gap: 8px;">
+                    <span class="dot" onclick="currentSlide(1)" style="width: 10px; height: 10px; background-color: white; border-radius: 50%; cursor: pointer; opacity: 0.7; border: 1px solid #333;"></span>
+                    <span class="dot" onclick="currentSlide(2)" style="width: 10px; height: 10px; background-color: white; border-radius: 50%; cursor: pointer; opacity: 0.7; border: 1px solid #333;"></span>
+                    <span class="dot" onclick="currentSlide(3)" style="width: 10px; height: 10px; background-color: white; border-radius: 50%; cursor: pointer; opacity: 0.7; border: 1px solid #333;"></span>
+                    <span class="dot" onclick="currentSlide(4)" style="width: 10px; height: 10px; background-color: white; border-radius: 50%; cursor: pointer; opacity: 0.7; border: 1px solid #333;"></span>
+                </div>
+            </div>
         </div>
             
 

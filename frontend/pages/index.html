@@ -1486,6 +1486,9 @@
                 #slider-controls {
                     display: none !important;
                 }
+                body.auth-open::before {
+                    background: transparent !important;
+                }
             }
             
             @media (max-width: 480px) {
@@ -1616,6 +1619,7 @@
         const overlay = document.getElementById('authOverlay');
         if (authContainer) {
             authContainer.style.display = 'none';
+            document.body.classList.remove('auth-open');
         }
         if (overlay) {
             overlay.style.display = 'none';
@@ -1629,6 +1633,7 @@
             // Always show the container when clicked
             authContainer.style.display = 'flex';
             if (authOverlay) authOverlay.style.display = 'block';
+            document.body.classList.add('auth-open');
             console.log('Login clicked, display:', authContainer.style.display);
         }
     }

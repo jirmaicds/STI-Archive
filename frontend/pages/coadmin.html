@@ -3245,11 +3245,12 @@
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                         <select id="search-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="unified">Unified Search</option>
-                            <option value="fullname">Full Name</option>
+                            <option value="fullname" selected>Full Name</option>
                             <option value="userid">User ID</option>
                             <option value="email">Email</option>
                         </select>
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'admins', document.getElementById('search-filter-admins').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                        <button class="btn" onclick="openCreateAdminModal()">Create New Admin</button>
                     </div>
                     <table>
                         <thead>
@@ -3347,11 +3348,12 @@
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                         <select id="search-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="unified">Unified Search</option>
-                            <option value="fullname">Full Name</option>
+                            <option value="fullname" selected>Full Name</option>
                             <option value="userid">User ID</option>
                             <option value="email">Email</option>
                         </select>
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'verified', document.getElementById('search-filter-verified').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                        <button class="btn" onclick="openAddUserModal()">Add New User</button>
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="verified-users-table">
@@ -3439,11 +3441,12 @@
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                         <select id="search-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="unified">Unified Search</option>
-                            <option value="fullname">Full Name</option>
+                            <option value="fullname" selected>Full Name</option>
                             <option value="userid">User ID</option>
                             <option value="email">Email</option>
                         </select>
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'signing-up', document.getElementById('search-filter-signing-up').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                        <button class="btn" onclick="openAddUserModal()">Add New User</button>
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="signing-up-users-table">
@@ -3528,11 +3531,12 @@
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                         <select id="search-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="unified">Unified Search</option>
-                            <option value="fullname">Full Name</option>
+                            <option value="fullname" selected>Full Name</option>
                             <option value="userid">User ID</option>
                             <option value="email">Email</option>
                         </select>
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'banned', document.getElementById('search-filter-banned').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                        <button class="btn" onclick="openAddUserModal()">Add New User</button>
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="banned-users-table">

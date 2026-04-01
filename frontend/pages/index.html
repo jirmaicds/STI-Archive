@@ -1460,7 +1460,9 @@
                     display: none;
                 }
                 #loginNavBtnMobile {
-                    margin: 0;
+                    margin: 10px auto;
+                    display: block;
+                    width: 80%;
                     position: relative;
                     top: 0;
                 }
@@ -4013,22 +4015,27 @@
         document.querySelector('.image-slider').addEventListener('mouseleave', startSlideshow);
         
         function showSlides(n) {
-            let dots = document.querySelectorAll('.dot');
-
             if (n > slides.length) { slideIndex = 1; }
             if (n < 1) { slideIndex = slides.length; }
 
             for (let i = 0; i < slides.length; i++) {
                 slides[i].style.display = 'none';
             }
-            for (let i = 0; i < dots.length; i++) {
-                dots[i].style.opacity = '0.7';
-                dots[i].style.backgroundColor = 'white';
-            }
 
             slides[slideIndex - 1].style.display = 'block';
-            dots[slideIndex - 1].style.opacity = '1';
-            dots[slideIndex - 1].style.backgroundColor = 'gray';
+
+            // Update dots if they exist
+            let dots = document.querySelectorAll('.dot');
+            if (dots.length > 0) {
+                for (let i = 0; i < dots.length; i++) {
+                    dots[i].style.opacity = '0.7';
+                    dots[i].style.backgroundColor = 'white';
+                }
+                if (dots[slideIndex - 1]) {
+                    dots[slideIndex - 1].style.opacity = '1';
+                    dots[slideIndex - 1].style.backgroundColor = 'gray';
+                }
+            }
         }
         
         function currentSlide(n) {

@@ -1441,7 +1441,7 @@
             /* Responsive adjustments for adsContentContainer */
             @media (max-width: 768px) {
                 #adsContentContainer {
-                    width: 95vw;
+                    width: 100vw;
                     height: 380px;
                     padding: 5px;
                     right: auto !important;
@@ -1454,7 +1454,6 @@
                 }
                 .main-content {
                     top: -28vh !important;
-                    padding-bottom: 40px !important;
                 }
                 #loginNavBtnMobile {
                     margin: 0;
@@ -1614,9 +1613,6 @@
         
         <!-- Main content overlay on background image -->
         <div class="main-content" style="position: absolute; top: 0; left: 0; width: 100%; min-height: 100%; box-sizing: border-box; padding-bottom: 80px; background: none;">
-            <button id="loginNavBtnMobile" class="login-nav-btn" onclick="toggleAuthContainer()" style="display: none; margin: 0; background: #0057b8; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; width: calc(100% - 30px); font-size: 16px;">
-                Login
-            </button>
             <!-- Ads/Content Container - Right Side -->
             <div id="adsContentContainer" style="width: 45%; position: absolute; right: 5%; top: 50%; transform: translateY(-50%); display: block;">
             <div class="image-slider" style="position: relative; width: 100%; height: 300px; overflow: hidden; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
@@ -1993,6 +1989,9 @@
                     </div>
                 </div>
             </div>
+            <button id="loginNavBtnMobile" class="login-nav-btn" onclick="toggleAuthContainer()" style="display: none; margin: 0; background: #0057b8; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; width: calc(100% - 30px); font-size: 18px; font-weight: bold;">
+                Login
+            </button>
         </div>
         <script>
         document.addEventListener('DOMContentLoaded', function () {

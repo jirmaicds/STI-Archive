@@ -3462,8 +3462,6 @@
                 </style>
                 <!-- Admin Accounts Section -->
                 <div id="admins-section" class="user-subsection" style="--border-color: #6f42c1; --header-color: #6f42c1;">
-                    <h3>Admin Accounts</h3>
-                    <p>The admin has full access to manage users, settings, and system operations.</p>
                     <button class="btn" id="create-admin-btn" onclick="
                         console.log('Create New Admin button clicked');
                         const modal = document.getElementById('create-admin-modal');
@@ -3475,6 +3473,7 @@
                         <input type="checkbox" id="select-all-admins-main" onclick="toggleSelectAll('admins')">
                         <button class="btn btn-danger" onclick="bulkAction('admins', 'remove')">Remove</button>
                     </div>
+                    <input type="text" placeholder="Search by fullname" onkeyup="filterTable(this.value, 'admins')" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;">
                     <div style="overflow-x: auto;">
                     <table>
                         <thead>
@@ -3496,8 +3495,6 @@
                 </div>
                 <!-- Verified Users Section -->
                 <div id="verified-section" class="user-subsection" style="--border-color: #28a745; --header-color: #28a745;">
-                                    <h3 style="color: var(--header-color);">Verified Users</h3>
-                                    <p style="margin-bottom: 20px;">Users who have been granted access by the admin.</p>
                     <!-- Filter by Category above table -->
                     <div style="margin-bottom: 20px;">
                         <h4 style="margin: 0 0 10px 0; color: #007bff;">Filter by Category:</h4>
@@ -3571,6 +3568,7 @@
                         <button class="btn btn-danger" onclick="bulkAction('verified', 'ban')">Ban</button>
                         <button class="btn btn-danger" onclick="bulkAction('verified', 'remove')">Remove</button>
                     </div>
+                    <input type="text" placeholder="Search by fullname" onkeyup="filterTable(this.value, 'verified')" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;">
                     <div style="overflow-x: auto;">
                         <table id="verified-users-table">
                                                     <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Section</th><th>Date Verified</th><th>RAF Preview</th><th>Actions</th></tr></thead>
@@ -3581,8 +3579,6 @@
                 </div>
                 <!-- Signing Up Users Section -->
                 <div id="signing-up-section" class="user-subsection" style="--border-color: #ffc107; --header-color: #ffc107;">
-                                    <h3 style="color: var(--header-color);">Signing Up Users</h3>
-                                    <p style="margin-bottom: 20px;">Users trying to sign up and awaiting admin approval.</p>
                     <!-- Filter by Category above table -->
                     <div style="margin-bottom: 20px;">
                         <h4 style="margin: 0 0 10px 0; color: #ffc107;">Filter by Category:</h4>
@@ -3656,6 +3652,7 @@
                         <button class="btn btn-danger" onclick="bulkAction('signing-up', 'ban')">Ban</button>
                         <button class="btn btn-danger" onclick="bulkAction('signing-up', 'remove')">Remove</button>
                     </div>
+                    <input type="text" placeholder="Search by fullname" onkeyup="filterTable(this.value, 'signing-up')" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;">
                     <div style="overflow-x: auto;">
                         <table id="signing-up-users-table">
                                                     <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Section</th><th>Date Signed Up</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
@@ -3665,8 +3662,6 @@
                 </div>
                 <!-- Banned Users Section -->
                 <div id="banned-section" class="user-subsection" style="--border-color: #dc3545; --header-color: #dc3545;">
-                                    <h3 style="color: var(--header-color);">Banned Users</h3>
-                                    <p style="margin-bottom: 20px;">Users who have been banned by the admin.</p>
                     <!-- Filter by Category above table -->
                     <div style="margin-bottom: 20px;">
                         <h4 style="margin: 0 0 10px 0; color: #dc3545;">Filter by Category:</h4>
@@ -3738,6 +3733,7 @@
                         <button class="btn btn-success" onclick="bulkAction('banned', 'accept')">Accept</button>
                         <button class="btn btn-danger" onclick="bulkAction('banned', 'remove')">Remove</button>
                     </div>
+                    <input type="text" placeholder="Search by fullname" onkeyup="filterTable(this.value, 'banned')" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;">
                     <div style="overflow-x: auto;">
                         <table id="banned-users-table">
                                                     <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Section</th><th>Date Banned</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
@@ -9789,6 +9785,27 @@ STI Archives Admin`;
                     uploadLink.closest('li').classList.add('active');
                 }
             });
+        }
+
+        function filterTable(query, tableType) {
+            const tableId = tableType === 'admins' ? 'admins-tbody' : `${tableType}-users-tbody`;
+            const tbody = document.getElementById(tableId);
+            if (!tbody) return;
+
+            const rows = tbody.getElementsByTagName('tr');
+            const filter = query.toLowerCase();
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+
+                // Search in Full Name column (assuming it's the 3rd column, index 2)
+                if (cells.length > 2 && cells[2].textContent.toLowerCase().includes(filter)) {
+                    found = true;
+                }
+
+                rows[i].style.display = found ? '' : 'none';
+            }
         }
     </script>
 </body>

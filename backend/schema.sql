@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(255) NOT NULL,
   fullname VARCHAR(255) NOT NULL,
   role VARCHAR(50) DEFAULT 'pending',
+  user_type TEXT CHECK (user_type IN ('user', 'admin', 'coadmin', 'subadmin')),
+  program VARCHAR(100),
   verified BOOLEAN DEFAULT FALSE,
   activation_token VARCHAR(255),
   reset_token VARCHAR(255),
@@ -69,28 +71,28 @@ CREATE POLICY "Anyone can register" ON users
 
 CREATE POLICY "Admin can view all users" ON users
   FOR SELECT USING (
-    (SELECT role FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
+    (SELECT user_type FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
   );
 
 CREATE POLICY "Admin can update all users" ON users
   FOR UPDATE USING (
-    (SELECT role FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
+    (SELECT user_type FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
   );
 
 CREATE POLICY "Admin can delete users" ON users
   FOR DELETE USING (
-    (SELECT role FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
+    (SELECT user_type FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
   );
 
 -- Create policies for activity_logs table
 CREATE POLICY "Admin can view all logs" ON activity_logs
   FOR SELECT USING (
-    (SELECT role FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
+    (SELECT user_type FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
   );
 
 CREATE POLICY "Admin can insert logs" ON activity_logs
   FOR INSERT WITH CHECK (
-    (SELECT role FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
+    (SELECT user_type FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
   );
 
 -- Create policies for articles table
@@ -99,7 +101,7 @@ CREATE POLICY "Anyone can view articles" ON articles
 
 CREATE POLICY "Admin can manage articles" ON articles
   FOR ALL USING (
-    (SELECT role FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin')
+    (SELECT user_type FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin')
   );
 
 -- Create indexes for better query performance
@@ -112,12 +114,14 @@ CREATE INDEX IF NOT EXISTS idx_articles_year ON articles(year);
 
 -- Insert sample admin user (password: admin123)
 -- NOTE: Change the password hash in production
-INSERT INTO users (email, password, fullname, role, verified)
+INSERT INTO users (email, password, fullname, role, user_type, program, verified)
 VALUES (
   'admin@stiarchives.edu',
   '$2a$10$8K1p/a0dL3.XQ/Z7Y5J4/.Vq5J5J5J5J5J5J5J5J5J5J5J5J5J5J5',
   'System Administrator',
   'admin',
+  'Admin',
+  NULL,
   TRUE
 )
 ON CONFLICT (email) DO NOTHING;

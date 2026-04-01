@@ -32,7 +32,7 @@ function generateToken(user) {
   const payload = {
     id: user.id,
     email: user.email,
-    role: user.role,
+    role: user.user_type,
     name: user.name
   };
   return jwt.sign(payload, config.jwt.secret, { expiresIn: config.jwt.expiry });
@@ -110,6 +110,7 @@ async function handleRegister(req, res) {
       password: hashedPassword,
       fullname: fullname,
       role: role || 'pending', // pending, user, admin, coadmin, subadmin
+      user_type: 'user',
       verified: false,
       activation_token: activationToken,
       created_at: new Date().toISOString()
@@ -216,7 +217,7 @@ async function handleLogin(req, res) {
       }
 
       // Check if user is verified
-      if (!user.verified && user.role !== 'admin' && user.role !== 'coadmin') {
+      if (!user.verified && user.user_type !== 'admin' && user.user_type !== 'coadmin') {
         res.statusCode = 403;
         res.end(JSON.stringify({ 
           success: false, 
@@ -235,7 +236,7 @@ async function handleLogin(req, res) {
           id: user.id,
           email: user.email,
           fullname: user.fullname,
-          role: user.role,
+          role: user.user_type,
           verified: user.verified
         }
       }));
@@ -298,7 +299,7 @@ async function handleProfile(req, res) {
       const userId = profile ? profile.id : auth.id;
       const { data, error } = await supabase
         .from('users')
-        .select('id, email, fullname, role, verified, created_at')
+        .select('id, email, fullname, user_type as role, verified, created_at')
         .eq('id', userId)
         .single();
 

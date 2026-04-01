@@ -3473,7 +3473,35 @@
                         <input type="checkbox" id="select-all-admins-main" onclick="toggleSelectAll('admins')">
                         <button class="btn btn-danger" onclick="bulkAction('admins', 'remove')">Remove</button>
                     </div>
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                        <select id="role-filter-admins" onchange="updateFilters('admins')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="">All Roles</option>
+                            <option value="shs">SHS</option>
+                            <option value="college">College</option>
+                            <option value="teacher">Teacher</option>
+                        </select>
+                        <select id="grade-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Grades</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                        <select id="strand-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Strands</option>
+                            <option value="abm">ABM</option>
+                            <option value="itma wd">ITMA WD</option>
+                            <option value="stem">STEM</option>
+                        </select>
+                        <select id="degree-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Degrees</option>
+                            <option value="bsba">BSBA</option>
+                            <option value="bscs">BSCS</option>
+                            <option value="bsit">BSIT</option>
+                        </select>
+                        <select id="dept-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Depts</option>
+                            <option value="shs dept">SHS Dept</option>
+                            <option value="college dept">College Dept</option>
+                        </select>
                         <select id="search-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="unified">Unified Search</option>
                             <option value="fullname" selected>Full Name</option>
@@ -3504,7 +3532,35 @@
                 </div>
                 <!-- Verified Users Section -->
                 <div id="verified-section" class="user-subsection" style="--border-color: #28a745; --header-color: #28a745;">
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                        <select id="role-filter-verified" onchange="updateFilters('verified')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="">All Roles</option>
+                            <option value="shs">SHS</option>
+                            <option value="college">College</option>
+                            <option value="teacher">Teacher</option>
+                        </select>
+                        <select id="grade-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Grades</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                        <select id="strand-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Strands</option>
+                            <option value="abm">ABM</option>
+                            <option value="itma wd">ITMA WD</option>
+                            <option value="stem">STEM</option>
+                        </select>
+                        <select id="degree-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Degrees</option>
+                            <option value="bsba">BSBA</option>
+                            <option value="bscs">BSCS</option>
+                            <option value="bsit">BSIT</option>
+                        </select>
+                        <select id="dept-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Depts</option>
+                            <option value="shs dept">SHS Dept</option>
+                            <option value="college dept">College Dept</option>
+                        </select>
                         <select id="search-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="unified">Unified Search</option>
                             <option value="fullname" selected>Full Name</option>
@@ -3519,16 +3575,7 @@
                         <button class="btn btn-danger" onclick="bulkAction('verified', 'ban')">Ban</button>
                         <button class="btn btn-danger" onclick="bulkAction('verified', 'remove')">Remove</button>
                     </div>
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                        <select id="search-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            <option value="unified">Unified Search</option>
-                            <option value="fullname" selected>Full Name</option>
-                            <option value="userid">User ID</option>
-                            <option value="email">Email</option>
-                        </select>
-                        <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'verified', document.getElementById('search-filter-verified').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                        <button class="btn" onclick="openAddUserModal()">Add New User</button>
-                    </div>
+                    
                     <div style="overflow-x: auto;">
                         <table id="verified-users-table">
                                                     <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Section</th><th>Date Verified</th><th>RAF Preview</th><th>Actions</th></tr></thead>
@@ -3539,80 +3586,35 @@
                 </div>
                 <!-- Signing Up Users Section -->
                 <div id="signing-up-section" class="user-subsection" style="--border-color: #ffc107; --header-color: #ffc107;">
-                    <!-- Filter by Category above table -->
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="margin: 0 0 10px 0; color: #ffc107;">Filter by Category:</h4>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="radio" id="signing-up-shs" name="signing-up-category" value="shs" onclick="openFilterModal('signing-up', 'shs')">
-                            <label for="signing-up-shs" style="cursor: pointer;">SHS</label>
-                            <input type="radio" id="signing-up-college" name="signing-up-category" value="college" onclick="openFilterModal('signing-up', 'college')">
-                            <label for="signing-up-college" style="cursor: pointer;">College</label>
-                            <input type="radio" id="signing-up-teacher" name="signing-up-category" value="teacher" onclick="openFilterModal('signing-up', 'teacher')">
-                            <label for="signing-up-teacher" style="cursor: pointer;">Teacher</label>
-                        </div>
-                    </div>
-                    <!-- SHS Specification for Signing Up -->
-                    <div id="signing-up-shs-spec" style="display: none; margin-top: 20px;">
-                        <h4>Grade:</h4>
-                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                            <button class="btn btn-info" onclick="showGradeForStatus('signing-up', '11')">Grade 11</button>
-                            <button class="btn btn-info" onclick="showGradeForStatus('signing-up', '12')">Grade 12</button>
-                        </div>
-                        <div id="signing-up-grade-selection" style="display: none;">
-                            <h5 id="signing-up-grade-title"></h5>
-                            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                                <button class="btn btn-secondary" onclick="showStrandForStatus('signing-up', 'abm')">ABM</button>
-                               
-                                <button class="btn btn-secondary" onclick="showStrandForStatus('signing-up', 'itmawd')">ITMAWD</button>
-                                <button class="btn btn-secondary" onclick="showStrandForStatus('signing-up', 'stem')">STEM</button>
-                            </div>
-                        </div>
-                        <div id="signing-up-strand-table" style="display: none; margin-top: 20px;">
-                            <h6 id="signing-up-strand-title"></h6>
-                            <table id="signing-up-strand-users-table">
-                                <thead><tr><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Section</th><th>Date Signed Up</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
-                                <tbody id="signing-up-strand-users-tbody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <!-- College Specification for Signing Up -->
-                    <div id="signing-up-college-spec" style="display: none; margin-top: 20px;">
-                        <h4>Degree:</h4>
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-success" onclick="showDegreeForStatus('signing-up', 'bsba')">BSBA</button>
-                            <button class="btn btn-success" onclick="showDegreeForStatus('signing-up', 'bscs')">BSCS</button>
-                            <button class="btn btn-success" onclick="showDegreeForStatus('signing-up', 'bsit')">BSIT</button>
-                        </div>
-                        <div id="signing-up-degree-table" style="display: none; margin-top: 20px;">
-                            <h5 id="signing-up-degree-title"></h5>
-                            <table id="signing-up-degree-users-table">
-                                <thead><tr><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Section</th><th>Date Signed Up</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
-                                <tbody id="signing-up-degree-users-tbody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <!-- Teacher Specification for Signing Up -->
-                    <div id="signing-up-teacher-spec" style="display: none; margin-top: 20px;">
-                        <h4>Department:</h4>
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-danger" onclick="showDepartmentForStatus('signing-up', 'shs')">SHS</button>
-                            <button class="btn btn-danger" onclick="showDepartmentForStatus('signing-up', 'college')">College</button>
-                        </div>
-                        <div id="signing-up-department-table" style="display: none; margin-top: 20px;">
-                            <h5 id="signing-up-department-title"></h5>
-                            <table id="signing-up-department-users-table">
-                                <thead><tr><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Section</th><th>Date Signed Up</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
-                                <tbody id="signing-up-department-users-tbody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-signing-up-main" onclick="toggleSelectAll('signing-up')">
-                        <button class="btn btn-success" onclick="bulkAction('signing-up', 'accept')">Accept</button>
-                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'ban')">Ban</button>
-                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'remove')">Remove</button>
-                    </div>
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                        <select id="role-filter-signing-up" onchange="updateFilters('signing-up')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="">All Roles</option>
+                            <option value="shs">SHS</option>
+                            <option value="college">College</option>
+                            <option value="teacher">Teacher</option>
+                        </select>
+                        <select id="grade-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Grades</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                        <select id="strand-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Strands</option>
+                            <option value="abm">ABM</option>
+                            <option value="itma wd">ITMA WD</option>
+                            <option value="stem">STEM</option>
+                        </select>
+                        <select id="degree-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Degrees</option>
+                            <option value="bsba">BSBA</option>
+                            <option value="bscs">BSCS</option>
+                            <option value="bsit">BSIT</option>
+                        </select>
+                        <select id="dept-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Depts</option>
+                            <option value="shs dept">SHS Dept</option>
+                            <option value="college dept">College Dept</option>
+                        </select>
                         <select id="search-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="unified">Unified Search</option>
                             <option value="fullname" selected>Full Name</option>
@@ -3621,6 +3623,12 @@
                         </select>
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'signing-up', document.getElementById('search-filter-signing-up').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                         <button class="btn" onclick="openAddUserModal()">Add New User</button>
+                    </div>
+                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                        <input type="checkbox" id="select-all-signing-up-main" onclick="toggleSelectAll('signing-up')">
+                        <button class="btn btn-success" onclick="bulkAction('signing-up', 'accept')">Accept</button>
+                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'ban')">Ban</button>
+                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'remove')">Remove</button>
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="signing-up-users-table">
@@ -9763,6 +9771,32 @@ STI Archives Admin`;
                     uploadLink.closest('li').classList.add('active');
                 }
             });
+        }
+
+        function updateFilters(section) {
+            const roleSelect = document.getElementById(`role-filter-${section}`);
+            const gradeSelect = document.getElementById(`grade-filter-${section}`);
+            const strandSelect = document.getElementById(`strand-filter-${section}`);
+            const degreeSelect = document.getElementById(`degree-filter-${section}`);
+            const deptSelect = document.getElementById(`dept-filter-${section}`);
+
+            const selectedRole = roleSelect.value;
+
+            // Hide all dynamic selects first
+            gradeSelect.style.display = 'none';
+            strandSelect.style.display = 'none';
+            degreeSelect.style.display = 'none';
+            deptSelect.style.display = 'none';
+
+            // Show relevant selects based on role
+            if (selectedRole === 'shs') {
+                gradeSelect.style.display = 'block';
+                strandSelect.style.display = 'block';
+            } else if (selectedRole === 'college') {
+                degreeSelect.style.display = 'block';
+            } else if (selectedRole === 'teacher') {
+                deptSelect.style.display = 'block';
+            }
         }
 
         function filterTable(query, tableType, filterType = 'unified') {

@@ -938,3 +938,8 @@ body.dark-mode {
 .dark-mode .pdf-canvas-container canvas {
     box-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
+
+/* Slider wrapper centering */
+.slider-wrapper {
+    align-items: center !important;
+}

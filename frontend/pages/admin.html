@@ -3471,13 +3471,7 @@
                 </style>
                 <!-- Admin Accounts Section -->
                 <div id="admins-section" class="user-subsection" style="--border-color: #6f42c1; --header-color: #6f42c1;">
-                    <button class="btn" id="create-admin-btn" onclick="
-                        console.log('Create New Admin button clicked');
-                        const modal = document.getElementById('create-admin-modal');
-                        modal.style.display = 'flex';
-                        modal.style.justifyContent = 'center';
-                        modal.style.alignItems = 'center';
-                    ">Create New Admin</button>
+                    
                      <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
                         <input type="checkbox" id="select-all-admins-main" onclick="toggleSelectAll('admins')">
                         <button class="btn btn-danger" onclick="bulkAction('admins', 'remove')">Remove</button>
@@ -4373,9 +4367,10 @@
                 const testPdfUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Research/2023-2024/Cejes%20et%20al.pdf';
                 const pdfUrl = testPdfUrl;
                 const hasPdf = pdfUrl && pdfUrl.length > 0;
-                
+
                 // Create onclick handler - call the modal PDF viewer function
-                const cardClick = "window.open('" + testPdfUrl + "', '_blank')";
+                const safeTitle = upload.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const cardClick = `displayArticlePDF('${testPdfUrl}', '${safeTitle}')`;
                 
                 return `
                 <div class="uploaded-article" data-id="${upload.id}" ${hasPdf ? "onclick=\"" + cardClick + "\" style=\"cursor: pointer;\"" : ''}>

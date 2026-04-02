@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-treemap@2" defer></script>
     <!-- Supabase Client -->
-    <script src="/frontend/services/supabase.js"></script>
+    <script src="../services/supabase.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <style>
@@ -8657,18 +8657,20 @@ STI Archives Admin`;
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    const settings = await response.json();
-                    console.log('DEBUG: Loaded settings:', settings);
+                    const responseData = await response.json();
+                    console.log('DEBUG: Loaded response:', responseData);
+                    const settings = responseData.settings || responseData;
+                    console.log('DEBUG: Extracted settings:', settings);
                     // Check if favicon is a blob URL and reset to default if so
                     if (settings.siteFavicon && settings.siteFavicon.startsWith('blob:')) {
                         console.log('DEBUG: Invalid blob URL detected, resetting to default favicon');
                         settings.siteFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
                     }
-                    siteTitleInput.value = settings.siteTitle;
-                    siteTitlePreview.textContent = settings.siteTitle;
-                    faviconPreview.src = settings.siteFavicon;
-                    updateDocumentTitle(settings.siteTitle);
-                    updateDocumentFavicon(settings.siteFavicon);
+                    siteTitleInput.value = settings.siteTitle || 'STI Archives';
+                    siteTitlePreview.textContent = settings.siteTitle || 'STI Archives';
+                    faviconPreview.src = settings.siteFavicon || '370044409_696741882497707_8408055328080058811_n.jpg';
+                    updateDocumentTitle(settings.siteTitle || 'STI Archives');
+                    updateDocumentFavicon(settings.siteFavicon || '370044409_696741882497707_8408055328080058811_n.jpg');
                 } catch (error) {
                     console.error('Failed to load site settings:', error);
                     // Fallback to defaults

@@ -146,10 +146,18 @@ async function handleGetUsers(req, res) {
       if (error) throw error;
 
       // Map database fields to frontend expected format
-      const users = (data || []).map(user => ({
-        ...user,
-        role: user.user_type || user.role // Use user_type as role for frontend
-      }));
+      const users = (data || []).map(user => {
+        // Ensure admin users have correct role mapping
+        let role = user.user_type || user.role;
+        if (!role && user.role === 'admin') role = 'admin';
+        if (!role && user.role === 'coadmin') role = 'coadmin';
+        if (!role && user.role === 'subadmin') role = 'subadmin';
+
+        return {
+          ...user,
+          role: role
+        };
+      });
 
       res.statusCode = 200;
       res.end(JSON.stringify({ success: true, users }));

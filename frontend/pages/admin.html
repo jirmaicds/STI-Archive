@@ -6476,6 +6476,7 @@ STI Archives Admin`;
                 // status - check admin role first (case-insensitive)
                 const roleLower = (user.role || '').toLowerCase();
                 const adminRoleLower = (user.admin_role || '').toLowerCase();
+                console.log('DEBUG: User role check:', user.fullname, 'role:', user.role, 'roleLower:', roleLower, 'admin_role:', user.admin_role, 'user_type:', user.user_type);
                 if (roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || adminRoleLower === 'admin' || adminRoleLower === 'coadmin' || adminRoleLower === 'subadmin') {
                     console.log('DEBUG: Adding admin user to table:', user.fullname, user.email);
                     // Determine role display based on admin_role field or default to full access
@@ -8165,7 +8166,7 @@ STI Archives Admin`;
                 };
             }
 
-            fetch('/update_user', {
+            fetch('/api/update_user', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userData)

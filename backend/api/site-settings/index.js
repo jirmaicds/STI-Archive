@@ -31,7 +31,9 @@ const defaultSettings = {
   default_user_role: 'user',
   carousel_interval: 5000,
   articles_per_page: 10,
-  max_upload_size: 50 // MB
+  max_upload_size: 50, // MB
+  siteTitle: 'STI Archives',
+  siteFavicon: '370044409_696741882497707_8408055328080058811_n.jpg'
 };
 
 // GET /api/site-settings or /get_site_settings
@@ -62,11 +64,19 @@ async function handleGetSettings(req, res) {
       if (error && error.code !== 'PGRST116') {
         throw error;
       }
-      
+
+      // Map backend fields to frontend expected fields
+      const settings = data || defaultSettings;
+      const frontendSettings = {
+        ...settings,
+        siteTitle: settings.site_name || settings.siteTitle || 'STI Archives',
+        siteFavicon: settings.siteFavicon || '370044409_696741882497707_8408055328080058811_n.jpg'
+      };
+
       res.statusCode = 200;
-      res.end(JSON.stringify({ 
-        success: true, 
-        settings: data || defaultSettings 
+      res.end(JSON.stringify({
+        success: true,
+        settings: frontendSettings
       }));
     } else {
       // Fallback - return default settings

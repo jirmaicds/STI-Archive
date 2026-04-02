@@ -117,10 +117,10 @@ CREATE INDEX IF NOT EXISTS idx_articles_year ON articles(year);
 INSERT INTO users (email, password, fullname, role, user_type, program, verified)
 VALUES (
   'admin@stiarchives.edu',
-  '$2a$10$8K1p/a0dL3.XQ/Z7Y5J4/.Vq5J5J5J5J5J5J5J5J5J5J5J5J5J5J5',
+  '$2a$10$8K1p/a0dL3.XQ/Z7Y5J5J5J5J5J5J5J5J5J5J5J5J5J5J5J5',
   'System Administrator',
   'admin',
-  'Admin',
+  'admin',
   NULL,
   TRUE
 )

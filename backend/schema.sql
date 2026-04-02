@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(255) NOT NULL,
   fullname VARCHAR(255) NOT NULL,
   role VARCHAR(50) DEFAULT 'pending',
-  user_type TEXT CHECK (user_type IN ('user', 'admin', 'coadmin', 'subadmin')),
+  user_type TEXT DEFAULT 'user' CHECK (user_type IN ('user', 'admin')),
+  CONSTRAINT role_check CHECK (role IN ('shs', 'college', 'teacher', 'admin', 'coadmin', 'subadmin', 'pending')),
   program VARCHAR(100),
   verified BOOLEAN DEFAULT FALSE,
   activation_token VARCHAR(255),
@@ -102,9 +103,35 @@ CREATE INDEX IF NOT EXISTS idx_articles_year ON articles(year);
 INSERT INTO users (email, password, fullname, role, user_type, program, verified)
 VALUES (
   'admin@stiarchives.edu',
-  '$2a$10$8K1p/a0dL3.XQ/Z7Y5J4/.Vq5J5J5J5J5J5J5J5J5J5J5J5J5J5J5',
+  '$2a$10$8K1p/a0dL3.XQ/Z7Y5J5J5J5J5J5J5J5J5J5J5J5J5J5J5J5',
   'System Administrator',
   'admin',
+  'admin',
+  NULL,
+  TRUE
+)
+ON CONFLICT (email) DO NOTHING;
+
+-- Co-admin user
+INSERT INTO users (email, password, fullname, role, user_type, program, verified)
+VALUES (
+  'coadmin@stiarchives.edu',
+  '$2a$10$8K1p/a0dL3.XQ/Z7Y5J5J5J5J5J5J5J5J5J5J5J5J5J5J5J5',
+  'Co Administrator',
+  'coadmin',
+  'admin',
+  NULL,
+  TRUE
+)
+ON CONFLICT (email) DO NOTHING;
+
+-- Sub-admin user
+INSERT INTO users (email, password, fullname, role, user_type, program, verified)
+VALUES (
+  'subadmin@stiarchives.edu',
+  '$2a$10$8K1p/a0dL3.XQ/Z7Y5J5J5J5J5J5J5J5J5J5J5J5J5J5J5J5',
+  'Sub Administrator',
+  'subadmin',
   'admin',
   NULL,
   TRUE

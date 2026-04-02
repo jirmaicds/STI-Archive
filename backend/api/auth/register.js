@@ -104,13 +104,14 @@ async function handleRegister(req, res) {
     const activationToken = uuidv4();
 
     // Create user object
+    const userRole = role || 'pending';
     const newUser = {
       id: userId,
       email: email.toLowerCase(),
       password: hashedPassword,
       fullname: fullname,
-      role: role || 'pending', // pending, user, admin, coadmin, subadmin
-      user_type: 'user',
+      role: userRole,
+      user_type: (userRole === 'admin' || userRole === 'coadmin' || userRole === 'subadmin') ? 'admin' : 'user',
       verified: false,
       activation_token: activationToken,
       created_at: new Date().toISOString()
@@ -231,11 +232,12 @@ async function handleLogin(req, res) {
       }
 
       // Check if user is verified
-      // Allow login for verified users or admin/coadmin roles
+      // Allow login for verified users or admin/coadmin/subadmin roles
       // Temporarily allow all users for debugging
       console.log('User verification check:', { verified: user.verified, user_type: user.user_type, role: user.role });
-      if (!user.verified && user.user_type !== 'admin' && user.user_type !== 'coadmin') {
-        console.log('User not verified and not admin/coadmin - allowing login for debugging');
+      const isAdminRole = user.role === 'admin' || user.role === 'coadmin' || user.role === 'subadmin';
+      if (!user.verified && !isAdminRole) {
+        console.log('User not verified and not admin role - allowing login for debugging');
         // Temporarily allow unverified users for debugging
         // res.statusCode = 403;
         // res.end(JSON.stringify({

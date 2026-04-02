@@ -86,8 +86,8 @@ async function handleGetUsers(req, res) {
         }));
         return;
       }
-      const defaultSelectFields = 'id, email, fullname, role, user_type, verified, created_at, updated_at';
-      const noMetaSelectFields = 'id, email, fullname, role, user_type, verified';
+      const defaultSelectFields = 'id, display_id, email, fullname, role, user_type, verified, created_at, updated_at';
+      const noMetaSelectFields = 'id, display_id, email, fullname, role, user_type, verified';
       let query = supabase
         .from('users')
         .select(defaultSelectFields);
@@ -457,7 +457,7 @@ async function handleGetUserCounts(req, res) {
       // Get all users for counting
       const { data: allUsers, error: allError } = await supabase
         .from('users')
-        .select('id, role, user_type, verified, banned, rejected');
+        .select('id, display_id, role, user_type, verified, banned, rejected');
 
       if (allError) throw allError;
       

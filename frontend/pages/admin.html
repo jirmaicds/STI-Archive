@@ -4298,24 +4298,6 @@
             isLoadingUsers = false;
             return localUsers;
         }
-
-                        // Update pending badge
-                        const pendingBadge = document.getElementById('pending-requests-badge');
-                        if (pendingBadge) {
-                            pendingBadge.textContent = newSignups;
-                            pendingBadge.style.display = newSignups > 0 ? 'flex' : 'none';
-                        }
-                        console.log('DEBUG: Updated dashboard counts from Supabase:', { totalUsers, adminUsers, newSignups });
-                    } else {
-                        console.log('DEBUG: No counts from API response');
-                    }
-                } else {
-                    console.log('DEBUG: fetchUserCounts - response not ok:', response.status, response.statusText);
-                }
-            } catch (error) {
-                console.log('DEBUG: fetchUserCounts - error:', error.message);
-            }
-        }
         
         // Add this helper function
 

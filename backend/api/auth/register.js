@@ -168,10 +168,11 @@ async function handleLogin(req, res) {
 
   try {
     const { email, password, fullname } = req.body;
-    
+    console.log('Login attempt:', { hasEmail: !!email, hasFullname: !!fullname, loginField: email || fullname });
+
     // Support both email and fullname login
     const loginField = email || fullname;
-    
+
     if (!loginField || !password) {
       res.statusCode = 400;
       res.end(JSON.stringify({ success: false, error: 'Missing credentials' }));
@@ -180,32 +181,42 @@ async function handleLogin(req, res) {
 
     if (isSupabaseConfigured()) {
       const supabase = getServiceSupabase();
-      
+
+      console.log('Attempting email lookup for:', loginField.toLowerCase());
       // Find user by email or fullname
       let query = supabase
         .from('users')
         .select('*')
         .eq('email', loginField.toLowerCase());
-      
+
       const { data: users, error } = await query;
-      
-      if (error) throw error;
-      
+
+      if (error) {
+        console.error('Email lookup error:', error);
+        throw error;
+      }
+
+      console.log('Email lookup results:', users?.length || 0, 'users found');
+
       if (!users || users.length === 0) {
         // Try fullname lookup
+        console.log('Attempting fullname lookup for:', loginField);
         const { data: nameUsers } = await supabase
           .from('users')
           .select('*')
           .eq('fullname', loginField);
-        
+
         if (!nameUsers || nameUsers.length === 0) {
+          console.log('No users found with fullname either');
           res.statusCode = 401;
           res.end(JSON.stringify({ success: false, error: 'Invalid credentials' }));
           return;
         }
         var user = nameUsers[0];
+        console.log('Found user by fullname:', user.email, user.fullname);
       } else {
         var user = users[0];
+        console.log('Found user by email:', user.email, user.fullname);
       }
 
       const validPassword = await bcrypt.compare(password, user.password);

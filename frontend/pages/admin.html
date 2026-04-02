@@ -17,7 +17,8 @@
         // Initialize Supabase client
         const SUPABASE_URL = 'https://eopbqatvianrjkdbypvk.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJxYXR2aWFucmprZGJ5cHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzA4OTIsImV4cCI6MjA4OTEwNjg5Mn0.k9_xTbjwRdwAQJ9UgGGsosjLWywzxHuYOq-JbGeII8g';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Supabase script creates global supabase object, just initialize it
+        window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
@@ -4347,39 +4348,48 @@
         
         // Add this helper function
         function calculateCountsFromLocalData() {
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            const adminRoles = ['admin', 'coadmin', 'subadmin'];
-            
-            const totalUsers = users.filter(u => {
-                const roleLower = (u.role || '').toLowerCase();
-                return u.verified && !adminRoles.includes(roleLower);
-            }).length;
-            
-            const adminUsers = users.filter(u => {
-                const roleLower = (u.role || '').toLowerCase();
-                return adminRoles.includes(roleLower);
-            }).length;
-            
-            const newSignups = users.filter(u => {
-                const roleLower = (u.role || '').toLowerCase();
-                return !u.verified && !adminRoles.includes(roleLower);
-            }).length;
-            
-            const verifiedCountEl = document.getElementById('verified-users-count');
-            const adminCountEl = document.getElementById('admin-users-count');
-            const signupCountEl = document.getElementById('signing-up-users-count');
-            
-            if (verifiedCountEl) verifiedCountEl.textContent = totalUsers;
-            if (adminCountEl) adminCountEl.textContent = adminUsers;
-            if (signupCountEl) signupCountEl.textContent = newSignups;
-            
-            const pendingBadge = document.getElementById('pending-requests-badge');
-            if (pendingBadge) {
-                pendingBadge.textContent = newSignups;
-                pendingBadge.style.display = newSignups > 0 ? 'flex' : 'none';
+            try {
+                const usersData = localStorage.getItem('users');
+                let users = [];
+
+                if (usersData) {
+                    const parsed = JSON.parse(usersData);
+                    // Ensure it's an array
+                    users = Array.isArray(parsed) ? parsed : [];
+                }
+
+                console.log('DEBUG: calculateCountsFromLocalData - users from localStorage:', users.length);
+
+                const totalUsers = users.filter(u => u.user_type === 'user').length;
+                const adminUsers = users.filter(u => u.user_type === 'admin').length;
+                const newSignups = users.filter(u => u.user_type === 'user' && !u.verified).length;
+
+                const verifiedCountEl = document.getElementById('verified-users-count');
+                const adminCountEl = document.getElementById('admin-users-count');
+                const signupCountEl = document.getElementById('signing-up-users-count');
+
+                if (verifiedCountEl) verifiedCountEl.textContent = totalUsers;
+                if (adminCountEl) adminCountEl.textContent = adminUsers;
+                if (signupCountEl) signupCountEl.textContent = newSignups;
+
+                const pendingBadge = document.getElementById('pending-requests-badge');
+                if (pendingBadge) {
+                    pendingBadge.textContent = newSignups;
+                    pendingBadge.style.display = newSignups > 0 ? 'flex' : 'none';
+                }
+
+                console.log('DEBUG: Calculated counts from local data:', { totalUsers, adminUsers, newSignups });
+            } catch (error) {
+                console.error('DEBUG: Error in calculateCountsFromLocalData:', error);
+                // Set default values
+                const verifiedCountEl = document.getElementById('verified-users-count');
+                const adminCountEl = document.getElementById('admin-users-count');
+                const signupCountEl = document.getElementById('signing-up-users-count');
+
+                if (verifiedCountEl) verifiedCountEl.textContent = '0';
+                if (adminCountEl) adminCountEl.textContent = '0';
+                if (signupCountEl) signupCountEl.textContent = '0';
             }
-            
-            console.log('DEBUG: Calculated counts from local data:', { totalUsers, adminUsers, newSignups });
         }
         
         async function refreshUsers() {

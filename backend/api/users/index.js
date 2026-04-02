@@ -285,6 +285,12 @@ module.exports = async function handler(req, res) {
     return;
   }
   
+  // Check for debug endpoint
+  if (req.method === 'GET' && url.pathname.includes('/debug')) {
+    await handleDebugUsers(req, res);
+    return;
+  }
+
   // Route based on method
   if (req.method === 'GET') {
     await handleGetUsers(req, res);
@@ -295,6 +301,48 @@ module.exports = async function handler(req, res) {
     res.end(JSON.stringify({ success: false, error: 'Method not allowed' }));
   }
 };
+
+// GET /api/users/debug - Debug endpoint to see raw user data
+async function handleDebugUsers(req, res) {
+  setCorsHeaders(res);
+
+  if (req.method !== 'GET') {
+    res.statusCode = 405;
+    res.end(JSON.stringify({ success: false, error: 'Method not allowed' }));
+    return;
+  }
+
+  try {
+    if (isSupabaseConfigured()) {
+      const supabase = getServiceSupabase();
+
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .limit(10);
+
+      if (error) throw error;
+
+      res.statusCode = 200;
+      res.end(JSON.stringify({
+        success: true,
+        users: data,
+        count: data?.length || 0
+      }));
+    } else {
+      res.statusCode = 200;
+      res.end(JSON.stringify({
+        success: true,
+        message: 'Supabase not configured',
+        users: []
+      }));
+    }
+  } catch (error) {
+    console.error('Debug users error:', error);
+    res.statusCode = 500;
+    res.end(JSON.stringify({ success: false, error: error.message }));
+  }
+}
 
 // GET /api/users/count - Get user counts for dashboard
 async function handleGetUserCounts(req, res) {

@@ -4298,18 +4298,6 @@
             isLoadingUsers = false;
             return localUsers;
         }
-        
-        // Function to fetch user counts from API
-
-                        const totalUsers = data.counts.totalUsers || 0;
-                        const adminUsers = data.counts.adminUsers || 0;
-                        const newSignups = data.counts.newSignups || 0;
-
-                        console.log('DEBUG: Setting counts - totalUsers:', totalUsers, 'adminUsers:', adminUsers, 'newSignups:', newSignups);
-
-                        if (verifiedCountEl) verifiedCountEl.textContent = totalUsers;
-                        if (adminCountEl) adminCountEl.textContent = adminUsers;
-                        if (signupCountEl) signupCountEl.textContent = newSignups;
 
                         // Update pending badge
                         const pendingBadge = document.getElementById('pending-requests-badge');

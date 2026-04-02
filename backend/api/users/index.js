@@ -155,7 +155,7 @@ async function handleGetUsers(req, res) {
 
         // Debug admin users
         if (user.fullname && (user.fullname.includes('admin') || role === 'admin' || role === 'coadmin' || role === 'subadmin')) {
-          console.log('DEBUG API: Admin user mapping:', user.fullname, 'user_type:', user.user_type, 'role:', user.role, 'mapped_role:', role);
+          console.log('DEBUG API: Admin user mapping:', user.fullname, 'user_type:', user.user_type, 'role:', user.role, 'mapped_role:', role, 'verified:', user.verified);
         }
 
         return {

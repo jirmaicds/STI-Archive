@@ -6473,20 +6473,20 @@ STI Archives Admin`;
                         tbody.innerHTML += rowWithEmail;
                     }
                 }
-                // status - check admin role first (case-insensitive)
-                const roleLower = (user.role || '').toLowerCase();
+                // status - check admin user_type first (case-insensitive)
+                const userTypeLower = (user.user_type || '').toLowerCase();
                 const adminRoleLower = (user.admin_role || '').toLowerCase();
-                console.log('DEBUG: User role check:', user.fullname, 'role:', user.role, 'roleLower:', roleLower, 'admin_role:', user.admin_role, 'user_type:', user.user_type, 'verified:', user.verified);
-                const isAdminRole = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin';
+                console.log('DEBUG: User type check:', user.fullname, 'user_type:', user.user_type, 'userTypeLower:', userTypeLower, 'admin_role:', user.admin_role, 'role:', user.role, 'verified:', user.verified);
+                const isAdminUserType = userTypeLower === 'admin' || userTypeLower === 'coadmin' || userTypeLower === 'subadmin';
                 const isAdminRoleField = adminRoleLower === 'admin' || adminRoleLower === 'coadmin' || adminRoleLower === 'subadmin';
                 const isAdminByName = user.fullname && user.fullname.toLowerCase().includes('admin');
-                console.log('DEBUG: isAdminRole:', isAdminRole, 'isAdminRoleField:', isAdminRoleField, 'isAdminByName:', isAdminByName);
-                if (isAdminRole || isAdminRoleField || isAdminByName) {
-                    console.log('DEBUG: Adding admin user to table:', user.fullname, user.email, 'role:', roleLower);
-                    // Determine role display based on role field (prioritize role over admin_role)
-                    const roleDisplay = (roleLower === 'coadmin' ? 'Co-Admin' : roleLower === 'subadmin' ? 'Sub-Admin' : 'Admin');
-                    const badgeClass = roleLower === 'coadmin' ? 'badge-coadmin' : roleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
-                    const permissions = user.permissions || (roleLower === 'admin' ? 'Full Access - All Features' : roleLower === 'coadmin' ? 'Limited Access - User & File Management' : roleLower === 'subadmin' ? 'Content Moderator - Articles & Documents' : 'Full Access');
+                console.log('DEBUG: isAdminUserType:', isAdminUserType, 'isAdminRoleField:', isAdminRoleField, 'isAdminByName:', isAdminByName);
+                if (isAdminUserType || isAdminRoleField || isAdminByName) {
+                    console.log('DEBUG: Adding admin user to table:', user.fullname, user.email, 'user_type:', userTypeLower);
+                    // Determine role display based on user_type field (prioritize user_type over admin_role)
+                    const roleDisplay = (userTypeLower === 'coadmin' ? 'Co-Admin' : userTypeLower === 'subadmin' ? 'Sub-Admin' : 'Admin');
+                    const badgeClass = userTypeLower === 'coadmin' ? 'badge-coadmin' : userTypeLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
+                    const permissions = user.permissions || (userTypeLower === 'admin' ? 'Full Access - All Features' : userTypeLower === 'coadmin' ? 'Limited Access - User & File Management' : userTypeLower === 'subadmin' ? 'Content Moderator - Articles & Documents' : 'Full Access');
                     const adminRow = `<tr>
                         <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                         <td>${user.user_id || user.id}</td>
@@ -6543,21 +6543,21 @@ STI Archives Admin`;
 
             // Update dashboard counts
             const filteredForCount = users.filter(u => !removedUsers.includes(u.user_id || u.id));
-            // Total Users = all users with verified=true EXCEPT admin/coadmin/subadmin roles
+            // Total Users = all users with verified=true EXCEPT admin/coadmin/subadmin user_types
             const verifiedCount = filteredForCount.filter(u => {
-                const roleLower = (u.role || '').toLowerCase();
-                return u.verified && roleLower !== 'admin' && roleLower !== 'coadmin' && roleLower !== 'subadmin';
+                const userTypeLower = (u.user_type || '').toLowerCase();
+                return u.verified && userTypeLower !== 'admin' && userTypeLower !== 'coadmin' && userTypeLower !== 'subadmin';
             }).length;
-            // Admin Users = users with admin, coadmin, or subadmin role OR admin_role
+            // Admin Users = users with admin, coadmin, or subadmin user_type OR admin_role
             const adminCount = filteredForCount.filter(u => {
-                const roleLower = (u.role || '').toLowerCase();
+                const userTypeLower = (u.user_type || '').toLowerCase();
                 const adminRoleLower = (u.admin_role || '').toLowerCase();
-                return roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || adminRoleLower === 'admin' || adminRoleLower === 'coadmin' || adminRoleLower === 'subadmin';
+                return userTypeLower === 'admin' || userTypeLower === 'coadmin' || userTypeLower === 'subadmin' || adminRoleLower === 'admin' || adminRoleLower === 'coadmin' || adminRoleLower === 'subadmin';
             }).length;
             // Signing up = users who are not verified and not admin
             const signingUpCount = filteredForCount.filter(u => {
-                const roleLower = (u.role || '').toLowerCase();
-                return !u.verified && roleLower !== 'admin' && roleLower !== 'coadmin' && roleLower !== 'subadmin';
+                const userTypeLower = (u.user_type || '').toLowerCase();
+                return !u.verified && userTypeLower !== 'admin' && userTypeLower !== 'coadmin' && userTypeLower !== 'subadmin';
             }).length;
             document.getElementById('verified-users-count').textContent = verifiedCount;
             document.getElementById('admin-users-count').textContent = adminCount;

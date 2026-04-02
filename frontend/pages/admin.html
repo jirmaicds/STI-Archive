@@ -4300,27 +4300,6 @@
         }
         
         // Function to fetch user counts from API
-        async function fetchUserCounts() {
-            try {
-                const token = localStorage.getItem('sti_auth_token');
-                console.log('DEBUG: fetchUserCounts - token present:', !!token);
-                const headers = {};
-                if (token) {
-                    headers['Authorization'] = `Bearer ${token}`;
-                }
-                const response = await fetch('/api/users/count', {
-                    headers: headers
-                });
-                console.log('DEBUG: fetchUserCounts - response status:', response.status);
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('DEBUG: fetchUserCounts - response data:', data);
-                    if (data.success && data.counts) {
-                        console.log('DEBUG: API returned counts:', data.counts);
-                        // Update dashboard cards with counts from Supabase
-                        const verifiedCountEl = document.getElementById('verified-users-count');
-                        const adminCountEl = document.getElementById('admin-users-count');
-                        const signupCountEl = document.getElementById('signing-up-users-count');
 
                         const totalUsers = data.counts.totalUsers || 0;
                         const adminUsers = data.counts.adminUsers || 0;
@@ -4355,50 +4334,7 @@
         }
         
         // Add this helper function
-        function calculateCountsFromLocalData() {
-            try {
-                const usersData = localStorage.getItem('users');
-                let users = [];
 
-                if (usersData) {
-                    const parsed = JSON.parse(usersData);
-                    // Ensure it's an array
-                    users = Array.isArray(parsed) ? parsed : [];
-                }
-
-                console.log('DEBUG: calculateCountsFromLocalData - users from localStorage:', users.length);
-
-                const totalUsers = users.filter(u => u.user_type === 'user').length;
-                const adminUsers = users.filter(u => u.user_type === 'admin').length;
-                const newSignups = users.filter(u => u.user_type === 'user' && !u.verified).length;
-
-                const verifiedCountEl = document.getElementById('verified-users-count');
-                const adminCountEl = document.getElementById('admin-users-count');
-                const signupCountEl = document.getElementById('signing-up-users-count');
-
-                if (verifiedCountEl) verifiedCountEl.textContent = totalUsers;
-                if (adminCountEl) adminCountEl.textContent = adminUsers;
-                if (signupCountEl) signupCountEl.textContent = newSignups;
-
-                const pendingBadge = document.getElementById('pending-requests-badge');
-                if (pendingBadge) {
-                    pendingBadge.textContent = newSignups;
-                    pendingBadge.style.display = newSignups > 0 ? 'flex' : 'none';
-                }
-
-                console.log('DEBUG: Calculated counts from local data:', { totalUsers, adminUsers, newSignups });
-            } catch (error) {
-                console.error('DEBUG: Error in calculateCountsFromLocalData:', error);
-                // Set default values
-                const verifiedCountEl = document.getElementById('verified-users-count');
-                const adminCountEl = document.getElementById('admin-users-count');
-                const signupCountEl = document.getElementById('signing-up-users-count');
-
-                if (verifiedCountEl) verifiedCountEl.textContent = '0';
-                if (adminCountEl) adminCountEl.textContent = '0';
-                if (signupCountEl) signupCountEl.textContent = '0';
-            }
-        }
         
         async function refreshUsers() {
             console.log('DEBUG: Auto refreshing users from server...');
@@ -5869,15 +5805,13 @@
             console.log('DEBUG: Initializing admin page - defaulting to dashboard');
             showSection('dashboard');
             loadUsers().then(() => {
-                // Fetch counts from Supabase for accurate numbers
-                fetchUserCounts();
+                // Counts are now updated automatically when tables are populated
                 renderUserChart();
                 renderDashboardUploadsChart();
                 renderSigningUpChart('day', null);
                 renderSuggestionsChart();
             }).catch(() => {
                 // Fallback if async fails
-                fetchUserCounts(); // Try to fetch counts even if users fail
                 renderUserChart();
                 renderDashboardUploadsChart();
                 renderSigningUpChart('day');
@@ -6563,37 +6497,25 @@ STI Archives Admin`;
                 document.getElementById('signing-up-users-tbody').innerHTML += row;
             });
 
-            // Update dashboard counts
+            // Update dashboard counts by counting actual table rows
+            // This ensures counts always match what's displayed
+
+            // Count rows in verified users table (tbody)
+            const verifiedTbody = document.getElementById('verified-users-tbody');
+            const verifiedCount = verifiedTbody ? verifiedTbody.querySelectorAll('tr').length : 0;
+
+            // Count rows in admin users table (tbody)
+            const adminTbody = document.getElementById('admins-tbody');
+            const adminCount = adminTbody ? adminTbody.querySelectorAll('tr').length : 0;
+
+            // Count signing up users from the existing logic
             const filteredForCount = users.filter(u => !removedUsers.includes(u.user_id || u.id));
-            console.log('DEBUG: Counting users from', filteredForCount.length, 'total users');
-
-            // Debug all users first
-            filteredForCount.forEach(u => {
-                console.log('DEBUG: User for counting:', u.fullname, 'user_type:', u.user_type, 'role:', u.role, 'verified:', u.verified, 'isActive:', u.isActive);
-            });
-
-            // Total Users = users with user_type = 'user'
-            const verifiedCount = filteredForCount.filter(u => {
-                const userType = u.user_type;
-                const shouldCount = userType === 'user';
-                if (shouldCount || u.fullname.includes('admin')) console.log('DEBUG: Counting as total user:', u.fullname, 'user_type:', userType, 'role:', u.role, 'verified:', u.verified);
-                return shouldCount;
-            }).length;
-
-            // Admin Users = users with user_type = 'admin'
-            const adminCount = filteredForCount.filter(u => {
-                const userType = u.user_type;
-                const shouldCount = userType === 'admin';
-                if (shouldCount || u.fullname.includes('admin')) console.log('DEBUG: Counting as admin user:', u.fullname, 'user_type:', userType, 'role:', u.role, 'verified:', u.verified);
-                return shouldCount;
-            }).length;
-
-            console.log('DEBUG: Final counts - Verified:', verifiedCount, 'Admin:', adminCount);
-            // Signing up = users who are not verified and user_type = 'user'
             const signingUpCount = filteredForCount.filter(u => {
                 const userType = u.user_type;
                 return !u.verified && userType === 'user';
             }).length;
+
+            console.log('DEBUG: Table row counts - Verified:', verifiedCount, 'Admin:', adminCount, 'Signing up:', signingUpCount);
             document.getElementById('verified-users-count').textContent = verifiedCount;
             document.getElementById('admin-users-count').textContent = adminCount;
             document.getElementById('signing-up-users-count').textContent = signingUpCount;
@@ -6961,8 +6883,7 @@ STI Archives Admin`;
                 document.getElementById('btn-pdf-upload').classList.add('active');
             }
             if (sectionId === 'dashboard') {
-                // Refresh dashboard counts when showing dashboard
-                fetchUserCounts();
+                // Dashboard counts are updated when tables are populated
                 setTimeout(() => {
                     renderUserChart();
                     renderSigningUpChart();

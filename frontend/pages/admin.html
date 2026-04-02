@@ -6283,7 +6283,7 @@ STI Archives Admin`;
                 let emailToUse = user.personal_email || user.email;
                 const row = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
-                    <td>${user.display_id || user.user_id || user.id}</td>
+                    <td>${user.id}</td>
                     <td>${user.name}</td>
                         <td>${emailToUse}</td>
                         <td>${formatRole(user.role)}</td>

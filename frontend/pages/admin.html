@@ -6476,13 +6476,17 @@ STI Archives Admin`;
                 // status - check admin role first (case-insensitive)
                 const roleLower = (user.role || '').toLowerCase();
                 const adminRoleLower = (user.admin_role || '').toLowerCase();
-                console.log('DEBUG: User role check:', user.fullname, 'role:', user.role, 'roleLower:', roleLower, 'admin_role:', user.admin_role, 'user_type:', user.user_type);
-                if (roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || adminRoleLower === 'admin' || adminRoleLower === 'coadmin' || adminRoleLower === 'subadmin') {
-                    console.log('DEBUG: Adding admin user to table:', user.fullname, user.email);
-                    // Determine role display based on admin_role field or default to full access
-                    const roleDisplay = user.role_display || (adminRoleLower === 'coadmin' ? 'Co-Admin' : adminRoleLower === 'subadmin' ? 'Sub-Admin' : 'Admin');
-                    const badgeClass = adminRoleLower === 'coadmin' ? 'badge-coadmin' : adminRoleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
-                    const permissions = user.permissions || (adminRoleLower === 'admin' ? 'Full Access - All Features' : adminRoleLower === 'coadmin' ? 'Limited Access - User & File Management' : adminRoleLower === 'subadmin' ? 'Content Moderator - Articles & Documents' : 'Full Access');
+                console.log('DEBUG: User role check:', user.fullname, 'role:', user.role, 'roleLower:', roleLower, 'admin_role:', user.admin_role, 'user_type:', user.user_type, 'verified:', user.verified);
+                const isAdminRole = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin';
+                const isAdminRoleField = adminRoleLower === 'admin' || adminRoleLower === 'coadmin' || adminRoleLower === 'subadmin';
+                const isAdminByName = user.fullname && user.fullname.toLowerCase().includes('admin');
+                console.log('DEBUG: isAdminRole:', isAdminRole, 'isAdminRoleField:', isAdminRoleField, 'isAdminByName:', isAdminByName);
+                if (isAdminRole || isAdminRoleField || isAdminByName) {
+                    console.log('DEBUG: Adding admin user to table:', user.fullname, user.email, 'role:', roleLower);
+                    // Determine role display based on role field (prioritize role over admin_role)
+                    const roleDisplay = (roleLower === 'coadmin' ? 'Co-Admin' : roleLower === 'subadmin' ? 'Sub-Admin' : 'Admin');
+                    const badgeClass = roleLower === 'coadmin' ? 'badge-coadmin' : roleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
+                    const permissions = user.permissions || (roleLower === 'admin' ? 'Full Access - All Features' : roleLower === 'coadmin' ? 'Limited Access - User & File Management' : roleLower === 'subadmin' ? 'Content Moderator - Articles & Documents' : 'Full Access');
                     const adminRow = `<tr>
                         <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                         <td>${user.user_id || user.id}</td>

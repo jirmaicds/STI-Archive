@@ -110,7 +110,7 @@ async function handleRegister(req, res) {
       password: hashedPassword,
       fullname: fullname,
       role: role || 'pending', // pending, user, admin, coadmin, subadmin
-      user_type: 'pending',
+      user_type: 'user',
       verified: false,
       activation_token: activationToken,
       created_at: new Date().toISOString()

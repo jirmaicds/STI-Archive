@@ -13,9 +13,10 @@ UPDATE users SET role = 'Sub-Admin' WHERE role = 'subadmin';
 -- Add program column
 -- ALTER TABLE users ADD COLUMN program VARCHAR(100);  -- Commented out if column exists
 
--- Step 3: Set user_type based on updated roles
+-- Step 3: Set verified for existing users and user_type based on updated roles
+UPDATE users SET verified = true WHERE verified IS NULL OR verified = false;
 UPDATE users SET user_type = 'user' WHERE role = 'user';
-UPDATE users SET user_type = 'pending' WHERE role = 'pending';
+UPDATE users SET user_type = 'user' WHERE role = 'pending';
 UPDATE users SET user_type = 'admin' WHERE role = 'Admin';
 UPDATE users SET user_type = 'coadmin' WHERE role = 'Co-Admin';
 UPDATE users SET user_type = 'subadmin' WHERE role = 'Sub-Admin';
@@ -23,7 +24,7 @@ UPDATE users SET user_type = 'subadmin' WHERE role = 'Sub-Admin';
 -- Step 4: Add CHECK constraint to enforce valid user_type values
 ALTER TABLE users DROP CONSTRAINT IF EXISTS user_type_check;
 ALTER TABLE users ADD CONSTRAINT user_type_check
-  CHECK (user_type IN ('user', 'pending', 'admin', 'coadmin', 'subadmin'));
+  CHECK (user_type IN ('user', 'admin', 'coadmin', 'subadmin'));
 
 -- Step 4: Update RLS policies to use user_type instead of role
 -- Drop old policies

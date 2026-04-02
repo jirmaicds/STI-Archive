@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(255) NOT NULL,
   fullname VARCHAR(255) NOT NULL,
   role VARCHAR(50) DEFAULT 'pending',
-  user_type TEXT CHECK (user_type IN ('user', 'pending', 'admin', 'coadmin', 'subadmin')),
+  user_type TEXT CHECK (user_type IN ('user', 'admin', 'coadmin', 'subadmin')),
   program VARCHAR(100),
   verified BOOLEAN DEFAULT FALSE,
   activation_token VARCHAR(255),

@@ -20,5 +20,5 @@ UPDATE users SET user_type = 'admin', role = 'coadmin' WHERE fullname = 'admin2'
 UPDATE users SET user_type = 'admin', role = 'subadmin' WHERE fullname = 'admin3';
 UPDATE users SET user_type = 'admin', role = 'admin' WHERE fullname ILIKE '%admin%' AND fullname NOT IN ('admin2', 'admin3') AND user_type = 'user';
 
--- Step 5: Ensure all admin users are verified
-UPDATE users SET verified = true WHERE user_type = 'admin';
+-- Step 5: Ensure all admin role users are verified
+UPDATE users SET verified = true WHERE role IN ('admin', 'coadmin', 'subadmin');

@@ -147,11 +147,8 @@ async function handleGetUsers(req, res) {
 
       // Map database fields to frontend expected format
       const users = (data || []).map(user => {
-        // Ensure admin users have correct role mapping
-        let role = user.user_type || user.role;
-        if (!role && user.role === 'admin') role = 'admin';
-        if (!role && user.role === 'coadmin') role = 'coadmin';
-        if (!role && user.role === 'subadmin') role = 'subadmin';
+        // Use the role field for frontend role (admin, coadmin, subadmin, etc.)
+        let role = user.role;
 
         // Debug admin users
         if (user.fullname && (user.fullname.includes('admin') || role === 'admin' || role === 'coadmin' || role === 'subadmin')) {

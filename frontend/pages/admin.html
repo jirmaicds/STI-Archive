@@ -6549,17 +6549,28 @@ STI Archives Admin`;
 
             // Update dashboard counts
             const filteredForCount = users.filter(u => !removedUsers.includes(u.user_id || u.id));
+            console.log('DEBUG: Counting users from', filteredForCount.length, 'total users');
+
             // Total Users = all users with verified=true EXCEPT admin/coadmin/subadmin roles
             const verifiedCount = filteredForCount.filter(u => {
                 const roleLower = (u.role || '').toLowerCase();
-                return u.verified && roleLower !== 'admin' && roleLower !== 'coadmin' && roleLower !== 'subadmin';
+                const isVerified = u.verified;
+                const isNotAdmin = roleLower !== 'admin' && roleLower !== 'coadmin' && roleLower !== 'subadmin';
+                const shouldCount = isVerified && isNotAdmin;
+                if (shouldCount) console.log('DEBUG: Counting as verified user:', u.fullname, 'role:', u.role, 'verified:', u.verified);
+                return shouldCount;
             }).length;
+
             // Admin Users = users with admin, coadmin, or subadmin role OR admin_role
             const adminCount = filteredForCount.filter(u => {
                 const roleLower = (u.role || '').toLowerCase();
                 const adminRoleLower = (u.admin_role || '').toLowerCase();
-                return roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || adminRoleLower === 'admin' || adminRoleLower === 'coadmin' || adminRoleLower === 'subadmin';
+                const isAdmin = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || adminRoleLower === 'admin' || adminRoleLower === 'coadmin' || adminRoleLower === 'subadmin';
+                if (isAdmin) console.log('DEBUG: Counting as admin user:', u.fullname, 'role:', u.role, 'admin_role:', u.admin_role, 'verified:', u.verified);
+                return isAdmin;
             }).length;
+
+            console.log('DEBUG: Final counts - Verified:', verifiedCount, 'Admin:', adminCount);
             // Signing up = users who are not verified and not admin
             const signingUpCount = filteredForCount.filter(u => {
                 const roleLower = (u.role || '').toLowerCase();

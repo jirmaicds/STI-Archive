@@ -46,9 +46,15 @@ async function handleUpdateUser(req, res) {
       const updateData = {};
       if (name) updateData.fullname = name;
       if (email) updateData.email = email.toLowerCase();
-      if (role) updateData.user_type = role; // Map role to user_type
-      if (admin_role) updateData.user_type = admin_role; // Alternative field
+      if (role) updateData.role = role; // Update role field
+      if (admin_role) updateData.role = admin_role; // Alternative field
       if (permissions) updateData.permissions = permissions;
+
+      // Ensure user_type is set correctly based on role
+      if (role || admin_role) {
+        const newRole = role || admin_role;
+        updateData.user_type = (newRole === 'admin' || newRole === 'coadmin' || newRole === 'subadmin') ? 'admin' : 'user';
+      }
 
       console.log('Updating user:', userId, 'with data:', updateData);
 

@@ -4319,17 +4319,13 @@
                         }
                         console.log('DEBUG: Updated dashboard counts from Supabase:', { totalUsers, adminUsers, newSignups });
                     } else {
-                        console.log('DEBUG: No counts from API response - data.success:', data.success, 'data.counts:', !!data.counts);
-                        console.log('DEBUG: Falling back to local data calculation');
-                        calculateCountsFromLocalData();
+                        console.log('DEBUG: No counts from API response');
                     }
                 } else {
                     console.log('DEBUG: fetchUserCounts - response not ok:', response.status, response.statusText);
-                    calculateCountsFromLocalData();
                 }
             } catch (error) {
                 console.log('DEBUG: fetchUserCounts - error:', error.message);
-                calculateCountsFromLocalData();
             }
         }
         

@@ -1,6 +1,11 @@
 -- Convert UUID id column to SERIAL integers
 -- Simplified version focusing only on users table
 
+-- Drop RLS policies that depend on the id column
+DROP POLICY IF EXISTS "Users can view own data" ON users;
+DROP POLICY IF EXISTS "Users can update own data" ON users;
+DROP POLICY IF EXISTS "Service role can manage users" ON users;
+
 -- Add a temporary integer column
 ALTER TABLE users ADD COLUMN temp_id SERIAL;
 
@@ -28,8 +33,8 @@ ALTER TABLE users ADD PRIMARY KEY (id);
 CREATE SEQUENCE IF NOT EXISTS users_id_seq OWNED BY users.id;
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 
--- Drop the old UUID column
-ALTER TABLE users DROP COLUMN old_uuid;
+-- Drop the old UUID column (use CASCADE to drop dependent policies)
+ALTER TABLE users DROP COLUMN old_uuid CASCADE;
 
 -- Recreate indexes
 DROP INDEX IF EXISTS idx_users_email;
@@ -41,6 +46,16 @@ CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_users_user_type ON users(user_type);
 CREATE INDEX idx_users_program ON users(program);
+
+-- Recreate RLS policies with new column references
+CREATE POLICY "Users can view own data" ON users
+  FOR SELECT USING (auth.uid()::text = id::text);
+
+CREATE POLICY "Users can update own data" ON users
+  FOR UPDATE USING (auth.uid()::text = id::text);
+
+CREATE POLICY "Service role can manage users" ON users
+  FOR ALL USING (auth.role() = 'service_role');
 
 -- Verify the conversion
 SELECT id, fullname, email, role, user_type FROM users ORDER BY id;

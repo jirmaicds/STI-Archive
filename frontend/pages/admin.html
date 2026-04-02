@@ -4316,24 +4316,32 @@
                     const data = await response.json();
                     console.log('DEBUG: fetchUserCounts - response data:', data);
                     if (data.success && data.counts) {
+                        console.log('DEBUG: API returned counts:', data.counts);
                         // Update dashboard cards with counts from Supabase
                         const verifiedCountEl = document.getElementById('verified-users-count');
                         const adminCountEl = document.getElementById('admin-users-count');
                         const signupCountEl = document.getElementById('signing-up-users-count');
-                        
-                        if (verifiedCountEl) verifiedCountEl.textContent = data.counts.totalUsers || 0;
-                        if (adminCountEl) adminCountEl.textContent = data.counts.adminUsers || 0;
-                        if (signupCountEl) signupCountEl.textContent = data.counts.newSignups || 0;
-                        
+
+                        const totalUsers = data.counts.totalUsers || 0;
+                        const adminUsers = data.counts.adminUsers || 0;
+                        const newSignups = data.counts.newSignups || 0;
+
+                        console.log('DEBUG: Setting counts - totalUsers:', totalUsers, 'adminUsers:', adminUsers, 'newSignups:', newSignups);
+
+                        if (verifiedCountEl) verifiedCountEl.textContent = totalUsers;
+                        if (adminCountEl) adminCountEl.textContent = adminUsers;
+                        if (signupCountEl) signupCountEl.textContent = newSignups;
+
                         // Update pending badge
                         const pendingBadge = document.getElementById('pending-requests-badge');
                         if (pendingBadge) {
-                            pendingBadge.textContent = data.counts.newSignups || 0;
-                            pendingBadge.style.display = (data.counts.newSignups || 0) > 0 ? 'flex' : 'none';
+                            pendingBadge.textContent = newSignups;
+                            pendingBadge.style.display = newSignups > 0 ? 'flex' : 'none';
                         }
-                        console.log('DEBUG: Updated dashboard counts from Supabase:', data.counts);
+                        console.log('DEBUG: Updated dashboard counts from Supabase:', { totalUsers, adminUsers, newSignups });
                     } else {
-                        console.log('DEBUG: No counts from API - calculating from local data');
+                        console.log('DEBUG: No counts from API response - data.success:', data.success, 'data.counts:', !!data.counts);
+                        console.log('DEBUG: Falling back to local data calculation');
                         calculateCountsFromLocalData();
                     }
                 } else {

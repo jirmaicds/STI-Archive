@@ -469,25 +469,18 @@ async function handleGetUserCounts(req, res) {
 
       if (allError) throw allError;
       
-      // Calculate counts based on the same logic as frontend
-      const totalUsers = allUsers.filter(u =>
-        ((u.isActive === true) || u.verified) &&
-        !['admin', 'coadmin', 'subadmin'].includes(u.user_type)
-      ).length;
+      // Calculate counts based on user_type
+      console.log('DEBUG API: All users for counting:', allUsers.map(u => ({ id: u.id, user_type: u.user_type, role: u.role, verified: u.verified })));
 
-      const adminUsers = allUsers.filter(u =>
-        ['admin', 'coadmin', 'subadmin'].includes(u.user_type)
-      ).length;
-
+      const totalUsers = allUsers.filter(u => u.user_type === 'user').length;
+      const adminUsers = allUsers.filter(u => u.user_type === 'admin').length;
       const newSignups = allUsers.filter(u =>
-        (!u.isActive || false) && !u.verified && !u.rejected && !u.banned &&
-        !['admin', 'coadmin', 'subadmin'].includes(u.user_type)
+        u.user_type === 'user' && !u.verified && !u.rejected && !u.banned
       ).length;
-      
+
       const bannedUsers = allUsers.filter(u => u.banned).length;
-      
-      res.statusCode = 200;
-      res.end(JSON.stringify({
+
+      const result = {
         success: true,
         counts: {
           totalUsers,
@@ -495,7 +488,12 @@ async function handleGetUserCounts(req, res) {
           newSignups,
           bannedUsers
         }
-      }));
+      };
+
+      console.log('DEBUG API: Calculated counts:', result.counts);
+
+      res.statusCode = 200;
+      res.end(JSON.stringify(result));
     } else {
       res.statusCode = 200;
       res.end(JSON.stringify({

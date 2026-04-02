@@ -4001,7 +4001,7 @@
     </div>
     <!-- Create Admin Modal -->
     <div id="create-admin-modal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-height: 600px; overflow-y: auto;">
             <div style="position: relative; margin-bottom: 20px;">
                 <h3 style="margin: 0;" id="create-user-modal-title">Create New User</h3>
                 <span class="close-modal" onclick="closeCreateAdminModal()" style="position: absolute; right: 0; top: 0; cursor: pointer; font-size: 28px; color: #aaa;">&times;</span>
@@ -4011,25 +4011,14 @@
                 <label style="font-weight: bold; display: block; margin-bottom: 10px;">Admin Role:</label>
                 <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
                     <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        <input type="radio" name="admin-role" value="admin" onchange="showAdminInputs()"> 
+                        <input type="radio" name="admin-role" value="admin" onchange="showAdminInputs()">
                         <strong>Admin (Full Access)</strong>
                     </label>
                     <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
                         Complete system control. Create, edit, delete other admin accounts. Full access to all features and settings.
                     </div>
-                    <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        <input type="radio" name="admin-role" value="coadmin" onchange="showAdminInputs()"> 
-                        <strong>Co-Admin (Limited Access)</strong>
-                    </label>
-                    <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                        User management and file oversight. View and manage registered users. Cannot view other admins or system settings.
-                    </div>
-                    <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        <input type="radio" name="admin-role" value="subadmin" onchange="showAdminInputs()">
-                        <strong>Sub-Admin (User Approver)</strong>
-                    </label>
-                    <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                        Accept or reject user registrations. Manage pending user accounts.
+                    <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; color: #856404;">
+                        <strong>Note:</strong> Only Admin role can create new admin accounts. Co-Admin and Sub-Admin roles are assigned by editing existing users.
                     </div>
                 </div>
                 
@@ -8202,7 +8191,7 @@ STI Archives Admin`;
                 }
             });
             
-            if (selectedRole) {
+            if (selectedRole === 'admin') {
                 document.getElementById('admin-inputs-container').style.display = 'block';
                 document.getElementById('select-role-message').style.display = 'none';
                 // Add required attribute to inputs when shown
@@ -8210,16 +8199,31 @@ STI Archives Admin`;
                 document.getElementById('create-admin-email').setAttribute('required', 'required');
                 document.getElementById('create-admin-password').setAttribute('required', 'required');
 
-                // Scroll the modal to show the newly visible inputs
+                // Scroll the modal content to show the newly visible inputs
                 setTimeout(() => {
+                    const modalContent = document.querySelector('#create-admin-modal .modal-content');
                     const inputsContainer = document.getElementById('admin-inputs-container');
-                    if (inputsContainer) {
-                        inputsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    if (modalContent && inputsContainer) {
+                        // Calculate the position of inputs container relative to modal content
+                        const modalRect = modalContent.getBoundingClientRect();
+                        const inputsRect = inputsContainer.getBoundingClientRect();
+                        const scrollTop = inputsRect.top - modalRect.top - 20; // 20px padding
+
+                        modalContent.scrollTo({
+                            top: modalContent.scrollTop + scrollTop,
+                            behavior: 'smooth'
+                        });
                     }
                 }, 100);
             } else {
                 document.getElementById('admin-inputs-container').style.display = 'none';
-                document.getElementById('select-role-message').style.display = 'block';
+                document.getElementById('select-role-message').style.display = selectedRole ? 'none' : 'block';
+                // Remove required attributes when hidden
+                if (selectedRole !== 'admin') {
+                    document.getElementById('create-admin-fullname')?.removeAttribute('required');
+                    document.getElementById('create-admin-email')?.removeAttribute('required');
+                    document.getElementById('create-admin-password')?.removeAttribute('required');
+                }
             }
         }
 

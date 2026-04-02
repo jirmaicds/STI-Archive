@@ -6404,10 +6404,27 @@ STI Archives Admin`;
                 console.log('DEBUG: isAdminRole:', isAdminRole, 'isAdminByName:', isAdminByName);
                 if (isAdminRole || isAdminByName) {
                     console.log('DEBUG: Adding admin user to table:', user.fullname, user.email, 'role:', roleLower);
-                    // Determine role display based on role field (prioritize role over admin_role)
-                    const roleDisplay = (roleLower === 'coadmin' ? 'Co-Admin' : roleLower === 'subadmin' ? 'Sub-Admin' : 'Admin');
-                    const badgeClass = roleLower === 'coadmin' ? 'badge-coadmin' : roleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
-                    const permissions = user.permissions || (roleLower === 'admin' ? 'Full Access - All Features' : roleLower === 'coadmin' ? 'Limited Access - User & File Management' : roleLower === 'subadmin' ? 'Content Moderator - Articles & Documents' : 'Full Access');
+                    // Determine role display based on role field or specific user names
+                    let roleDisplay;
+                    if (user.fullname === 'admin2' || user.fullname === 'Admin2') {
+                        roleDisplay = 'Co-Admin';
+                    } else if (user.fullname === 'admin3' || user.fullname === 'Admin3') {
+                        roleDisplay = 'Sub-Admin';
+                    } else {
+                        roleDisplay = (roleLower === 'coadmin' ? 'Co-Admin' : roleLower === 'subadmin' ? 'Sub-Admin' : 'Admin');
+                    }
+                    let badgeClass;
+                    let permissions;
+                    if (user.fullname === 'admin2' || user.fullname === 'Admin2') {
+                        badgeClass = 'badge-coadmin';
+                        permissions = 'Limited Access - User & File Management';
+                    } else if (user.fullname === 'admin3' || user.fullname === 'Admin3') {
+                        badgeClass = 'badge-subadmin';
+                        permissions = 'Content Moderator - Articles & Documents';
+                    } else {
+                        badgeClass = roleLower === 'coadmin' ? 'badge-coadmin' : roleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
+                        permissions = user.permissions || (roleLower === 'admin' ? 'Full Access - All Features' : roleLower === 'coadmin' ? 'Limited Access - User & File Management' : roleLower === 'subadmin' ? 'Content Moderator - Articles & Documents' : 'Full Access');
+                    }
                     const adminRow = `<tr>
                         <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                         <td>${user.user_id || user.id}</td>

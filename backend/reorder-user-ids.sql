@@ -1,10 +1,6 @@
--- SIMPLE: Directly reorder user IDs using the existing id column
--- This uses ROW_NUMBER() to assign sequential IDs 1, 2, 3, 4... in the exact order requested
+-- Directly reorder user IDs using the existing id column
+-- Assign sequential IDs 1, 2, 3, 4... in the exact order requested
 
--- Create backup first
-CREATE TABLE users_backup AS SELECT * FROM users;
-
--- Update the id column directly with sequential numbers
 UPDATE users SET
     id = new_id
 FROM (
@@ -33,7 +29,3 @@ SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 SELECT id, fullname, email, role, user_type
 FROM users
 ORDER BY id;
-
--- If you need to rollback:
--- DROP TABLE users;
--- ALTER TABLE users_backup RENAME TO users;

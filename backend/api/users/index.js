@@ -86,15 +86,15 @@ async function handleGetUsers(req, res) {
         }));
         return;
       }
-      const defaultSelectFields = 'id, email, fullname, role, verified, created_at, updated_at';
-      const noMetaSelectFields = 'id, email, fullname, role, verified';
+      const defaultSelectFields = 'id, email, fullname, role, user_type, verified, created_at, updated_at';
+      const noMetaSelectFields = 'id, email, fullname, role, user_type, verified';
       let query = supabase
         .from('users')
         .select(defaultSelectFields);
 
       // Apply filters (banned/rejected may not exist in some schemas)
       if (status === 'pending') {
-        query = query.eq('verified', false).eq('role', 'pending');
+        query = query.eq('verified', false).or('role.eq.pending,user_type.is.null');
       } else if (status === 'approved') {
         query = query.eq('verified', true).neq('role', 'pending');
       } else if (status === 'banned') {
@@ -104,6 +104,17 @@ async function handleGetUsers(req, res) {
           // Column may not exist; produce no rows for banned if unsupported
           query = query.eq('id', '');
         }
+      } else if (status === 'rejected') {
+        try {
+          query = query.eq('rejected', true);
+        } catch (err) {
+          query = query.eq('id', '');
+        }
+      }
+
+      if (role) {
+        query = query.eq('user_type', role);
+      }
       } else if (status === 'rejected') {
         try {
           query = query.eq('rejected', true);
@@ -133,9 +144,15 @@ async function handleGetUsers(req, res) {
       }
       
       if (error) throw error;
-      
+
+      // Map database fields to frontend expected format
+      const users = (data || []).map(user => ({
+        ...user,
+        role: user.user_type || user.role // Use user_type as role for frontend
+      }));
+
       res.statusCode = 200;
-      res.end(JSON.stringify({ success: true, users: data || [] }));
+      res.end(JSON.stringify({ success: true, users }));
     } else {
       // Fallback: return mock data
       res.statusCode = 200;
@@ -317,31 +334,31 @@ async function handleGetUserCounts(req, res) {
       // Get total users (verified or active, excluding admin roles)
       let { data: allUsers, error: allError } = await supabase
         .from('users')
-        .select('id, role, verified, isActive, banned, rejected');
-      
+        .select('id, role, user_type, verified, isActive, banned, rejected');
+
       if (allError && allError.code === '42703') {
         // isActive field may not exist in older/newer schemas; fall back to verified + admin roles
         console.warn('Supabase users count query missing isActive; falling back to verified-only logic');
         ({ data: allUsers, error: allError } = await supabase
           .from('users')
-          .select('id, role, verified, banned, rejected'));
+          .select('id, role, user_type, verified, banned, rejected'));
       }
 
       if (allError) throw allError;
       
       // Calculate counts based on the same logic as frontend
-      const totalUsers = allUsers.filter(u => 
-        ((u.isActive === true) || u.verified) && 
-        !['admin', 'coadmin', 'subadmin'].includes(u.role)
+      const totalUsers = allUsers.filter(u =>
+        ((u.isActive === true) || u.verified) &&
+        !['admin', 'coadmin', 'subadmin'].includes(u.user_type)
       ).length;
-      
-      const adminUsers = allUsers.filter(u => 
-        ['admin', 'coadmin', 'subadmin'].includes(u.role)
+
+      const adminUsers = allUsers.filter(u =>
+        ['admin', 'coadmin', 'subadmin'].includes(u.user_type)
       ).length;
-      
-      const newSignups = allUsers.filter(u => 
-        (!u.isActive || false) && !u.verified && !u.rejected && !u.banned && 
-        !['admin', 'coadmin', 'subadmin'].includes(u.role)
+
+      const newSignups = allUsers.filter(u =>
+        (!u.isActive || false) && !u.verified && !u.rejected && !u.banned &&
+        !['admin', 'coadmin', 'subadmin'].includes(u.user_type)
       ).length;
       
       const bannedUsers = allUsers.filter(u => u.banned).length;

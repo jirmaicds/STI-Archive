@@ -8199,20 +8199,38 @@ STI Archives Admin`;
                 document.getElementById('create-admin-email').setAttribute('required', 'required');
                 document.getElementById('create-admin-password').setAttribute('required', 'required');
 
-                // Scroll the modal content to show the newly visible inputs
+                // Adjust modal position to show the newly visible inputs
                 setTimeout(() => {
-                    const modalContent = document.querySelector('#create-admin-modal .modal-content');
+                    const modal = document.getElementById('create-admin-modal');
+                    const modalContent = modal.querySelector('.modal-content');
                     const inputsContainer = document.getElementById('admin-inputs-container');
-                    if (modalContent && inputsContainer) {
-                        // Calculate the position of inputs container relative to modal content
-                        const modalRect = modalContent.getBoundingClientRect();
-                        const inputsRect = inputsContainer.getBoundingClientRect();
-                        const scrollTop = inputsRect.top - modalRect.top - 20; // 20px padding
 
-                        modalContent.scrollTo({
-                            top: modalContent.scrollTop + scrollTop,
-                            behavior: 'smooth'
-                        });
+                    if (modal && modalContent && inputsContainer) {
+                        // Temporarily show inputs to measure their position
+                        const originalDisplay = inputsContainer.style.display;
+                        inputsContainer.style.display = 'block';
+
+                        // Calculate if inputs extend beyond viewport
+                        const modalRect = modal.getBoundingClientRect();
+                        const inputsRect = inputsContainer.getBoundingClientRect();
+                        const viewportHeight = window.innerHeight;
+
+                        // If inputs are below the viewport, adjust modal position upward
+                        const inputsBottom = modalRect.top + inputsRect.bottom - modalRect.top;
+                        if (inputsBottom > viewportHeight - 50) { // 50px margin from bottom
+                            const newTop = Math.max(50, viewportHeight - inputsBottom - 50);
+                            modal.style.top = newTop + 'px';
+                            modal.style.transform = 'translateX(-50%)'; // Remove vertical centering
+                        }
+
+                        // Scroll modal content to ensure inputs are visible
+                        const scrollTop = inputsRect.top - modalRect.top - 20;
+                        if (scrollTop > 0) {
+                            modalContent.scrollTo({
+                                top: scrollTop,
+                                behavior: 'smooth'
+                            });
+                        }
                     }
                 }, 100);
             } else {

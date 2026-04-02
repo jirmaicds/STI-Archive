@@ -6481,13 +6481,11 @@ STI Archives Admin`;
                 }
                 // status - check admin role first (case-insensitive)
                 const roleLower = (user.role || '').toLowerCase();
-                const adminRoleLower = (user.admin_role || '').toLowerCase();
-                console.log('DEBUG: User role check:', user.fullname, 'role:', user.role, 'roleLower:', roleLower, 'admin_role:', user.admin_role, 'user_type:', user.user_type, 'verified:', user.verified);
-                const isAdminRole = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin';
-                const isAdminRoleField = adminRoleLower === 'admin' || adminRoleLower === 'coadmin' || adminRoleLower === 'subadmin';
+                console.log('DEBUG: User role check:', user.fullname, 'role:', user.role, 'roleLower:', roleLower, 'user_type:', user.user_type, 'verified:', user.verified);
+                const isAdminRole = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || roleLower === 'Admin' || roleLower === 'Co-Admin' || roleLower === 'Sub-Admin';
                 const isAdminByName = user.fullname && user.fullname.toLowerCase().includes('admin');
-                console.log('DEBUG: isAdminRole:', isAdminRole, 'isAdminRoleField:', isAdminRoleField, 'isAdminByName:', isAdminByName);
-                if (isAdminRole || isAdminRoleField || isAdminByName) {
+                console.log('DEBUG: isAdminRole:', isAdminRole, 'isAdminByName:', isAdminByName);
+                if (isAdminRole || isAdminByName) {
                     console.log('DEBUG: Adding admin user to table:', user.fullname, user.email, 'role:', roleLower);
                     // Determine role display based on role field (prioritize role over admin_role)
                     const roleDisplay = (roleLower === 'coadmin' ? 'Co-Admin' : roleLower === 'subadmin' ? 'Sub-Admin' : 'Admin');
@@ -6551,22 +6549,26 @@ STI Archives Admin`;
             const filteredForCount = users.filter(u => !removedUsers.includes(u.user_id || u.id));
             console.log('DEBUG: Counting users from', filteredForCount.length, 'total users');
 
+            // Debug all users first
+            filteredForCount.forEach(u => {
+                console.log('DEBUG: User for counting:', u.fullname, 'role:', u.role, 'user_type:', u.user_type, 'verified:', u.verified, 'isActive:', u.isActive);
+            });
+
             // Total Users = all users with verified=true EXCEPT admin/coadmin/subadmin roles
             const verifiedCount = filteredForCount.filter(u => {
                 const roleLower = (u.role || '').toLowerCase();
                 const isVerified = u.verified;
-                const isNotAdmin = roleLower !== 'admin' && roleLower !== 'coadmin' && roleLower !== 'subadmin';
+                const isNotAdmin = roleLower !== 'admin' && roleLower !== 'coadmin' && roleLower !== 'subadmin' && roleLower !== 'Admin' && roleLower !== 'Co-Admin' && roleLower !== 'Sub-Admin';
                 const shouldCount = isVerified && isNotAdmin;
-                if (shouldCount) console.log('DEBUG: Counting as verified user:', u.fullname, 'role:', u.role, 'verified:', u.verified);
+                if (shouldCount || u.fullname.includes('admin')) console.log('DEBUG: Counting as verified user:', u.fullname, 'role:', u.role, 'roleLower:', roleLower, 'verified:', u.verified, 'isNotAdmin:', isNotAdmin);
                 return shouldCount;
             }).length;
 
-            // Admin Users = users with admin, coadmin, or subadmin role OR admin_role
+            // Admin Users = users with admin, coadmin, or subadmin role
             const adminCount = filteredForCount.filter(u => {
                 const roleLower = (u.role || '').toLowerCase();
-                const adminRoleLower = (u.admin_role || '').toLowerCase();
-                const isAdmin = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || adminRoleLower === 'admin' || adminRoleLower === 'coadmin' || adminRoleLower === 'subadmin';
-                if (isAdmin) console.log('DEBUG: Counting as admin user:', u.fullname, 'role:', u.role, 'admin_role:', u.admin_role, 'verified:', u.verified);
+                const isAdmin = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || roleLower === 'Admin' || roleLower === 'Co-Admin' || roleLower === 'Sub-Admin';
+                if (isAdmin || u.fullname.includes('admin')) console.log('DEBUG: Counting as admin user:', u.fullname, 'role:', u.role, 'roleLower:', roleLower, 'verified:', u.verified, 'isAdmin:', isAdmin);
                 return isAdmin;
             }).length;
 

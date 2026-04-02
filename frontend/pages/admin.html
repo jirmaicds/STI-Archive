@@ -3476,7 +3476,7 @@
                         <input type="checkbox" id="select-all-admins-main" onclick="toggleSelectAll('admins')">
                         <button class="btn btn-danger" onclick="bulkAction('admins', 'remove')">Remove</button>
                     </div>
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                    <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                         <select id="role-filter-admins" onchange="updateFilters('admins')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="">All Roles</option>
                             <option value="shs">SHS</option>
@@ -3535,7 +3535,7 @@
                 </div>
                 <!-- Verified Users Section -->
                 <div id="verified-section" class="user-subsection" style="--border-color: #28a745; --header-color: #28a745;">
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                    <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                         <select id="role-filter-verified" onchange="updateFilters('verified')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="">All Roles</option>
                             <option value="shs">SHS</option>
@@ -3589,7 +3589,7 @@
                 </div>
                 <!-- Signing Up Users Section -->
                 <div id="signing-up-section" class="user-subsection" style="--border-color: #ffc107; --header-color: #ffc107;">
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                    <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                         <select id="role-filter-signing-up" onchange="updateFilters('signing-up')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="">All Roles</option>
                             <option value="shs">SHS</option>
@@ -3651,7 +3651,7 @@
                         <button class="btn btn-success" onclick="bulkAction('banned', 'accept')">Accept</button>
                         <button class="btn btn-danger" onclick="bulkAction('banned', 'remove')">Remove</button>
                     </div>
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px;">
                         <select id="search-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="unified">Unified Search</option>
                             <option value="fullname" selected>Full Name</option>

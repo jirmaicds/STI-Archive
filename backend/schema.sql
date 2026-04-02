@@ -95,15 +95,43 @@ CREATE INDEX IF NOT EXISTS idx_activity_logs_created_at ON activity_logs(created
 CREATE INDEX IF NOT EXISTS idx_articles_category ON articles(category);
 CREATE INDEX IF NOT EXISTS idx_articles_year ON articles(year);
 
--- Insert sample admin user (password: admin123)
+-- Insert sample admin users (password: admin123)
 -- NOTE: Change the password hash in production
+
+-- Main admin user
 INSERT INTO users (email, password, fullname, role, user_type, program, verified)
 VALUES (
   'admin@stiarchives.edu',
-  '$2a$10$8K1p/a0dL3.XQ/Z7Y5J5J5J5J5J5J5J5J5J5J5J5J5J5J5J5',
+  '$2a$10$8K1p/a0dL3.XQ/Z7Y5J4/.Vq5J5J5J5J5J5J5J5J5J5J5J5J5J5J5',
   'System Administrator',
   'admin',
   'admin',
+  NULL,
+  TRUE
+)
+ON CONFLICT (email) DO NOTHING;
+
+-- Co-admin user
+INSERT INTO users (email, password, fullname, role, user_type, program, verified)
+VALUES (
+  'coadmin@stiarchives.edu',
+  '$2a$10$8K1p/a0dL3.XQ/Z7Y5J4/.Vq5J5J5J5J5J5J5J5J5J5J5J5J5J5J5',
+  'Co Administrator',
+  'admin',
+  'coadmin',
+  NULL,
+  TRUE
+)
+ON CONFLICT (email) DO NOTHING;
+
+-- Sub-admin user
+INSERT INTO users (email, password, fullname, role, user_type, program, verified)
+VALUES (
+  'subadmin@stiarchives.edu',
+  '$2a$10$8K1p/a0dL3.XQ/Z7Y5J4/.Vq5J5J5J5J5J5J5J5J5J5J5J5J5J5J5',
+  'Sub Administrator',
+  'admin',
+  'subadmin',
   NULL,
   TRUE
 )

@@ -296,11 +296,76 @@ module.exports = async function handler(req, res) {
     await handleGetUsers(req, res);
   } else if (req.method === 'POST') {
     await handleCreateUser(req, res);
+  } else if (req.method === 'PUT') {
+    await handleUpdateUser(req, res);
   } else {
     res.statusCode = 405;
     res.end(JSON.stringify({ success: false, error: 'Method not allowed' }));
   }
 };
+
+// PUT /api/users - Update user (admin only)
+async function handleUpdateUser(req, res) {
+  setCorsHeaders(res);
+
+  if (req.method !== 'PUT') {
+    res.statusCode = 405;
+    res.end(JSON.stringify({ success: false, error: 'Method not allowed' }));
+    return;
+  }
+
+  try {
+    const { user_id, student_id, name, email, role, admin_role, permissions } = req.body;
+
+    if (!user_id && !student_id) {
+      res.statusCode = 400;
+      res.end(JSON.stringify({ success: false, error: 'User ID is required' }));
+      return;
+    }
+
+    const userId = user_id || student_id;
+
+    if (isSupabaseConfigured()) {
+      const supabase = getServiceSupabase();
+
+      // Prepare update data
+      const updateData = {};
+      if (name) updateData.fullname = name;
+      if (email) updateData.email = email.toLowerCase();
+      if (role) updateData.user_type = role; // Map role to user_type
+      if (admin_role) updateData.user_type = admin_role; // Alternative field
+      if (permissions) updateData.permissions = permissions;
+
+      console.log('Updating user:', userId, 'with data:', updateData);
+
+      const { data, error } = await supabase
+        .from('users')
+        .update(updateData)
+        .eq('id', userId)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      res.statusCode = 200;
+      res.end(JSON.stringify({
+        success: true,
+        user: data,
+        message: 'User updated successfully'
+      }));
+    } else {
+      res.statusCode = 200;
+      res.end(JSON.stringify({
+        success: true,
+        message: 'Supabase not configured - update simulated'
+      }));
+    }
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.statusCode = 500;
+    res.end(JSON.stringify({ success: false, error: error.message }));
+  }
+}
 
 // GET /api/users/debug - Debug endpoint to see raw user data
 async function handleDebugUsers(req, res) {

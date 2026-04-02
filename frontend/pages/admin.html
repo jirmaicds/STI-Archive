@@ -4025,11 +4025,11 @@
                         User management and file oversight. View and manage registered users. Cannot view other admins or system settings.
                     </div>
                     <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        <input type="radio" name="admin-role" value="subadmin" onchange="showAdminInputs()"> 
-                        <strong>Sub-Admin (Content Moderator)</strong>
+                        <input type="radio" name="admin-role" value="subadmin" onchange="showAdminInputs()">
+                        <strong>Sub-Admin (User Approver)</strong>
                     </label>
                     <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                        Manage website content (create, edit, delete articles). Read-only user management.
+                        Accept or reject user registrations. Manage pending user accounts.
                     </div>
                 </div>
                 
@@ -4154,11 +4154,11 @@
                             User management and file oversight. Cannot view other admins.
                         </div>
                         <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                            <input type="radio" name="edit-admin-role" value="subadmin"> 
-                            <strong>Sub-Admin (Content Moderator)</strong>
+                            <input type="radio" name="edit-admin-role" value="subadmin">
+                            <strong>Sub-Admin (User Approver)</strong>
                         </label>
                         <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                            Manage website content. Read-only user management.
+                            Accept or reject user registrations. Manage pending user accounts.
                         </div>
                     </div>
                 </div>
@@ -6420,10 +6420,10 @@ STI Archives Admin`;
                         permissions = 'Limited Access - User & File Management';
                     } else if (user.fullname === 'admin3' || user.fullname === 'Admin3') {
                         badgeClass = 'badge-subadmin';
-                        permissions = 'Content Moderator - Articles & Documents';
+                        permissions = 'User Approver - Accept/Reject Registrations';
                     } else {
                         badgeClass = roleLower === 'coadmin' ? 'badge-coadmin' : roleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
-                        permissions = user.permissions || (roleLower === 'admin' ? 'Full Access - All Features' : roleLower === 'coadmin' ? 'Limited Access - User & File Management' : roleLower === 'subadmin' ? 'Content Moderator - Articles & Documents' : 'Full Access');
+                        permissions = user.permissions || (roleLower === 'admin' ? 'Full Access - All Features' : roleLower === 'coadmin' ? 'Limited Access - User & File Management' : roleLower === 'subadmin' ? 'User Approver - Accept/Reject Registrations' : 'Full Access');
                     }
                     const adminRow = `<tr>
                         <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
@@ -8084,7 +8084,7 @@ STI Archives Admin`;
                 } else if (adminRole === 'coadmin') {
                     permissionsText = 'Limited Access - User & File Management';
                 } else if (adminRole === 'subadmin') {
-                    permissionsText = 'Content Moderator - Articles & Documents';
+                    permissionsText = 'User Approver - Accept/Reject Registrations';
                 }
                 
                 userData = {

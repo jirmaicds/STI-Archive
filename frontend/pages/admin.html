@@ -6551,32 +6551,30 @@ STI Archives Admin`;
 
             // Debug all users first
             filteredForCount.forEach(u => {
-                console.log('DEBUG: User for counting:', u.fullname, 'role:', u.role, 'user_type:', u.user_type, 'verified:', u.verified, 'isActive:', u.isActive);
+                console.log('DEBUG: User for counting:', u.fullname, 'user_type:', u.user_type, 'role:', u.role, 'verified:', u.verified, 'isActive:', u.isActive);
             });
 
-            // Total Users = all users with verified=true EXCEPT admin/coadmin/subadmin roles
+            // Total Users = users with user_type = 'user'
             const verifiedCount = filteredForCount.filter(u => {
-                const roleLower = (u.role || '').toLowerCase();
-                const isVerified = u.verified;
-                const isNotAdmin = roleLower !== 'admin' && roleLower !== 'coadmin' && roleLower !== 'subadmin' && roleLower !== 'Admin' && roleLower !== 'Co-Admin' && roleLower !== 'Sub-Admin';
-                const shouldCount = isVerified && isNotAdmin;
-                if (shouldCount || u.fullname.includes('admin')) console.log('DEBUG: Counting as verified user:', u.fullname, 'role:', u.role, 'roleLower:', roleLower, 'verified:', u.verified, 'isNotAdmin:', isNotAdmin);
+                const userType = u.user_type;
+                const shouldCount = userType === 'user';
+                if (shouldCount || u.fullname.includes('admin')) console.log('DEBUG: Counting as total user:', u.fullname, 'user_type:', userType, 'role:', u.role, 'verified:', u.verified);
                 return shouldCount;
             }).length;
 
-            // Admin Users = users with admin, coadmin, or subadmin role
+            // Admin Users = users with user_type = 'admin'
             const adminCount = filteredForCount.filter(u => {
-                const roleLower = (u.role || '').toLowerCase();
-                const isAdmin = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || roleLower === 'Admin' || roleLower === 'Co-Admin' || roleLower === 'Sub-Admin';
-                if (isAdmin || u.fullname.includes('admin')) console.log('DEBUG: Counting as admin user:', u.fullname, 'role:', u.role, 'roleLower:', roleLower, 'verified:', u.verified, 'isAdmin:', isAdmin);
-                return isAdmin;
+                const userType = u.user_type;
+                const shouldCount = userType === 'admin';
+                if (shouldCount || u.fullname.includes('admin')) console.log('DEBUG: Counting as admin user:', u.fullname, 'user_type:', userType, 'role:', u.role, 'verified:', u.verified);
+                return shouldCount;
             }).length;
 
             console.log('DEBUG: Final counts - Verified:', verifiedCount, 'Admin:', adminCount);
-            // Signing up = users who are not verified and not admin
+            // Signing up = users who are not verified and user_type = 'user'
             const signingUpCount = filteredForCount.filter(u => {
-                const roleLower = (u.role || '').toLowerCase();
-                return !u.verified && roleLower !== 'admin' && roleLower !== 'coadmin' && roleLower !== 'subadmin';
+                const userType = u.user_type;
+                return !u.verified && userType === 'user';
             }).length;
             document.getElementById('verified-users-count').textContent = verifiedCount;
             document.getElementById('admin-users-count').textContent = adminCount;

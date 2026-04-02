@@ -60,49 +60,32 @@ ALTER TABLE activity_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE articles ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for users table
+-- Allow users to view and update their own data
 CREATE POLICY "Users can view own data" ON users
   FOR SELECT USING (auth.uid() = id);
 
 CREATE POLICY "Users can update own data" ON users
   FOR UPDATE USING (auth.uid() = id);
 
+-- Allow anyone to register (insert)
 CREATE POLICY "Anyone can register" ON users
   FOR INSERT WITH CHECK (true);
 
-CREATE POLICY "Admin can view all users" ON users
-  FOR SELECT USING (
-    (SELECT user_type FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
-  );
-
-CREATE POLICY "Admin can update all users" ON users
-  FOR UPDATE USING (
-    (SELECT user_type FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
-  );
-
-CREATE POLICY "Admin can delete users" ON users
-  FOR DELETE USING (
-    (SELECT user_type FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
-  );
+-- For admin operations, we'll handle this in the application logic
+-- since service role bypasses RLS anyway
+CREATE POLICY "Service role can manage all" ON users
+  FOR ALL USING (auth.role() = 'service_role');
 
 -- Create policies for activity_logs table
-CREATE POLICY "Admin can view all logs" ON activity_logs
-  FOR SELECT USING (
-    (SELECT user_type FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
-  );
-
-CREATE POLICY "Admin can insert logs" ON activity_logs
-  FOR INSERT WITH CHECK (
-    (SELECT user_type FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin', 'subadmin')
-  );
+CREATE POLICY "Service role can manage logs" ON activity_logs
+  FOR ALL USING (auth.role() = 'service_role');
 
 -- Create policies for articles table
 CREATE POLICY "Anyone can view articles" ON articles
   FOR SELECT USING (true);
 
-CREATE POLICY "Admin can manage articles" ON articles
-  FOR ALL USING (
-    (SELECT user_type FROM users WHERE id = auth.uid()) IN ('admin', 'coadmin')
-  );
+CREATE POLICY "Service role can manage articles" ON articles
+  FOR ALL USING (auth.role() = 'service_role');
 
 -- Create indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);

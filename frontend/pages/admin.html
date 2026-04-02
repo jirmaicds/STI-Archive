@@ -3472,10 +3472,7 @@
                 <!-- Admin Accounts Section -->
                 <div id="admins-section" class="user-subsection" style="--border-color: #6f42c1; --header-color: #6f42c1;">
                     
-                     <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-admins-main" onclick="toggleSelectAll('admins')">
-                        <button class="btn btn-danger" onclick="bulkAction('admins', 'remove')">Remove</button>
-                    </div>
+                    
                     <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                         <select id="role-filter-admins" onchange="updateFilters('admins')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="">All Roles</option>
@@ -3531,6 +3528,11 @@
                         <tbody id="admins-tbody">
                         </tbody>
                     </table>
+                    </div>
+
+                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                        <input type="checkbox" id="select-all-admins-main" onclick="toggleSelectAll('admins')">
+                        <button class="btn btn-danger" onclick="bulkAction('admins', 'remove')">Remove</button>
                     </div>
                 </div>
                 <!-- Verified Users Section -->
@@ -3642,15 +3644,7 @@
                 </div>
                 <!-- Banned Users Section -->
                 <div id="banned-section" class="user-subsection" style="--border-color: #dc3545; --header-color: #dc3545;">
-
-
-
-
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-banned-main" onclick="toggleSelectAll('banned')">
-                        <button class="btn btn-success" onclick="bulkAction('banned', 'accept')">Accept</button>
-                        <button class="btn btn-danger" onclick="bulkAction('banned', 'remove')">Remove</button>
-                    </div>
+                    
                     <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px;">
                         <select id="search-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="unified">Unified Search</option>
@@ -3667,6 +3661,13 @@
                             <tbody id="banned-users-tbody"></tbody>
                         </table>
                     </div>
+
+                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                            <input type="checkbox" id="select-all-banned-main" onclick="toggleSelectAll('banned')">
+                            <button class="btn btn-success" onclick="bulkAction('banned', 'accept')">Accept</button>
+                            <button class="btn btn-danger" onclick="bulkAction('banned', 'remove')">Remove</button>
+                    </div>
+
                 </div>
                 <!-- Activity Log Section -->
                 <div id="activity-section" class="user-subsection" style="--border-color: #17a2b8; --header-color: #17a2b8; display: none;">

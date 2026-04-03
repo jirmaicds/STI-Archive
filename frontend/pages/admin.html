@@ -7980,9 +7980,11 @@ STI Archives Admin`;
                         const viewportHeight = window.innerHeight;
                         if (rect.bottom > viewportHeight - 10) {
                             modalContent.style.top = '10px';
+                            modalContent.style.left = '50%';
                             modalContent.style.transform = 'translateX(-50%)';
                         } else {
                             modalContent.style.top = '50%';
+                            modalContent.style.left = '50%';
                             modalContent.style.transform = 'translate(-50%, -50%)';
                         }
                     }

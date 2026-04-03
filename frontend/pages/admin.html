@@ -7475,6 +7475,7 @@ STI Archives Admin`;
         function closeRafModal() { document.getElementById('raf-preview-modal').style.display = 'none'; }
 
         function displayArticlePDF(pdfUrl, title) {
+            console.log('displayArticlePDF called with:', pdfUrl, title);
             if (!pdfUrl || pdfUrl === '') {
                 alert('No PDF file available for preview.');
                 return;
@@ -9503,6 +9504,8 @@ STI Archives Admin`;
         if (typeof acceptUser === 'function') window.acceptUser = acceptUser;
         if (typeof removeUser === 'function') window.removeUser = removeUser;
         if (typeof previewRaf === 'function') window.previewRaf = previewRaf;
+        if (typeof displayArticlePDF === 'function') window.displayArticlePDF = displayArticlePDF;
+        if (typeof closePdfModal === 'function') window.closePdfModal = closePdfModal;
         if (typeof showGrade === 'function') window.showGrade = showGrade;
         if (typeof showStrand === 'function') window.showStrand = showStrand;
         if (typeof showDegree === 'function') window.showDegree = showDegree;

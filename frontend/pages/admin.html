@@ -3476,9 +3476,9 @@
                     <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                         <select id="role-filter-admins" onchange="updateFilters('admins')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="">All Roles</option>
-                            <option value="shs">SHS</option>
-                            <option value="college">College</option>
-                            <option value="teacher">Teacher</option>
+                            <option value="admin">Admin</option>
+                            <option value="co-admin">Co-Admin</option>
+                            <option value="sub-admin">Sub-Admin</option>
                         </select>
                         <select id="grade-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
                             <option value="">All Grades</option>
@@ -9515,6 +9515,11 @@ STI Archives Admin`;
             } else if (selectedRole === 'teacher') {
                 deptSelect.style.display = 'block';
             }
+
+            // Apply role filter
+            const searchInput = document.querySelector(`#${section}-section input[onkeyup*="filterTable"]`);
+            const filterType = document.getElementById(`search-filter-${section}`).value;
+            filterTable(searchInput ? searchInput.value : '', section, filterType);
         }
 
         function filterTable(query, tableType, filterType = 'unified') {
@@ -9524,10 +9529,27 @@ STI Archives Admin`;
 
             const rows = tbody.getElementsByTagName('tr');
             const filter = query.toLowerCase();
+            const roleFilter = document.getElementById(`role-filter-${tableType}`).value;
 
             for (let i = 0; i < rows.length; i++) {
                 const cells = rows[i].getElementsByTagName('td');
                 let found = false;
+
+                // Check role filter first
+                if (roleFilter) {
+                    const roleCell = cells[4]; // Role column for both admins and users
+                    if (roleCell) {
+                        const roleText = roleCell.textContent.toLowerCase();
+                        if (tableType === 'admins') {
+                            if (roleFilter === 'admin' && !roleText.includes('admin')) continue;
+                            if (roleFilter === 'co-admin' && !roleText.includes('co-admin')) continue;
+                            if (roleFilter === 'sub-admin' && !roleText.includes('sub-admin')) continue;
+                        } else {
+                            // For other tables, check exact match
+                            if (!roleText.includes(roleFilter.toLowerCase())) continue;
+                        }
+                    }
+                }
 
                 if (filterType === 'unified') {
                     // Search in all relevant columns

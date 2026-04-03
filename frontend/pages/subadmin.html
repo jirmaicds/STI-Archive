@@ -2995,6 +2995,7 @@
                         <tbody id="admins-tbody">
                         </tbody>
                     </table>
+                    <div class="pagination" id="admins-pagination" style="text-align: right; margin-top: 10px;"></div>
                 </div>
                 <!-- Verified Users Section -->
                 <div id="verified-section" class="user-subsection" style="--border-color: #28a745; --header-color: #28a745;">
@@ -3113,9 +3114,12 @@
                         <table id="verified-users-table">
                             <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>Id</th><th>Student ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Str/B.S.</th><th>Date Verified</th><th>RAF Preview</th><th>Actions</th></tr></thead>
                             <tbody id="verified-users-tbody">
-                            </tbody>
+                        </tbody>
                         </table>
                     </div>
+                    <div class="pagination" id="signing-up-pagination" style="text-align: right; margin-top: 10px;"></div>
+                </div>
+                    <div class="pagination" id="verified-pagination" style="text-align: right; margin-top: 10px;"></div>
                 </div>
                 <!-- Signing Up Users Section -->
                 <div id="signing-up-section" class="user-subsection" style="--border-color: #ffc107; --header-color: #ffc107;">
@@ -4726,6 +4730,11 @@ STI Archives Admin`;
                     }
                 }
             });
+
+            // Paginate tables
+            paginateTable('admins-tbody', 10);
+            paginateTable('verified-users-tbody', 10);
+            paginateTable('signing-up-users-tbody', 10);
 
             // Update dashboard counts from user.json
             // Load users from user.json for accurate counts
@@ -6437,7 +6446,26 @@ STI Archives Admin`;
 
                 rows[i].style.display = found ? '' : 'none';
             }
+
+            // Reset pagination to page 1 and paginate
+            const paginationDiv = document.getElementById(`${tableType === 'admins' ? 'admins' : tableType}-pagination`);
+            if (paginationDiv) {
+                paginationDiv.dataset.currentPage = 1;
+                paginateTable(tableId, 10);
+            }
         }
+                }
+                if (currentPage < totalPages) buttons += `<button onclick="changePage('${tbodyId}', ${currentPage + 1})">Next</button>`;
+            }
+            paginationDiv.innerHTML = buttons;
+        }
+
+        function changePage(tbodyId, page) {
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            paginationDiv.dataset.currentPage = page;
+            paginateTable(tbodyId, 10);
+        }
+
     </script>
     <script>
         // === GLOBAL FUNCTION BINDINGS ===

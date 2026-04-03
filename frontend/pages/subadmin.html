@@ -4736,6 +4736,21 @@ STI Archives Admin`;
             paginateTable('verified-users-tbody', 10);
             paginateTable('signing-up-users-tbody', 10);
 
+            // Reapply current filters after reload
+            for (const section in currentFilters) {
+                const f = currentFilters[section];
+                if (f.role) {
+                    document.getElementById(`role-filter-${section}`).value = f.role;
+                    updateFilters(section);
+                }
+                if (f.search) {
+                    const searchInput = document.querySelector(`#${section}-section input[onkeyup*="filterTable"]`);
+                    if (searchInput) searchInput.value = f.search;
+                    document.getElementById(`search-filter-${section}`).value = f.filterType;
+                    filterTable(f.search, section, f.filterType);
+                }
+            }
+
             // Update dashboard counts from user.json
             // Load users from user.json for accurate counts
             const jsonUsers = await getUsersFromJson();
@@ -6381,6 +6396,13 @@ STI Archives Admin`;
             }
         }
 
+        // Current filter states
+        let currentFilters = {
+            admins: { role: '', search: '', filterType: 'unified' },
+            verified: { role: '', search: '', filterType: 'unified' },
+            'signing-up': { role: '', search: '', filterType: 'unified' }
+        };
+
         function updateFilters(section) {
             const roleSelect = document.getElementById(`role-filter-${section}`);
             const gradeSelect = document.getElementById(`grade-filter-${section}`);
@@ -6405,12 +6427,24 @@ STI Archives Admin`;
             } else if (selectedRole === 'teacher') {
                 deptSelect.style.display = 'block';
             }
+
+            // Apply role filter
+            const searchInput = document.querySelector(`#${section}-section input[onkeyup*="filterTable"]`);
+            const filterType = document.getElementById(`search-filter-${section}`).value;
+            filterTable(searchInput ? searchInput.value : '', section, filterType);
+
+            // Store current filter state
+            currentFilters[section].role = selectedRole;
         }
 
         function filterTable(query, tableType, filterType = 'unified') {
             const tableId = tableType === 'admins' ? 'admins-tbody' : `${tableType}-users-tbody`;
             const tbody = document.getElementById(tableId);
             if (!tbody) return;
+
+            // Store current filter state
+            currentFilters[tableType].search = query;
+            currentFilters[tableType].filterType = filterType;
 
             const rows = tbody.getElementsByTagName('tr');
             const filter = query.toLowerCase();

@@ -7971,6 +7971,22 @@ STI Archives Admin`;
                 document.getElementById('create-admin-fullname').setAttribute('required', 'required');
                 document.getElementById('create-admin-email').setAttribute('required', 'required');
                 document.getElementById('create-admin-password').setAttribute('required', 'required');
+
+                // Adjust modal position if content is too tall
+                setTimeout(() => {
+                    const modalContent = document.querySelector('#create-admin-modal .modal-content');
+                    if (modalContent) {
+                        const rect = modalContent.getBoundingClientRect();
+                        const viewportHeight = window.innerHeight;
+                        if (rect.bottom > viewportHeight - 10) {
+                            modalContent.style.top = '10px';
+                            modalContent.style.transform = 'translateX(-50%)';
+                        } else {
+                            modalContent.style.top = '50%';
+                            modalContent.style.transform = 'translate(-50%, -50%)';
+                        }
+                    }
+                }, 100);
             } else {
                 document.getElementById('admin-inputs-container').style.display = 'none';
                 document.getElementById('select-role-message').style.display = selectedRole ? 'none' : 'block';

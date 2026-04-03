@@ -7971,15 +7971,26 @@ STI Archives Admin`;
                 document.getElementById('create-admin-fullname').setAttribute('required', 'required');
                 document.getElementById('create-admin-email').setAttribute('required', 'required');
                 document.getElementById('create-admin-password').setAttribute('required', 'required');
+
+                // Move modal slightly up for better centering with inputs
+                const modalContent = document.querySelector('#create-admin-modal .modal-content');
+                if (modalContent) {
+                    modalContent.style.top = '40%';
+                }
             } else {
                 document.getElementById('admin-inputs-container').style.display = 'none';
-                document.getElementById('select-role-message').style.display = selectedRole ? 'none' : 'block';
+                document.getElementById('select-role-message').style.display = 'block';
                 // Remove required attributes when hidden
-                if (selectedRole !== 'admin') {
-                    document.getElementById('create-admin-fullname')?.removeAttribute('required');
-                    document.getElementById('create-admin-email')?.removeAttribute('required');
-                    document.getElementById('create-admin-password')?.removeAttribute('required');
+                document.getElementById('create-admin-fullname').removeAttribute('required');
+                document.getElementById('create-admin-email').removeAttribute('required');
+                document.getElementById('create-admin-password').removeAttribute('required');
+
+                // Reset modal position
+                const modalContent = document.querySelector('#create-admin-modal .modal-content');
+                if (modalContent) {
+                    modalContent.style.top = '50%';
                 }
+            }
             }
         }
 

@@ -4797,10 +4797,8 @@
                 console.log('Creating View button for article:', articleData.id, 'Title:', safeTitle);
                 const hasPdf = articleData.pdfPath || articleData.pdf_path || articleData.pdfId;
                 const pdfUrl = hasPdf ? (articleData.pdfPath || articleData.pdf_path ? safePdfPath : '/api/pdf/' + articleData.pdfId) : '';
-                // Make article title clickable to show PDF when clicked
-                const titleClickHandler = hasPdf ? `onclick="event.preventDefault(); displayArticlePDF('${pdfUrl}', '${safeTitle}')" style="cursor: pointer;"` : '';
                 template.innerHTML = `
-                    <h3><a href="#" ${titleClickHandler}>${articleData.title}</a></h3>
+                    <h3>${articleData.title}</h3>
                     <div class="meta">${articleData.meta}</div>
                     ${articleData.topic ? `<div class="meta" style="color: #0057b8;">Topic: ${articleData.topic.charAt(0).toUpperCase() + articleData.topic.slice(1)}</div>` : ''}
                     ${(articleData.type || articleData.qualitativeQuantitative) ? `<div class="meta" style="color: #0057b8;">Type: ${(articleData.type || articleData.qualitativeQuantitative).charAt(0).toUpperCase() + (articleData.type || articleData.qualitativeQuantitative).slice(1)}</div>` : ''}
@@ -4811,11 +4809,22 @@
                     </div>
                 `;
                 actionButtons.innerHTML = '';
+                // Add onclick to article container to show PDF
+                if (hasPdf) {
+                    template.onclick = (e) => {
+                        if (!e.target.classList.contains('edit-btn') && !e.target.classList.contains('delete-btn')) {
+                            displayArticlePDF(pdfUrl, articleData.title);
+                        }
+                    };
+                    template.style.cursor = 'pointer';
+                }
                 // Add event listener for edit button
                 const editBtn = template.querySelector('.edit-btn');
                 editBtn.addEventListener('click', setEditMode);
             }
             function setEditMode() {
+                template.onclick = null;
+                template.style.cursor = 'default';
                 template.classList.add('editing');
                 template.innerHTML = `
                     <div>

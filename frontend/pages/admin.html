@@ -3973,18 +3973,29 @@
             <form id="create-admin-form" onsubmit="return handleCreateAdminSubmit(event)">
                 <!-- Admin Roles Section First -->
                 <label style="font-weight: bold; display: block; margin-bottom: 10px;">Admin Role:</label>
-                <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                    <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        <input type="radio" name="admin-role" value="admin" onchange="showAdminInputs()">
-                        <strong>Admin (Full Access)</strong>
-                    </label>
-                    <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                        Complete system control. Create, edit, delete other admin accounts. Full access to all features and settings.
-                    </div>
-                    <div style="margin-top: 10px; padding: 10px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; color: #856404;">
-                        <strong>Note:</strong> Only Admin role can create new admin accounts. Co-Admin and Sub-Admin roles are assigned by editing existing users.
-                    </div>
-                </div>
+                 <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                     <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                         <input type="radio" name="admin-role" value="admin" onchange="showAdminInputs()">
+                         <strong>Admin (Full Access)</strong>
+                     </label>
+                     <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
+                         Complete system control. Create, edit, delete other admin accounts. Full access to all features and settings.
+                     </div>
+                     <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                         <input type="radio" name="admin-role" value="co-admin" onchange="showAdminInputs()">
+                         <strong>Co-Admin (Limited Access)</strong>
+                     </label>
+                     <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
+                         User & File Management. Approve/reject user registrations. Limited access to features.
+                     </div>
+                     <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                         <input type="radio" name="admin-role" value="sub-admin" onchange="showAdminInputs()">
+                         <strong>Sub-Admin (Approver)</strong>
+                     </label>
+                     <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
+                         User Approver. Accept/Reject Registrations. Basic access to user management.
+                     </div>
+                 </div>
                 
                 <!-- Hidden Input Fields (shown when role is selected) -->
                 <div id="admin-inputs-container" style="display: none;">
@@ -7953,7 +7964,7 @@ STI Archives Admin`;
                 }
             });
             
-            if (selectedRole === 'admin') {
+            if (selectedRole) {
                 document.getElementById('admin-inputs-container').style.display = 'block';
                 document.getElementById('select-role-message').style.display = 'none';
                 // Add required attribute to inputs when shown

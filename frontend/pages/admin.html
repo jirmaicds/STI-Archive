@@ -9539,14 +9539,19 @@ STI Archives Admin`;
                 if (roleFilter) {
                     const roleCell = cells[4]; // Role column for both admins and users
                     if (roleCell) {
-                        const roleText = roleCell.textContent.toLowerCase();
+                        const roleText = roleCell.textContent.trim();
                         if (tableType === 'admins') {
-                            if (roleFilter === 'admin' && !roleText.includes('admin')) continue;
-                            if (roleFilter === 'co-admin' && !roleText.includes('co-admin')) continue;
-                            if (roleFilter === 'sub-admin' && !roleText.includes('sub-admin')) continue;
+                            const expectedText = roleFilter === 'admin' ? 'Admin' : roleFilter === 'co-admin' ? 'Co-Admin' : roleFilter === 'sub-admin' ? 'Sub-Admin' : '';
+                            if (expectedText && roleText !== expectedText) {
+                                rows[i].style.display = 'none';
+                                continue;
+                            }
                         } else {
-                            // For other tables, check exact match
-                            if (!roleText.includes(roleFilter.toLowerCase())) continue;
+                            // For other tables, check if roleText includes the filter value
+                            if (!roleText.toLowerCase().includes(roleFilter.toLowerCase())) {
+                                rows[i].style.display = 'none';
+                                continue;
+                            }
                         }
                     }
                 }

@@ -55,12 +55,16 @@ async function handleGetUserUploads(req, res) {
         if (userIds.length > 0) {
           const { data: users } = await supabase
             .from('users')
-            .select('id, full_name, first_name, last_name')
+            .select('id, full_name, first_name, last_name, role, program')
             .in('id', userIds);
-          
+
           if (users) {
             users.forEach(user => {
-              usersMap[user.id] = user.full_name || (user.first_name + ' ' + user.last_name) || 'Unknown User';
+              usersMap[user.id] = {
+                name: user.full_name || (user.first_name + ' ' + user.last_name) || 'Unknown User',
+                role: user.role || 'unknown',
+                program: user.program || 'N/A'
+              };
             });
           }
         }
@@ -82,7 +86,9 @@ async function handleGetUserUploads(req, res) {
           url: upload.file_path || '',
           status: upload.status || 'pending',
           userId: upload.user_id,
-          userName: usersMap[upload.user_id] || 'Unknown User',
+          userName: usersMap[upload.user_id]?.name || 'Unknown User',
+          userRole: usersMap[upload.user_id]?.role || 'unknown',
+          userProgram: usersMap[upload.user_id]?.program || 'N/A',
           uploadedAt: upload.created_at
         }));
       }

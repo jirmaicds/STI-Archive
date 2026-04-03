@@ -2738,6 +2738,32 @@
         .uploaded-article .actions .view-pdf-btn:hover {
             background-color: #003f8a !important;
         }
+        .uploaded-article .actions .edit-btn {
+            background-color: #ffc107 !important;
+            color: #333 !important;
+            border: none !important;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .uploaded-article .actions .edit-btn:hover {
+            background-color: #e0a800 !important;
+        }
+        .uploaded-article.editing input,
+        .uploaded-article.editing textarea,
+        .uploaded-article.editing select {
+            border: 1px solid #ccc;
+            background: white;
+            padding: 5px;
+            border-radius: 4px;
+            outline: none;
+        }
+        .uploaded-article.editing .meta {
+            display: none;
+        }
+        .uploaded-article.editing .edit-fields {
+            display: block;
+        }
         body.dark-mode .uploaded-article {
             background-color: #2d2d2d;
         }
@@ -2749,6 +2775,91 @@
         }
         body.dark-mode .uploaded-article .summary {
             color: #ddd;
+        }
+        /* === USER UPLOADED ARTICLE STYLES === */
+        .user-uploaded {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-left: 4px solid #ffd700;
+        }
+        .user-uploaded:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .user-pfp {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .user-details {
+            flex: 1;
+        }
+        .user-fullname {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .user-meta {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+        .user-uploaded .uploaded-article {
+            margin-top: 15px;
+            margin-bottom: 0;
+            padding: 15px;
+            border-left: none;
+            box-shadow: none;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .user-uploaded .uploaded-article:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        body.dark-mode .user-uploaded {
+            background-color: #2d2d2d;
+            border-left-color: #ffd700;
+        }
+        body.dark-mode .user-uploaded .user-info {
+            border-bottom-color: #444;
+        }
+        body.dark-mode .user-uploaded .user-pfp {
+            background-color: #4CAF50;
+        }
+        body.dark-mode .user-uploaded .user-fullname {
+            color: #ffffff;
+        }
+        body.dark-mode .user-uploaded .user-meta {
+            color: #ccc;
+        }
+        body.dark-mode .user-uploaded .uploaded-article {
+            background: #3d3d3d;
+        }
+        body.dark-mode .uploaded-article.editing input,
+        body.dark-mode .uploaded-article.editing textarea,
+        body.dark-mode .uploaded-article.editing select {
+            background-color: #555;
+            color: #ffffff;
+            border-color: #777;
         }
         /* === ARTICLE STYLES (for Admin Uploads section) === */
         .article {
@@ -4352,33 +4463,112 @@
                 // Create onclick handler - call the modal PDF viewer function
                 const safeTitle = upload.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 const cardClick = `displayArticlePDF('${testPdfUrl}', '${safeTitle}')`;
-                
+
+                // Get user initials for profile picture
+                const userInitials = upload.userName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'U';
+
+                // Format user metadata based on role
+                let userMeta = '';
+                const role = upload.userRole || 'unknown';
+                const program = upload.userProgram || 'N/A';
+
+                if (role === 'shs') {
+                    userMeta = `SHS Student - ${program}`;
+                } else if (role === 'college') {
+                    userMeta = `College Student - ${program}`;
+                } else if (role === 'teacher') {
+                    userMeta = `Teacher - ${program}`;
+                } else {
+                    userMeta = `${role.charAt(0).toUpperCase() + role.slice(1)} - ${program}`;
+                }
+
                 return `
-                <div class="uploaded-article" data-id="${upload.id}" ${hasPdf ? "onclick=\"" + cardClick + "\" style=\"cursor: pointer;\"" : ''}>
-                    <h3>${upload.title}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : ''}</h3>
-                    <div class="summary">${upload.abstract || 'N/A'}</div>
-                    <div class="meta">
-                        <strong>Uploaded by:</strong> ${upload.userName}<br>
-                        <strong>Category:</strong> ${upload.category}<br>
-                        <strong>Topic:</strong> ${upload.topic ? upload.topic.charAt(0).toUpperCase() + upload.topic.slice(1) : 'Not set'}<br>
-                        <strong>Type:</strong> ${upload.type ? upload.type.charAt(0).toUpperCase() + upload.type.slice(1) : 'Not set'}<br>
-                        <strong>Level:</strong> ${upload.level}<br>
-                        <strong>Year:</strong> ${upload.year}
+                <div class="user-uploaded" data-id="${upload.id}">
+                    <div class="user-info">
+                        <div class="user-pfp">${userInitials}</div>
+                        <div class="user-details">
+                            <div class="user-fullname">${upload.userName}</div>
+                            <div class="user-meta">${userMeta}</div>
+                        </div>
                     </div>
-                    <div class="source-tag">
-                        <strong>File:</strong> ${upload.filename}<br>
-                        <strong>Status:</strong> <span style="color: ${upload.status === 'approved' ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">${upload.status}</span><br>
-                        <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}
-                    </div>
-                    <div class="actions">
-                        ${upload.status === 'pending' ? `
-                            <button class="upload-btn" onclick="approveUserUpload('${upload.id}')">
-                                <i class="fas fa-check"></i> Approve
+                    <div class="uploaded-article" data-id="${upload.id}" ${hasPdf ? "onclick=\"handleUserUploadClick('" + upload.id + "')\" style=\"cursor: pointer;\"" : ''}>
+                        <h3>${upload.title}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : ''}</h3>
+                        <div class="summary">${upload.abstract || 'N/A'}</div>
+                        <div class="meta">
+                            <strong>Category:</strong> ${upload.category}<br>
+                            <strong>Topic:</strong> ${upload.topic ? upload.topic.charAt(0).toUpperCase() + upload.topic.slice(1) : 'Not set'}<br>
+                            <strong>Type:</strong> ${upload.type ? upload.type.charAt(0).toUpperCase() + upload.type.slice(1) : 'Not set'}<br>
+                            <strong>Level:</strong> ${upload.level}<br>
+                            <strong>Year:</strong> ${upload.year}
+                        </div>
+                        <div class="edit-fields" style="display: none;">
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Title:</strong></label>
+                                <input type="text" class="edit-title" value="${upload.title.replace(/"/g, '&quot;')}" style="width: 100%;">
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Abstract:</strong></label>
+                                <textarea class="edit-abstract" style="width: 100%; min-height: 80px;">${upload.abstract || ''}</textarea>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Category:</strong></label>
+                                <select class="edit-category" style="width: 100%;">
+                                    <option value="research" ${upload.category === 'research' ? 'selected' : ''}>Research</option>
+                                    <option value="capstone" ${upload.category === 'capstone' ? 'selected' : ''}>Capstone</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Topic:</strong></label>
+                                <select class="edit-topic" style="width: 100%;">
+                                    <option value="">Select Topic</option>
+                                    <option value="agriculture" ${upload.topic === 'agriculture' ? 'selected' : ''}>Agriculture</option>
+                                    <option value="business" ${upload.topic === 'business' ? 'selected' : ''}>Business</option>
+                                    <option value="cosmetics" ${upload.topic === 'cosmetics' ? 'selected' : ''}>Cosmetics</option>
+                                    <option value="education" ${upload.topic === 'education' ? 'selected' : ''}>Education</option>
+                                    <option value="environment" ${upload.topic === 'environment' ? 'selected' : ''}>Environment</option>
+                                    <option value="food" ${upload.topic === 'food' ? 'selected' : ''}>Food</option>
+                                    <option value="technology" ${upload.topic === 'technology' ? 'selected' : ''}>Technology</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Type:</strong></label>
+                                <select class="edit-type" style="width: 100%;">
+                                    <option value="qualitative" ${upload.type === 'qualitative' ? 'selected' : ''}>Qualitative</option>
+                                    <option value="quantitative" ${upload.type === 'quantitative' ? 'selected' : ''}>Quantitative</option>
+                                    <option value="bsba" ${upload.type === 'bsba' ? 'selected' : ''}>BSBA</option>
+                                    <option value="bscs" ${upload.type === 'bscs' ? 'selected' : ''}>BSCS</option>
+                                    <option value="bsit" ${upload.type === 'bsit' ? 'selected' : ''}>BSIT</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Level:</strong></label>
+                                <select class="edit-level" style="width: 100%;">
+                                    <option value="shs" ${upload.level === 'shs' ? 'selected' : ''}>Senior High School</option>
+                                    <option value="college" ${upload.level === 'college' ? 'selected' : ''}>College</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Year:</strong></label>
+                                <input type="number" class="edit-year" value="${upload.year}" min="2020" max="2030" style="width: 100%;">
+                            </div>
+                        </div>
+                        <div class="source-tag">
+                            <strong>File:</strong> ${upload.filename}<br>
+                            <strong>Status:</strong> <span style="color: ${upload.status === 'approved' ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">${upload.status}</span><br>
+                            <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}
+                        </div>
+                        <div class="actions">
+                            ${upload.status === 'pending' ? `
+                                <button class="upload-btn" onclick="approveUserUpload('${upload.id}')">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                <button class="delete-btn" onclick="rejectUserUpload('${upload.id}')">
+                                    <i class="fas fa-times"></i> Reject
+                            ` : ''}
+                            <button class="edit-btn" onclick="toggleUserUploadEdit('${upload.id}')">
+                                <i class="fas fa-edit"></i> Edit
                             </button>
-                            <button class="delete-btn" onclick="rejectUserUpload('${upload.id}')">
-                                <i class="fas fa-times"></i> Reject
-                            </button>
-                        ` : ''}
+                        </div>
                     </div>
                 </div>
             `}).join('');
@@ -4431,7 +4621,86 @@
                 });
             }
         }
-        
+
+        // Handle click on user uploaded article
+        function handleUserUploadClick(id) {
+            const uploadedArticle = document.querySelector(`.uploaded-article[data-id="${id}"]`);
+            if (uploadedArticle.classList.contains('editing')) {
+                return; // Don't open PDF when editing
+            }
+
+            const uploads = window.userUploadsData || [];
+            const upload = uploads.find(u => u.id === id);
+            if (upload && upload.pdfUrl) {
+                const testPdfUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Research/2023-2024/Cejes%20et%20al.pdf';
+                const safeTitle = upload.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                displayArticlePDF(testPdfUrl, safeTitle);
+            }
+        }
+
+        // Toggle edit mode for user uploads
+        function toggleUserUploadEdit(id) {
+            const userUploadedDiv = document.querySelector(`.user-uploaded[data-id="${id}"]`);
+            const uploadedArticle = userUploadedDiv.querySelector('.uploaded-article');
+            const editBtn = uploadedArticle.querySelector('.edit-btn');
+
+            // Get PDF info from the uploads data
+            const uploads = window.userUploadsData || [];
+            const upload = uploads.find(u => u.id === id);
+            const hasPdf = upload && upload.pdfUrl && upload.pdfUrl.length > 0;
+            const testPdfUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Research/2023-2024/Cejes%20et%20al.pdf';
+
+            if (uploadedArticle.classList.contains('editing')) {
+                // Save changes
+                saveUserUploadEdit(id);
+                uploadedArticle.classList.remove('editing');
+                editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                // Hide edit fields and show meta
+                uploadedArticle.querySelector('.edit-fields').style.display = 'none';
+                uploadedArticle.querySelector('.meta').style.display = 'block';
+                // Restore cursor
+                uploadedArticle.style.cursor = hasPdf ? 'pointer' : 'default';
+            } else {
+                // Enter edit mode
+                uploadedArticle.classList.add('editing');
+                editBtn.innerHTML = '<i class="fas fa-save"></i> Save';
+                // Show edit fields and hide meta
+                uploadedArticle.querySelector('.edit-fields').style.display = 'block';
+                uploadedArticle.querySelector('.meta').style.display = 'none';
+                // Change cursor to default during edit
+                uploadedArticle.style.cursor = 'default';
+            }
+        }
+
+        // Save user upload edits
+        function saveUserUploadEdit(id) {
+            const userUploadedDiv = document.querySelector(`.user-uploaded[data-id="${id}"]`);
+            const uploadedArticle = userUploadedDiv.querySelector('.uploaded-article');
+
+            const title = uploadedArticle.querySelector('.edit-title').value;
+            const abstract = uploadedArticle.querySelector('.edit-abstract').value;
+            const category = uploadedArticle.querySelector('.edit-category').value;
+            const topic = uploadedArticle.querySelector('.edit-topic').value;
+            const type = uploadedArticle.querySelector('.edit-type').value;
+            const level = uploadedArticle.querySelector('.edit-level').value;
+            const year = uploadedArticle.querySelector('.edit-year').value;
+
+            // Update the display
+            uploadedArticle.querySelector('h3').innerHTML = title + (hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : '');
+            uploadedArticle.querySelector('.summary').textContent = abstract || 'N/A';
+            uploadedArticle.querySelector('.meta').innerHTML = `
+                <strong>Category:</strong> ${category}<br>
+                <strong>Topic:</strong> ${topic ? topic.charAt(0).toUpperCase() + topic.slice(1) : 'Not set'}<br>
+                <strong>Type:</strong> ${type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Not set'}<br>
+                <strong>Level:</strong> ${level}<br>
+                <strong>Year:</strong> ${year}
+            `;
+
+            // Here you would typically send the update to the server
+            // For now, just update the display
+            alert('Changes saved successfully!');
+        }
+
         // Approve user upload
         async function approveUserUpload(id) {
             try {

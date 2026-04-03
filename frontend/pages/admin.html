@@ -7473,6 +7473,34 @@ STI Archives Admin`;
             }
         }
         function closeRafModal() { document.getElementById('raf-preview-modal').style.display = 'none'; }
+
+        function displayArticlePDF(pdfUrl, title) {
+            if (!pdfUrl || pdfUrl === '') {
+                alert('No PDF file available for preview.');
+                return;
+            }
+            // Check if modal exists, create if not
+            let modal = document.getElementById('pdf-preview-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'pdf-preview-modal';
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content" style="width: 90%; max-width: 800px; max-height: 90vh;">
+                        <span class="close-modal" onclick="closePdfModal()">&times;</span>
+                        <h3>${title}</h3>
+                        <div id="pdf-preview-content" style="margin-top: 15px; height: 600px;"></div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+            modal.style.display = 'flex';
+            const content = document.getElementById('pdf-preview-content');
+            // Use iframe to display PDF
+            content.innerHTML = '<iframe src="' + pdfUrl + '" width="100%" height="100%" frameborder="0"></iframe>';
+        }
+
+        function closePdfModal() { document.getElementById('pdf-preview-modal').style.display = 'none'; }
         function toggleUploadsDropdown(e) {
             e.preventDefault();
             e.stopPropagation();

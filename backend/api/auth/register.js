@@ -237,14 +237,13 @@ async function handleLogin(req, res) {
       console.log('User verification check:', { verified: user.verified, user_type: user.user_type, role: user.role });
       const isAdminRole = user.role === 'admin' || user.role === 'coadmin' || user.role === 'subadmin';
       if (!user.verified && !isAdminRole) {
-        console.log('User not verified and not admin role - allowing login for debugging');
-        // Temporarily allow unverified users for debugging
-        // res.statusCode = 403;
-        // res.end(JSON.stringify({
-        //   success: false,
-        //   error: 'Account not activated. Please contact an administrator to approve your account.'
-        // }));
-        // return;
+        console.log('User not verified and not admin role - blocking login');
+        res.statusCode = 403;
+        res.end(JSON.stringify({
+          success: false,
+          error: 'Account not verified. Please wait for admin approval to access the system.'
+        }));
+        return;
       }
 
       const token = generateToken(user);

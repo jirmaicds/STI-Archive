@@ -1183,7 +1183,7 @@
                 max-height: 80vh;
                 overflow-y: auto;
                 box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-                animation: slideUp 0.5s ease;
+                animation: none;
                 position: relative;
             }
             .modal-header {
@@ -1343,6 +1343,16 @@
                     width: 95%;
                     max-height: 80vh;
                     animation: none;
+                }
+            }
+            @media (max-width: 400px) {
+                .modal {
+                    padding-top: 5vh;
+                }
+                .modal-content {
+                    width: calc(100% - 20px);
+                    margin: 10px;
+                    max-height: 90vh;
                 }
             }
             

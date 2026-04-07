@@ -5109,7 +5109,7 @@
                         <label style="font-weight: bold; color: #0057b8;">PDF Document:</label>
                         ${(articleData.pdfPath || articleData.pdf_path || articleData.pdfId) ? `
                         <div class="current-pdf" style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
-                            <span style="flex: 1; color: #333; word-break: break-all;">${articleData.pdfPath || articleData.pdf_path || 'PDF ID: ' + articleData.pdfId}</span>
+                            <span style="flex: 1; color: #333; word-break: break-all;">${(articleData.pdfPath || articleData.pdf_path || '').split('/').pop() || 'PDF ID: ' + articleData.pdfId}</span>
                             <button type="button" onclick="removeArticlePDF(this, '${articleData.id || articleData.title}')" style="background: #dc3545; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; font-size: 16px;">&times;</button>
                         </div>
                         ` : '<p style="color: #666; margin: 5px 0;">No PDF uploaded</p>'}

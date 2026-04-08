@@ -1922,8 +1922,8 @@
         .btn-success:hover { background-color: #218838; }
         .btn-danger { background-color: #dc3545; color: white; }
         .btn-danger:hover { background-color: #c82333; }
-        .btn-warning { background-color: #ffc107; color: #212529; }
-        .btn-warning:hover { background-color: #e0a800; }
+        .btn-warning { background-color: #007bff; color: white; }
+        .btn-warning:hover { background-color: #0056b3; }
         .btn-info { background-color: #17a2b8; color: white; }
         .btn-info:hover { background-color: #138496; }
         .btn-primary { background-color: #007bff; color: white; }
@@ -1932,8 +1932,8 @@
         body.dark-mode .btn-success:hover { background-color: #218838; }
         body.dark-mode .btn-danger { background-color: #dc3545; }
         body.dark-mode .btn-danger:hover { background-color: #c82333; }
-        body.dark-mode .btn-warning { background-color: #ffc107; color: #212529; }
-        body.dark-mode .btn-warning:hover { background-color: #e0a800; }
+        body.dark-mode .btn-warning { background-color: #007bff; color: white; }
+        body.dark-mode .btn-warning:hover { background-color: #0056b3; }
         body.dark-mode .btn-info { background-color: #17a2b8; }
         body.dark-mode .btn-info:hover { background-color: #138496; }
         body.dark-mode .btn-primary { background-color: #007bff; }
@@ -3271,7 +3271,7 @@
                 </div>
                 <!-- Admin Accounts Section -->
                 <div id="admins-section" class="user-subsection" style="--border-color: #6f42c1; --header-color: #6f42c1;">
-                    <button class="btn" onclick="openCreateAdminModal()">Create New Admin</button>
+                    
                     <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
                         <input type="checkbox" id="select-all-admins-main" onclick="toggleSelectAll('admins')">
                         <button class="btn btn-danger" onclick="bulkAction('admins', 'remove')">Remove</button>
@@ -3333,20 +3333,7 @@
                 </div>
                 <!-- Verified Users Section -->
                 <div id="verified-section" class="user-subsection" style="--border-color: #28a745; --header-color: #28a745;">
-                    <h3 style="color: var(--header-color);">✅ Verified Users</h3>
-                    <p style="margin-bottom: 20px;">Users who have been granted access by the admin.</p>
-                    <!-- Filter by Category above table -->
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="margin: 0 0 10px 0; color: #007bff;">Filter by Category:</h4>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="radio" id="verified-shs" name="verified-category" value="shs" onclick="openFilterModal('verified', 'shs')">
-                            <label for="verified-shs" style="cursor: pointer;">SHS</label>
-                            <input type="radio" id="verified-college" name="verified-category" value="college" onclick="openFilterModal('verified', 'college')">
-                            <label for="verified-college" style="cursor: pointer;">College</label>
-                            <input type="radio" id="verified-teacher" name="verified-category" value="teacher" onclick="openFilterModal('verified', 'teacher')">
-                            <label for="verified-teacher" style="cursor: pointer;">Teacher</label>
-                        </div>
-                    </div>
+                    
                     <!-- SHS Specification -->
                     <div id="shs-spec" style="display: none; margin-top: 20px;">
                         <h4>Grade:</h4>
@@ -3459,18 +3446,7 @@
                 </div>
                 <!-- Signing Up Users Section -->
                 <div id="signing-up-section" class="user-subsection" style="--border-color: #ffc107; --header-color: #ffc107;">
-                    <!-- Filter by Category above table -->
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="margin: 0 0 10px 0; color: #ffc107;">Filter by Category:</h4>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="radio" id="signing-up-shs" name="signing-up-category" value="shs" onclick="openFilterModal('signing-up', 'shs')">
-                            <label for="signing-up-shs" style="cursor: pointer;">SHS</label>
-                            <input type="radio" id="signing-up-college" name="signing-up-category" value="college" onclick="openFilterModal('signing-up', 'college')">
-                            <label for="signing-up-college" style="cursor: pointer;">College</label>
-                            <input type="radio" id="signing-up-teacher" name="signing-up-category" value="teacher" onclick="openFilterModal('signing-up', 'teacher')">
-                            <label for="signing-up-teacher" style="cursor: pointer;">Teacher</label>
-                        </div>
-                    </div>
+                    
                     <!-- SHS Specification for Signing Up -->
                     <div id="signing-up-shs-spec" style="display: none; margin-top: 20px;">
                         <h4>Grade:</h4>
@@ -3579,18 +3555,7 @@
                 </div>
                 <!-- Banned Users Section -->
                 <div id="banned-section" class="user-subsection" style="--border-color: #dc3545; --header-color: #dc3545;">
-                    <!-- Filter by Category above table -->
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="margin: 0 0 10px 0; color: #dc3545;">Filter by Category:</h4>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="radio" id="banned-shs" name="banned-category" value="shs" onclick="openFilterModal('banned', 'shs')">
-                            <label for="banned-shs" style="cursor: pointer;">SHS</label>
-                            <input type="radio" id="banned-college" name="banned-category" value="college" onclick="openFilterModal('banned', 'college')">
-                            <label for="banned-college" style="cursor: pointer;">College</label>
-                            <input type="radio" id="banned-teacher" name="banned-category" value="teacher" onclick="openFilterModal('banned', 'teacher')">
-                            <label for="banned-teacher" style="cursor: pointer;">Teacher</label>
-                        </div>
-                    </div>
+                    
                     <!-- SHS Specification for Banned -->
                     <div id="banned-shs-spec" style="display: none; margin-top: 20px;">
                         <h4>Grade:</h4>
@@ -7869,39 +7834,63 @@ STI Archives Admin`;
                 // Determine PDF URL from various possible fields
                 const pdfUrl = upload.filePath || upload.pdfUrl || upload.url || '';
                 const hasPdf = pdfUrl && (pdfUrl.startsWith('http') || pdfUrl.includes('.pdf'));
-                
+
                 // Escape special characters for onclick handler
                 const safePdfUrl = pdfUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 const safeTitle = (upload.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                
+
                 // Create onclick handler - call displayArticlePDF for inline viewing
                 const cardClick = hasPdf ? `displayArticlePDF('${safePdfUrl}', '${safeTitle}')` : '';
-                
+
+                // Get user initials for profile picture
+                const userInitials = (upload.userName || '').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'U';
+
+                // Format user metadata based on level
+                let userMeta = '';
+                const level = upload.level || 'unknown';
+
+                if (level === 'shs') {
+                    userMeta = `SHS Student - ${upload.topic || 'N/A'}`;
+                } else if (level === 'college') {
+                    userMeta = `College Student - ${upload.type || 'N/A'}`;
+                } else if (level === 'teacher') {
+                    userMeta = `Teacher - ${upload.category || 'N/A'}`;
+                } else {
+                    userMeta = `${level.charAt(0).toUpperCase() + level.slice(1)} - ${upload.category || 'N/A'}`;
+                }
+
                 return `
-                <div class="uploaded-article" data-id="${upload.id}" ${hasPdf ? "onclick=\"" + cardClick + "\" style=\"cursor: pointer;\"" : ''}>
-                    <h3>${upload.title}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : ''}</h3>
-                    <div class="summary">${upload.abstract || 'N/A'}</div>
-                    <div class="meta">
-                        <strong>Uploaded by:</strong> ${upload.userName}<br>
-                        <strong>Category:</strong> ${upload.category}<br>
-                        <strong>Topic:</strong> ${upload.topic ? upload.topic.charAt(0).toUpperCase() + upload.topic.slice(1) : 'Not set'}<br>
-                        <strong>Type:</strong> ${upload.type ? upload.type.charAt(0).toUpperCase() + upload.type.slice(1) : 'Not set'}<br>
-                        <strong>Level:</strong> ${upload.level}<br>
-                        <strong>Year:</strong> ${upload.year}
+                <div class="user-uploaded" data-id="${upload.id}">
+                    <div class="user-info">
+                        <div class="user-pfp">${userInitials}</div>
+                        <div class="user-details">
+                            <div class="user-fullname">${upload.userName}</div>
+                            <div class="user-meta">${userMeta}</div>
+                        </div>
                     </div>
-                    <div class="source-tag">
-                        <strong>File:</strong> ${upload.filename}<br>
-                        <strong>Status:</strong> <span style="color: ${upload.status === 'approved' ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">${upload.status}</span><br>
-                        <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}
-                    </div>
-                    <div class="actions">
-                        ${hasPdf ? `
-                        <button class="view-pdf-btn" onclick="event.stopPropagation(); displayArticlePDF('${safePdfUrl}', '${safeTitle}')">
-                            <i class="fas fa-eye"></i> View PDF
-                        </button>
-                        ` : ''}
-                        ${upload.status === 'pending' ? `
-                            <button class="upload-btn" onclick="approveUserUploadCoadmin('${upload.id}')">
+                    <div class="uploaded-article" data-id="${upload.id}" ${hasPdf ? "onclick=\"" + cardClick + "\" style=\"cursor: pointer;\"" : ''}>
+                        <h3>${upload.title}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : ''}</h3>
+                        <div class="summary">${upload.abstract || 'N/A'}</div>
+                        <div class="meta">
+                            <strong>Category:</strong> ${upload.category}<br>
+                            <strong>Topic:</strong> ${upload.topic ? upload.topic.charAt(0).toUpperCase() + upload.topic.slice(1) : 'Not set'}<br>
+                            <strong>Type:</strong> ${upload.type ? upload.type.charAt(0).toUpperCase() + upload.type.slice(1) : 'Not set'}<br>
+                            <strong>Level:</strong> ${upload.level}<br>
+                            <strong>Year:</strong> ${upload.year}
+                        </div>
+                        <div class="source-tag">
+                            <strong>File:</strong> ${upload.filename}<br>
+                            <strong>Status:</strong> <span style="color: ${upload.status === 'approved' ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">${upload.status}</span><br>
+                            <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}
+                        </div>
+                        <div class="actions">
+                            ${hasPdf ? `
+                            <button class="view-pdf-btn" onclick="event.stopPropagation(); displayArticlePDF('${safePdfUrl}', '${safeTitle}')">
+                                <i class="fas fa-eye"></i> View PDF
+                            </button>
+                            ` : ''}
+                            ${upload.status === 'pending' ? `
+                                <button class="upload-btn" onclick="approveUserUploadCoadmin('${upload.id}')`}
                                 <i class="fas fa-check"></i> Approve
                             </button>
                             <button class="delete-btn" onclick="rejectUserUploadCoadmin('${upload.id}')">

@@ -1343,7 +1343,7 @@
     </footer>
     <!-- Scroll to Top Button -->
     <button id="scrollToTopBtn" class="scroll-to-top-btn" title="Scroll to Top"><i class="fa fa-arrow-up"></i></button>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js" defer></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js" defer></script> -->
     <script src="/frontend/assets/js/script.js"></script>
     <!-- Dark mode toggle script -->
     <script>
@@ -2003,11 +2003,12 @@
         
         // Handle carousel item click - navigate to myspace.html with PDF
         function handleCarouselClick(pdfId, pdfPath, title) {
+            console.log('Carousel clicked:', { pdfId, pdfPath, title });
             if (pdfId || pdfPath) {
                 // Build URL with PDF parameters - need study parameter for myspace to work
-                let url = '/myspace.html?study=carousel';
+                let url = './myspace.html?study=carousel';
                 const params = [];
-                
+
                 if (pdfId) {
                     params.push(`pdfId=${encodeURIComponent(pdfId)}`);
                 }
@@ -2015,10 +2016,12 @@
                     params.push(`pdfPath=${encodeURIComponent(pdfPath)}`);
                 }
                 if (title) {
-                    params.push(`articleTitle=${title}`);
+                    params.push(`articleTitle=${encodeURIComponent(title)}`);
                 }
-                
-                window.location.href = url + (params.length > 0 ? '&' + params.join('&') : '');
+
+                const fullUrl = url + (params.length > 0 ? '&' + params.join('&') : '');
+                console.log('Redirecting to:', fullUrl);
+                window.location.href = fullUrl;
             } else {
                 // No PDF linked - just do nothing (don't show alert)
                 console.log('No PDF linked to this carousel item');

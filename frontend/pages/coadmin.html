@@ -3271,11 +3271,6 @@
                 </div>
                 <!-- Admin Accounts Section -->
                 <div id="admins-section" class="user-subsection" style="--border-color: #6f42c1; --header-color: #6f42c1;">
-                    
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-admins-main" onclick="toggleSelectAll('admins')">
-                        <button class="btn btn-danger" onclick="bulkAction('admins', 'remove')">Remove</button>
-                    </div>
                     <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                         <select id="role-filter-admins" onchange="updateFilters('admins')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="">All Roles</option>
@@ -3314,6 +3309,11 @@
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'admins', document.getElementById('search-filter-admins').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                         <button class="btn" onclick="openCreateAdminModal()">Create New Admin</button>
                     </div>
+                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                        <input type="checkbox" id="select-all-admins-main" onclick="toggleSelectAll('admins')">
+                        <button class="btn btn-danger" onclick="bulkAction('admins', 'remove')">Remove</button>
+                    </div>
+                    
                     <table>
                         <thead>
                             <tr>
@@ -3389,12 +3389,6 @@
                             </table>
                         </div>
                     </div>
-                    <button class="btn" onclick="openAddUserModal()">Add New User</button>
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-verified-main" onclick="toggleSelectAll('verified')">
-                        <button class="btn btn-danger" onclick="bulkAction('verified', 'ban')">Ban</button>
-                        <button class="btn btn-danger" onclick="bulkAction('verified', 'remove')">Remove</button>
-                    </div>
                     <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                         <select id="role-filter-verified" onchange="updateFilters('verified')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="">All Roles</option>
@@ -3433,6 +3427,12 @@
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'verified', document.getElementById('search-filter-verified').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                         <button class="btn" onclick="openAddUserModal()">Add New User</button>
                     </div>
+                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                        <input type="checkbox" id="select-all-verified-main" onclick="toggleSelectAll('verified')">
+                        <button class="btn btn-danger" onclick="bulkAction('verified', 'ban')">Ban</button>
+                        <button class="btn btn-danger" onclick="bulkAction('verified', 'remove')">Remove</button>
+                    </div>
+                    
                     <div style="overflow-x: auto;">
                         <table id="verified-users-table">
                             <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Section</th><th>Date Verified</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
@@ -3502,12 +3502,6 @@
                             </table>
                         </div>
                     </div>
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-signing-up-main" onclick="toggleSelectAll('signing-up')">
-                        <button class="btn btn-success" onclick="bulkAction('signing-up', 'accept')">Accept</button>
-                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'ban')">Ban</button>
-                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'remove')">Remove</button>
-                    </div>
                     <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                         <select id="role-filter-signing-up" onchange="updateFilters('signing-up')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="">All Roles</option>
@@ -3546,6 +3540,13 @@
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'signing-up', document.getElementById('search-filter-signing-up').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                         <button class="btn" onclick="openAddUserModal()">Add New User</button>
                     </div>
+                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                        <input type="checkbox" id="select-all-signing-up-main" onclick="toggleSelectAll('signing-up')">
+                        <button class="btn btn-success" onclick="bulkAction('signing-up', 'accept')">Accept</button>
+                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'ban')">Ban</button>
+                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'remove')">Remove</button>
+                    </div>
+                    
                     <div style="overflow-x: auto;">
                         <table id="signing-up-users-table">
                             <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Str/B.S.</th><th>Date Signed Up</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
@@ -3610,11 +3611,6 @@
                             </table>
                         </div>
                     </div>
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-banned-main" onclick="toggleSelectAll('banned')">
-                        <button class="btn btn-success" onclick="bulkAction('banned', 'accept')">Accept</button>
-                        <button class="btn btn-danger" onclick="bulkAction('banned', 'remove')">Remove</button>
-                    </div>
                     <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                         <select id="role-filter-banned" onchange="updateFilters('banned')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="">All Roles</option>
@@ -3653,6 +3649,12 @@
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'banned', document.getElementById('search-filter-banned').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                         <button class="btn" onclick="openAddUserModal()">Add New User</button>
                     </div>
+                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                        <input type="checkbox" id="select-all-banned-main" onclick="toggleSelectAll('banned')">
+                        <button class="btn btn-success" onclick="bulkAction('banned', 'accept')">Accept</button>
+                        <button class="btn btn-danger" onclick="bulkAction('banned', 'remove')">Remove</button>
+                    </div>
+                    
                     <div style="overflow-x: auto;">
                         <table id="banned-users-table">
                             <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Str/B.S.</th><th>Date Banned</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
@@ -6588,6 +6590,8 @@ STI Archives Admin`;
             }
         }
         function previewRaf(rafPath) {
+            // For testing, use a hardcoded PDF from Supabase
+            rafPath = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Santibanez%20et%20al.pdf';
             if (!rafPath || rafPath === '') {
                 alert('No RAF file available for preview.');
                 return;

@@ -3622,7 +3622,7 @@
                             <option value="email">Email</option>
                         </select>
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'admins', document.getElementById('search-filter-admins').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                        <button class="btn" onclick="openCreateAdminModal()">Create New Admin</button>
+                        <button id="create-admin-btn" class="btn" onclick="openCreateAdminModal()">Create New Admin</button>
                     </div>
 
                     <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
@@ -4465,7 +4465,7 @@
                 const cardClick = `displayArticlePDF('${testPdfUrl}', '${safeTitle}')`;
 
                 // Get user initials for profile picture
-                const userInitials = upload.userName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'U';
+                const userInitials = (upload.userName || '').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'U';
 
                 // Format user metadata based on role
                 let userMeta = '';
@@ -5624,36 +5624,33 @@
                     const maxNotifications = 10;
                     const limitedNotifications = notifications.slice(0, maxNotifications);
                     const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
-                    limitedNotifications.forEach(notif => {
-                        const notifDiv = document.createElement('div');
-                        notifDiv.className = 'notification-item';
-                        notifDiv.setAttribute('data-id', notif.id);
+                    if (limitedNotifications.length === 0) {
+                        notificationList.innerHTML = '<div class="notification-placeholder">No new notifications.</div>';
+                    } else {
+                        limitedNotifications.forEach(notif => {
+                            const notifDiv = document.createElement('div');
+                            notifDiv.className = 'notification-item';
+                            notifDiv.setAttribute('data-id', notif.id);
 
-                        // Apply read state if previously marked as read
-                        const isRead = readNotifications.includes(notif.id);
-                        if (isRead) {
-                            notifDiv.classList.add('read');
-                        }
+                            // Apply read state if previously marked as read
+                            const isRead = readNotifications.includes(notif.id);
+                            if (isRead) {
+                                notifDiv.classList.add('read');
+                            }
 
-                        notifDiv.innerHTML = `
-                            <div class="notification-details">
-                                <div class="notification-type ${notif.type}">${notif.typeText}</div>
-                                <div class="notification-content">${notif.content}</div>
-                                <div class="notification-time">${formatNotificationDate(notif.time)}</div>
-                            </div>
-                            <div class="notification-actions">
-                                <i class="fas ${isRead ? 'fa-check' : 'fa-times'}" title="${isRead ? 'Mark as Unread' : 'Mark as Read'}" onclick="${isRead ? 'markNotificationUnread' : 'markNotificationRead'}(this)"></i>
-                            </div>
-                        `;
-                        notificationList.appendChild(notifDiv);
-                    });
-                }
-                const placeholder = document.querySelector('.notification-placeholder');
-                console.log('DEBUG: Notification placeholder element:', placeholder);
-                if (placeholder) {
-                    placeholder.style.display = notifications.length > 0 ? 'none' : 'block';
-                } else {
-                    console.error('DEBUG: Notification placeholder not found');
+                            notifDiv.innerHTML = `
+                                <div class="notification-details">
+                                    <div class="notification-type ${notif.type}">${notif.typeText}</div>
+                                    <div class="notification-content">${notif.content}</div>
+                                    <div class="notification-time">${formatNotificationDate(notif.time)}</div>
+                                </div>
+                                <div class="notification-actions">
+                                    <i class="fas ${isRead ? 'fa-check' : 'fa-times'}" title="${isRead ? 'Mark as Unread' : 'Mark as Read'}" onclick="${isRead ? 'markNotificationUnread' : 'markNotificationRead'}(this)"></i>
+                                </div>
+                            `;
+                            notificationList.appendChild(notifDiv);
+                        });
+                    }
                 }
 
                 // Update badge count
@@ -9092,11 +9089,16 @@ STI Archives Admin`;
                     if (data.success) {
                         const item = data.carousel.find(i => i.id === id);
                         if (item) {
-                            document.getElementById('carousel-item-id').value = item.id;
-                            document.getElementById('carousel-image-url').value = item.imageUrl || '';
-                            document.getElementById('carousel-title').value = item.title || '';
-                            document.getElementById('carousel-author').value = item.author || '';
-                            document.getElementById('carousel-description').value = item.description || '';
+                            const idEl = document.getElementById('carousel-item-id');
+                            if (idEl) idEl.value = item.id;
+                            const urlEl = document.getElementById('carousel-image-url');
+                            if (urlEl) urlEl.value = item.imageUrl || '';
+                            const titleEl = document.getElementById('carousel-title');
+                            if (titleEl) titleEl.value = item.title || '';
+                            const authorEl = document.getElementById('carousel-author');
+                            if (authorEl) authorEl.value = item.author || '';
+                            const descEl = document.getElementById('carousel-description');
+                            if (descEl) descEl.value = item.description || '';
                             
                             // Set PDF selection if there's a linked PDF
                             const pdfSelect = document.getElementById('carousel-pdf-select');

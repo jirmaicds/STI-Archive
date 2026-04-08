@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <!-- Supabase Client -->
-    <script src="/frontend/services/supabase.js"></script>
+    <script src="./frontend/services/supabase.js"></script>
     <style>
         /* === GLOBAL RESET & BASE STYLES === */
         * {
@@ -2034,7 +2034,10 @@
                 const settings = await response.json();
                 // Check if favicon is a blob URL and reset to default if so
                 if (settings.siteFavicon && settings.siteFavicon.startsWith('blob:')) {
-                    settings.siteFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
+                    settings.siteFavicon = 'frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg';
+                }
+                if (!settings.siteFavicon) {
+                    settings.siteFavicon = 'frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg';
                 }
                 updateDocumentTitle(settings.siteTitle);
                 updateDocumentFavicon(settings.siteFavicon);
@@ -2042,7 +2045,7 @@
                 console.error('Failed to load site settings:', error);
                 // Fallback to defaults
                 const defaultTitle = 'STI Archives';
-                const defaultFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
+                const defaultFavicon = 'frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg';
                 updateDocumentTitle(defaultTitle);
                 updateDocumentFavicon(defaultFavicon);
             }

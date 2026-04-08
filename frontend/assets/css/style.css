@@ -171,12 +171,7 @@ body {
     font-family: 'Poppins', Arial, sans-serif;
     
 }
-/* Sidebar at narrower widths */
-@media (max-width: 874px) {
-    .sidebar {
-        top: 5% !important;
-    }
-}
+
 @media (max-width:768px) {
     .nav-center{
         display:none;

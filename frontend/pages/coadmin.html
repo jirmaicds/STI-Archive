@@ -2981,6 +2981,16 @@
             background-color: #6c757d;
             color: white;
         }
+
+        /* Carousel items list responsive */
+        @media (max-width: 768px) {
+            #carousel-items-list {
+                flex-direction: column;
+            }
+            #carousel-items-list > div {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -3173,7 +3183,7 @@
                     <p style="margin-bottom: 15px; color: #666;">Manage the carousel items displayed on the homepage. Click on a carousel item to edit it.</p>
                     
                     <!-- Carousel Items List -->
-                    <div id="carousel-items-list" style="max-width: 800px; margin-bottom: 30px;">
+                    <div id="carousel-items-list" style="display: flex !important; flex-direction: row; flex-wrap: wrap; gap: 15px; margin-bottom: 30px;">
                         <p class="empty-state">No carousel items yet. Add one below.</p>
                     </div>
                     
@@ -7380,6 +7390,8 @@ STI Archives Admin`;
         
         // Load carousel items from server
         function loadCarouselItems() {
+            const container = document.getElementById('carousel-items-list');
+            container.innerHTML = '<div style="text-align: center; padding: 40px; width: 100%;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #0057b8;"></i><p>Loading carousel items...</p></div>';
             fetch('/api/carousel')
                 .then(response => response.json())
                 .then(data => {
@@ -7422,20 +7434,22 @@ STI Archives Admin`;
             }
             
             container.innerHTML = items.map(item => `
-                <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; gap: 15px; align-items: center;">
-                    <img src="${item.imageUrl}" alt="${item.title}" style="width: 80px; height: 60px; object-fit: cover; border-radius: 4px;">
-                    <div style="flex: 1;">
-                        <h4 style="margin: 0 0 5px 0; color: #0057b8;">${item.title}</h4>
-                        <p style="margin: 0; font-size: 12px; color: #666;">${item.author || 'No author'}</p>
-                        ${item.pdfId || item.pdfPath ? '<p style="margin: 5px 0 0 0; font-size: 11px; color: green;"><i class="fas fa-link"></i> PDF linked</p>' : ''}
-                    </div>
-                    <div style="display: flex; gap: 5px;">
-                        <button onclick="editCarouselItem('${item.id}')" class="btn btn-sm" style="background: #0057b8; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer;">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button onclick="deleteCarouselItem('${item.id}')" class="btn btn-sm" style="background: #dc3545; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer;">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
+                <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 350px; height: 400px; display: flex; flex-direction: column; align-items: stretch; flex-shrink: 0;">
+                    <img src="${item.imageUrl}" alt="${item.title}" style="width: 100%; height: 250px; object-fit: cover; border-radius: 4px; margin-bottom: 10px;">
+                    <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; color: #0057b8; font-size: 14px;">${item.title}</h4>
+                            <p style="margin: 0; font-size: 12px; color: #666;">${item.author || 'No author'}</p>
+                            ${item.pdfId || item.pdfPath ? '<p style="margin: 5px 0 0 0; font-size: 11px; color: green;"><i class="fas fa-link"></i> PDF linked</p>' : ''}
+                        </div>
+                        <div style="display: flex; gap: 5px; margin-top: 10px;">
+                            <button onclick="editCarouselItem('${item.id}')" class="btn btn-sm" style="background: #0057b8; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; flex: 1; font-size: 12px;">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button onclick="deleteCarouselItem('${item.id}')" class="btn btn-sm" style="background: #dc3545; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; flex: 1; font-size: 12px;">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
                     </div>
                 </div>
             `).join('');

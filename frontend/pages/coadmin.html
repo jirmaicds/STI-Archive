@@ -3188,15 +3188,20 @@
                 </div>
                 <div id="carousel-section" class="upload-subsection">
                     <h3 style="color: #0057b8; margin: 20px 0;">Carousel Management</h3>
-                    <p style="margin-bottom: 15px; color: #666;">Manage the carousel items displayed on the homepage. Click on a carousel item to edit it.</p>
-                    
-                    <!-- Carousel Items List -->
-                    <div id="carousel-items-list">
-                        <p class="empty-state">No carousel items yet. Add one below.</p>
+                    <p style="margin-bottom: 15px; color: #666;">Manage the carousel items displayed on the homepage.</p>
+
+                    <!-- Navigation and Add Button -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <button type="button" id="carousel-add-btn" onclick="showCarouselForm()" class="btn" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-plus" style="margin-right: 5px;"></i>Add new carousel item
+                        </button>
+                        <button type="button" id="carousel-show-btn" onclick="showCarouselItemsList()" class="btn" style="background: #0057b8; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-list" style="margin-right: 5px;"></i>Showing Carousel Item
+                        </button>
                     </div>
-                    
+
                     <!-- Add/Edit Carousel Form -->
-                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid #ddd;">
+                    <div id="carousel-form-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #ddd; display: none;">
                         <h4 id="carousel-form-title" style="color: #0057b8; margin-top: 0;">Add New Carousel Item</h4>
                         <form id="carousel-form">
                             <input type="hidden" id="carousel-item-id" value="">
@@ -3240,6 +3245,11 @@
                                 </button>
                             </div>
                         </form>
+                    </div>
+
+                    <!-- Carousel Items List -->
+                    <div id="carousel-items-list">
+                        <p class="empty-state">No carousel items yet. Add one below.</p>
                     </div>
                 </div>
             </div>
@@ -7396,6 +7406,25 @@ STI Archives Admin`;
     <script>
         // === CAROUSEL MANAGEMENT FUNCTIONS ===
         
+        // Show carousel form for adding new item
+        function showCarouselForm() {
+            resetCarouselForm();
+            document.getElementById('carousel-form-container').style.display = 'block';
+            document.getElementById('carousel-add-btn').style.display = 'none';
+            document.getElementById('carousel-show-btn').style.display = 'inline-block';
+            // Load articles for PDF selection
+            loadArticlesForCarouselSelect();
+        }
+
+        // Show carousel items list
+        function showCarouselItemsList() {
+            document.getElementById('carousel-form-container').style.display = 'none';
+            document.getElementById('carousel-add-btn').style.display = 'inline-block';
+            document.getElementById('carousel-show-btn').style.display = 'none';
+            // Load carousel items
+            loadCarouselItems();
+        }
+
         // Load carousel items from server
         function loadCarouselItems() {
             const container = document.getElementById('carousel-items-list');
@@ -7597,7 +7626,16 @@ STI Archives Admin`;
                             // Show cancel button and change title
                             document.getElementById('carousel-form-title').textContent = 'Edit Carousel Item';
                             document.getElementById('carousel-cancel-btn').style.display = 'inline-block';
-                            
+
+                            // Show the form
+                            document.getElementById('carousel-form-container').style.display = 'block';
+                            document.getElementById('carousel-add-btn').style.display = 'none';
+                            document.getElementById('carousel-show-btn').style.display = 'inline-block';
+
+                            // Change submit button text
+                            const submitBtn = document.querySelector('#carousel-form button[type="submit"]');
+                            if (submitBtn) submitBtn.textContent = 'Update Item';
+
                             // Scroll to form
                             document.getElementById('carousel-form').scrollIntoView({ behavior: 'smooth' });
                         }
@@ -7654,6 +7692,15 @@ STI Archives Admin`;
             
             if (carouselFormTitle) carouselFormTitle.textContent = 'Add New Carousel Item';
             if (carouselCancelBtn) carouselCancelBtn.style.display = 'none';
+            const submitBtn = document.querySelector('#carousel-form button[type="submit"]');
+            if (submitBtn) submitBtn.textContent = 'Add Item';
+            // Hide form and show buttons
+            const carouselFormContainer = document.getElementById('carousel-form-container');
+            if (carouselFormContainer) carouselFormContainer.style.display = 'none';
+            const carouselAddBtn = document.getElementById('carousel-add-btn');
+            if (carouselAddBtn) carouselAddBtn.style.display = 'inline-block';
+            const carouselShowBtn = document.getElementById('carousel-show-btn');
+            if (carouselShowBtn) carouselShowBtn.style.display = 'none';
         }
         
         // Handle carousel image upload

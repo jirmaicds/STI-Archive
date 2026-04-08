@@ -2982,6 +2982,14 @@
             color: white;
         }
 
+        #carousel-items-list {
+            display: flex !important;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
         /* Carousel items list responsive */
         @media (max-width: 768px) {
             #carousel-items-list {
@@ -3183,7 +3191,7 @@
                     <p style="margin-bottom: 15px; color: #666;">Manage the carousel items displayed on the homepage. Click on a carousel item to edit it.</p>
                     
                     <!-- Carousel Items List -->
-                    <div id="carousel-items-list" style="display: flex !important; flex-direction: row; flex-wrap: wrap; gap: 15px; margin-bottom: 30px;">
+                    <div id="carousel-items-list">
                         <p class="empty-state">No carousel items yet. Add one below.</p>
                     </div>
                     

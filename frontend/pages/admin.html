@@ -3492,39 +3492,34 @@
                         </button>
                     </div>
                     
-                    <!-- Carousel Items List -->
-                    <div id="carousel-items-list" style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 30px;">
-                        <p class="empty-state">No carousel items yet. Add one below.</p>
-                    </div>
-                    
                     <!-- Add/Edit Carousel Form -->
-                    <div id="carousel-form-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid #ddd; display: none;">
+                    <div id="carousel-form-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #ddd; display: none;">
                         <h4 id="carousel-form-title" style="color: #0057b8; margin-top: 0;">Add New Carousel Item</h4>
                         <form id="carousel-form">
                             <input type="hidden" id="carousel-item-id" value="">
-                            
+
                             <div style="margin-bottom: 15px;">
                                 <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Image *</label>
                                 <input type="file" id="carousel-image-upload" accept="image/*" onchange="handleCarouselImageUpload(this)" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
                                 <div id="carousel-image-preview" style="margin-top: 10px;"></div>
                                 <small style="color: #666;">Upload an image for the carousel</small>
                             </div>
-                            
+
                             <div style="margin-bottom: 15px;">
                                 <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Title *</label>
                                 <input type="text" id="carousel-title" placeholder="Enter title" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;" required>
                             </div>
-                            
+
                             <div style="margin-bottom: 15px;">
                                 <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Author/Source</label>
                                 <input type="text" id="carousel-author" placeholder="Author Name - Year" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
                             </div>
-                            
+
                             <div style="margin-bottom: 15px;">
                                 <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Description</label>
                                 <textarea id="carousel-description" placeholder="Enter description" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;" rows="3"></textarea>
                             </div>
-                            
+
                             <div style="margin-bottom: 15px;">
                                 <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Link to PDF (optional)</label>
                                 <select id="carousel-pdf-select" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
@@ -3532,7 +3527,7 @@
                                 </select>
                                 <small style="color: #666;">When users click this carousel item, they will be directed to myspace.html with the selected PDF.</small>
                             </div>
-                            
+
                             <div style="display: flex; gap: 10px;">
                                 <button type="submit" class="btn" style="background: #0057b8; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
                                     Add Item
@@ -3542,6 +3537,11 @@
                                 </button>
                             </div>
                         </form>
+                    </div>
+
+                    <!-- Carousel Items List -->
+                    <div id="carousel-items-list" style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 30px;">
+                        <p class="empty-state">No carousel items yet. Add one below.</p>
                     </div>
                 </div>
             </div>
@@ -8912,6 +8912,8 @@ STI Archives Admin`;
         
         // Load carousel items from server
         function loadCarouselItems() {
+            const container = document.getElementById('carousel-items-list');
+            container.innerHTML = '<div style="text-align: center; padding: 40px; width: 100%;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #0057b8;"></i><p>Loading carousel items...</p></div>';
             fetch('/api/carousel')
                 .then(response => response.json())
                 .then(data => {
@@ -8954,8 +8956,8 @@ STI Archives Admin`;
             }
             
             container.innerHTML = items.map(item => `
-                <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 200px; height: 300px; display: flex; flex-direction: column; align-items: stretch;">
-                    <img src="${item.imageUrl}" alt="${item.title}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 4px; margin-bottom: 10px;">
+                <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 350px; height: 400px; display: flex; flex-direction: column; align-items: stretch;">
+                    <img src="${item.imageUrl}" alt="${item.title}" style="width: 100%; height: 250px; object-fit: cover; border-radius: 4px; margin-bottom: 10px;">
                     <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
                         <div>
                             <h4 style="margin: 0 0 5px 0; color: #0057b8; font-size: 14px;">${item.title}</h4>
@@ -9117,7 +9119,6 @@ STI Archives Admin`;
 
                             // Show the form
                             document.getElementById('carousel-form-container').style.display = 'block';
-                            document.getElementById('carousel-items-list').style.display = 'none';
                             document.getElementById('carousel-add-btn').style.display = 'none';
                             document.getElementById('carousel-show-btn').style.display = 'inline-block';
 
@@ -9196,7 +9197,6 @@ STI Archives Admin`;
         function showCarouselForm() {
             resetCarouselForm();
             document.getElementById('carousel-form-container').style.display = 'block';
-            document.getElementById('carousel-items-list').style.display = 'none';
             document.getElementById('carousel-add-btn').style.display = 'none';
             document.getElementById('carousel-show-btn').style.display = 'inline-block';
             // Load articles for PDF selection

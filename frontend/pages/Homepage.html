@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="/frontend/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    <!-- Supabase Client -->
-    <script src="/frontend/services/supabase.js"></script>
+    <!-- Supabase Client - commented out due to 404 -->
+    <!-- <script src="/frontend/services/supabase.js"></script> -->
     <style>
         /* === GLOBAL RESET & BASE STYLES === */
         * {
@@ -2038,6 +2038,9 @@
                 }
                 if (!settings.siteFavicon) {
                     settings.siteFavicon = 'frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg';
+                }
+                if (!settings.siteTitle) {
+                    settings.siteTitle = 'STI Archives';
                 }
                 updateDocumentTitle(settings.siteTitle);
                 updateDocumentFavicon(settings.siteFavicon);

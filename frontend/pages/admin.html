@@ -3266,6 +3266,16 @@
             background-color: #6c757d;
             color: white;
         }
+
+        /* Carousel items list responsive */
+        @media (max-width: 768px) {
+            #carousel-items-list {
+                flex-direction: column;
+            }
+            #carousel-items-list > div {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -3540,7 +3550,7 @@
                     </div>
 
                     <!-- Carousel Items List -->
-                    <div id="carousel-items-list" style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 30px;">
+                    <div id="carousel-items-list" style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 15px; margin-bottom: 30px;">
                         <p class="empty-state">No carousel items yet. Add one below.</p>
                     </div>
                 </div>

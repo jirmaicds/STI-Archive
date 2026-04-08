@@ -9112,6 +9112,16 @@ STI Archives Admin`;
                             // Show cancel button and change title
                             document.getElementById('carousel-form-title').textContent = 'Edit Carousel Item';
                             document.getElementById('carousel-cancel-btn').style.display = 'inline-block';
+
+                            // Show the form
+                            document.getElementById('carousel-form-container').style.display = 'block';
+                            document.getElementById('carousel-items-list').style.display = 'none';
+                            document.getElementById('carousel-add-btn').style.display = 'none';
+                            document.getElementById('carousel-show-btn').style.display = 'inline-block';
+
+                            // Change submit button text
+                            const submitBtn = document.querySelector('#carousel-form button[type="submit"]');
+                            if (submitBtn) submitBtn.textContent = 'Update Item';
                             
                             // Scroll to form
                             document.getElementById('carousel-form').scrollIntoView({ behavior: 'smooth' });
@@ -9170,12 +9180,14 @@ STI Archives Admin`;
             if (carouselImagePreview) carouselImagePreview.innerHTML = '';
             
             if (carouselFormTitle) carouselFormTitle.textContent = 'Add New Carousel Item';
+            const submitBtn = document.querySelector('#carousel-form button[type="submit"]');
+            if (submitBtn) submitBtn.textContent = 'Add Item';
             // Hide form and show items list
             if (carouselFormContainer) carouselFormContainer.style.display = 'none';
             if (carouselItemsList) carouselItemsList.style.display = 'block';
             // Show the add button and hide show button
             if (carouselAddBtn) carouselAddBtn.style.display = 'inline-block';
-            document.getElementById('carousel-show-btn').style.display = 'inline-block';
+            document.getElementById('carousel-show-btn').style.display = 'none';
         }
         
         // Show carousel form for adding new item

@@ -3195,9 +3195,6 @@
                         <button type="button" id="carousel-add-btn" onclick="showCarouselForm()" class="btn" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
                             <i class="fas fa-plus" style="margin-right: 5px;"></i>Add new carousel item
                         </button>
-                        <button type="button" id="carousel-show-btn" onclick="showCarouselItemsList()" class="btn" style="background: #0057b8; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
-                            <i class="fas fa-list" style="margin-right: 5px;"></i>Showing Carousel Item
-                        </button>
                     </div>
 
                     <!-- Add/Edit Carousel Form -->
@@ -7411,7 +7408,6 @@ STI Archives Admin`;
             resetCarouselForm();
             document.getElementById('carousel-form-container').style.display = 'block';
             document.getElementById('carousel-add-btn').style.display = 'none';
-            document.getElementById('carousel-show-btn').style.display = 'inline-block';
             // Load articles for PDF selection
             loadArticlesForCarouselSelect();
         }
@@ -7630,7 +7626,6 @@ STI Archives Admin`;
                             // Show the form
                             document.getElementById('carousel-form-container').style.display = 'block';
                             document.getElementById('carousel-add-btn').style.display = 'none';
-                            document.getElementById('carousel-show-btn').style.display = 'inline-block';
 
                             // Change submit button text
                             const submitBtn = document.querySelector('#carousel-form button[type="submit"]');
@@ -7694,13 +7689,11 @@ STI Archives Admin`;
             if (carouselCancelBtn) carouselCancelBtn.style.display = 'none';
             const submitBtn = document.querySelector('#carousel-form button[type="submit"]');
             if (submitBtn) submitBtn.textContent = 'Add Item';
-            // Hide form and show buttons
+            // Hide form
             const carouselFormContainer = document.getElementById('carousel-form-container');
             if (carouselFormContainer) carouselFormContainer.style.display = 'none';
             const carouselAddBtn = document.getElementById('carousel-add-btn');
             if (carouselAddBtn) carouselAddBtn.style.display = 'inline-block';
-            const carouselShowBtn = document.getElementById('carousel-show-btn');
-            if (carouselShowBtn) carouselShowBtn.style.display = 'none';
         }
         
         // Handle carousel image upload

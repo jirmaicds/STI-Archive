@@ -3996,7 +3996,12 @@
             } catch (e) {
                 console.log('DEBUG: Could not load from server, error:', e.message, 'using localStorage');
             }
-            let localUsers = JSON.parse(localStorage.getItem('users')) || [];
+            let localUsers = [];
+            try {
+                localUsers = JSON.parse(localStorage.getItem('users')) || [];
+            } catch (e) {
+                console.error('Error parsing local users:', e);
+            }
             // Auto-delete rejected users after 24 hours
             const now = new Date();
             localUsers = localUsers.filter(user => {
@@ -4656,30 +4661,36 @@
                 if (notificationList) {
                     notificationList.innerHTML = ''; // Clear existing
                     console.log('DEBUG: Populating notification modal with', notifications.length, 'notifications');
+                    const maxNotifications = 10;
+                    const limitedNotifications = notifications.slice(0, maxNotifications);
                     const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
-                    notifications.forEach(notif => {
-                        const notifDiv = document.createElement('div');
-                        notifDiv.className = 'notification-item';
-                        notifDiv.setAttribute('data-id', notif.id);
+                    if (limitedNotifications.length === 0) {
+                        notificationList.innerHTML = '<div class="notification-placeholder">No new notifications.</div>';
+                    } else {
+                        limitedNotifications.forEach(notif => {
+                            const notifDiv = document.createElement('div');
+                            notifDiv.className = 'notification-item';
+                            notifDiv.setAttribute('data-id', notif.id);
 
-                        // Apply read state if previously marked as read
-                        const isRead = readNotifications.includes(notif.id);
-                        if (isRead) {
-                            notifDiv.classList.add('read');
-                        }
+                            // Apply read state if previously marked as read
+                            const isRead = readNotifications.includes(notif.id);
+                            if (isRead) {
+                                notifDiv.classList.add('read');
+                            }
 
-                        notifDiv.innerHTML = `
-                            <div class="notification-details">
-                                <div class="notification-type ${notif.type}">${notif.typeText}</div>
-                                <div class="notification-content">${notif.content}</div>
-                                <div class="notification-time">${formatNotificationDate(notif.time)}</div>
-                            </div>
-                            <div class="notification-actions">
-                                <i class="fas ${isRead ? 'fa-check' : 'fa-times'}" title="${isRead ? 'Mark as Unread' : 'Mark as Read'}" onclick="${isRead ? 'markNotificationUnread' : 'markNotificationRead'}(this)"></i>
-                            </div>
-                        `;
-                        notificationList.appendChild(notifDiv);
-                    });
+                            notifDiv.innerHTML = `
+                                <div class="notification-details">
+                                    <div class="notification-type ${notif.type}">${notif.typeText}</div>
+                                    <div class="notification-content">${notif.content}</div>
+                                    <div class="notification-time">${formatNotificationDate(notif.time)}</div>
+                                </div>
+                                <div class="notification-actions">
+                                    <i class="fas ${isRead ? 'fa-check' : 'fa-times'}" title="${isRead ? 'Mark as Unread' : 'Mark as Read'}" onclick="${isRead ? 'markNotificationUnread' : 'markNotificationRead'}(this)"></i>
+                                </div>
+                            `;
+                            notificationList.appendChild(notifDiv);
+                        });
+                    }
                 }
                 const placeholder = document.querySelector('.notification-placeholder');
                 console.log('DEBUG: Notification placeholder element:', placeholder);
@@ -7187,7 +7198,10 @@ STI Archives Admin`;
                     // Check if favicon is a blob URL and reset to default if so
                     if (settings.siteFavicon && settings.siteFavicon.startsWith('blob:')) {
                         console.log('DEBUG: Invalid blob URL detected, resetting to default favicon');
-                        settings.siteFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
+                        settings.siteFavicon = 'frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg';
+                    }
+                    if (!settings.siteFavicon) {
+                        settings.siteFavicon = 'frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg';
                     }
                     siteTitleInput.value = settings.siteTitle;
                     siteTitlePreview.textContent = settings.siteTitle;
@@ -7198,7 +7212,7 @@ STI Archives Admin`;
                     console.error('Failed to load site settings:', error);
                     // Fallback to defaults
                     const defaultTitle = 'STI Archives';
-                    const defaultFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
+                    const defaultFavicon = 'frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg';
                     siteTitleInput.value = defaultTitle;
                     siteTitlePreview.textContent = defaultTitle;
                     faviconPreview.src = defaultFavicon;

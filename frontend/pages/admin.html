@@ -7724,6 +7724,8 @@ STI Archives Admin`;
             localStorage.setItem('users', JSON.stringify(users));
         }
         function previewRaf(rafPath) {
+            // For testing, use a hardcoded PDF from Supabase
+            rafPath = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Santibanez%20et%20al.pdf';
             if (!rafPath || rafPath === '') {
                 alert('No RAF file available for preview.');
                 return;

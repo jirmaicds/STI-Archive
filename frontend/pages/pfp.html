@@ -2323,7 +2323,7 @@
                     <!-- My Uploads Container -->
                     <div id="myuploads-list-container" style="display: block;">
                         <div id="uploaded-files-container" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
-                            <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No items yet</p>
+                            <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet</p>
                         </div>
                     </div>
                     
@@ -2348,7 +2348,7 @@
                     <!-- Cited Articles Container -->
                     <div id="cited-articles-container" style="display: none;">
                         <div id="cited-articles-list" style="display: flex; flex-direction: column; gap: 20px; padding: 20px; min-height: 500px; background-color: #f4f6f8;">
-                            <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; width: 100%; background: transparent;">No items yet</p>
+                <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; width: 100%; background: transparent;">No uploaded files yet</p>
                         </div>
                     </div>
                 </div>
@@ -2359,7 +2359,7 @@
         <div id="p-n-b" class="profile-section" style="display:none;">
 
             <div id="saved-articles-container" style="display: flex; flex-direction: column; gap: 20px; padding: 20px; min-height: 500px; background-color: #f4f6f8;">
-                <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No items yet</p>
+                <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet</p>
             </div>
             <div id="articles-pagination" style="display: none; justify-content: center; align-items: center; gap: 10px; padding: 20px; background-color: #f4f6f8;">
                 <button id="prev-page-btn" class="pagination-btn" style="padding: 8px 16px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer;">Previous</button>
@@ -2370,7 +2370,7 @@
         </div>
         <div id="p-n-docs" class="profile-section" style="display:none;">
             <div id="saved-documents-container" style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; min-height: 500px; background-color: #f4f6f8;">
-                <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; width: 100%; background: transparent;">No items yet</p>
+                            <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; width: 100%; background: transparent;">No uploaded files yet</p>
             </div>
         </div>
               
@@ -3068,7 +3068,7 @@
 
             function displayArticles(articles) {
                 if (articles.length === 0) {
-                    container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No items yet.</p>';
+                    container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet.</p>';
                     document.getElementById('articles-pagination').style.display = 'none';
                     return;
                 }
@@ -3191,7 +3191,7 @@
                 .then(data => {
                     const files = data.files || [];
                     if (files.length === 0) {
-                        container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No items yet</p>';
+                        container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet</p>';
                         return;
                     }
 
@@ -3266,7 +3266,7 @@
                 console.log('Loading saved documents:', uniqueDocuments); // Debug log
 
                 if (uniqueDocuments.length === 0) {
-                    container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No items yet.</p>';
+                    container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet.</p>';
                     return;
                 }
 
@@ -3402,7 +3402,7 @@
             const citedArticles = JSON.parse(localStorage.getItem('citedArticles')) || [];
 
             if (citedArticles.length === 0) {
-                container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; width: 100%; background: transparent;">No items yet</p>';
+                container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; width: 100%; background: transparent;">No uploaded files yet</p>';
                 return;
             }
 
@@ -6424,7 +6424,7 @@
         const container = document.getElementById('uploaded-files-container');
         
         if (!uploads || uploads.length === 0) {
-            container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No items yet</p>';
+            container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet</p>';
             return;
         }
         

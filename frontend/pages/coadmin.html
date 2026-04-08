@@ -7890,15 +7890,16 @@ STI Archives Admin`;
                             </button>
                             ` : ''}
                             ${upload.status === 'pending' ? `
-                                <button class="upload-btn" onclick="approveUserUploadCoadmin('${upload.id}')`}
-                                <i class="fas fa-check"></i> Approve
-                            </button>
-                            <button class="delete-btn" onclick="rejectUserUploadCoadmin('${upload.id}')">
-                                <i class="fas fa-times"></i> Reject
-                            </button>
-                        ` : ''}
+                                <button class="upload-btn" onclick="approveUserUploadCoadmin('${upload.id}')">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                <button class="delete-btn" onclick="rejectUserUploadCoadmin('${upload.id}')">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>
+                            ` : ''}
                     </div>
                 </div>
+            </div>
             `}).join('');
         }
         

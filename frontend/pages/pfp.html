@@ -1127,7 +1127,6 @@
 
         .background-image-container:hover {
             box-shadow: 0 12px 40px rgba(0,0,0,0.2);
-            transform: translateY(-2px);
         }
 
         
@@ -1248,7 +1247,7 @@
             margin: 20px auto;
             width: 80%;
             position: absolute;
-            top: 550px;
+            top: 600px;
             left: 50%;
             transform: translateX(-50%);
         }
@@ -2283,10 +2282,10 @@
                         </label>
                         <input type="file" id="profileUpload" accept="image/*" onchange="changeProfile(event)" style="display: none;" />
                     </div>
-                    <div class="full-name" style="position: absolute; top: 325px; left: 50%; transform: translateX(-50%); color: black; padding: 8px 20px; border-radius: 20px; font-size: 48px; font-weight: bold;">Username</div>
+                    <div class="full-name" style="position: absolute; top: 440px; left: 50%; transform: translateX(-50%); color: black; padding: 8px 20px; border-radius: 20px; font-size: 48px; font-weight: bold;">Username</div>
                 </div>
 
-                <div class="profile-info-block" style="position: absolute; top: 400px; text-align: center;">
+                <div class="profile-info-block" style="position: absolute; top: 510px; text-align: center;">
                     <div class="full-name" style="display: none;">Username</div>
                     
                     <!-- Tab Navigation -->
@@ -2981,7 +2980,7 @@
 
             const localArticles = JSON.parse(localStorage.getItem('savedArticles')) || [];
 
-            fetch('/load_saved_articles')
+            fetch('/api/saved-articles')
                 .then(response => response.json())
                 .then(data => {
                     const couchbaseArticles = data.articles || [];
@@ -3087,7 +3086,7 @@
 
             document.getElementById('next-page-btn').onclick = () => {
                 const localArticles = JSON.parse(localStorage.getItem('savedArticles')) || [];
-                fetch('/load_saved_articles')
+                fetch('/api/saved-articles')
                     .then(response => response.json())
                     .then(data => {
                         const couchbaseArticles = data.articles || [];
@@ -3178,7 +3177,7 @@
             const savedDocuments = JSON.parse(localStorage.getItem('savedDocuments')) || [];
             const pfpDocuments = JSON.parse(localStorage.getItem('pfpDocuments')) || [];
 
-            fetch('/load_saved_documents')
+            fetch('/api/saved-documents')
                 .then(response => response.json())
                 .then(data => {
                     const couchbaseDocuments = data.documents || [];

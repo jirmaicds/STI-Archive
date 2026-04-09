@@ -57,10 +57,7 @@
             align-items: center;
             justify-content: flex-start;
         }
-        @media (min-width: 875px) {
-            .sidebar {
-            }
-        }
+
         .sidebar img {
             max-width: 120px;
             height: 105px;
@@ -6492,8 +6489,6 @@ STI Archives Admin`;
                 paginationDiv.dataset.currentPage = 1;
                 paginateTable(tableId, 10);
             }
-        }
-                }
                 if (currentPage < totalPages) buttons += `<button onclick="changePage('${tbodyId}', ${currentPage + 1})">Next</button>`;
             }
             paginationDiv.innerHTML = buttons;

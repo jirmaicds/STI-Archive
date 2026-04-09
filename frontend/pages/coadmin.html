@@ -5469,6 +5469,10 @@ STI Archives Admin`;
         // === LOAD USERS FUNCTION ===
         async function loadUsers() {
             let users = await getUsers();
+            if (!Array.isArray(users)) {
+                console.error('Users data is not an array:', users);
+                users = [];
+            }
             // Auto-delete rejected users after 24 hours
             users = users.filter(user => {
                 if (user.rejected && user.rejected_at) {

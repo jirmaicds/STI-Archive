@@ -362,10 +362,7 @@
             color: white !important;
         }
         
-        .dark-mode .home-editor .recent-doc-item {
-            background: #3d3d3d !important;
-            border-color: #555 !important;
-        }
+
         
         .dark-mode .home-editor .recent-doc-item h4 {
             color: white !important;
@@ -419,20 +416,13 @@
             border-color: #555 !important;
         }
         
-        .dark-mode .home-editor #recentDocumentsContainer {
-            background: transparent !important;
-        }
+
         
-        .home-editor .recent-doc-item {
-            display: flex !important;
-            visibility: visible !important;
-        }
+
         
         
         
-        .dark-mode .recent-doc-item:hover {
-            background: #4d4d4d !important;
-        }
+
         
         /* Light mode for All Documents Modal */
         #allDocumentsModal .modal-content {
@@ -2274,10 +2264,7 @@ color: #ffd700;
           View All <i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i>
         </button>
       </div>
-      <!-- Recent Documents Container -->
-      <div id="recentDocumentsContainer" style="display: flex; flex-direction: column; gap: 10px;">
-        <p id="noRecentDocuments" style="color: #666; text-align: center; padding: 20px;">No recent documents</p>
-      </div>
+
     </div>
     
     <!-- Templates Section -->
@@ -2336,11 +2323,7 @@ color: #ffd700;
        </select>
 
        <input type="text" id="docTitle" placeholder="Untitled document" class="doc-title-input" style="padding: 6px 10px; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9; margin-right: 10px; width: 200px; color: #333;" />
-       <span id="cloudSaveStatus" style="display: inline-flex; align-items: center; margin-right: 10px; position: relative; background: white; border: none; border-radius: 50%; width: 32px; height: 32px; justify-content: center; box-shadow: 2px 2px 5px rgba(0,0,0,0.3);" title="Cloud Status">
-         <i class="fas fa-cloud" style="font-size: 1rem; color: #0057b8;"></i>
-         <i class="fas fa-sync-alt" id="cloudSyncIcon" style="font-size: 0.6rem; color: #2196F3; position: absolute; bottom: -2px; right: -2px; background: white; border-radius: 50%; padding: 2px;"></i>
-       </span>
-       <button onclick="saveDocumentNow()" title="Save Document"><i class="fas fa-save"></i> Save</button>
+
        <button onclick="downloadDocument()" title="Download Document"><i class="fas fa-download"></i></button>
        <button onclick="addNewPage()" title="Add New Page"><i class="fas fa-plus"></i> New Page</button>
        <button onclick="removeCurrentPage()" title="Remove Current Page"><i class="fas fa-minus"></i> Remove Page</button>

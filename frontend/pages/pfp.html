@@ -1328,9 +1328,7 @@
             color: #ffd700;
         }
 
-        .dark-mode #saved-documents-container {
-            background-color: #2d2d2d !important;
-        }
+
         
         .dark-mode #saved-articles-container {
             background-color: #2d2d2d !important;
@@ -1352,9 +1350,7 @@
             color: #aaa !important;
         }
 
-        .dark-mode #saved-documents-container .no-items-message {
-            color: #aaa !important;
-        }
+
 
         .dark-mode #saved-articles-container .no-items-message {
             color: #aaa !important;
@@ -2294,7 +2290,6 @@
                         <button class="tab-btn" onclick="showMyUploadsTab('upload')">Uploads</button>
                         <button class="tab-btn" onclick="showMyUploadsTab('cited')">Cited</button>
                         <button class="tab-btn" onclick="showMyUploadsTab('saved-articles')">Saved Article</button>
-                        <button class="tab-btn" onclick="showMyUploadsTab('saved-documents')">Saved Document</button>
                     </div>
                     
                     <!-- Profile Tabs Burger Button (visible only on mobile/tablet) -->
@@ -2315,7 +2310,6 @@
                             <button class="tab-btn" onclick="showMyUploadsTab('upload'); closeProfileTabsSidebar();">Uploads</button>
                             <button class="tab-btn" onclick="showMyUploadsTab('cited'); closeProfileTabsSidebar();">Cited</button>
                             <button class="tab-btn" onclick="showMyUploadsTab('saved-articles'); closeProfileTabsSidebar();">Saved Article</button>
-                            <button class="tab-btn" onclick="showMyUploadsTab('saved-documents'); closeProfileTabsSidebar();">Saved Document</button>
                         </div>
                     </div>
                     
@@ -2358,9 +2352,7 @@
                         <span id="page-info" style="font-weight: bold; color: #333;">Page 1 of 1</span>
                         <button id="next-page-btn" class="pagination-btn" style="padding: 8px 16px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer;">Next</button>
                     </div>
-                    <div id="saved-documents-container" style="display: none; flex-wrap: wrap; gap: 20px; padding: 20px; min-height: 500px; align-items: center; justify-content: center;">
-                        <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; width: 100%; background: transparent;">No uploaded files yet</p>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -2370,29 +2362,7 @@
 
     </section>
 
-    <!-- Saved Documents Modal -->
-    <div id="savedDocumentsModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000;">
-        <div class="modal-content document-modal-content" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 15px; width: 90%; max-width: 800px; max-height: 80vh; overflow-y: auto; position: relative; margin: auto; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <button onclick="closeSavedDocumentsModalPfp()" class="close" style="position: absolute; top: 15px; right: 15px; background: transparent; border: none; cursor: pointer; font-size: 1.5rem; color: white;">
-                <i class="fas fa-times"></i>
-            </button>
-            <h2 style="font-size: 1.8rem; margin-bottom: 20px; color: white;">Saved Documents</h2>
-            <div id="savedDocumentsListPfp" style="display: flex; flex-direction: column; gap: 10px;">
-            </div>
-        </div>
-    </div>
 
-    <!-- All Documents Modal -->
-    <div id="allDocumentsModalPfp" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000;">
-        <div class="modal-content document-modal-content" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 15px; width: 90%; max-width: 800px; max-height: 80vh; overflow-y: auto; position: relative; margin: auto; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <button onclick="closeAllDocumentsModalPfp()" class="close" style="position: absolute; top: 15px; right: 15px; background: transparent; border: none; cursor: pointer; font-size: 1.5rem; color: white;">
-                <i class="fas fa-times"></i>
-            </button>
-            <h2 style="font-size: 1.8rem; margin-bottom: 20px; color: white;">All Documents</h2>
-            <div id="allDocumentsListPfp" style="display: flex; flex-direction: column; gap: 10px;">
-            </div>
-        </div>
-    </div>
 
     <!-- Change Password Modal -->
     <div id="changePasswordModal" class="modal" style="display: none;">
@@ -2950,11 +2920,6 @@
                     loadSavedArticles();
                 }
 
-                // Load saved documents if showing saved documents section
-                if (id === 'saved-documents-container') {
-                    loadSavedDocuments();
-                }
-
                 // Load uploaded files if showing my uploads section
                 if (id === 'p-n-m') {
                     loadUploadedFiles();
@@ -3167,162 +3132,10 @@
         }
 
         // Load saved documents from localStorage and Couchbase
-        function loadSavedDocuments() {
-            const container = document.getElementById('saved-documents-container');
-            if (!container) return;
 
-            container.innerHTML = '';
-
-            const savedDocuments = JSON.parse(localStorage.getItem('savedDocuments')) || [];
-            const pfpDocuments = JSON.parse(localStorage.getItem('pfpDocuments')) || [];
-
-            fetch('/api/saved-documents')
-                .then(response => response.json())
-                .then(data => {
-                    const couchbaseDocuments = data.documents || [];
-                    const allDocuments = [...savedDocuments, ...pfpDocuments, ...couchbaseDocuments];
-                    const uniqueDocuments = allDocuments.filter((doc, index, self) =>
-                        index === self.findIndex(d => d.id === doc.id)
-                    );
-                    displayDocuments(uniqueDocuments);
-                })
-                .catch(error => {
-                    console.error('Error loading from Couchbase:', error);
-                    const allDocuments = [...savedDocuments, ...pfpDocuments];
-                    const uniqueDocuments = allDocuments.filter((doc, index, self) =>
-                        index === self.findIndex(d => d.id === doc.id)
-                    );
-                    displayDocuments(uniqueDocuments);
-                });
-
-            function displayDocuments(uniqueDocuments) {
-                console.log('Loading saved documents:', uniqueDocuments); // Debug log
-
-                if (uniqueDocuments.length === 0) {
-                    container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet.</p>';
-                    return;
-                }
-
-                uniqueDocuments.forEach((doc, index) => {
-                    const docDiv = document.createElement('div');
-                    docDiv.style.display = 'inline-block';
-                    docDiv.style.width = '200px';
-                    docDiv.style.height = '300px';
-                    docDiv.style.margin = '10px';
-                    docDiv.style.verticalAlign = 'top';
-                    docDiv.style.background = '#f9f9f9';
-                    docDiv.style.border = '1px solid #ccc';
-                    docDiv.style.borderRadius = '8px';
-                    docDiv.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-                    docDiv.style.cursor = 'pointer';
-                    docDiv.onclick = () => {
-                        localStorage.setItem('selectedDocument', JSON.stringify(doc));
-                        window.location.href = 'myspace.html?from=pfp&doc=' + doc.id;
-                    };
-
-                    const contentPreview = doc.content.replace(/<[^>]*>/g, '').substring(0, 100) + (doc.content.replace(/<[^>]*>/g, '').length > 100 ? '...' : '');
-                    const sourceIndicator = doc.sentFromMyspace ? ' <small style="color: #28a745;">(From MySpace)</small>' : '';
-
-                    docDiv.innerHTML = `
-                        <div class="sd-header" style="padding: 10px; margin-bottom: 10px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <span style="font-weight: bold; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">${doc.title}${sourceIndicator}</span>
-                                <span style="font-size: 10px; color: #666;">${new Date(doc.date).toLocaleDateString()}</span>
-                            </div>
-                        </div>
-                        <div class="document" style="border: 1px solid #ccc; border-radius: 0; padding: 8px; height: 200px; width: 150px; overflow: hidden; font-size: 10px; color: #333; background: #fff; margin: 0 auto;">${contentPreview}</div>
-                    `;
-                    container.appendChild(docDiv);
-                });
-            }
-        }
 
         // Open saved documents modal
-        window.openSavedDocumentsModalPfp = function() {
-            const modal = document.getElementById('savedDocumentsModal');
-            const listContainer = document.getElementById('savedDocumentsListPfp');
-            if (!modal || !listContainer) return;
 
-            const savedDocuments = JSON.parse(localStorage.getItem('savedDocuments')) || [];
-            const pfpDocuments = JSON.parse(localStorage.getItem('pfpDocuments')) || [];
-            const allDocuments = [...savedDocuments, ...pfpDocuments];
-            const uniqueDocuments = allDocuments.filter((doc, index, self) =>
-                index === self.findIndex(d => d.id === doc.id)
-            );
-
-            if (uniqueDocuments.length === 0) {
-                listContainer.innerHTML = '<p style="color: white; text-align: center; padding: 30px;">No saved documents</p>';
-            } else {
-                const sortedDocs = uniqueDocuments.sort((a, b) => {
-                    const dateA = new Date(a.lastModified || a.date || 0);
-                    const dateB = new Date(b.lastModified || b.date || 0);
-                    return dateB - dateA;
-                });
-
-                listContainer.innerHTML = sortedDocs.map(doc => `
-                    <div onclick="window.location.href='myspace.html?from=pfp&doc=${doc.id}'" 
-                         style="background: white; padding: 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: transform 0.2s, box-shadow 0.2s;">
-                        <i class="fas fa-file-alt" style="color: #667eea; font-size: 1.5rem;"></i>
-                        <div style="flex: 1;">
-                            <p style="margin: 0; color: #333; font-weight: bold;">${doc.title || 'Untitled'}</p>
-                            <p style="margin: 5px 0 0; color: #666; font-size: 0.8rem;">${new Date(doc.lastModified || doc.date || Date.now()).toLocaleDateString()}</p>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            modal.style.display = 'flex';
-        };
-
-        // Close saved documents modal
-        window.closeSavedDocumentsModalPfp = function() {
-            const modal = document.getElementById('savedDocumentsModal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-        };
-
-        // Open all documents modal
-        window.openAllDocumentsModalPfp = function() {
-            const modal = document.getElementById('allDocumentsModalPfp');
-            const listContainer = document.getElementById('allDocumentsListPfp');
-            if (!modal || !listContainer) return;
-
-            const savedDocuments = JSON.parse(localStorage.getItem('savedDocuments')) || [];
-            const pfpDocuments = JSON.parse(localStorage.getItem('pfpDocuments')) || [];
-            const allDocuments = [...savedDocuments, ...pfpDocuments];
-
-            if (allDocuments.length === 0) {
-                listContainer.innerHTML = '<p style="color: white; text-align: center; padding: 30px;">No documents found</p>';
-            } else {
-                const sortedDocs = allDocuments.sort((a, b) => {
-                    const dateA = new Date(a.lastModified || a.date || 0);
-                    const dateB = new Date(b.lastModified || b.date || 0);
-                    return dateB - dateA;
-                });
-
-                listContainer.innerHTML = sortedDocs.map(doc => `
-                    <div onclick="window.location.href='myspace.html?from=pfp&doc=${doc.id}'" 
-                         style="background: white; padding: 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: transform 0.2s, box-shadow 0.2s;">
-                        <i class="fas fa-file-alt" style="color: #667eea; font-size: 1.5rem;"></i>
-                        <div style="flex: 1;">
-                            <p style="margin: 0; color: #333; font-weight: bold;">${doc.title || 'Untitled'}</p>
-                            <p style="margin: 5px 0 0; color: #666; font-size: 0.8rem;">${new Date(doc.lastModified || doc.date || Date.now()).toLocaleDateString()}</p>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            modal.style.display = 'flex';
-        };
-
-        // Close all documents modal
-        window.closeAllDocumentsModalPfp = function() {
-            const modal = document.getElementById('allDocumentsModalPfp');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-        };
 
         // Load cited articles from localStorage
         function loadCitedArticles() {
@@ -6090,7 +5903,7 @@
             const uploadForm = document.getElementById('upload-form-container');
             const citedContainer = document.getElementById('cited-articles-container');
             const savedArticlesContainer = document.getElementById('saved-articles-container');
-            const savedDocumentsContainer = document.getElementById('saved-documents-container');
+
             const tabs = document.querySelectorAll('.profile-tabs .tab-btn');
             
             // Hide all containers first
@@ -6098,7 +5911,7 @@
             if (uploadForm) uploadForm.style.display = 'none';
             if (citedContainer) citedContainer.style.display = 'none';
             if (savedArticlesContainer) savedArticlesContainer.style.display = 'none';
-            if (savedDocumentsContainer) savedDocumentsContainer.style.display = 'none';
+
             
             // Remove active from all tabs
             tabs.forEach(tab => tab.classList.remove('active'));

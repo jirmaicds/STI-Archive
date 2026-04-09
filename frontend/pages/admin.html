@@ -3577,9 +3577,7 @@
                     <button class="nav-btn" onclick="showUserSection('admins')">
                         <i class="fas fa-user-shield" style="margin-right: 8px;"></i>Admin
                     </button>
-                    <button class="nav-btn" onclick="showUserSection('activity')">
-                        <i class="fas fa-history" style="margin-right: 8px;"></i>Activity Log
-                    </button>
+
                 </div>
                 <style>
                     /* Activity Log Badge Styles */
@@ -3825,47 +3823,7 @@
                     <div class="pagination" id="banned-pagination" style="text-align: right; margin-top: 10px;"></div>
 
                 </div>
-                <!-- Activity Log Section -->
-                <div id="activity-section" class="user-subsection" style="--border-color: #17a2b8; --header-color: #17a2b8; display: none;">
-                    <h3 style="color: var(--header-color);">Activity Log</h3>
-                    <p style="margin-bottom: 20px;">Track all admin actions and changes made to the system.</p>
-                    <!-- Filters -->
-                    <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                        <select id="activity-filter-role" onchange="loadActivityLogs()" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
-                            <option value="">All Roles</option>
-                            <option value="admin">Admin</option>
-                            <option value="coadmin">Co-Admin</option>
-                            <option value="subadmin">Sub-Admin</option>
-                        </select>
-                        <select id="activity-filter-action" onchange="loadActivityLogs()" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
-                            <option value="">All Actions</option>
-                            <option value="user_approved">User Approved</option>
-                            <option value="user_rejected">User Rejected</option>
-                            <option value="user_banned">User Banned</option>
-                            <option value="user_updated">User Updated</option>
-                            <option value="admin_created">Admin Created</option>
-                        </select>
-                        <button class="btn btn-sm" onclick="loadActivityLogs()">Apply Filters</button>
-                        <button class="btn btn-sm" onclick="document.getElementById('activity-filter-role').value=''; document.getElementById('activity-filter-action').value=''; loadActivityLogs();">Clear</button>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table id="activity-log-table">
-                            <thead>
-                                <tr>
-                                    <th>Timestamp</th>
-                                    <th>Admin</th>
-                                    <th>Role</th>
-                                    <th>Action</th>
-                                    <th>Target User</th>
-                                    <th>Details</th>
-                                </tr>
-                            </thead>
-                            <tbody id="activity-log-tbody">
-                                <tr><td colspan="6" style="text-align: center;">Loading activity logs...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+
             </div>
         </div>
         <div id="settings" class="content-section">
@@ -4927,12 +4885,7 @@
                 document.getElementById('signing-up-users-tbody').innerHTML += row;
             });
         }
-        function getActivityLogs() {
-            return JSON.parse(localStorage.getItem('activityLogs')) || [];
-        }
-        function saveActivityLogs(logs) {
-            localStorage.setItem('activityLogs', JSON.stringify(logs));
-        }
+
         function formatRole(role) {
             if (role === 'senior_high') return 'SHS';
             if (role === 'college') return 'College';
@@ -7841,54 +7794,7 @@ STI Archives Admin`;
             }
         }
         
-        // Load Activity Logs Function
-        async function loadActivityLogs() {
-            const tbody = document.getElementById('activity-log-tbody');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Loading activity logs...</td></tr>';
-            
-            try {
-                const roleFilter = document.getElementById('activity-filter-role')?.value || '';
-                const actionFilter = document.getElementById('activity-filter-action')?.value || '';
-                
-                const queryParams = new URLSearchParams();
-                if (roleFilter) queryParams.append('adminRole', roleFilter);
-                if (actionFilter) queryParams.append('action', actionFilter);
-                queryParams.append('limit', '100');
-                
-                const response = await fetch(`/api/activity/logs?${queryParams}`);
-                const data = await response.json();
-                
-                if (data.success && data.logs && data.logs.length > 0) {
-                    tbody.innerHTML = data.logs.map(log => {
-                        const timestamp = new Date(log.timestamp).toLocaleString();
-                        const roleLabel = log.adminRole === 'admin' ? 'Admin' : log.adminRole === 'coadmin' ? 'Co-Admin' : 'Sub-Admin';
-                        const actionLabel = log.action.replace('user_', '').replace('admin_', '').replace('_', ' ').toUpperCase();
-                        let badgeClass = 'badge-updated';
-                        if (log.action === 'user_approved') badgeClass = 'badge-approved';
-                        else if (log.action === 'user_rejected') badgeClass = 'badge-rejected';
-                        else if (log.action === 'user_banned') badgeClass = 'badge-banned';
-                        else if (log.action === 'admin_created') badgeClass = 'badge-created';
-                        const details = log.details ? JSON.stringify(log.details).replace(/[{}"]/g, '') : '-';
-                        
-                        return `<tr>
-                            <td>${timestamp}</td>
-                            <td>${log.adminName || 'Unknown'}</td>
-                            <td>${roleLabel}</td>
-                            <td><span class="badge ${badgeClass}">${actionLabel}</span></td>
-                            <td>${log.targetUserName || 'N/A'}</td>
-                            <td><small>${details}</small></td>
-                        </tr>`;
-                    }).join('');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No activity logs found.</td></tr>';
-                }
-            } catch (error) {
-                console.error('Error loading activity logs:', error);
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Error loading activity logs.</td></tr>';
-            }
-        }
+
         function toggleReportsDropdown(e) {
             e.preventDefault();
             e.stopPropagation();

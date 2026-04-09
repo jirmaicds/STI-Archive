@@ -6512,6 +6512,48 @@ STI Archives Admin`;
         if (typeof rejectUser === 'function') window.rejectUser = rejectUser;
         if (typeof previewRaf === 'function') window.previewRaf = previewRaf;
         console.log('Global functions bound to window');
+
+        function paginateTable(tbodyId, rowsPerPage) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+
+            const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+            const totalPages = Math.ceil(rows.length / rowsPerPage);
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            if (!paginationDiv) return;
+
+            let currentPage = parseInt(paginationDiv.dataset.currentPage) || 1;
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+            paginationDiv.dataset.currentPage = currentPage;
+
+            // Show only current page rows among visible
+            rows.forEach((row, index) => {
+                const page = Math.floor(index / rowsPerPage) + 1;
+                row.style.display = page === currentPage ? '' : 'none';
+            });
+
+            // Generate pagination buttons
+            let buttons = '';
+            if (totalPages > 1) {
+                if (currentPage > 1) buttons += `<button onclick="changePage('${tbodyId}', ${currentPage - 1})">Previous</button>`;
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === currentPage) {
+                        buttons += `<button class="active" onclick="changePage('${tbodyId}', ${i})">${i}</button>`;
+                    } else {
+                        buttons += `<button onclick="changePage('${tbodyId}', ${i})">${i}</button>`;
+                    }
+                }
+                if (currentPage < totalPages) buttons += `<button onclick="changePage('${tbodyId}', ${currentPage + 1})">Next</button>`;
+            }
+            paginationDiv.innerHTML = buttons;
+        }
+
+        function changePage(tbodyId, page) {
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            paginationDiv.dataset.currentPage = page;
+            paginateTable(tbodyId, 10);
+        }
     </script>
 </body>
 </html>

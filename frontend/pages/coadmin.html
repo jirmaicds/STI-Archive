@@ -3991,7 +3991,10 @@
                 console.log('DEBUG: Fetch response status:', response.status);
                 if (response.ok) {
                     console.log('DEBUG: Server responded successfully, parsing JSON...');
-                    const users = await response.json();
+                    let users = await response.json();
+                    if (users && typeof users === 'object' && users.users) {
+                        users = users.users;
+                    }
                     isLoadingUsers = false;
                     localStorage.setItem('users', JSON.stringify(users));
                     return users;

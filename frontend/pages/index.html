@@ -3830,6 +3830,18 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadSiteSettings();
 
+            // Reset login form state on page load (for back navigation)
+            resetLoginFormState();
+        });
+
+        // Also reset on pageshow (for back/forward navigation)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // Page was restored from cache (back navigation)
+                resetLoginFormState();
+            }
+        });
+
             // Add form submit handler for signup form
             const signupForm = document.getElementById('signupForm');
             if (signupForm) {
@@ -4005,6 +4017,48 @@
             closeGeneratedAccountModal();
             // Switch to login tab
             document.getElementById('loginTab').click();
+        }
+
+        // Function to reset login form state on page load/back navigation
+        function resetLoginFormState() {
+            // Clear password field
+            const passwordField = document.getElementById('login-password');
+            if (passwordField) {
+                passwordField.value = '';
+            }
+
+            // Clear login message
+            const loginMessage = document.getElementById('login-message');
+            if (loginMessage) {
+                loginMessage.style.display = 'none';
+                loginMessage.textContent = '';
+            }
+
+            // Clear error messages
+            const emailError = document.getElementById('login-email-error');
+            const passwordError = document.getElementById('login-password-error');
+            if (emailError) {
+                emailError.style.display = 'none';
+            }
+            if (passwordError) {
+                passwordError.style.display = 'none';
+            }
+
+            // Remove input error classes
+            const emailInput = document.getElementById('login-email');
+            const passwordInput = document.getElementById('login-password');
+            if (emailInput) {
+                emailInput.classList.remove('input-error');
+            }
+            if (passwordInput) {
+                passwordInput.classList.remove('input-error');
+            }
+
+            // Uncheck terms if checked (reset to initial state)
+            const termsCheckbox = document.getElementById('terms-login');
+            if (termsCheckbox) {
+                termsCheckbox.checked = false;
+            }
         }
 
         // Function to show waiting for verification screen

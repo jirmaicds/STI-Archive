@@ -3842,6 +3842,7 @@
             }
         });
 
+        document.addEventListener('DOMContentLoaded', function() {
             // Add form submit handler for signup form
             const signupForm = document.getElementById('signupForm');
             if (signupForm) {
@@ -3851,9 +3852,9 @@
                     handleSignup();
                 });
 
-                // Save form data on input changes for form persistence
-                const formFields = ['signup-fullname', 'signup-email', 'signup-password', 'signup-confirm-password', 'signup-role', 'signup-grade', 'signup-section', 'terms-signup'];
-                formFields.forEach(fieldId => {
+                    // Save form data on input changes for form persistence
+                    const formFields = ['signup-fullname', 'signup-email', 'signup-password', 'signup-confirm-password', 'signup-role', 'signup-grade', 'signup-section', 'terms-signup'];
+                    formFields.forEach(fieldId => {
                     const field = document.getElementById(fieldId);
                     if (field) {
                         field.addEventListener('input', function() {
@@ -3875,7 +3876,7 @@
                 restoreSignupFormData();
             }
 
-            });
+        });
 
 
         // Function to save signup form data to sessionStorage (clears when browser closes)

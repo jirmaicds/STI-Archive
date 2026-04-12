@@ -5404,7 +5404,7 @@ STI Archives Admin`;
                         <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                         <td>${user.id}</td>
                         <td>${user.name}</td>
-                        <td>${emailToUse}</td>
+                        <td>${user.email}</td>
                         <td>${formatRole(user.role)}</td>
                         <td>${date}</td>
                         <td>${getStatus(user)}</td>
@@ -5484,12 +5484,11 @@ STI Archives Admin`;
                         <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'ban')">Ban</button>
                     `;
                 }
-                const emailToUse = user.personal_email || user.email;
                 const rowWithEmail = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                     <td>${user.id}</td>
-                    <td>${user.fullname}</td>
-                    <td>${emailToUse}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
                     <td>${formatRole(user.role)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
@@ -5499,8 +5498,8 @@ STI Archives Admin`;
                 const rowWithoutEmail = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                     <td>${user.id}</td>
-                    <td>${user.fullname}</td>
-                    <td>${emailToUse}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
                     <td>${formatRole(user.role)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
@@ -5509,6 +5508,7 @@ STI Archives Admin`;
                 </tr>`;
                 // categorized
                 let tbodyId = '';
+                let addedToSpecific = false;
                 if (user.role === 'senior_high') {
                     const grade = user.section === 'Grade 11' ? 'gr11' : 'gr12';
                     const strand = user.strand ? user.strand.toLowerCase().replace(' ', '') : 'abm';
@@ -5524,23 +5524,23 @@ STI Archives Admin`;
                     const tbody = document.getElementById(tbodyId);
                     if (tbody) {
                         tbody.innerHTML += rowWithEmail;
+                        addedToSpecific = true;
                     }
                 }
                 // status
                 // status - filter admin roles to admins table, not signing up
                 if (user.role && ['admin', 'coadmin', 'subadmin'].includes(user.role.toLowerCase())) {
-                    const roleDisplay = user.role && user.role.toLowerCase() === 'coadmin' ? 'Full Access' : user.role && user.role.toLowerCase() === 'subadmin' ? 'Content Moderator' : 'Admin';
                     const adminRow = `<tr>
                         <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                         <td>${user.id}</td>
-                        <td>${user.fullname}</td>
+                        <td>${user.name}</td>
                         <td>${user.email}</td>
-                        <td>${roleDisplay}</td>
+                        <td>${user.role}</td>
                         <td>${user.created_at}</td>
-                        <td><button class="btn btn-danger btn-sm">Remove</button></td>
+                        <td><button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name}')">Remove</button></td>
                     </tr>`;
                     document.getElementById('admins-tbody').innerHTML += adminRow;
-                } else if (user.verified) {
+                } else if (!addedToSpecific && user.verified) {
                     const row = `<tr>
                         <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                         <td>${user.id}</td>
@@ -5557,8 +5557,8 @@ STI Archives Admin`;
                     const row = `<tr>
                         <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                         <td>${user.id}</td>
-                        <td>${user.fullname}</td>
-                        <td>${emailToUse}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
                         <td>${formatRole(user.role)}</td>
                         <td>${date}</td>
                         <td>${getStatus(user)}</td>

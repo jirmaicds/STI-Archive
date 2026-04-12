@@ -4573,11 +4573,13 @@ STI Archives Admin`;
             // Signing up users = non-admin users who are active (isActive = true)
             const signingUpCount = jsonUsers.filter(u => u.isActive && !adminRoles.includes(u.role)).length;
             
-            // Update dashboard counts with null checks
+            // Update dashboard counts
+            let totalUsers = users.filter(u => u.verified).length;
+            let signingUp = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
             const standardCountEl = document.getElementById('standard-users-count');
             const signupCountEl = document.getElementById('signing-up-users-count');
-            if (standardCountEl) standardCountEl.textContent = totalUsersCount;
-            if (signupCountEl) signupCountEl.textContent = signingUpCount;
+            if (standardCountEl) standardCountEl.textContent = totalUsers;
+            if (signupCountEl) signupCountEl.textContent = signingUp;
         }
 
         // === LOAD ADMINS FUNCTION ===

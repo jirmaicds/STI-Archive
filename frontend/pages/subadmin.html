@@ -4564,15 +4564,7 @@ STI Archives Admin`;
                 }
             }
 
-            // Update dashboard counts from user.json
-            // Load users from user.json for accurate counts
-            const jsonUsers = await getUsersFromJson();
-            const adminRoles = ['admin', 'coadmin', 'subadmin'];
-            // Total users = all users in user.json
-            const totalUsersCount = jsonUsers.length;
-            // Signing up users = non-admin users who are active (isActive = true)
-            const signingUpCount = jsonUsers.filter(u => u.isActive && !adminRoles.includes(u.role)).length;
-            
+
             // Update dashboard counts
             let totalUsers = users.filter(u => u.verified).length;
             let signingUp = users.filter(u => !u.verified && !u.rejected && !u.banned).length;

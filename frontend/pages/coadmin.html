@@ -5421,7 +5421,7 @@ STI Archives Admin`;
             if (user.verified) return 'Verified';
             if (user.rejected) return 'Rejected';
             if (user.banned) return 'Banned';
-            if (user.role === 'admin') return 'Active';
+            if (user.role && user.role.toLowerCase() === 'admin') return 'Active';
             // For signing up
             if (!user.created_at) return 'N/A';
             const now = new Date();
@@ -5528,8 +5528,8 @@ STI Archives Admin`;
                 }
                 // status
                 // status - filter admin roles to admins table, not signing up
-                if (user.role === 'admin' || user.role === 'coadmin' || user.role === 'subadmin') {
-                    const roleDisplay = user.role === 'coadmin' ? 'Full Access' : user.role === 'subadmin' ? 'Content Moderator' : 'Admin';
+                if (user.role && ['admin', 'coadmin', 'subadmin'].includes(user.role.toLowerCase())) {
+                    const roleDisplay = user.role && user.role.toLowerCase() === 'coadmin' ? 'Full Access' : user.role && user.role.toLowerCase() === 'subadmin' ? 'Content Moderator' : 'Admin';
                     const adminRow = `<tr>
                         <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                         <td>${user.id}</td>

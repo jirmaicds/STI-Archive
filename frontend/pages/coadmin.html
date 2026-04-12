@@ -3056,7 +3056,7 @@
             <div class="dashboard">
                 <div class="card" onclick="navigateToUsers()">
                     <h3>Total Users</h3>
-                    <p id="standard-users-count">0</p>
+                    <p id="verified-users-count">0</p>
                 </div>
                 <div class="card" onclick="navigateToUsers(); showUserSection('admins');">
                     <h3>Admin Users</h3>
@@ -5605,8 +5605,8 @@ STI Archives Admin`;
             const adminCount = adminTbody ? adminTbody.querySelectorAll('tr').length : 0;
             const signingUpTbody = document.getElementById('signing-up-users-tbody');
             const signingUpCount = signingUpTbody ? signingUpTbody.querySelectorAll('tr').length : 0;
-            // standard-users-count is total verified users (excluding admins)
-            document.getElementById('standard-users-count').textContent = verifiedCount;
+            // verified-users-count is verified users (excluding admins)
+            document.getElementById('verified-users-count').textContent = verifiedCount;
             document.getElementById('admin-users-count').textContent = adminCount;
             document.getElementById('signing-up-users-count').textContent = signingUpCount;
         }

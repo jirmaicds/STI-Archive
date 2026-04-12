@@ -5484,6 +5484,7 @@ STI Archives Admin`;
                         <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'ban')">Ban</button>
                     `;
                 }
+                const emailToUse = user.personal_email || user.email;
                 const rowWithEmail = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                     <td>${user.id}</td>
@@ -5529,7 +5530,7 @@ STI Archives Admin`;
                 }
                 // status
                 // status - filter admin roles to admins table, not signing up
-                if (user.role && ['admin', 'coadmin', 'subadmin'].includes(user.role.toLowerCase())) {
+                if (user.role && user.role.toLowerCase() === 'coadmin') {
                     const adminRow = `<tr>
                         <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
                         <td>${user.id}</td>

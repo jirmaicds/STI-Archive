@@ -3094,7 +3094,18 @@ window.supabaseHelpers = {
                 const email = document.getElementById('signup-email').value.trim();
                 const role = roleSelect.value;
                 // Generate sequential User ID
-                const existingUsers = JSON.parse(localStorage.getItem('users')) || [];
+                let existingUsers = [];
+                try {
+                    const usersData = localStorage.getItem('users');
+                    if (usersData) {
+                        existingUsers = JSON.parse(usersData);
+                        if (!Array.isArray(existingUsers)) {
+                            existingUsers = [];
+                        }
+                    }
+                } catch (e) {
+                    existingUsers = [];
+                }
                 let maxId = 0;
                 existingUsers.forEach(user => {
                     const id = parseInt(user.id);
@@ -3159,8 +3170,19 @@ window.supabaseHelpers = {
                reader.readAsDataURL(requiredFile);
            }
 
-           // Store user in localStorage (client-side only)
-           const users = JSON.parse(localStorage.getItem('users')) || [];
+            // Store user in localStorage (client-side only)
+            let users = [];
+            try {
+                const usersData = localStorage.getItem('users');
+                if (usersData) {
+                    users = JSON.parse(usersData);
+                    if (!Array.isArray(users)) {
+                        users = [];
+                    }
+                }
+            } catch (e) {
+                users = [];
+            }
            const existingUserIndex = users.findIndex(u => u.email === email);
            if (existingUserIndex >= 0) {
              users[existingUserIndex] = { ...users[existingUserIndex], ...newUser };

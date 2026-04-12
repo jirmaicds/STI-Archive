@@ -5510,14 +5510,14 @@ STI Archives Admin`;
                 // categorized
                 let tbodyId = '';
                 let addedToSpecific = false;
-                if (user.role === 'senior_high') {
+                if (user.role && user.role.toLowerCase() === 'senior_high') {
                     const grade = user.section === 'Grade 11' ? 'gr11' : 'gr12';
                     const strand = user.strand ? user.strand.toLowerCase().replace(' ', '') : 'abm';
                     tbodyId = grade + '-' + strand + '-tbody';
-                } else if (user.role === 'college') {
+                } else if (user.role && user.role.toLowerCase() === 'college') {
                     const program = user.section ? user.section.toLowerCase() : 'bsba';
                     tbodyId = program + '-tbody';
-                } else if (user.role === 'teacher') {
+                } else if (user.role && user.role.toLowerCase() === 'teacher') {
                     const dept = user.section === 'Department SHS' ? 'shs' : 'college';
                     tbodyId = 'teacher-' + dept + '-tbody';
                 }
@@ -5599,15 +5599,21 @@ STI Archives Admin`;
             }
 
             // Update dashboard counts by counting actual table rows
-            // This ensures counts always match what's displayed
-            const verifiedTbody = document.getElementById('verified-users-tbody');
-            const verifiedCount = verifiedTbody ? verifiedTbody.querySelectorAll('tr').length : 0;
+            // Total users = users with role senior_high, college, teacher (in specific tables)
+            const usersSection = document.getElementById('users');
+            const allTbodys = usersSection.querySelectorAll('tbody');
+            let totalUsers = 0;
+            allTbodys.forEach(tbody => {
+                if (tbody.id !== 'verified-users-tbody' && tbody.id !== 'admins-tbody' && tbody.id !== 'signing-up-users-tbody' && tbody.id !== 'banned-users-tbody') {
+                    totalUsers += tbody.querySelectorAll('tr').length;
+                }
+            });
             const adminTbody = document.getElementById('admins-tbody');
             const adminCount = adminTbody ? adminTbody.querySelectorAll('tr').length : 0;
             const signingUpTbody = document.getElementById('signing-up-users-tbody');
             const signingUpCount = signingUpTbody ? signingUpTbody.querySelectorAll('tr').length : 0;
-            // verified-users-count is verified users (excluding admins)
-            document.getElementById('verified-users-count').textContent = verifiedCount;
+            // verified-users-count is total users with specific roles (shs, college, teacher)
+            document.getElementById('verified-users-count').textContent = totalUsers;
             document.getElementById('admin-users-count').textContent = adminCount;
             document.getElementById('signing-up-users-count').textContent = signingUpCount;
         }

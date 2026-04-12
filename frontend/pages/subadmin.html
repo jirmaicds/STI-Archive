@@ -4542,7 +4542,7 @@ STI Archives Admin`;
                         document.getElementById('signing-up-users-tbody').innerHTML += rowWithoutEmail;
                     }
                 }
-            });
+            };
 
             // Paginate tables
             paginateTable('admins-tbody', 10);
@@ -4580,7 +4580,7 @@ STI Archives Admin`;
             const signupCountEl = document.getElementById('signing-up-users-count');
             if (standardCountEl) standardCountEl.textContent = totalUsers;
             if (signupCountEl) signupCountEl.textContent = signingUp;
-        }
+        
 
         // === LOAD ADMINS FUNCTION ===
         async function loadAdmins() {

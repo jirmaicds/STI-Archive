@@ -3536,7 +3536,7 @@
             isLoadingUsers = true;
             console.log('DEBUG: Attempting to fetch users from user.json...');
             try {
-                const response = await fetch('/api/data/users.json');
+                const response = await fetch('/api/users');
                 console.log('DEBUG: Fetch response status:', response.status);
                 if (response.ok) {
                     console.log('DEBUG: Server responded successfully, parsing JSON...');
@@ -3615,7 +3615,7 @@
                         updateDashboardCounts();
                         console.log('✓ Loaded', articles.length, 'articles from server');
                     } else {
-                        console.error('✗ Failed to load articles:', data.error);
+                        console.error('✗ Failed to load articles:', data.error || data);
                     }
                 })
                 .catch(error => {
@@ -3893,11 +3893,8 @@
                     });
                 }
                 const placeholder = document.querySelector('.notification-placeholder');
-                console.log('DEBUG: Notification placeholder element:', placeholder);
                 if (placeholder) {
                     placeholder.style.display = notifications.length > 0 ? 'none' : 'block';
-                } else {
-                    console.error('DEBUG: Notification placeholder not found');
                 }
 
                 // Update badge count
@@ -6342,6 +6339,9 @@ STI Archives Admin`;
         }
 
         function updateDocumentFavicon(faviconSrc) {
+            if (!faviconSrc) {
+                faviconSrc = '370044409_696741882497707_8408055328080058811_n.jpg';
+            }
             let faviconLink = document.querySelector('link[rel="icon"]');
             if (!faviconLink) {
                 faviconLink = document.createElement('link');

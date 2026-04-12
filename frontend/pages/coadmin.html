@@ -4031,38 +4031,7 @@
             localStorage.setItem('users', JSON.stringify(users));
         }
         
-        // Function to fetch user counts from API
-        async function fetchUserCounts() {
-            try {
-                const token = localStorage.getItem('sti_auth_token');
-                const response = await fetch('/api/users/count', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success && data.counts) {
-                        // Update dashboard cards with counts from Supabase
-                        const standardCountEl = document.getElementById('standard-users-count');
-                        if (standardCountEl) {
-                            standardCountEl.textContent = data.counts.totalUsers || 0;
-                        }
-                        const adminCountEl = document.getElementById('admin-users-count');
-                        if (adminCountEl) {
-                            adminCountEl.textContent = data.counts.adminUsers || 0;
-                        }
-                        const signupCountEl = document.getElementById('signing-up-users-count');
-                        if (signupCountEl) {
-                            signupCountEl.textContent = data.counts.newSignups || 0;
-                        }
-                        console.log('DEBUG: Updated dashboard counts from Supabase:', data.counts);
-                    }
-                }
-            } catch (error) {
-                console.log('DEBUG: Could not fetch user counts:', error.message);
-            }
-        }
+
         
         function getArticles() {
             return JSON.parse(localStorage.getItem('articles')) || [];
@@ -5081,15 +5050,12 @@
             const savedSection = localStorage.getItem('adminCurrentSection') || 'dashboard';
             showSection(savedSection);
             loadUsers().then(() => {
-                // Fetch counts from Supabase for accurate numbers
-                fetchUserCounts();
                 renderUserChart();
                 renderDashboardUploadsChart();
                 renderSigningUpChart('day', null);
                 renderSuggestionsChart();
             }).catch(() => {
                 // Fallback if async fails
-                fetchUserCounts(); // Try to fetch counts even if users fail
                 renderUserChart();
                 renderDashboardUploadsChart();
                 renderSigningUpChart('day');
@@ -5631,14 +5597,17 @@ STI Archives Admin`;
                 }
             }
 
-            // Update dashboard counts
-            // Standard users = verified users who are NOT admin, coadmin, or subadmin
-            const adminRoles = ['admin', 'coadmin', 'subadmin'];
-            const standardUsersCount = users.filter(u => u.verified && !adminRoles.includes(u.role)).length;
-            const adminUsersCount = users.filter(u => u.verified && adminRoles.includes(u.role)).length;
-            const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
-            document.getElementById('standard-users-count').textContent = standardUsersCount;
-            document.getElementById('admin-users-count').textContent = adminUsersCount;
+            // Update dashboard counts by counting actual table rows
+            // This ensures counts always match what's displayed
+            const verifiedTbody = document.getElementById('verified-users-tbody');
+            const verifiedCount = verifiedTbody ? verifiedTbody.querySelectorAll('tr').length : 0;
+            const adminTbody = document.getElementById('admins-tbody');
+            const adminCount = adminTbody ? adminTbody.querySelectorAll('tr').length : 0;
+            const signingUpTbody = document.getElementById('signing-up-users-tbody');
+            const signingUpCount = signingUpTbody ? signingUpTbody.querySelectorAll('tr').length : 0;
+            // standard-users-count is total verified users (excluding admins)
+            document.getElementById('standard-users-count').textContent = verifiedCount;
+            document.getElementById('admin-users-count').textContent = adminCount;
             document.getElementById('signing-up-users-count').textContent = signingUpCount;
         }
 

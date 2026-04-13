@@ -1164,11 +1164,24 @@
             margin-top: 10px;
         }
 
-        .profile-container {
+        .profile-section {
+            display: flex;
+        }
+
+        .tabs-sidebar {
+            width: 50px;
+            background: #f0f0f0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
+            padding: 10px 0;
+        }
+
+        .profile-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .status-row {
@@ -2351,6 +2364,10 @@
                 <button onclick="verifyCode()">Verify</button>
             </div>
         </div>
+    </div>
+
+    <div class="mobile-tabs-sidebar" onclick="toggleProfileTabsSidebar()">
+        <i class="fas fa-bars"></i>
     </div>
 
     <script>

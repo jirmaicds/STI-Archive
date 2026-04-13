@@ -1102,18 +1102,19 @@
             left: 0;
             width: 100%;
             height: 100%;
-            border-radius: 50%;
+            border-radius: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             opacity: 0;
             transition: opacity 0.3s ease;
             background: rgba(0, 87, 184, 0.8);
+            z-index: 10;
 
         }
 
-        .pfp-container:hover .pic-overlay {
-            opacity: 0;
+        .background-image-container:hover .pic-overlay {
+            opacity: 1;
         }
 
         .background-image-container {
@@ -2358,21 +2359,20 @@
     </nav>
     <section class="main-content" style="margin-top: 50px;">
         <div id="p-n-p" class="profile-section" style="display:block; text-align: center;">
-            <div class="tabs-sidebar">
-                <button class="tabs-burger" id="tabsBurger" onclick="toggleProfileTabsSidebar()">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
             <div class="profile-container">
+                <div class="tabs-sidebar">
+                    <button class="tabs-burger" id="tabsBurger" onclick="toggleProfileTabsSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
                 <div class="background-image-container" id="backgroundContainer" style="background-image: url('/frontend/assets/images/dbgc.png'); background-size: cover; background-position: center;">
-
+                    <div class="pic-overlay">
+                        <div class="edit-icon">📷</div>
+                    </div>
                     <input type="file" id="backgroundUpload" accept="image/*" onchange="changeBackground(event)" style="display: none;">
                     <div class="pfp-container" style="position: absolute; top: 175px; left: 50%; transform: translateX(-50%);">
                         <label for="pfp-profileUpload">
                             <img src="/frontend/assets/images/Screenshot 2025-09-10 204105.png" alt="Profile" class="pfp-pic" id="pfpPic">
-                            <div class="pic-overlay">
-                                <div class="edit-icon">📷</div>
-                            </div>
                         </label>
                         <input type="file" id="profileUpload" accept="image/*" onchange="changeProfile(event)" style="display: none;">
                     </div>

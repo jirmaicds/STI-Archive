@@ -1691,7 +1691,7 @@
             
             track.innerHTML = items.map(function(item, index) {
                 return '<div class="carousel-item" data-index="' + index + '" data-pdfid="' + (item.pdfId || '') + '" data-pdfpath="' + (item.pdfPath || '') + '" data-title="' + encodeURIComponent(item.title || '') + '" style="cursor: pointer;">' +
-                    '<div class="lu-image-container"><img class="lu-img" src="' + item.imageUrl + '" alt="' + item.title + '" onerror="this.src=/frontend/assets/images/paper2.png"></div>' +
+                    '<div class="lu-image-container"><img class="lu-img" src="' + item.imageUrl + '" alt="' + item.title + '" onerror="this.src=\'/frontend/assets/images/paper2.png\'"></div>' +
                     '<div class="carousel-content"><h3>' + item.title + '</h3><p><strong>' + (item.author || '') + '</strong></p><p>' + (item.description || '') + '</p></div>' +
                 '</div>';
             }).join('');

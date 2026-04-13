@@ -455,7 +455,7 @@
             margin: 0;
             overflow: hidden;
             position: relative;
-            padding: 40px 0;
+            padding: 0;
             min-height: 550px;
         }
         .carousel-track {
@@ -508,7 +508,14 @@
         }
         
         .carousel-item.elevated .lu-image-container {
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .carousel-item {
+                width: 280px;
+                height: 340px;
+            }
         }
         .lu-image-container {
             width: 100%;

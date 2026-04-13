@@ -317,25 +317,7 @@
         }
 
         /* === SCROLL TO TOP BUTTON === */
-        .scroll-to-top-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #0077ffc3;
-            color: white;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            opacity: 0;
-            transform: translateY(100px);
-            z-index: 1000;
-            transition: opacity 0.5s ease, transform 0.5s ease, background-color 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            pointer-events: none;
-        }
+
         .scroll-to-top-btn.visible {
             opacity: 1;
             transform: translateY(0);
@@ -355,7 +337,7 @@
             width: 100%;
             min-height: 700px;
             background: linear-gradient(135deg, #101d4f, #071835);
-            padding: 40px 20px;
+            padding: 20px 20px;
             font-family: 'Poppins', Arial, sans-serif;
             display: flex;
             flex-direction: column;
@@ -387,6 +369,16 @@
             max-width: 1000px;
             padding: 0 15px;
             margin: 0 auto; /* 🔑 THIS CENTERS THE GRID */
+        }
+        @media (max-width: 791px) {
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 537px) {
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
         }
         .profile-card {
             display: flex;
@@ -433,8 +425,16 @@
             margin-top: 6px;
             text-align: center;
         }
+
+        /* Dark mode fixes */
+        .dark-mode .about-section {
+            background: linear-gradient(135deg, #0a1428, #071835);
+        }
+        .dark-mode .profile-card {
+            background: rgba(0, 0, 0, 0.3);
+        }
         /* 📱 On very small screens: ensure single column */
-        @media (max-width: 480px) {
+        @media (max-width: 537px) {
             .team-grid {
                 grid-template-columns: 1fr;
                 gap: 28px;
@@ -474,23 +474,7 @@
             color: #cececee6;
         }
 
-        .dark-mode .scroll-to-top-btn {
-            background-color: #ffd900cc;
-            color: #232f41;
-        }
-        .dark-mode .scroll-to-top-btn:hover {
-            background-color: #e7c401;
-        }
-        .dark-mode .scroll-to-top-btn i {
-            color: #232f41;
-        }
 
-        /* Hide scroll to top button on tablet and phone */
-        @media (max-width: 768px) {
-            .scroll-to-top-btn {
-                display: none !important;
-            }
-        }
 
         /* === FOOTER === */
         .site-footer {
@@ -664,7 +648,7 @@
     </footer>
 
     <!-- Scroll to Top Button -->
-    <button id="scrollToTopBtn" class="scroll-to-top-btn" title="Scroll to Top"><i class="fa fa-arrow-up"></i></button>
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js" defer></script>
     <script src="/frontend/assets/js/script.js"></script>
@@ -743,20 +727,7 @@
             }
         }
 
-        // Scroll to top functionality
-        const scrollToTopBtn = document.getElementById('scrollToTopBtn');
-        window.onscroll = function() {
-            if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
-                scrollToTopBtn.classList.add('visible');
-            } else {
-                scrollToTopBtn.classList.remove('visible');
-            }
-        };
-        
-        scrollToTopBtn.addEventListener('click', function() {
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-        });
+
     </script>
 </body>
 </html>

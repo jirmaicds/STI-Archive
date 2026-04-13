@@ -46,6 +46,14 @@
             }
         }
 
+        // Toggle tab buttons visibility
+        function toggleTabButtons() {
+            const profileTabs = document.querySelector('.profile-tabs');
+            if (profileTabs) {
+                profileTabs.classList.toggle('hide-tabs');
+            }
+        }
+
         // Navbar scroll behavior
         document.addEventListener('DOMContentLoaded', function() {
             const navbar = document.getElementById('main-navbar');
@@ -1905,6 +1913,7 @@
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
+            position: relative;
         }
         .tab-btn {
             padding: 12px 30px;
@@ -1964,6 +1973,7 @@
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
+            position: relative;
         }
         .tab-btn {
             padding: 12px 30px;
@@ -1992,6 +2002,10 @@
         .dark-mode .tab-btn.active {
             background: #ffd700;
             color: #232f41;
+        }
+
+        .profile-tabs.hide-tabs .tab-btn {
+            display: none;
         }
 
         /* === RESPONSIVE BURGER MENU FOR PROFILE TABS (1665px and below) === */
@@ -2059,22 +2073,35 @@
 
         /* Show mobile sidebar on small screens */
         @media (max-width: 1665px) {
-            .mobile-tabs-sidebar {
+            .tabs-sidebar {
                 display: block;
             }
-            .tabs-burger {
+            .profile-tabs .profile-tabs-burger {
                 display: none;
             }
         }
 
         /* Show tabs-burger on large screens */
         @media (min-width: 1666px) {
-            .tabs-burger {
-                display: block;
-            }
-            .mobile-tabs-sidebar {
+            .tabs-sidebar {
                 display: none;
             }
+            .profile-tabs .profile-tabs-burger {
+                display: block;
+            }
+        }
+
+        .profile-tabs-burger {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #0057b8;
+            border: none;
+            border-radius: 4px;
+            padding: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
         }
 
         .profile-tabs-burger:hover {
@@ -2357,6 +2384,9 @@
 
                     <!-- Tab Navigation -->
                     <div class="profile-tabs">
+                        <button class="profile-tabs-burger" onclick="toggleTabButtons()">
+                            <i class="fas fa-bars"></i>
+                        </button>
                         <button class="tab-btn active" onclick="showMyUploadsTab('myuploads')">My Uploads</button>
                         <button class="tab-btn" onclick="showMyUploadsTab('upload')">Uploads</button>
                         <button class="tab-btn" onclick="showMyUploadsTab('cited')">Cited</button>

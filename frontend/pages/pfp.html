@@ -1164,11 +1164,24 @@
             margin-top: 10px;
         }
 
-        .profile-container {
+        .profile-section {
+            display: flex;
+        }
+
+        .tabs-sidebar {
+            width: 50px;
+            background: #f0f0f0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
+            padding: 10px 0;
+        }
+
+        .profile-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .status-row {
@@ -1983,19 +1996,41 @@
         }
 
         /* === RESPONSIVE BURGER MENU FOR PROFILE TABS (1665px and below) === */
-        .profile-tabs-burger {
-            display: none;
-            position: fixed;
-            top: 70px;
-            left: 10px;
-            z-index: 999;
+        .tabs-burger {
             background: #0057b8;
             border: none;
             border-radius: 8px;
-            padding: 12px 15px;
+            padding: 10px;
             cursor: pointer;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             transition: background 0.3s ease;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tabs-burger:hover {
+            background: #003f8a;
+        }
+
+        .tabs-burger i {
+            color: white;
+            font-size: 16px;
+        }
+
+        .dark-mode .tabs-burger {
+            background: #ffd700;
+        }
+
+        .dark-mode .tabs-burger:hover {
+            background: #e6c300;
+
+        }
+
+        .dark-mode .tabs-burger i {
+            color: #232f41;
         }
 
         .profile-tabs-burger:hover {
@@ -2101,8 +2136,8 @@
 
         /* Show burger and sidebar only on screens 1665px and below */
         @media (max-width: 1665px) {
-            .profile-tabs-burger {
-                display: block;
+            .tabs-sidebar {
+                display: none;
             }
 
             .profile-tabs-sidebar {
@@ -2114,37 +2149,9 @@
             }
         }
 
-        /* At 1665px and above, show burger sidebar */
-        @media (min-width: 1665px) {
-            .profile-tabs-burger {
-                position: fixed;
-                left: 0;
-                top: 60px; /* below navbar */
-                width: 40px;
-                height: auto;
-                background: #f0f0f0;
-                border-right: 2px solid #000;
-                border-radius: 0;
-                box-shadow: none;
-                z-index: 1000;
-                padding: 10px 0;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-
-            .profile-tabs-burger:hover {
-                background: rgba(0,0,0,0.1);
-            }
-
-            .dark-mode .profile-tabs-burger {
-                background: #333;
-                border-right-color: #fff;
-            }
-
-            .profile-container {
-                margin-left: 50px;
-            }
+        /* Dark mode for tabs-sidebar */
+        .dark-mode .tabs-sidebar {
+            background: #333;
         }
 
         .upload-form-content {
@@ -2297,6 +2304,11 @@
 
     <section class="main-content" style="margin-top: 50px;">
         <div id="p-n-p" class="profile-section" style="display:block; text-align: center;">
+            <div class="tabs-sidebar">
+                <button class="tabs-burger" id="tabsBurger" onclick="toggleProfileTabsSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
             <div class="profile-container">
                 <div class="background-image-container" id="backgroundContainer" style="background-image: url('/frontend/assets/images/dbgc.png'); background-size: cover; background-position: center;">
 
@@ -2323,12 +2335,7 @@
                         <button class="tab-btn" onclick="showMyUploadsTab('cited')">Cited</button>
                         <button class="tab-btn" onclick="showMyUploadsTab('saved-articles')">Saved Article</button>
                     </div>
-                    
-                    <!-- Profile Tabs Burger Button (visible only on mobile/tablet) -->
-                    <button class="profile-tabs-burger" id="profileTabsBurger" onclick="toggleProfileTabsSidebar()">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    
+
                     <!-- Profile Tabs Sidebar -->
                     <div class="profile-tabs-sidebar" id="profileTabsSidebar">
                         <div class="profile-tabs-sidebar-header">

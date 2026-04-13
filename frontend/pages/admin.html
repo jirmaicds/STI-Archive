@@ -355,11 +355,19 @@
             font-size:30px;
             font-weight: bold;
             color: #333;
-            margin-left:0px;
+            margin-left:20px;
         }
         body.dark-mode .header  #page-title{
             background-color: #232f41;
             color: #ffffff;
+        }
+
+        /* When sidebar collapsed, move toggle-btn and page-title left */
+        body.sidebar-collapsed .toggle-btn {
+            margin-left: 0;
+        }
+        body.sidebar-collapsed #page-title {
+            margin-left: 0;
         }
 
 
@@ -705,7 +713,7 @@
             color: #ccc;
         }
         .toggle-btn {
-            margin-left:0px;
+            margin-left:20px;
             background: none;
             border: none;
             font-size: 24px;

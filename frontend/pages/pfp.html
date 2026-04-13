@@ -2033,6 +2033,53 @@
             color: #232f41;
         }
 
+        .mobile-tabs-sidebar {
+            display: none;
+            background: #f0f0f0;
+            border-right: 2px solid #000;
+            padding: 10px 0;
+            position: fixed;
+            left: 0;
+            top: 60px;
+            width: 60px;
+            height: auto;
+            cursor: pointer;
+        }
+
+        .mobile-tabs-sidebar i {
+            color: #333;
+            font-size: 20px;
+        }
+
+        .dark-mode .mobile-tabs-sidebar {
+            background: #333;
+            border-right-color: #fff;
+        }
+
+        .dark-mode .mobile-tabs-sidebar i {
+            color: #fff;
+        }
+
+        /* Show mobile sidebar on small screens */
+        @media (max-width: 1665px) {
+            .mobile-tabs-sidebar {
+                display: block;
+            }
+            .tabs-burger {
+                display: none;
+            }
+        }
+
+        /* Show tabs-burger on large screens */
+        @media (min-width: 1666px) {
+            .tabs-burger {
+                display: block;
+            }
+            .mobile-tabs-sidebar {
+                display: none;
+            }
+        }
+
         .profile-tabs-burger:hover {
             background: #003f8a;
         }
@@ -2274,131 +2321,10 @@
                 <a href="/Homepage.html"><span>ARCHIVES</span></a>
             </div>
         </div>
-        <div style="flex:1"></div>
-        <div class="nav-center">
-            <div class="nav-item">
-                <a href="/library.html"><span class="nav-text">Library</span></a>
-            </div>
+
+        <div class="mobile-tabs-sidebar" onclick="toggleProfileTabsSidebar()">
+            <i class="fas fa-bars"></i>
         </div>
-        <div class="navbar-right user-nav-fixed">
-            <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode">
-                <i class="fa fa-moon"></i>
-            </button>
-            <img id="userIcon" src="/frontend/assets/images/Screenshot 2025-09-10 204105.png" alt="Profile" style="cursor:pointer;" onclick="toggleSidebar()">
-        </div>
-    </nav>
-
-    <!-- Sidebar -->
-    <div id="sidebar" class="sidebar">
-        <div class="sidebar-content">
-            <ul>
-    
-                <li><a href="/library.html"><i class="fa-solid fa-book"></i> <span class="text">Library</span></a></li>
-                <li><a href="/myspace.html"><i class="fa-solid fa-feather-pointed"></i> <span class="text">Myspace</span></a></li>
-                <li><a href="about.html"><i class="fa-solid fa-info-circle"></i> <span class="text">About Us</span></a></li>
-                <hr>
-                <li><a href="/index.html"><i class="fa-solid fa-sign-out-alt"></i> <span class="text">Sign out</span></a></li>
-            </ul>
-        </div>
-    </div>
-
-    <section class="main-content" style="margin-top: 50px;">
-        <div id="p-n-p" class="profile-section" style="display:block; text-align: center;">
-            <div class="tabs-sidebar">
-                <button class="tabs-burger" id="tabsBurger" onclick="toggleProfileTabsSidebar()">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
-            <div class="profile-container">
-                <div class="background-image-container" id="backgroundContainer" style="background-image: url('/frontend/assets/images/dbgc.png'); background-size: cover; background-position: center;">
-
-                    <input type="file" id="backgroundUpload" accept="image/*" onchange="changeBackground(event)" style="display: none;" />
-                    <div class="pfp-container" style="position: absolute; top: 175px; left: 50%; transform: translateX(-50%);">
-                        <label for="pfp-profileUpload">
-                            <img src="/frontend/assets/images/Screenshot 2025-09-10 204105.png" alt="Profile" class="pfp-pic" id="pfpPic" />
-                            <div class="pic-overlay">
-                                <div class="edit-icon">📷</div>
-                            </div>
-                        </label>
-                        <input type="file" id="profileUpload" accept="image/*" onchange="changeProfile(event)" style="display: none;" />
-                    </div>
-                    <div class="full-name" style="position: absolute; top: 440px; left: 50%; transform: translateX(-50%); color: black; padding: 8px 20px; border-radius: 20px; font-size: 48px; font-weight: bold;">Username</div>
-                </div>
-
-                <div class="profile-info-block" style="position: relative; margin-top: 10px; text-align: center;">
-                    <div class="full-name" style="display: none;">Username</div>
-                    
-                    <!-- Tab Navigation -->
-                    <div class="profile-tabs">
-                        <button class="tab-btn active" onclick="showMyUploadsTab('myuploads')">My Uploads</button>
-                        <button class="tab-btn" onclick="showMyUploadsTab('upload')">Uploads</button>
-                        <button class="tab-btn" onclick="showMyUploadsTab('cited')">Cited</button>
-                        <button class="tab-btn" onclick="showMyUploadsTab('saved-articles')">Saved Article</button>
-                    </div>
-
-                    <!-- Profile Tabs Sidebar -->
-                    <div class="profile-tabs-sidebar" id="profileTabsSidebar">
-                        <div class="profile-tabs-sidebar-header">
-                            <h3>Menu</h3>
-                            <button class="profile-tabs-sidebar-close" onclick="closeProfileTabsSidebar()">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="profile-tabs-sidebar-content">
-                            <button class="tab-btn active" onclick="showMyUploadsTab('myuploads'); closeProfileTabsSidebar();">My Uploads</button>
-                            <button class="tab-btn" onclick="showMyUploadsTab('upload'); closeProfileTabsSidebar();">Uploads</button>
-                            <button class="tab-btn" onclick="showMyUploadsTab('cited'); closeProfileTabsSidebar();">Cited</button>
-                            <button class="tab-btn" onclick="showMyUploadsTab('saved-articles'); closeProfileTabsSidebar();">Saved Article</button>
-                        </div>
-                    </div>
-                    
-                    <!-- My Uploads Container -->
-                    <div id="myuploads-list-container" style="display: block;">
-                        <div id="uploaded-files-container" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
-                            <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Upload Container -->
-                    <div id="upload-form-container" style="display: none;">
-                        <div class="upload-form-content">
-                            <div class="drop-zone" id="myuploads-drop-zone" onclick="document.getElementById('user-pdf-upload').click()">
-                                <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #0057b8;"></i>
-                                <p style="margin-top: 10px; color: #666;">Click or Drag & Drop to Upload PDF File</p>
-                                <p style="font-size: 12px; color: #999;">(Only PDF files are allowed)</p>
-                            </div>
-                            <input type="file" id="user-pdf-upload" accept=".pdf,application/pdf" style="display: none;" onchange="handleUserPdfSelect(event)">
-                            <div id="selected-pdf-info" style="display: none; margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                                <p id="selected-filename" style="font-weight: bold; color: #0057b8;"></p>
-                                <button onclick="showUserUploadModal()" style="margin-top: 10px; padding: 8px 16px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                    <i class="fas fa-edit"></i> Add Details & Upload
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Cited Articles Container -->
-                    <div id="cited-articles-container" style="display: none;">
-                        <div id="cited-articles-list" style="display: flex; flex-direction: column; gap: 20px; padding: 20px; min-height: 500px;">
-                <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; width: 100%; background: transparent;">No uploaded files yet</p>
-                        </div>
-                    </div>
-                    <div id="saved-articles-container" style="display: none; flex-direction: column; gap: 20px; padding: 20px; min-height: 500px; align-items: center; justify-content: center;">
-                        <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet</p>
-                    </div>
-                    <div id="articles-pagination" style="display: none; justify-content: center; align-items: center; gap: 10px; padding: 20px;">
-                        <button id="prev-page-btn" class="pagination-btn" style="padding: 8px 16px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer;">Previous</button>
-                        <span id="page-info" style="font-weight: bold; color: #333;">Page 1 of 1</span>
-                        <button id="next-page-btn" class="pagination-btn" style="padding: 8px 16px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer;">Next</button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-              
-
-
-
     </section>
 
 

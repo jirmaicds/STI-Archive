@@ -201,6 +201,31 @@
       background: #2d2d2d;
     }
 
+    /* PDF Viewer Styles */
+    #pdf-viewer-modal {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+
+    #pdf-viewer-modal > div {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+
+    #pdf-viewer-modal #pdf-viewer-container {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+
     /* PDF Viewer Darkmode Styles */
     .dark-mode #pdf-viewer-modal {
       background: rgba(0, 0, 0, 0.95) !important;
@@ -2238,7 +2263,7 @@ color: #ffd700;
 
   <!-- Document Editor -->
   <!-- HomeEditor - Default view when no document is open -->
-  <div id="homeEditor" class="home-editor" style="display: flex; flex: 0 0 50%; width: 50%; flex-direction: column; align-items: center; justify-content: center; align-content: center; padding: 40px 20px; height: 100%; overflow-y: auto; background: white; position: absolute; right: 0; top: 0;">
+  <div id="homeEditor" class="home-editor" style="display: none; flex: 0 0 50%; width: 50%; flex-direction: column; align-items: center; justify-content: center; align-content: center; padding: 40px 20px; height: 100%; overflow-y: auto; background: white; position: absolute; right: 0; top: 0;">
     
     <h1 style="color: #333; font-size: 2.5rem; margin-bottom: 40px; text-shadow: none; font-family: 'Segoe UI', Arial, sans-serif;">STI Archives Word</h1>
     
@@ -7005,11 +7030,11 @@ CURRICULUM VITAE`;
     <!-- Footer Toggle Button for PDF/Word - shown in tablet and mobile -->
     <div class="footer-toggle-container" id="footerToggleContainer">
       <div class="toggle-buttons-row">
-        <button class="toggle-btn-mobile pdf-btn active" id="footerPdfBtn" onclick="selectFooterDocType('pdf')" style="background: #ffd700; color: #333;">
+        <button class="toggle-btn-mobile pdf-btn active" id="footerPdfBtn" onclick="selectFooterDocType('pdf')" style="background: #0057b8; color: #333; border: none;">
           <i class="fas fa-book" style="color: #333;"></i> PDF
         </button>
-        <button class="toggle-btn-mobile word-btn" id="footerWordBtn" onclick="selectFooterDocType('word')" style="background: #0057b8; color: #fff;">
-          <i class="fas fa-file-word"></i> Word
+        <button class="toggle-btn-mobile word-btn" id="footerWordBtn" onclick="selectFooterDocType('word')" style="background: #fff; color: #333; border: 2px solid #000;">
+          <i class="fas fa-file-word" style="color: #333;"></i> Word
         </button>
       </div>
     </div>
@@ -7041,15 +7066,74 @@ CURRICULUM VITAE`;
         console.log('pdfBtn:', pdfBtn);
         console.log('wordBtn:', wordBtn);
         
-        // Update button states and background colors - PDF stays yellow, Word stays blue
+        // Update button states
         if (type === 'pdf') {
             pdfBtn.classList.add('active');
             wordBtn.classList.remove('active');
-            // PDF button stays yellow, Word button stays blue
-            pdfBtn.style.background = '#ffd700';
-            pdfBtn.style.color = '#333';
-            wordBtn.style.background = '#0057b8';
-            wordBtn.style.color = '#fff';
+        } else {
+            pdfBtn.classList.remove('active');
+            wordBtn.classList.add('active');
+        }
+
+        // Update styles based on active state and theme
+        const isDark = document.body.classList.contains('dark-mode');
+        const activeBg = '#0057b8'; // blue
+        const inactiveBg = isDark ? '#333' : '#fff';
+        const activeText = isDark ? '#fff' : '#333';
+        const inactiveText = isDark ? '#fff' : '#333';
+        const inactiveBorder = isDark ? '2px solid #fff' : '2px solid #000';
+
+        if (type === 'pdf') {
+            pdfBtn.style.background = activeBg;
+            pdfBtn.style.color = activeText;
+            pdfBtn.style.border = 'none';
+            pdfBtn.querySelector('i').style.color = activeText;
+
+            wordBtn.style.background = inactiveBg;
+            wordBtn.style.color = inactiveText;
+            wordBtn.style.border = inactiveBorder;
+            wordBtn.querySelector('i').style.color = inactiveText;
+        } else {
+            wordBtn.style.background = activeBg;
+            wordBtn.style.color = activeText;
+            wordBtn.style.border = 'none';
+            wordBtn.querySelector('i').style.color = activeText;
+
+            pdfBtn.style.background = inactiveBg;
+            pdfBtn.style.color = inactiveText;
+            pdfBtn.style.border = inactiveBorder;
+            pdfBtn.querySelector('i').style.color = inactiveText;
+        }
+
+        // Update styles based on active state and theme
+        const isDark = document.body.classList.contains('dark-mode');
+        const activeBg = '#0057b8'; // blue
+        const inactiveBg = isDark ? '#333' : '#fff';
+        const activeText = isDark ? '#fff' : '#333';
+        const inactiveText = isDark ? '#fff' : '#333';
+        const inactiveBorder = isDark ? '2px solid #fff' : '2px solid #000';
+
+        if (type === 'pdf') {
+            pdfBtn.style.background = activeBg;
+            pdfBtn.style.color = activeText;
+            pdfBtn.style.border = 'none';
+            pdfBtn.querySelector('i').style.color = activeText;
+
+            wordBtn.style.background = inactiveBg;
+            wordBtn.style.color = inactiveText;
+            wordBtn.style.border = inactiveBorder;
+            wordBtn.querySelector('i').style.color = inactiveText;
+        } else {
+            wordBtn.style.background = activeBg;
+            wordBtn.style.color = activeText;
+            wordBtn.style.border = 'none';
+            wordBtn.querySelector('i').style.color = activeText;
+
+            pdfBtn.style.background = inactiveBg;
+            pdfBtn.style.color = inactiveText;
+            pdfBtn.style.border = inactiveBorder;
+            pdfBtn.querySelector('i').style.color = inactiveText;
+        }
             
             // Show file-viewer when PDF is clicked - use !important to override CSS
             const homeEditor = document.getElementById('homeEditor');
@@ -7070,13 +7154,16 @@ CURRICULUM VITAE`;
                 console.log('PDF case - homeEditor display AFTER:', homeEditor.style.display);
             }
         } else {
-            pdfBtn.classList.remove('active');
-            wordBtn.classList.add('active');
-            // Word button stays blue, PDF button turns blue
-            wordBtn.style.background = '#ffd700';
-            wordBtn.style.color = '#333';
-            pdfBtn.style.background = '#0057b8';
-            pdfBtn.style.color = '#fff';
+            // styling for word active
+            wordBtn.style.background = activeBg;
+            wordBtn.style.color = activeText;
+            wordBtn.style.border = 'none';
+            wordBtn.querySelector('i').style.color = activeText;
+
+            pdfBtn.style.background = inactiveBg;
+            pdfBtn.style.color = inactiveText;
+            pdfBtn.style.border = inactiveBorder;
+            pdfBtn.querySelector('i').style.color = inactiveText;
             
             // Show HomeEditor when Word is clicked - use !important to override CSS
             const homeEditor = document.getElementById('homeEditor');

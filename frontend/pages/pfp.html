@@ -54,6 +54,34 @@
             }
         }
 
+        // Profile Picture Modal
+        let selectedProfilePic = null;
+
+        function showProfilePicModal() {
+            document.getElementById('profilePicModal').style.display = 'block';
+            selectedProfilePic = null;
+            document.querySelectorAll('.pic-option').forEach(opt => opt.classList.remove('selected'));
+        }
+
+        function closeProfilePicModal() {
+            document.getElementById('profilePicModal').style.display = 'none';
+        }
+
+        function selectProfilePic(filename) {
+            selectedProfilePic = filename;
+            document.querySelectorAll('.pic-option').forEach(opt => opt.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+        }
+
+        function saveProfilePic() {
+            if (selectedProfilePic) {
+                document.getElementById('pfpPic').src = `/frontend/assets/images/${selectedProfilePic}`;
+                closeProfilePicModal();
+            } else {
+                alert('Please select a profile picture.');
+            }
+        }
+
         // Navbar scroll behavior
         document.addEventListener('DOMContentLoaded', function() {
             const navbar = document.getElementById('main-navbar');
@@ -1144,6 +1172,9 @@
        
 
         .edit-icon {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
             color: #fff;
             padding: 6px;
             border-radius: 50%;
@@ -1151,6 +1182,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
+            background: rgba(0,0,0,0.5);
+            transition: background 0.3s ease;
+        }
+
+        .edit-icon:hover {
+            background: rgba(0,0,0,0.7);
         }
 
         .profile-info-block {
@@ -2192,7 +2230,116 @@
         }
 
         .dark-mode .profile-tabs-sidebar-close:hover {
-            color: #ffed4a;
+            background: #5b6b7a;
+        }
+
+        /* Desktop styles */
+        @media (min-width: 1666px) {
+            .full-name {
+                position: absolute;
+                top: 120px;
+                left: 40%;
+                transform: translateX(-50%);
+                color: white;
+                padding: 8px 20px;
+                border-radius: 20px;
+                font-size: 48px;
+                font-weight: bold;
+            }
+
+            .pfp-container {
+                position: absolute;
+                top: 15px;
+                left: 20%;
+                transform: translateX(-50%);
+            }
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .profile-pic-options {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .pic-option {
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: border 0.3s ease;
+        }
+
+        .pic-option:hover,
+        .pic-option.selected {
+            border-color: #0057b8;
+        }
+
+        .pic-option img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+
+        #saveProfilePicBtn {
+            background: #0057b8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #saveProfilePicBtn:hover {
+            background: #003f8a;
+        }
+
+        .dark-mode .modal-content {
+            background-color: #374151;
+            color: #e2e8f0;
+        }
+
+        .dark-mode .close {
+            color: #aaa;
+        }
+
+        .dark-mode .close:hover {
+            color: white;
         }
 
         .profile-tabs-sidebar-content {
@@ -2366,9 +2513,7 @@
                     </button>
                 </div>
                 <div class="background-image-container" id="backgroundContainer" style="background-image: url('/frontend/assets/images/dbgc.png'); background-size: cover; background-position: center;">
-                    <div class="pic-overlay">
-                        <div class="edit-icon">📷</div>
-                    </div>
+                    <div class="edit-icon" onclick="showProfilePicModal()">📷</div>
                     <input type="file" id="backgroundUpload" accept="image/*" onchange="changeBackground(event)" style="display: none;">
                     <div class="pfp-container" style="position: absolute; top: 175px; left: 50%; transform: translateX(-50%);">
                         <label for="pfp-profileUpload">
@@ -6294,5 +6439,25 @@
             <span>Made for STI College Calamba | ITMAWD 21 G1</span>
         </div>
     </footer>
+
+    <!-- Profile Picture Selection Modal -->
+    <div id="profilePicModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeProfilePicModal()">&times;</span>
+            <h2>Select Profile Picture</h2>
+            <div class="profile-pic-options">
+                <div class="pic-option" onclick="selectProfilePic('Screenshot 2025-09-10 204105.png')">
+                    <img src="/frontend/assets/images/Screenshot 2025-09-10 204105.png" alt="Profile 1">
+                </div>
+                <div class="pic-option" onclick="selectProfilePic('Screenshot 2026-04-14 005023.png')">
+                    <img src="/frontend/assets/images/Screenshot 2026-04-14 005023.png" alt="Profile 2">
+                </div>
+                <div class="pic-option" onclick="selectProfilePic('Screenshot 2026-04-14 005053.png')">
+                    <img src="/frontend/assets/images/Screenshot 2026-04-14 005053.png" alt="Profile 3">
+                </div>
+            </div>
+            <button id="saveProfilePicBtn" onclick="saveProfilePic()">Save</button>
+        </div>
+    </div>
 </body>
 </html>

@@ -10,10 +10,7 @@
     <link rel="stylesheet" href="/frontend/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js" defer></script>
     <script>
-        // Configure PDF.js worker
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -55,7 +52,7 @@
         }
 
         // Profile Picture Modal
-        let selectedProfilePic = null;
+        var selectedProfilePic = null;
 
         function showProfilePicModal() {
             document.getElementById('profilePicModal').style.display = 'block';
@@ -2858,19 +2855,7 @@
             }, 3000);
         }
 
-        // Status update functionality
-        function initializeStatusFeatures() {
-            const statusCloud = document.getElementById('statusCloud');
 
-            statusCloud.addEventListener('click', function() {
-                showStatusModal();
-            });
-
-            // Load saved status
-            const savedStatus = localStorage.getItem('userStatus');
-            if (savedStatus) {
-                updateStatusDisplay(savedStatus);
-            }
         }
 
         // Show status modal
@@ -3443,10 +3428,6 @@
         window.addEventListener('storage', function(e) {
             if (e.key === 'documentUpdateTrigger' || e.key === 'savedDocuments' || e.key === 'pfpDocumentUpdate') {
                 // Reload documents when myspace.html saves something
-                const currentSection = document.querySelector('.profile-section[style*="display: block"]');
-                if (currentSection && currentSection.id === 'saved-documents-container') {
-                    loadSavedDocuments();
-                }
             }
         });
 
@@ -3454,10 +3435,6 @@
         window.addEventListener('message', function(e) {
             if (e.data.type === 'documentSaved') {
                 // Reload documents when myspace.html saves something
-                const currentSection = document.querySelector('.profile-section[style*="display: block"]');
-                if (currentSection && currentSection.id === 'saved-documents-container') {
-                    loadSavedDocuments();
-                }
             }
         });
 
@@ -3643,7 +3620,6 @@
                 localStorage.setItem('savedDocuments', JSON.stringify(savedDocuments));
                 localStorage.setItem('pfpDocuments', JSON.stringify(pfpDocuments));
 
-                loadSavedDocuments(); // Reload the list
                 showNotification('Document removed from saved documents!', 'success');
             }
         }
@@ -3736,7 +3712,7 @@
             loadSavedImages();
             loadSavedName();
             initializeProfileFeatures();
-            initializeStatusFeatures();
+
 
             // Check URL hash and query parameters to show appropriate section
             const hash = window.location.hash;
@@ -5928,7 +5904,6 @@
         // Initialize file upload on page load
         document.addEventListener('DOMContentLoaded', function() {
             initializeFileUpload();
-            loadSavedDocuments();
             loadSavedArticles();
         });
 
@@ -6016,6 +5991,7 @@
         }
 
         function updateDocumentFavicon(faviconSrc) {
+            if (!faviconSrc) return;
             let faviconLink = document.querySelector('link[rel="icon"]');
             if (!faviconLink) {
                 faviconLink = document.createElement('link');
@@ -6178,14 +6154,7 @@
                     loadSavedArticles();
                 }
                 tabs[3].classList.add('active');
-            } else if (tabName === 'saved-documents') {
-                if (savedDocumentsContainer) savedDocumentsContainer.style.display = 'flex';
-                // Load saved documents when tab is clicked
-                if (typeof loadSavedDocuments === 'function') {
-                    loadSavedDocuments();
-                }
-                tabs[4].classList.add('active');
-            }
+
         }
 
         // Function to open upload modal

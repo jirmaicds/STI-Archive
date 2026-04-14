@@ -3731,9 +3731,12 @@
 
             showSection(defaultSection);
             // Set initial active state
-            const activeItem = document.querySelector(`.sdbr1-menu .dropdown-item.${activeClass}`).closest('li');
-            if (activeItem) {
-                activeItem.classList.add('active');
+            const activeElement = document.querySelector(`.sdbr1-menu .dropdown-item.${activeClass}`);
+            if (activeElement) {
+                const activeItem = activeElement.closest('li');
+                if (activeItem) {
+                    activeItem.classList.add('active');
+                }
             }
             initializeFileUpload();
 

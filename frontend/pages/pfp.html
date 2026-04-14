@@ -3168,27 +3168,11 @@
 
             const localArticles = JSON.parse(localStorage.getItem('savedArticles')) || [];
 
-            fetch('/api/saved-articles')
-                .then(response => response.json())
-                .then(data => {
-                    const couchbaseArticles = data.articles || [];
-                    const allArticles = [...localArticles];
-                    couchbaseArticles.forEach(cb => {
-                        if (!allArticles.some(local => local.title === cb.title)) {
-                            allArticles.push(cb);
-                        }
-                    });
-                    displayArticles(allArticles);
-                })
-                .catch(error => {
-                    console.error('Error loading from Couchbase:', error);
-                    displayArticles(localArticles);
-                });
-
-            let currentPage = 1;
-            const articlesPerPage = 5;
+            displayArticles(localArticles);
 
             function displayArticles(articles) {
+                let currentPage = 1;
+                const articlesPerPage = 5;
                 if (articles.length === 0) {
                     container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet.</p>';
                     document.getElementById('articles-pagination').style.display = 'none';

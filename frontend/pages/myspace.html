@@ -7046,7 +7046,7 @@ CURRICULUM VITAE`;
     // Track current view state: 'pdf' or 'word'
     let footerCurrentDocView = 'pdf';
 
-    function selectFooterDocType(type) {
+    window.selectFooterDocType = function(type) {
         const pdfBtn = document.getElementById('footerPdfBtn');
         const wordBtn = document.getElementById('footerWordBtn');
         
@@ -7102,19 +7102,12 @@ CURRICULUM VITAE`;
             const fileViewer = document.querySelector('.file-viewer');
             const editor = document.getElementById('editor');
 
-            console.log('PDF case - homeEditor:', homeEditor);
-            console.log('PDF case - fileViewer:', fileViewer);
-
             if (fileViewer) {
-                console.log('PDF case - fileViewer display BEFORE:', fileViewer.style.display);
                 fileViewer.style.setProperty('display', 'flex', 'important');
-                console.log('PDF case - fileViewer display AFTER:', fileViewer.style.display);
             }
             if (homeEditor) {
-                console.log('PDF case - homeEditor display BEFORE:', homeEditor.style.display);
                 homeEditor.style.setProperty('display', 'none', 'important');
                 homeEditor.classList.remove('visible');
-                console.log('PDF case - homeEditor display AFTER:', homeEditor.style.display);
             }
             if (editor) {
                 editor.style.setProperty('display', 'none', 'important');

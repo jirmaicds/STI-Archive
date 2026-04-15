@@ -41,11 +41,11 @@
              top:0;
              height: 50px;
              width: 100%;
-              background: #132a3f;
+              background: white;
              box-shadow: 0 2px 8px #0001;
              padding: 0 12px;
              transition: all 0.3s ease;
-             
+
 
          }
        
@@ -180,6 +180,10 @@
     /* Dark mode styles */
     .dark-mode body {
       background: #181f2a;
+    }
+
+    .dark-mode .main-navbar {
+      background: #132a3f;
     }
 
     .dark-mode .file-viewer {
@@ -1763,13 +1767,13 @@ color: #ffd700;
     }
 
     .footer-toggle-container .toggle-btn-mobile.active {
-      background: #ffd700 !important;
-      color: #333;
+      background: #0057b8 !important;
+      color: white;
       font-weight: bold;
     }
 
     .footer-toggle-container .toggle-btn-mobile.active i {
-      color: #333;
+      color: white;
     }
 
     /* Dark mode styles for footer toggle */
@@ -7041,20 +7045,10 @@ CURRICULUM VITAE`;
     </div>
     
     <script>
-    // Debug: Check footer toggle on load
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Footer toggle container:', document.getElementById('footerToggleContainer'));
-        console.log('Window width:', window.innerWidth);
-    });
-    
-    // Also check on resize
-    window.addEventListener('resize', function() {
-        console.log('Window width changed:', window.innerWidth);
-    });
     // === FOOTER PDF/WORD TOGGLE FUNCTION ===
     // Track current view state: 'pdf' or 'word'
     let footerCurrentDocView = 'pdf';
-    
+
     function selectFooterDocType(type) {
         const pdfBtn = document.getElementById('footerPdfBtn');
         const wordBtn = document.getElementById('footerWordBtn');

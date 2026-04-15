@@ -511,11 +511,29 @@
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
         }
 
+        /* Tablet responsiveness */
+        @media (max-width: 1024px) {
+            .carousel-item {
+                width: 320px;
+                height: 400px;
+            }
+        }
+
         @media (max-width: 768px) {
             .carousel-item {
                 width: 280px;
                 height: 340px;
             }
+        }
+
+        /* Center text in carousel items */
+        .carousel-item .carousel-content {
+            text-align: center;
+        }
+
+        .carousel-item p {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
         .lu-image-container {
             width: 100%;

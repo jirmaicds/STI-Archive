@@ -1114,6 +1114,30 @@
             color: white !important;
         }
 
+        /* Tablet responsiveness */
+        @media (max-width: 1024px) {
+            .pfp-container {
+                width: 200px;
+                height: 200px;
+            }
+            .pfp-container .full-name {
+                font-size: 1.2rem;
+                bottom: -25px;
+            }
+        }
+
+        /* Phone responsiveness */
+        @media (max-width: 600px) {
+            .pfp-container {
+                width: 150px;
+                height: 150px;
+            }
+            .pfp-container .full-name {
+                font-size: 1rem;
+                bottom: -20px;
+            }
+        }
+
         
 
         .pfp-pic {
@@ -2599,7 +2623,7 @@
         </div>
         <div class="navbar-right user-nav-fixed">
             <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode"><i class="fa fa-moon"></i></button>
-            <img id="userIcon" src="/frontend/assets/images/Screenshot 2025-09-10 204105.png" alt="Profile" style="cursor:pointer;" onclick="toggleSidebar()">
+            <img id="userIcon" src="/frontend/assets/images/Screenshot 2025-09-10 204105.png" alt="Profile" style="cursor:pointer;" onclick="toggleProfileTabsSidebar()">
         </div>
     </nav>
     <!-- Sidebar -->

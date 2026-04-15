@@ -7080,22 +7080,22 @@ CURRICULUM VITAE`;
             pdfBtn.style.background = activeBg;
             pdfBtn.style.color = activeText;
             pdfBtn.style.border = 'none';
-            pdfBtn.querySelector('i').style.color = activeText;
+            if (pdfBtn.querySelector('i')) pdfBtn.querySelector('i').style.color = activeText;
 
             wordBtn.style.background = inactiveBg;
             wordBtn.style.color = inactiveText;
             wordBtn.style.border = inactiveBorder;
-            wordBtn.querySelector('i').style.color = inactiveText;
+            if (wordBtn.querySelector('i')) wordBtn.querySelector('i').style.color = inactiveText;
         } else {
             wordBtn.style.background = activeBg;
             wordBtn.style.color = activeText;
             wordBtn.style.border = 'none';
-            wordBtn.querySelector('i').style.color = activeText;
+            if (wordBtn.querySelector('i')) wordBtn.querySelector('i').style.color = activeText;
 
             pdfBtn.style.background = inactiveBg;
             pdfBtn.style.color = inactiveText;
             pdfBtn.style.border = inactiveBorder;
-            pdfBtn.querySelector('i').style.color = inactiveText;
+            if (pdfBtn.querySelector('i')) pdfBtn.querySelector('i').style.color = inactiveText;
         }
 
         // Update display
@@ -7141,22 +7141,22 @@ CURRICULUM VITAE`;
             pdfBtn.style.background = activeBg;
             pdfBtn.style.color = activeText;
             pdfBtn.style.border = 'none';
-            pdfBtn.querySelector('i').style.color = activeText;
+            if (pdfBtn.querySelector('i')) pdfBtn.querySelector('i').style.color = activeText;
 
             wordBtn.style.background = inactiveBg;
             wordBtn.style.color = inactiveText;
             wordBtn.style.border = inactiveBorder;
-            wordBtn.querySelector('i').style.color = inactiveText;
+            if (wordBtn.querySelector('i')) wordBtn.querySelector('i').style.color = inactiveText;
         } else {
             wordBtn.style.background = activeBg;
             wordBtn.style.color = activeText;
             wordBtn.style.border = 'none';
-            wordBtn.querySelector('i').style.color = activeText;
+            if (wordBtn.querySelector('i')) wordBtn.querySelector('i').style.color = activeText;
 
             pdfBtn.style.background = inactiveBg;
             pdfBtn.style.color = inactiveText;
             pdfBtn.style.border = inactiveBorder;
-            pdfBtn.querySelector('i').style.color = inactiveText;
+            if (pdfBtn.querySelector('i')) pdfBtn.querySelector('i').style.color = inactiveText;
         }
             
             // Show file-viewer when PDF is clicked - use !important to override CSS
@@ -7180,12 +7180,12 @@ CURRICULUM VITAE`;
             wordBtn.style.background = activeBg;
             wordBtn.style.color = activeText;
             wordBtn.style.border = 'none';
-            wordBtn.querySelector('i').style.color = activeText;
+            if (wordBtn.querySelector('i')) wordBtn.querySelector('i').style.color = activeText;
 
             pdfBtn.style.background = inactiveBg;
             pdfBtn.style.color = inactiveText;
             pdfBtn.style.border = inactiveBorder;
-            pdfBtn.querySelector('i').style.color = inactiveText;
+            if (pdfBtn.querySelector('i')) pdfBtn.querySelector('i').style.color = inactiveText;
 
             // Show Editor when Word is clicked - use !important to override CSS
             const homeEditor = document.getElementById('homeEditor');

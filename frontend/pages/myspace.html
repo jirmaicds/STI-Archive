@@ -7100,10 +7100,11 @@ CURRICULUM VITAE`;
             // Show file-viewer when PDF is clicked - use !important to override CSS
             const homeEditor = document.getElementById('homeEditor');
             const fileViewer = document.querySelector('.file-viewer');
-            
+            const editor = document.getElementById('editor');
+
             console.log('PDF case - homeEditor:', homeEditor);
             console.log('PDF case - fileViewer:', fileViewer);
-            
+
             if (fileViewer) {
                 console.log('PDF case - fileViewer display BEFORE:', fileViewer.style.display);
                 fileViewer.style.setProperty('display', 'flex', 'important');
@@ -7114,6 +7115,10 @@ CURRICULUM VITAE`;
                 homeEditor.style.setProperty('display', 'none', 'important');
                 homeEditor.classList.remove('visible');
                 console.log('PDF case - homeEditor display AFTER:', homeEditor.style.display);
+            }
+            if (editor) {
+                editor.style.setProperty('display', 'none', 'important');
+                editor.classList.remove('visible');
             }
         else {
             // styling for word active
@@ -7129,20 +7134,19 @@ CURRICULUM VITAE`;
             
             // Show HomeEditor when Word is clicked - use !important to override CSS
             const homeEditor = document.getElementById('homeEditor');
-            const editor = document.getElementById('editor');
             const fileViewer = document.querySelector('.file-viewer');
-            
-            console.log('WORD case - homeEditor:', homeEditor);
-            console.log('WORD case - editor:', editor);
-            console.log('WORD case - fileViewer:', fileViewer);
-            console.log('WORD case - window.innerWidth:', window.innerWidth);
-            
+            const editor = document.getElementById('editor');
+
             if (homeEditor) {
-                console.log('WORD case - homeEditor display BEFORE:', homeEditor.style.display);
                 homeEditor.style.setProperty('display', 'flex', 'important');
                 homeEditor.classList.add('visible');
-                console.log('WORD case - homeEditor display AFTER:', homeEditor.style.display);
-                console.log('WORD case - homeEditor has visible class:', homeEditor.classList.contains('visible'));
+            }
+            if (fileViewer) {
+                fileViewer.style.setProperty('display', 'none', 'important');
+            }
+            if (editor) {
+                editor.style.setProperty('display', 'none', 'important');
+                editor.classList.remove('visible');
             }
             if (editor) {
                 console.log('WORD case - editor display BEFORE:', editor.style.display);

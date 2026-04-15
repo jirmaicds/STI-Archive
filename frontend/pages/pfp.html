@@ -2514,6 +2514,73 @@
         .hidden {
             display: none;
         }
+
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 50px;
+            right: -320px;
+            width: 320px;
+            height: calc(100vh - 50px);
+            background: #fff;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            box-shadow: -2px 0 8px rgba(0,0,0,0.1);
+        }
+
+        .sidebar.open {
+            right: 0;
+        }
+
+        .sidebar-content {
+            padding: 20px;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .sidebar-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-content ul li {
+            margin-bottom: 15px;
+        }
+
+        .sidebar-content ul li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            color: #333;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .sidebar-content ul li a:hover {
+            background: #f0f0f0;
+        }
+
+        .sidebar-content ul li a i {
+            width: 20px;
+        }
+
+        .sidebar-content ul li a .text {
+            flex: 1;
+        }
+
+        .dark-mode .sidebar {
+            background: #232f41;
+        }
+
+        .dark-mode .sidebar-content ul li a {
+            color: #e2e8f0;
+        }
+
+        .dark-mode .sidebar-content ul li a:hover {
+            background: #374151;
+        }
     </style>
 </head>
 <body>
@@ -2532,9 +2599,21 @@
         </div>
         <div class="navbar-right user-nav-fixed">
             <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode"><i class="fa fa-moon"></i></button>
-            <img id="userIcon" src="/frontend/assets/images/Screenshot 2025-09-10 204105.png" alt="Profile" style="cursor:pointer;" onclick="toggleProfileTabsSidebar()">
+            <img id="userIcon" src="/frontend/assets/images/Screenshot 2025-09-10 204105.png" alt="Profile" style="cursor:pointer;" onclick="toggleSidebar()">
         </div>
     </nav>
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-content">
+            <ul>
+                <li><a href="/library.html"><i class="fa-solid fa-book"></i> <span class="text">Library</span></a></li>
+                <li><a href="/myspace.html"><i class="fa-solid fa-feather-pointed"></i> <span class="text">Myspace</span></a></li>
+                <li><a href="/about.html"><i class="fa-solid fa-info-circle"></i> <span class="text">About Us</span></a></li>
+                <hr>
+                <li><a href="/index.html"><i class="fa-solid fa-sign-out-alt"></i> <span class="text">Sign out</span></a></li>
+            </ul>
+        </div>
+    </div>
     <section class="main-content" style="margin-top: 50px;">
         <div id="p-n-p" class="profile-section" style="display:block; text-align: center;">
             <div class="profile-container">

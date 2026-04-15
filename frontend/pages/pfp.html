@@ -2139,10 +2139,10 @@
         .profile-tabs-burger {
             position: absolute;
             left: 10px;
-            
+
             transform: translateY(-50%);
             background: #0057b8;
-            border: none;
+            border: 2px solid #003f8a;
             border-radius: 4px;
             padding: 10px;
             margin-top:24px;
@@ -2154,6 +2154,11 @@
             background: #003f8a;
         }
 
+        .profile-tabs.hide-tabs .profile-tabs-burger {
+            background: none;
+            border: 2px solid #0057b8;
+        }
+
         .profile-tabs-burger i {
             color: white;
             font-size: 20px;
@@ -2161,10 +2166,16 @@
 
         .dark-mode .profile-tabs-burger {
             background: #ffd700;
+            border: 2px solid #e6c300;
         }
 
         .dark-mode .profile-tabs-burger:hover {
             background: #e6c300;
+        }
+
+        .dark-mode .profile-tabs.hide-tabs .profile-tabs-burger {
+            background: none;
+            border: 2px solid #ffd700;
         }
 
         .dark-mode .profile-tabs-burger i {

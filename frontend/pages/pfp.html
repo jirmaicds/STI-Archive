@@ -72,6 +72,7 @@
 
         function saveProfilePic() {
             if (selectedProfilePic) {
+                localStorage.setItem('selectedProfilePic', selectedProfilePic);
                 document.getElementById('pfpPic').src = `/frontend/assets/images/${selectedProfilePic}`;
                 closeProfilePicModal();
             } else {
@@ -5909,6 +5910,11 @@
         // Load site settings from server and apply to page
         document.addEventListener('DOMContentLoaded', function() {
             loadSiteSettings();
+            // Load saved profile picture
+            const savedPic = localStorage.getItem('selectedProfilePic');
+            if (savedPic) {
+                document.getElementById('pfpPic').src = `/frontend/assets/images/${savedPic}`;
+            }
         });
 
         // Initialize upload area functionality

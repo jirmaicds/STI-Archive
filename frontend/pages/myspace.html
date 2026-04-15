@@ -7131,16 +7131,24 @@ CURRICULUM VITAE`;
             pdfBtn.style.color = inactiveText;
             pdfBtn.style.border = inactiveBorder;
             pdfBtn.querySelector('i').style.color = inactiveText;
-            
-            // Show HomeEditor when Word is clicked - use !important to override CSS
+
+            // Show Editor when Word is clicked - use !important to override CSS
             const homeEditor = document.getElementById('homeEditor');
             const fileViewer = document.querySelector('.file-viewer');
             const editor = document.getElementById('editor');
 
-            if (homeEditor) {
-                homeEditor.style.setProperty('display', 'flex', 'important');
-                homeEditor.classList.add('visible');
+            if (editor) {
+                editor.style.setProperty('display', 'flex', 'important');
+                editor.classList.add('visible');
             }
+            if (fileViewer) {
+                fileViewer.style.setProperty('display', 'none', 'important');
+            }
+            if (homeEditor) {
+                homeEditor.style.setProperty('display', 'none', 'important');
+                homeEditor.classList.remove('visible');
+            }
+        }
             if (fileViewer) {
                 fileViewer.style.setProperty('display', 'none', 'important');
             }

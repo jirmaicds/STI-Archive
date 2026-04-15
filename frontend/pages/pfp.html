@@ -3335,8 +3335,6 @@
                             // Store article data for myspace to load
                             localStorage.setItem('selectedArticle', JSON.stringify(article));
                             let studyId = article.title.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20);
-                            if (article.title.includes('Lagundi')) studyId = 'lagundi_oil';
-                            if (article.title.includes('Farmers')) studyId = 'perceptions';
                             window.location.href = 'myspace.html?study=' + encodeURIComponent(studyId);
                         }
                     };

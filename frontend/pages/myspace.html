@@ -203,13 +203,14 @@
 
     /* PDF Viewer Styles */
     #pdf-viewer-modal {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
+      width: 50%;
       height: 100%;
       padding: 0;
       margin: 0;
+      z-index: 1000;
     }
 
     #pdf-viewer-modal > div {
@@ -228,11 +229,11 @@
 
     /* PDF Viewer Darkmode Styles */
     .dark-mode #pdf-viewer-modal {
-      background: rgba(0, 0, 0, 0.95) !important;
+      background: rgba(0, 0, 0, 0.95);
     }
 
     .dark-mode #pdf-viewer-modal > div {
-      background: #2d2d2d !important;
+      background: #2d2d2d;
     }
 
     .dark-mode #pdf-viewer-modal #pdf-viewer-container {
@@ -4208,10 +4209,10 @@ CURRICULUM VITAE`;
             // Check for PDF - try GDrive (pdfUrl) first, then fall back to local file system (pdfId/pdfPath)
             // GDrive fallback: try GDrive first, if fails/times out, use local Couchbase/PDF.js
             if (article.pdfUrl) {
-                // Try GDrive first with iframe
+                // Load PDF from Supabase
                 const iframe = document.createElement('iframe');
-                const gdriveUrl = `https://drive.google.com/file/d/${article.pdfUrl}/preview#page=1`;
-                iframe.src = gdriveUrl;
+                const pdfUrl = article.pdfUrl;
+                iframe.src = pdfUrl;
                 iframe.style.width = '100%';
                 iframe.style.height = '93vh';
                 iframe.style.border = 'none';
@@ -4396,9 +4397,9 @@ CURRICULUM VITAE`;
                    // Clear and create iframe container
                    docPreview.innerHTML = '';
                    
-                   const iframe = document.createElement('iframe');
-                   const gdriveUrl = `https://drive.google.com/file/d/${study.pdfUrl}/preview`;
-                   iframe.src = gdriveUrl;
+                    const iframe = document.createElement('iframe');
+                    const pdfUrl = study.pdfUrl;
+                    iframe.src = pdfUrl;
                    iframe.style.width = '100%';
                    iframe.style.height = '93vh';
                    iframe.style.border = 'none';
@@ -4538,11 +4539,11 @@ CURRICULUM VITAE`;
              docPreview.innerHTML = '';
 
              // Check for PDF - try GDrive (pdfUrl) first, then fall back to local file system
-             if (study.pdfUrl) {
-                 // Try GDrive first with iframe
-                 const iframe = document.createElement('iframe');
-                 const gdriveUrl = `https://drive.google.com/file/d/${study.pdfUrl}/preview`;
-                 iframe.src = gdriveUrl;
+              if (study.pdfUrl) {
+                  // Load PDF from Supabase
+                  const iframe = document.createElement('iframe');
+                  const pdfUrl = study.pdfUrl;
+                  iframe.src = pdfUrl;
                  iframe.style.width = '100%';
                  iframe.style.height = '93vh';
                  iframe.style.border = 'none';
@@ -5976,8 +5977,8 @@ CURRICULUM VITAE`;
                  imageDiv.style.textAlign = 'center';
                  imageDiv.style.padding = '20px';
 
-                 const img = document.createElement('img');
-                 img.src = `https://drive.google.com/uc?id=${currentFileIds[index]}`;
+                  const img = document.createElement('img');
+                  img.src = currentFileIds[index];
                  img.style.maxWidth = '100%';
                  img.style.maxHeight = '80vh';
                  img.style.objectFit = 'contain';
@@ -7073,36 +7074,6 @@ CURRICULUM VITAE`;
         } else {
             pdfBtn.classList.remove('active');
             wordBtn.classList.add('active');
-        }
-
-        // Update styles based on active state and theme
-        const isDark = document.body.classList.contains('dark-mode');
-        const activeBg = '#0057b8'; // blue
-        const inactiveBg = isDark ? '#333' : '#fff';
-        const activeText = isDark ? '#fff' : '#333';
-        const inactiveText = isDark ? '#fff' : '#333';
-        const inactiveBorder = isDark ? '2px solid #fff' : '2px solid #000';
-
-        if (type === 'pdf') {
-            pdfBtn.style.background = activeBg;
-            pdfBtn.style.color = activeText;
-            pdfBtn.style.border = 'none';
-            pdfBtn.querySelector('i').style.color = activeText;
-
-            wordBtn.style.background = inactiveBg;
-            wordBtn.style.color = inactiveText;
-            wordBtn.style.border = inactiveBorder;
-            wordBtn.querySelector('i').style.color = inactiveText;
-        } else {
-            wordBtn.style.background = activeBg;
-            wordBtn.style.color = activeText;
-            wordBtn.style.border = 'none';
-            wordBtn.querySelector('i').style.color = activeText;
-
-            pdfBtn.style.background = inactiveBg;
-            pdfBtn.style.color = inactiveText;
-            pdfBtn.style.border = inactiveBorder;
-            pdfBtn.querySelector('i').style.color = inactiveText;
         }
 
         // Update styles based on active state and theme

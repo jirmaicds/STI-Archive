@@ -2479,8 +2479,6 @@
       articleDiv.setAttribute('data-type', articleType);
 
       let studyId = article.title.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20);
-      if (article.title.includes('Lagundi')) studyId = 'lagundi_oil';
-      if (article.title.includes('Farmers')) studyId = 'perceptions';
 
       // Add PDF indicator if article has PDF (pdfId for Couchbase, pdfPath/pdf_path for Studies)
       const hasPDF = article.pdfId || article.pdfPath || article.pdf_path;
@@ -3617,8 +3615,6 @@
   function openRelatedArticle(title) {
     // Find the study ID for this article (same logic as in the main articles)
     let studyId = title.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20);
-    if (title.includes('Lagundi')) studyId = 'lagundi_oil';
-    if (title.includes('Farmers')) studyId = 'perceptions';
 
     // Close the modal and navigate to myspace
     closeRelatedModal();
@@ -3640,7 +3636,7 @@
       // Find the article data to get fileIds or gdrive_id from the actual article being saved
       const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
       const articleData = allArticles.find(a => a.title === title);
-      const pdfUrl = articleData && (articleData.gdrive_id || (articleData.fileIds && articleData.fileIds.length > 0)) ? `https://drive.google.com/file/d/${articleData.gdrive_id || articleData.fileIds[0]}/preview` : null;
+      const pdfUrl = articleData ? articleData.pdfUrl : null;
       
       // Get PDF ID from Couchbase if available
       const pdfId = articleData && articleData.pdfId ? articleData.pdfId : null;

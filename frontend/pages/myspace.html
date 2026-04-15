@@ -312,38 +312,20 @@
       color: #333 !important;
     }
 
-    /* Ensure PDF button starts with yellow background when page loads */
-    #footerPdfBtn {
-      background: #2000d8 !important;
-      color: #ffffff !important;
-    }
-    
     /* Ensure home-editor has proper z-index to not be covered by footer-toggle */
     .home-editor {
       z-index: 1000;
+      text-align: center;
     }
-    
+
     /* Footer toggle should not cover home-editor content */
     .footer-toggle-container {
       pointer-events: auto;
     }
-    
+
     /* Make sure home-editor is visible and interactive */
     .home-editor.visible {
       z-index: 1001 !important;
-    }
-
-    #footerPdfBtn i {
-      color: #333 !important;
-    }
-
-    .dark-mode #footerPdfBtn {
-      background: #ffd700 !important;
-      color: #333 !important;
-    }
-
-    .dark-mode #footerPdfBtn i {
-      color: #333 !important;
     }
 
     
@@ -1776,6 +1758,15 @@ color: #ffd700;
       color: white;
     }
 
+    .footer-toggle-container .toggle-btn-mobile:not(.active) {
+      background: white;
+      color: #333;
+    }
+
+    .footer-toggle-container .toggle-btn-mobile:not(.active) i {
+      color: #333;
+    }
+
     /* Dark mode styles for footer toggle */
     .dark-mode .footer-toggle-container {
       background: #232f41;
@@ -1783,6 +1774,12 @@ color: #ffd700;
     }
 
     .dark-mode .footer-toggle-container .toggle-btn-mobile {
+      background: #232f41;
+      border-color: white;
+      color: #e2e8f0;
+    }
+
+    .dark-mode .footer-toggle-container .toggle-btn-mobile i {
       color: #e2e8f0;
     }
 

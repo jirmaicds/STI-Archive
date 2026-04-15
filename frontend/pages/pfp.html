@@ -55,9 +55,16 @@
         var selectedProfilePic = null;
 
         function showProfilePicModal() {
-            document.getElementById('profilePicModal').style.display = 'block';
+            const modal = document.getElementById('profilePicModal');
+            modal.style.display = 'block';
             selectedProfilePic = null;
             document.querySelectorAll('.pic-option').forEach(opt => opt.classList.remove('selected'));
+            // Close on click outside
+            modal.onclick = function(event) {
+                if (event.target === modal) {
+                    closeProfilePicModal();
+                }
+            };
         }
 
         function closeProfilePicModal() {
@@ -2511,7 +2518,7 @@
                     </button>
                 </div>
                 <div class="background-image-container" id="backgroundContainer" style="background-image: url('/frontend/assets/images/dbgc.png'); background-size: cover; background-position: center;">
-                    <div class="edit-icon" onclick="showProfilePicModal()">📷</div>
+                    <div class="edit-icon" onclick="showProfilePicModal()">✏️</div>
                     <input type="file" id="backgroundUpload" accept="image/*" onchange="changeBackground(event)" style="display: none;">
                     <div class="pfp-container" style="position: absolute; top: 5px; left: 20%; transform: translateX(-50%);">
                         <label for="pfp-profileUpload">

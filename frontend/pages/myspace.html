@@ -7059,12 +7059,74 @@ CURRICULUM VITAE`;
         console.log('wordBtn:', wordBtn);
         
         // Update button states
+        // Update button states
         if (type === 'pdf') {
             pdfBtn.classList.add('active');
             wordBtn.classList.remove('active');
         } else {
             pdfBtn.classList.remove('active');
             wordBtn.classList.add('active');
+        }
+
+        // Update styles based on active state and theme
+        const isDark = document.body.classList.contains('dark-mode');
+        const activeBg = '#0057b8'; // blue
+        const inactiveBg = isDark ? '#333' : '#fff';
+        const activeText = isDark ? '#fff' : '#333';
+        const inactiveText = isDark ? '#fff' : '#333';
+        const inactiveBorder = isDark ? '2px solid #fff' : '2px solid #000';
+
+        if (type === 'pdf') {
+            pdfBtn.style.background = activeBg;
+            pdfBtn.style.color = activeText;
+            pdfBtn.style.border = 'none';
+            pdfBtn.querySelector('i').style.color = activeText;
+
+            wordBtn.style.background = inactiveBg;
+            wordBtn.style.color = inactiveText;
+            wordBtn.style.border = inactiveBorder;
+            wordBtn.querySelector('i').style.color = inactiveText;
+        } else {
+            wordBtn.style.background = activeBg;
+            wordBtn.style.color = activeText;
+            wordBtn.style.border = 'none';
+            wordBtn.querySelector('i').style.color = activeText;
+
+            pdfBtn.style.background = inactiveBg;
+            pdfBtn.style.color = inactiveText;
+            pdfBtn.style.border = inactiveBorder;
+            pdfBtn.querySelector('i').style.color = inactiveText;
+        }
+
+        // Update display
+        const homeEditor = document.getElementById('homeEditor');
+        const fileViewer = document.querySelector('.file-viewer');
+        const editor = document.getElementById('editor');
+
+        if (type === 'pdf') {
+            if (fileViewer) {
+                fileViewer.style.setProperty('display', 'flex', 'important');
+            }
+            if (homeEditor) {
+                homeEditor.style.setProperty('display', 'none', 'important');
+                homeEditor.classList.remove('visible');
+            }
+            if (editor) {
+                editor.style.setProperty('display', 'none', 'important');
+                editor.classList.remove('visible');
+            }
+        } else {
+            if (editor) {
+                editor.style.setProperty('display', 'flex', 'important');
+                editor.classList.add('visible');
+            }
+            if (fileViewer) {
+                fileViewer.style.setProperty('display', 'none', 'important');
+            }
+            if (homeEditor) {
+                homeEditor.style.setProperty('display', 'none', 'important');
+                homeEditor.classList.remove('visible');
+            }
         }
 
         // Update styles based on active state and theme
@@ -7169,7 +7231,7 @@ CURRICULUM VITAE`;
 
         // Save preference to localStorage
         localStorage.setItem('footerDocViewPreference', footerCurrentDocView);
-    };
+    }
 
     
     function toggleFooterPdfWord() {

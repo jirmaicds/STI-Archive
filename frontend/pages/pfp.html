@@ -1103,40 +1103,50 @@
             box-shadow: 0 4px 16px rgba(0,0,0,0.2);
         }
         
-        .pfp-container .full-name {
-            position: absolute;
-            bottom: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            white-space: nowrap;
-            font-size: 1.5rem;
+        .full-name {
+            
+            font-size: 3.5rem;
             font-weight: bold;
             color: white !important;
         }
 
-        @media (min-width: 1025px) {
+        /* Desktop styles */
+        @media (min-width: 1024px) {
+            .full-name {
+
+                top: 120px;
+                left: 40%;
+
+                color: white;
+                padding: 8px 20px;
+                border-radius: 20px;
+                font-size: 3.2rem;
+                font-weight: bold;
+            }
+        
             .pfp-container {
-                position: absolute; top: 120px; left: 38%; transform: translateX(-50%); color: black; padding: 8px 20px; border-radius: 20px; font-size: 48px; font-weight: bold;
+                position: absolute;
+                top: 15px;
+                left: 20%;
+                transform: translateX(-50%);
             }
-            .pfp-container .full-name {
-                position: absolute; top: 120px; left: 38%; transform: translateX(-50%); color: black; padding: 8px 20px; border-radius: 20px; font-size: 48px; font-weight: bold;
-            }
-            
         }
         /* Tablet responsiveness */
-        @media (max-width: 1024px) {
+        @media (min-width: 701px) and (max-width: 1023px) {
             .pfp-container {
                 width: 200px;
                 height: 200px;
+                left: -8%;
+                
             }
             .pfp-container .full-name {
-                font-size: 1.2rem;
-                bottom: -25px;
+                font-size:xx-large;
+                
             }
         }
 
         /* Phone responsiveness */
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
             .pfp-container {
                 width: 200px!important;
                 height: 200px!important;
@@ -1152,7 +1162,6 @@
                 position: relative !important; top: 110px!important;
             }
         }
-
         
 
         .pfp-pic {
@@ -1275,52 +1284,7 @@
             align-items: center;
         }
 
-        .status-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-
-        .status-cloud {
-            position: absolute;
-            top: -35px;
-            right:-35px;
-            background: #0b4dd1;
-            padding: 6px 14px;
-            border-radius: 999px;
-            font-size: 0.9rem;
-            color: white;
-            
-            align-items: center;
-            z-index: 2;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .status-cloud:hover {
-            background: #0a42b8 !important;
-            transform: translateY(-2px);
-        }
-
-        .status-bubble1 {
-            position: absolute;
-            top:-7px;
-            left: -12px;
-            width: 12px;
-            height: 12px;
-            background: #1455d5;
-            border-radius: 50%;
-        }
-
-        .status-bubble2 {
-            position: absolute;
-            top:-4px;
-            left: -7px;
-            width: 20px;
-            height: 20px;
-            background: #1455d5;
-            border-radius: 50%;
-        }
+        
 
         .full-name {
             font-size: 2.2rem;
@@ -2300,27 +2264,7 @@
             background: #5b6b7a;
         }
 
-        /* Desktop styles */
-        @media (min-width: 1666px) {
-            .full-name {
-                position: absolute;
-                top: 120px;
-                left: 40%;
-                transform: translateX(-50%);
-                color: white;
-                padding: 8px 20px;
-                border-radius: 20px;
-                font-size: 48px;
-                font-weight: bold;
-            }
-
-            .pfp-container {
-                position: absolute;
-                top: 15px;
-                left: 20%;
-                transform: translateX(-50%);
-            }
-        }
+        
 
         /* Modal styles */
         .modal {
@@ -2423,8 +2367,8 @@
             text-align: left;
         }
 
-        /* Show burger and sidebar only on screens 1665px and below */
-        @media (max-width: 1665px) {
+        /* Show burger and sidebar only on screens 1023px and below */
+        @media (max-width: 1023px) {
             .tabs-sidebar {
                 display: none;
             }

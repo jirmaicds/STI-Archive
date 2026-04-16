@@ -1769,18 +1769,18 @@ color: #ffd700;
 
     /* Dark mode styles for footer toggle */
     .dark-mode .footer-toggle-container {
-      background: #232f41;
+      background: #333;
       box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
     }
 
     .dark-mode .footer-toggle-container .toggle-btn-mobile {
-      background: #232f41;
+      background: #333;
       border-color: white;
-      color: #e2e8f0;
+      color: white;
     }
 
     .dark-mode .footer-toggle-container .toggle-btn-mobile i {
-      color: #e2e8f0;
+      color: white;
     }
 
     .dark-mode .footer-toggle-container .toggle-btn-mobile.pdf-btn {
@@ -1802,6 +1802,10 @@ color: #ffd700;
     .dark-mode .footer-toggle-container .toggle-btn-mobile.active {
       background: #ffd700 !important;
       color: #333;
+    }
+
+    .dark-mode .footer-toggle-container .toggle-btn-mobile.active i {
+      color: #333 !important;
     }
 
     /* Show footer toggle only on tablet and phone */
@@ -7032,10 +7036,10 @@ CURRICULUM VITAE`;
     <!-- Footer Toggle Button for PDF/Word - shown in tablet and mobile -->
     <div class="footer-toggle-container" id="footerToggleContainer">
       <div class="toggle-buttons-row">
-        <button class="toggle-btn-mobile pdf-btn active" id="footerPdfBtn" onclick="selectFooterDocType('pdf')" style="background: #0057b8; color: #333; border: none;">
+        <button class="toggle-btn-mobile pdf-btn active" id="footerPdfBtn" onclick="selectFooterDocType('pdf')">
           <i class="fas fa-book" style="color: #333;"></i> PDF
         </button>
-        <button class="toggle-btn-mobile word-btn" id="footerWordBtn" onclick="selectFooterDocType('word')" style="background: #fff; color: #333; border: 2px solid #000;">
+        <button class="toggle-btn-mobile word-btn" id="footerWordBtn" onclick="selectFooterDocType('word')">
           <i class="fas fa-file-word" style="color: #333;"></i> Word
         </button>
       </div>
@@ -7049,23 +7053,42 @@ CURRICULUM VITAE`;
     window.selectFooterDocType = function(type) {
         const pdfBtn = document.getElementById('footerPdfBtn');
         const wordBtn = document.getElementById('footerWordBtn');
-        
+
         footerCurrentDocView = type;
-        
+
         // DEBUG: Log element selection status
         console.log('=== selectFooterDocType DEBUG ===');
         console.log('Type:', type);
         console.log('pdfBtn:', pdfBtn);
         console.log('wordBtn:', wordBtn);
-        
-        // Update button states
+
         // Update button states
         if (type === 'pdf') {
             pdfBtn.classList.add('active');
             wordBtn.classList.remove('active');
+            // Show file-viewer, hide homeEditor
+            const homeEditor = document.getElementById('homeEditor');
+            const fileViewer = document.querySelector('.file-viewer');
+            if (homeEditor) {
+                homeEditor.classList.remove('visible');
+                homeEditor.style.display = 'none';
+            }
+            if (fileViewer) {
+                fileViewer.style.display = 'flex';
+            }
         } else {
             pdfBtn.classList.remove('active');
             wordBtn.classList.add('active');
+            // Show homeEditor, hide file-viewer
+            const homeEditor = document.getElementById('homeEditor');
+            const fileViewer = document.querySelector('.file-viewer');
+            if (homeEditor) {
+                homeEditor.classList.add('visible');
+                homeEditor.style.display = 'flex';
+            }
+            if (fileViewer) {
+                fileViewer.style.display = 'none';
+            }
         }
 
         // Filter documents

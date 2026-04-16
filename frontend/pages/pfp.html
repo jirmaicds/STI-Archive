@@ -1114,6 +1114,15 @@
             color: white !important;
         }
 
+        @media (min-width: 1025px) {
+            .pfp-container {
+                position: absolute; top: 120px; left: 38%; transform: translateX(-50%); color: black; padding: 8px 20px; border-radius: 20px; font-size: 48px; font-weight: bold;
+            }
+            .pfp-container .full-name {
+                position: absolute; top: 120px; left: 38%; transform: translateX(-50%); color: black; padding: 8px 20px; border-radius: 20px; font-size: 48px; font-weight: bold;
+            }
+            
+        }
         /* Tablet responsiveness */
         @media (max-width: 1024px) {
             .pfp-container {
@@ -1129,18 +1138,18 @@
         /* Phone responsiveness */
         @media (max-width: 600px) {
             .pfp-container {
-                width: 200px;
-                height: 200px;
+                width: 200px!important;
+                height: 200px!important;
             }
             .pfp-container .full-name {
                 font-size: 1rem;
                 bottom: -20px;
             }
             .pfp-container {
-                position: absolute; top: 5px; 
+                position: absolute !important; top: 5px!important; 
             }
             .full-name {
-                position: relative; top: 110px;
+                position: relative !important; top: 110px!important;
             }
         }
 
@@ -2655,13 +2664,13 @@
                 <div class="background-image-container" id="backgroundContainer" style="background-image: url('/frontend/assets/images/dbgc.png'); background-size: cover; background-position: center;">
                     <div class="edit-icon" onclick="showProfilePicModal()">✏️</div>
                     <input type="file" id="backgroundUpload" accept="image/*" onchange="changeBackground(event)" style="display: none;">
-                    <div class="pfp-container" style="position: absolute; top: 5px; left: 20%; transform: translateX(-50%);">
+                    <div class="pfp-container" >
                         <label for="pfp-profileUpload">
                             <img src="/frontend/assets/images/Screenshot 2025-09-10 204105.png" alt="Profile" class="pfp-pic" id="pfpPic">
                         </label>
                         <input type="file" id="profileUpload" accept="image/*" onchange="changeProfile(event)" style="display: none;">
                     </div>
-                    <div class="full-name" style="position: absolute; top: 120px; left: 38%; transform: translateX(-50%); color: black; padding: 8px 20px; border-radius: 20px; font-size: 48px; font-weight: bold;">Username</div>
+                    <div class="full-name">Username</div>
                 </div>
 
                 <div class="profile-info-block" style="position: absolute; margin-top: 30px; text-align: center;">

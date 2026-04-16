@@ -7235,12 +7235,26 @@ CURRICULUM VITAE`;
     // Initialize PDF/Word toggle preference on page load
     document.addEventListener('DOMContentLoaded', function() {
         var savedPreference = localStorage.getItem('footerDocViewPreference');
-        
+
         if (savedPreference) {
             footerCurrentDocView = savedPreference;
         }
-        // Always call selectFooterDocType to set initial state (defaults to PDF with yellow background)
-        selectFooterDocType(footerCurrentDocView);
+
+        // On desktop screens (>1780px), always show homeEditor alongside file-viewer
+        if (window.innerWidth > 1780) {
+            const homeEditor = document.getElementById('homeEditor');
+            if (homeEditor) {
+                homeEditor.classList.add('visible');
+                homeEditor.style.display = 'flex';
+            }
+            const fileViewer = document.querySelector('.file-viewer');
+            if (fileViewer) {
+                fileViewer.style.display = 'flex';
+            }
+        } else {
+            // On mobile/tablet, use the toggle preference
+            selectFooterDocType(footerCurrentDocView);
+        }
     });
     </script>
 </body>

@@ -1534,8 +1534,8 @@
                     const li = e.target.closest('li');
                     const text = li.querySelector('span').textContent;
                     addToRecent(text);
-                    // Store search term in sessionStorage and redirect to library
-                    sessionStorage.setItem('homepageSearch', text);
+                    // Store search term in localStorage and redirect to library
+                    localStorage.setItem('homepageSearch', text);
                     window.location.href = 'library.html';
                 }
             });

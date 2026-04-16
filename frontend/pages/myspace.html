@@ -6005,8 +6005,7 @@ CURRICULUM VITAE`;
             // Load saved editor state from localStorage
             var editorState = null;
             try {
-                    editorState = JSON.parse(localStorage.getItem('editorState'));
-                }
+                editorState = JSON.parse(localStorage.getItem('editorState'));
             } catch(e) {
                 console.log('No saved editor state found');
             }

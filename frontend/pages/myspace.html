@@ -6994,21 +6994,24 @@ CURRICULUM VITAE`;
             footerCurrentDocView = savedPreference;
         }
 
-        // On desktop screens (>=1024px), always show homeEditor alongside file-viewer
-        if (window.innerWidth >= 1024) {
-            const homeEditor = document.getElementById('homeEditor');
-            if (homeEditor) {
-                homeEditor.classList.add('visible');
-                homeEditor.style.display = 'flex';
+        // Defer layout changes to avoid FOUC
+        requestAnimationFrame(function() {
+            // On desktop screens (>=1024px), always show homeEditor alongside file-viewer
+            if (window.innerWidth >= 1024) {
+                const homeEditor = document.getElementById('homeEditor');
+                if (homeEditor) {
+                    homeEditor.classList.add('visible');
+                    homeEditor.style.display = 'flex';
+                }
+                const fileViewer = document.querySelector('.file-viewer');
+                if (fileViewer) {
+                    fileViewer.style.display = 'flex';
+                }
+            } else {
+                // On mobile/tablet, use the toggle preference
+                selectFooterDocType(footerCurrentDocView);
             }
-            const fileViewer = document.querySelector('.file-viewer');
-            if (fileViewer) {
-                fileViewer.style.display = 'flex';
-            }
-        } else {
-            // On mobile/tablet, use the toggle preference
-            selectFooterDocType(footerCurrentDocView);
-        }
+        });
     });
     </script>
 </body>

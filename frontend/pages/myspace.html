@@ -6902,11 +6902,17 @@ CURRICULUM VITAE`;
             pdfBtn.classList.remove('active');
             wordBtn.classList.add('active');
             // Show homeEditor, hide file-viewer
+            console.log('Showing homeEditor on mobile for word');
             const homeEditor = document.getElementById('homeEditor');
             const fileViewer = document.querySelector('.file-viewer');
             if (homeEditor) {
                 homeEditor.classList.add('visible');
                 homeEditor.style.display = 'flex';
+                // On mobile, make homeEditor full width
+                homeEditor.style.width = '100%';
+                homeEditor.style.left = '0';
+                homeEditor.style.position = 'relative';
+                homeEditor.style.right = 'auto';
             }
             if (fileViewer) {
                 fileViewer.style.display = 'none';
@@ -6998,14 +7004,20 @@ CURRICULUM VITAE`;
         requestAnimationFrame(function() {
             // On desktop screens (>=1024px), always show homeEditor alongside file-viewer
             if (window.innerWidth >= 1024) {
+                console.log('Showing homeEditor on desktop, innerWidth:', window.innerWidth);
                 const homeEditor = document.getElementById('homeEditor');
                 if (homeEditor) {
                     homeEditor.classList.add('visible');
                     homeEditor.style.display = 'flex';
+                    homeEditor.style.position = 'absolute';
+                    homeEditor.style.right = '0';
+                    homeEditor.style.width = '50%';
+                    homeEditor.style.top = '0';
                 }
                 const fileViewer = document.querySelector('.file-viewer');
                 if (fileViewer) {
                     fileViewer.style.display = 'flex';
+                    fileViewer.style.flex = '0 0 50%';
                 }
             } else {
                 // On mobile/tablet, use the toggle preference

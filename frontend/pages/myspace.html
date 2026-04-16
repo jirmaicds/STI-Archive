@@ -6994,11 +6994,8 @@ CURRICULUM VITAE`;
     
     // Initialize PDF/Word toggle preference on page load
     document.addEventListener('DOMContentLoaded', function() {
-        var savedPreference = localStorage.getItem('footerDocViewPreference');
-
-        if (savedPreference) {
-            footerCurrentDocView = savedPreference;
-        }
+        // Always start with PDF view (don't load saved preference to reset on navigation)
+        footerCurrentDocView = 'pdf';
 
         // Defer layout changes to avoid FOUC
         requestAnimationFrame(function() {
@@ -7021,6 +7018,7 @@ CURRICULUM VITAE`;
                     homeEditor.style.width = '50%';
                     homeEditor.style.top = '0';
                     homeEditor.style.zIndex = '1001';
+                    homeEditor.style.border = '2px solid red'; // Debug border
                 }
                 const fileViewer = document.querySelector('.file-viewer');
                 if (fileViewer) {

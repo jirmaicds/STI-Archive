@@ -2887,6 +2887,7 @@
     currentPage = page;
     const articlesContainer = document.getElementById('articles-container');
 
+    console.log('Rendering page', page, 'with', allSortedArticles.length, 'articles');
     articlesContainer.innerHTML = '';
 
     // Check for no results and show appropriate message

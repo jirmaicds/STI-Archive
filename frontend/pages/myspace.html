@@ -4962,15 +4962,12 @@ CURRICULUM VITAE`;
                   
                    // Trigger storage event for pfp.html to update
                    localStorage.setItem('documentUpdateTrigger', Date.now().toString());
-                  
-                  savePromise.then(() => {
-                       // Refresh recent documents in HomeEditor after auto-save
-                       setTimeout(() => {
-                           if (typeof loadRecentDocuments === 'function') {
-                               loadRecentDocuments();
-                            }
-                        }, 500);
-                  });
+                   // Refresh recent documents in HomeEditor after auto-save
+                   setTimeout(() => {
+                       if (typeof loadRecentDocuments === 'function') {
+                           loadRecentDocuments();
+                       }
+                   }, 500);
               }
           }, 30000);
           

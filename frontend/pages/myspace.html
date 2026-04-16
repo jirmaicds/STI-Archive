@@ -5981,18 +5981,10 @@ CURRICULUM VITAE`;
 
         // Check for study parameter or article from pfp on page load
         document.addEventListener('DOMContentLoaded', async function() {
-            // Always show HomeEditor by default - hide editor first
-            var homeEditor = document.getElementById('homeEditor');
+            // Load editor if there is saved state
             var editor = document.getElementById('editor');
-            var fileViewer = document.querySelector('.file-viewer');
-            
-            // First ensure HomeEditor is shown and editor is hidden
-            if (homeEditor) {
-                homeEditor.style.display = 'flex';
-                homeEditor.style.flex = '0 0 50%';
-                homeEditor.style.position = 'absolute';
-                homeEditor.style.right = '0';
-                homeEditor.style.top = '0';
+            if (editor) {
+                editor.style.display = 'none';
             }
             if (editor) {
                 editor.style.display = 'none';
@@ -6043,6 +6035,8 @@ CURRICULUM VITAE`;
                     updateWordCounter();
                     updatePageNumbers();
                 }, 100);
+                // Show the editor since we loaded content
+                showEditor();
             }
 
             const urlParams = new URLSearchParams(window.location.search);

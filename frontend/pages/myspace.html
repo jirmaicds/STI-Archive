@@ -1548,7 +1548,7 @@ color: #ffd700;
     }
 
     /* Tablet and below responsive layout */
-    @media (max-width: 1024px) {
+    @media (max-width: 1023px) {
       /* Hide toggle-panel in tablet and mobile */
       .toggle-panel {
         display: none !important;
@@ -1797,8 +1797,8 @@ color: #ffd700;
     }
 
     /* Show footer toggle only on tablet and phone */
-    @media (max-width: 1024px) {
-        
+    @media (max-width: 1023px) {
+
       .footer-toggle-container {
         display: block !important;
       }
@@ -1826,7 +1826,7 @@ color: #ffd700;
     }
 
     /* Tablet and mobile layout */
-    @media (max-width: 1024px) {
+    @media (max-width: 1023px) {
       .main-content {
         padding-top: 0 !important;
       }
@@ -1850,7 +1850,7 @@ color: #ffd700;
         z-index: 1000 !important;
       }
     }
-    @media (max-width: 1024px) {
+    @media (max-width: 1023px) {
       .footer-toggle-container {
         display: flex !important;
         z-index: 1000 !important;
@@ -1888,7 +1888,7 @@ color: #ffd700;
     }
     
     /* PDF Canvas Responsive Styles for Tablet and Mobile */
-    @media (max-width: 1024px) {
+    @media (max-width: 1023px) {
       .pdf-modal-content {
         width: 95% !important;
         height: 85% !important;
@@ -1947,8 +1947,8 @@ color: #ffd700;
     
     /* === COMPREHENSIVE RESPONSIVE STYLES FOR TABLET AND PHONE === */
     
-    /* Tablet (764px - 1024px) */
-    @media (min-width: 764px) and (max-width: 1024px) {
+    /* Tablet (764px - 1023px) */
+    @media (min-width: 764px) and (max-width: 1023px) {
       .main-content {
         padding-top: 50px;
         padding-bottom: 0 !important;
@@ -6035,8 +6035,7 @@ CURRICULUM VITAE`;
                     updateWordCounter();
                     updatePageNumbers();
                 }, 100);
-                // Show the editor since we loaded content
-                showEditor();
+                // Editor content loaded but not shown - homeEditor remains visible
             }
 
             const urlParams = new URLSearchParams(window.location.search);

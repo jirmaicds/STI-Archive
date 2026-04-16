@@ -330,11 +330,7 @@
 
     
 
-    /* Cloud sync rotation animation */
-        @keyframes cloudSyncRotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+
         
         /* HomeEditor styles */
         .home-editor button:hover {
@@ -523,15 +519,7 @@
             to { opacity: 1; }
         }
         
-        #cloudSaveStatus.cloud-syncing #cloudSyncIcon {
-            animation: cloudSyncRotate 1s linear infinite !important;
-            color: #2196F3 !important;
-        }
-        
-        #cloudSaveStatus.cloud-saved #cloudSyncIcon {
-            animation: none !important;
-            color: #4CAF50 !important;
-        }
+
         
         .dark-mode .toolbar select, .dark-mode .toolbar button, .dark-mode .toolbar input[type="color"] {
       background: #333;
@@ -3588,17 +3576,7 @@ CURRICULUM VITAE`;
                      currentLoadedDocId = doc.id;
                  }
                  localStorage.setItem('savedDocuments', JSON.stringify(savedDocuments));
-                 console.log('Document saved to localStorage:', savedDocuments);
-                  
-                  // Also save to cloud
-                  if (typeof saveEditorContentToCloud === 'function') {
-                      saveEditorContentToCloud();
-                  }                   // Also save to API documents endpoint for recent documents to work\n                   if (typeof saveDocumentToAPI === 'function') {\n                       const userId = getCurrentUserId();\n                       if (userId) {\n                           const currentDoc = savedDocuments.find(d => d.id === currentLoadedDocId);\n                           if (currentDoc) {\n                               saveDocumentToAPI({\n                                   user_id: userId,\n                                   title: currentDoc.title,\n                                   content: currentDoc.content,\n                                   doc_id: currentDoc.id\n                               });\n                           }\n                       }\n                   }
-
-                  // Refresh recent documents in HomeEditor
-                  if (typeof loadRecentDocuments === 'function') {
-                      loadRecentDocuments();
-                  }
+                  console.log('Document saved to localStorage:', savedDocuments);
 
                  // Trigger update in pfp.html if it's open
                  if (window.parent !== window) {
@@ -3650,14 +3628,7 @@ CURRICULUM VITAE`;
             currentLoadedDocId = null;
             updateCurrentPage();
             updateWordCounter();
-            updatePageNumbers();
-            
-            // Clear cloud status
-            const cloudStatus = document.getElementById('cloudSaveStatus');
-            if (cloudStatus) {
-                cloudStatus.classList.remove('cloud-syncing');
-                cloudStatus.classList.remove('cloud-saved');
-            }
+             updatePageNumbers();
         }
 
         // Open saved documents modal
@@ -4369,15 +4340,10 @@ CURRICULUM VITAE`;
              // Save current editor state
              const title = document.getElementById('docTitle').value;
              const content = Array.from(document.querySelectorAll('.page')).map(p => p.innerHTML).join('<hr>');
-             const isSTITemplate = document.querySelector('.page.sti-template') !== null;
-             localStorage.setItem('editorState', JSON.stringify({title, content, isSTITemplate}));
-             
-             // Also save to cloud if function exists
-             if (typeof saveEditorContentToCloud === 'function') {
-                 saveEditorContentToCloud();
-             }
-             
-             window.location.href = 'library.html?from=myspace';
+              const isSTITemplate = document.querySelector('.page.sti-template') !== null;
+              localStorage.setItem('editorState', JSON.stringify({title, content, isSTITemplate}));
+
+              window.location.href = 'library.html?from=myspace';
          }
 
         function goToPfp(id) {
@@ -4386,13 +4352,8 @@ CURRICULUM VITAE`;
              const content = Array.from(document.querySelectorAll('.page')).map(p => p.innerHTML).join('<hr>');
              const isSTITemplate = document.querySelector('.page.sti-template') !== null;
              localStorage.setItem('editorState', JSON.stringify({title, content, isSTITemplate}));
-             
-             // Also save to cloud if function exists
-             if (typeof saveEditorContentToCloud === 'function') {
-                 saveEditorContentToCloud();
-             }
-             
-             window.location.href = 'pfp.html?from=myspace&id=' + id;
+
+              window.location.href = 'pfp.html?from=myspace&id=' + id;
          }
 
         function loadStudy(studyId, pdfPath, pdfId) {
@@ -4774,41 +4735,7 @@ CURRICULUM VITAE`;
               }
           }
           
-          async function savePreferencesToCloud(prefs) {
-              const userId = getCurrentUserId();
-              if (!userId) return false;
-              try {
-                  const response = await fetch('/api/user/preferences', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ userId, preferences: prefs })
-                  });
-                  const result = await response.json();
-                  if (result.success) {
-                      console.log('✓ Preferences saved to cloud for user:', userId);
-                      return true;
-                  }
-              } catch (e) {
-                  console.error('Error saving preferences to cloud:', e);
-              }
-              return false;
-          }
-          
-          async function loadPreferencesFromCloud() {
-              const userId = getCurrentUserId();
-              if (!userId) return null;
-              try {
-                  const response = await fetch(`/api/user/preferences/${userId}`);
-                  const result = await response.json();
-                  if (result.success && result.preferences) {
-                      console.log('✓ Preferences loaded from cloud for user:', userId);
-                      return result.preferences;
-                  }
-              } catch (e) {
-                  console.error('Error loading preferences from cloud:', e);
-              }
-              return null;
-          }
+
           
           function savePreferences() {
              const prefs = {
@@ -4823,12 +4750,7 @@ CURRICULUM VITAE`;
              
              try {
                  localStorage.setItem(PREFERENCES_KEY, JSON.stringify(prefs));
-                 console.log('Preferences saved:', prefs);
-                  
-                  // Also save to cloud
-                  if (typeof savePreferencesToCloud !== 'undefined') {
-                      savePreferencesToCloud(prefs);
-                  }
+                  console.log('Preferences saved:', prefs);
              } catch (e) {
                  console.error('Error saving preferences:', e);
              }
@@ -4837,14 +4759,7 @@ CURRICULUM VITAE`;
          // Load preferences from localStorage
          async function loadPreferences() {
              try {
-                 // Try cloud first
-              const cloudPrefs = typeof loadPreferencesFromCloud !== 'undefined' ? await loadPreferencesFromCloud() : null;
-              if (cloudPrefs) {
-                  console.log('Using cloud preferences');
-                  return { ...defaultPreferences, ...cloudPrefs };
-              }
-              
-              // Fallback to localStorage
+              // Load from localStorage
               const stored = localStorage.getItem(PREFERENCES_KEY);
                  if (stored) {
                      const prefs = JSON.parse(stored);
@@ -4937,83 +4852,11 @@ CURRICULUM VITAE`;
              
              console.log('Editor preferences initialized');
           
-          // ============================================
-          // Editor Content Cloud Storage
-          // ============================================
+
           
-          // Save current editor content to cloud
-          async function saveEditorContentToCloud() {
-              const userId = getCurrentUserId();
-              if (!userId) {
-                  console.log('No user logged in, content saved locally only');
-                  return false;
-              }
-              
-              const title = document.getElementById('docTitle')?.value || 'Untitled';
-              const content = Array.from(document.querySelectorAll('.page')).map(p => {
-                  const contentDiv = p.querySelector('.page-content');
-                  return contentDiv ? contentDiv.innerHTML : '';
-              }).join('<hr>');
-              
-              try {
-                  const response = await fetch('/api/user/editor-content', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ 
-                          userId, 
-                          content, 
-                          documentId: 'current-editor',
-                          title: title
-                      })
-                  });
-                  const result = await response.json();
-                  if (result.success) {
-                      console.log('✓ Editor content saved to cloud for user:', userId);
-                      return true;
-                  }
-              } catch (e) {
-                  console.error('Error saving editor content to cloud:', e);
-              }
-              return false;
-          }
-          
-          // Load editor content from cloud
-          async function loadEditorContentFromCloud() {
-              const userId = getCurrentUserId();
-              if (!userId) {
-                  console.log('No user logged in, using local content');
-                  return null;
-              }
-              
-              try {
-                  const response = await fetch(`/api/user/editor-content/${userId}?documentId=current-editor`);
-                  const result = await response.json();
-                  if (result.success && result.content) {
-                      console.log('✓ Editor content loaded from cloud for user:', userId);
-                      return result.content;
-                  }
-              } catch (e) {
-                  console.error('Error loading editor content from cloud:', e);
-              }
-              return null;
-          }
-          
-          // Manual save function - triggered by Save button in toolbar
-          window.saveDocumentNow = async function() {
-              const cloudStatus = document.getElementById('cloudSaveStatus');
-              
-              // Show syncing animation
-              if (cloudStatus) {
-                  cloudStatus.classList.add('cloud-syncing');
-                  cloudStatus.classList.remove('cloud-saved');
-              }
-              
-              // Save to cloud
-              if (typeof saveEditorContentToCloud === 'function') {
-                  await saveEditorContentToCloud();
-              }
-              
-              // Also save to local storage and API
+           // Manual save function - triggered by Save button in toolbar
+           window.saveDocumentNow = async function() {
+               // Save to local storage and API
               const title = document.getElementById('docTitle')?.value || 'Untitled';
               const content = Array.from(document.querySelectorAll('.page')).map(p => {
                   const contentDiv = p.querySelector('.page-content');
@@ -5065,33 +4908,21 @@ CURRICULUM VITAE`;
                   }
               }
               
-              // Show saved animation after successful save
-              setTimeout(() => {
-                  if (cloudStatus) {
-                      cloudStatus.classList.remove('cloud-syncing');
-                      cloudStatus.classList.add('cloud-saved');
-                  }
-                  // Refresh recent documents in HomeEditor after manual save
-                  if (typeof loadRecentDocuments === 'function') {
-                      loadRecentDocuments();
-                  }
-              }, 500);
+               // Refresh recent documents in HomeEditor after manual save
+               setTimeout(() => {
+                   if (typeof loadRecentDocuments === 'function') {
+                       loadRecentDocuments();
+                   }
+               }, 500);
               
               console.log('Document saved manually');
           };
           
-          // Auto-save to cloud every 30 seconds while editing
+          // Auto-save every 30 seconds while editing
           setInterval(() => {
               const hasContent = document.querySelector('.page-content')?.textContent?.trim();
               if (hasContent && hasContent.length > 0) {
-                  // Show syncing animation
-                  const cloudStatus = document.getElementById('cloudSaveStatus');
-                  if (cloudStatus) {
-                      cloudStatus.classList.add('cloud-syncing');
-                      cloudStatus.classList.remove('cloud-saved');
-                  }
-                  
-                  // Save to localStorage first (this is what loadRecentDocuments reads from)
+               // Save to localStorage first (this is what loadRecentDocuments reads from)
                   const title = document.getElementById('docTitle')?.value || 'Untitled';
                   const content = Array.from(document.querySelectorAll('.page')).map(p => {
                       const contentDiv = p.querySelector('.page-content');
@@ -5129,71 +4960,22 @@ CURRICULUM VITAE`;
                   }
                   localStorage.setItem('pfpDocuments', JSON.stringify(pfpDocuments));
                   
-                  // Trigger storage event for pfp.html to update
-                  localStorage.setItem('documentUpdateTrigger', Date.now().toString());
-                  
-                  // Also save to cloud if user is logged in
-                  const savePromise = (typeof saveEditorContentToCloud !== 'undefined') ? saveEditorContentToCloud() : Promise.resolve();
+                   // Trigger storage event for pfp.html to update
+                   localStorage.setItem('documentUpdateTrigger', Date.now().toString());
                   
                   savePromise.then(() => {
-                      // Show saved animation after successful save
-                      setTimeout(() => {
-                          if (cloudStatus) {
-                              cloudStatus.classList.remove('cloud-syncing');
-                              cloudStatus.classList.add('cloud-saved');
-                           }
-                           // Refresh recent documents in HomeEditor after auto-save
+                       // Refresh recent documents in HomeEditor after auto-save
+                       setTimeout(() => {
                            if (typeof loadRecentDocuments === 'function') {
                                loadRecentDocuments();
-                           }
-                       }, 500);
+                            }
+                        }, 500);
                   });
               }
           }, 30000);
           
-          // Function to trigger cloud sync animation on any content change
-          function triggerCloudSync() {
-              const cloudStatus = document.getElementById('cloudSaveStatus');
-              if (cloudStatus) {
-                  cloudStatus.classList.add('cloud-syncing');
-                  cloudStatus.classList.remove('cloud-saved');
-              }
-          }
-          
-          // Add event listeners to trigger cloud sync on content changes
-          function initCloudSyncListeners() {
-              const container = document.getElementById('documentContainer');
-              if (container) {
-                  // Listen for input on the container (includes typing in contenteditable)
-                  container.addEventListener('input', function(e) {
-                      // Check if the event came from a page-content element
-                      if (e.target && e.target.classList.contains('page-content')) {
-                          triggerCloudSync();
-                      }
-                  });
-                  container.addEventListener('paste', triggerCloudSync);
-                  container.addEventListener('cut', triggerCloudSync);
-                  container.addEventListener('keyup', triggerCloudSync);
-              }
-              
-              const docTitle = document.getElementById('docTitle');
-              if (docTitle) {
-                  docTitle.addEventListener('input', triggerCloudSync);
-              }
-              
-              // Also add to page-content elements directly
-              document.querySelectorAll('.page-content').forEach(function(el) {
-                  el.addEventListener('input', triggerCloudSync);
-                  el.addEventListener('keyup', triggerCloudSync);
-                  el.addEventListener('paste', triggerCloudSync);
-              });
-          }
-          
-          // Initialize after DOM is ready
-          if (document.readyState === 'loading') {
-              document.addEventListener('DOMContentLoaded', initCloudSyncListeners);
-          } else {
-              initCloudSyncListeners();
+
+
           }
           
           // HomeEditor functions - attached to window for global access
@@ -5340,14 +5122,11 @@ CURRICULUM VITAE`;
                   setPaperSize(templateType === 'sti' ? 'letter' : templateType);
               }
               
-              // If STI template, add the class
-              if (templateType === 'sti') {
-                  const pages = document.querySelectorAll('.page');
-                  pages.forEach(page => page.classList.add('sti-template'));
-              }
-              
-              // Save to cloud
-              triggerCloudSync();
+               // If STI template, add the class
+               if (templateType === 'sti') {
+                   const pages = document.querySelectorAll('.page');
+                   pages.forEach(page => page.classList.add('sti-template'));
+               }
           }
           
           function loadRecentDocuments() {
@@ -5631,13 +5410,13 @@ CURRICULUM VITAE`;
               const container = document.getElementById('documentContainer');
               if (!container) return;
               
-              const observer = new MutationObserver(function(mutations) {
-                  mutations.forEach(function(mutation) {
-                      if (mutation.type === 'characterData' || mutation.type === 'childList') {
-                          triggerCloudSync();
-                      }
-                  });
-              });
+               const observer = new MutationObserver(function(mutations) {
+                   mutations.forEach(function(mutation) {
+                       if (mutation.type === 'characterData' || mutation.type === 'childList') {
+                           // Content changed
+                       }
+                   });
+               });
               
               container.querySelectorAll('.page-content').forEach(function(el) {
                   observer.observe(el, {
@@ -6229,21 +6008,9 @@ CURRICULUM VITAE`;
                 fileViewer.style.flex = '0 0 50%';
             }
             
-            // Load saved editor state - try cloud first, then localStorage
+            // Load saved editor state from localStorage
             var editorState = null;
             try {
-                var cloudContent = null;
-                if (typeof loadEditorContentFromCloud !== 'undefined') {
-                    cloudContent = await loadEditorContentFromCloud();
-                }
-                if (cloudContent) {
-                    editorState = {
-                        title: '',
-                        content: cloudContent,
-                        isSTITemplate: false
-                    };
-                    console.log('Loaded editor content from cloud');
-                } else {
                     editorState = JSON.parse(localStorage.getItem('editorState'));
                 }
             } catch(e) {

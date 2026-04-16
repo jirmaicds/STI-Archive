@@ -1828,7 +1828,13 @@ color: #ffd700;
       #pdfContainer1 {
         padding-bottom: 80px !important;
       }
-      
+
+      /* Make PDF viewer modal fullwidth on tablet and mobile */
+      #pdf-viewer-modal {
+        width: 100%;
+        left: 0;
+      }
+
     }
 
     /* Hide footer toggle on screens <= 1780px */
@@ -2248,7 +2254,7 @@ color: #ffd700;
         </div>
        </div>
 
-<div id="pdf-viewer-modal" style="display: block; position: absolute; top: 0px;  width: calc(100% - 200px); height: calc(100% - 0px); background: rgba(0, 0, 0, 0.95); z-index: 100; overflow: auto;">
+<div id="pdf-viewer-modal" style="display: none; position: fixed;">
             <div style="
                 position: absolute;
                 top: 0;

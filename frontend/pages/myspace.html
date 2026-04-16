@@ -1825,8 +1825,8 @@ color: #ffd700;
 
     }
 
-    /* Hide footer toggle on screens <= 1780px */
-    @media (max-width: 1780px) {
+    /* Tablet and mobile layout */
+    @media (max-width: 1024px) {
       .main-content {
         padding-top: 0 !important;
       }
@@ -7000,8 +7000,8 @@ CURRICULUM VITAE`;
             footerCurrentDocView = savedPreference;
         }
 
-        // On desktop screens (>1780px), always show homeEditor alongside file-viewer
-        if (window.innerWidth > 1780) {
+        // On desktop screens (>=1024px), always show homeEditor alongside file-viewer
+        if (window.innerWidth >= 1024) {
             const homeEditor = document.getElementById('homeEditor');
             if (homeEditor) {
                 homeEditor.classList.add('visible');

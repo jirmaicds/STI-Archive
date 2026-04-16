@@ -2093,20 +2093,20 @@ color: #ffd700;
       .home-editor h1 {
         font-size: 1rem;
       }
-      
+
       .home-editor h2 {
         font-size: 0.9rem;
       }
-      
+
       .home-editor p {
         font-size: 0.85rem;
       }
-      
+
       .footer-toggle-container .toggle-btn-mobile {
         padding: 6px 8px;
         font-size: 11px;
       }
-      
+
       .footer-toggle-container .toggle-btn-mobile i {
         font-size: 12px;
       }
@@ -2118,7 +2118,7 @@ color: #ffd700;
         flex-direction: column;
         display: flex;
       }
-      
+
       .file-viewer, .home-editor {
         width: 100% !important;
         flex: 1 !important;
@@ -2130,19 +2130,41 @@ color: #ffd700;
         right: auto !important;
         overflow: auto;
       }
-      
+
       .footer-toggle-container {
         bottom: 0;
         height: 45px;
         width: 100%;
         flex-shrink: 0;
       }
-      
+
       /* PDF container sizing - full height */
       #pdfContainer1, #pdfCanvas {
         width: 100% !important;
         height: 100% !important;
         min-height: 500px !important;
+      }
+    }
+
+    /* Desktop screens (1024px and above) */
+    @media (min-width: 1024px) {
+      .home-editor {
+        display: flex !important;
+        position: absolute !important;
+        right: 0 !important;
+        top: 50px !important;
+        width: 50% !important;
+        height: calc(100vh - 50px) !important;
+        z-index: 1007 !important; /* Higher than toggle panel */
+      }
+
+      .file-viewer {
+        flex: 0 0 50% !important;
+        display: flex !important;
+      }
+
+      .toggle-panel {
+        display: flex !important;
       }
     }
   </style>
@@ -7018,7 +7040,6 @@ CURRICULUM VITAE`;
                     homeEditor.style.top = '50px';
                     homeEditor.style.height = 'calc(100vh - 50px)';
                     homeEditor.style.zIndex = '1003';
-                    homeEditor.style.border = '2px solid red'; // Debug border
                 }
                 const fileViewer = document.querySelector('.file-viewer');
                 if (fileViewer) {

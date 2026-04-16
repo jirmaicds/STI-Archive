@@ -7002,9 +7002,16 @@ CURRICULUM VITAE`;
 
         // Defer layout changes to avoid FOUC
         requestAnimationFrame(function() {
+            console.log('DOMContentLoaded, innerWidth:', window.innerWidth);
+            // Ensure pdf-viewer-modal is hidden
+            const pdfModal = document.getElementById('pdf-viewer-modal');
+            if (pdfModal) {
+                pdfModal.style.display = 'none';
+            }
+
             // On desktop screens (>=1024px), always show homeEditor alongside file-viewer
             if (window.innerWidth >= 1024) {
-                console.log('Showing homeEditor on desktop, innerWidth:', window.innerWidth);
+                console.log('Showing homeEditor on desktop');
                 const homeEditor = document.getElementById('homeEditor');
                 if (homeEditor) {
                     homeEditor.classList.add('visible');
@@ -7013,6 +7020,7 @@ CURRICULUM VITAE`;
                     homeEditor.style.right = '0';
                     homeEditor.style.width = '50%';
                     homeEditor.style.top = '0';
+                    homeEditor.style.zIndex = '1001';
                 }
                 const fileViewer = document.querySelector('.file-viewer');
                 if (fileViewer) {

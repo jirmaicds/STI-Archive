@@ -1129,12 +1129,18 @@
         /* Phone responsiveness */
         @media (max-width: 600px) {
             .pfp-container {
-                width: 150px;
-                height: 150px;
+                width: 200px;
+                height: 200px;
             }
             .pfp-container .full-name {
                 font-size: 1rem;
                 bottom: -20px;
+            }
+            .pfp-container {
+                position: absolute; top: 5px; 
+            }
+            .full-name {
+                position: relative; top: 110px;
             }
         }
 

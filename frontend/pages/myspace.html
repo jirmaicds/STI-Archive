@@ -1547,7 +1547,23 @@ color: #ffd700;
         display:none
       }
     }
-
+    /* Desktop layout - force homeEditor to show */
+@media (min-width: 1024px) {
+  .home-editor {
+    display: flex !important;
+    width: 50% !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: 50px !important;
+    height: calc(100vh - 50px) !important;
+    z-index: 1003 !important;
+  }
+  
+  .file-viewer {
+    display: flex !important;
+    width: 50% !important;
+  }
+}
     /* Tablet and below responsive layout */
     @media (max-width: 1023px) {
       /* Hide toggle-panel in tablet and mobile */

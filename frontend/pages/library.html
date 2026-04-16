@@ -3131,8 +3131,10 @@
     // Apply saved topic filter from localStorage (backup logic)
     const urlParams = new URLSearchParams(window.location.search);
     const categoryParam = urlParams.get('category');
-    
+
     // If no category in URL, check localStorage for saved topic
+    // Commented out to load default view when clicking nav library link
+    /*
     if (!categoryParam) {
       const savedTopic = localStorage.getItem('librarySelectedTopic');
       if (savedTopic && allArticles && allArticles.length > 0) {
@@ -3145,6 +3147,7 @@
         });
       }
     }
+    */
 
     // Check if redirected from myspace - auto-show first article in PDF viewer
     if (urlParams.get('from') === 'myspace') {

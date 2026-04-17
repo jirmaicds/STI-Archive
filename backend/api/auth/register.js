@@ -100,10 +100,12 @@ async function handleRegister(req, res) {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const activationToken = uuidv4();
+    const userId = Math.floor(Math.random() * 1000000); // Generate integer id
 
-    // Create user object without id (let Supabase auto-generate)
+    // Create user object
     const userRole = role || 'pending';
     const newUser = {
+      id: userId,
       email: email.toLowerCase(),
       password: hashedPassword,
       fullname: fullname,
@@ -128,7 +130,7 @@ async function handleRegister(req, res) {
 
       if (error) throw error;
 
-      const userId = data.id; // Auto-generated id
+      // userId is already set
 
       // Upload file if present
       if (file && filename && mimetype) {

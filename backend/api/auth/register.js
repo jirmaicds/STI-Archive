@@ -113,7 +113,7 @@ async function handleRegister(req, res) {
 
     busboy.on('finish', async () => {
       try {
-        const { email, password, fullname, role, grade, section, section_degree } = fields;
+        const { email, password, name: fullname, role, grade, section, section_degree } = fields;
 
         if (!email || !password || !fullname) {
           res.statusCode = 400;

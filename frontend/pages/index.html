@@ -4094,16 +4094,23 @@ window.supabaseHelpers = {
 
         // Function to save signup form data to sessionStorage (clears when browser closes)
         function saveSignupFormData() {
+            const role = document.getElementById('signup-role')?.value || '';
             const formData = {
                 fullname: document.getElementById('signup-fullname')?.value || '',
                 email: document.getElementById('signup-email')?.value || '',
                 password: document.getElementById('signup-password')?.value || '',
                 confirmPassword: document.getElementById('signup-confirm-password')?.value || '',
-                role: document.getElementById('signup-role')?.value || '',
-                grade: document.getElementById('signup-grade')?.value || '',
-                section: document.getElementById('signup-section')?.value || '',
+                role: role,
                 terms: document.getElementById('terms-signup')?.checked || false
             };
+            // Conditionally add role-specific fields
+            if (role === 'senior_high') {
+                formData.grade = document.getElementById('signup-grade')?.value || '';
+                formData.section = document.getElementById('signup-section')?.value || '';
+            } else if (role === 'college') {
+                formData.section_degree = document.getElementById('signup-section')?.value || '';
+            }
+            // Educator role has no additional fields to save
             sessionStorage.setItem('signupFormData', JSON.stringify(formData));
         }
 
@@ -4113,7 +4120,8 @@ window.supabaseHelpers = {
             if (savedData) {
                 try {
                     const formData = JSON.parse(savedData);
-                    
+
+                    // Restore common fields
                     if (formData.fullname) {
                         const fullnameField = document.getElementById('signup-fullname');
                         if (fullnameField) fullnameField.value = formData.fullname;
@@ -4140,20 +4148,30 @@ window.supabaseHelpers = {
                             }
                         }
                     }
-                    if (formData.grade) {
-                        const gradeField = document.getElementById('signup-grade');
-                        if (gradeField) gradeField.value = formData.grade;
-                    }
-                    if (formData.section) {
-                        const sectionField = document.getElementById('signup-section');
-                        if (sectionField) sectionField.value = formData.section;
-                    }
                     if (formData.terms) {
                         const termsField = document.getElementById('terms-signup');
                         if (termsField) termsField.checked = formData.terms;
                     }
-                    
-                    console.log('Signup form data restored from localStorage');
+
+                    // Restore role-specific fields
+                    if (formData.role === 'senior_high') {
+                        if (formData.grade) {
+                            const gradeField = document.getElementById('signup-grade');
+                            if (gradeField) gradeField.value = formData.grade;
+                        }
+                        if (formData.section) {
+                            const sectionField = document.getElementById('signup-section');
+                            if (sectionField) sectionField.value = formData.section;
+                        }
+                    } else if (formData.role === 'college') {
+                        if (formData.section_degree) {
+                            const sectionField = document.getElementById('signup-section');
+                            if (sectionField) sectionField.value = formData.section_degree;
+                        }
+                    }
+                    // Educator role has no additional fields
+
+                    console.log('Signup form data restored from sessionStorage');
                 } catch (e) {
                     console.error('Error restoring signup form data:', e);
                 }

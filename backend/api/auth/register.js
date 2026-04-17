@@ -97,6 +97,13 @@ async function handleRegister(req, res) {
     return;
   }
 
+  // Prevent signing up as admin roles
+  if (role === 'admin' || role === 'coadmin' || role === 'subadmin') {
+    res.statusCode = 400;
+    res.end(JSON.stringify({ success: false, error: 'Invalid role selected' }));
+    return;
+  }
+
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const activationToken = uuidv4();
@@ -108,7 +115,7 @@ async function handleRegister(req, res) {
       password: hashedPassword,
       fullname: fullname,
       role: userRole,
-          user_type: 'user',
+           user_type: 'user',
       verified: false,
       grade: grade || null,
       section_degree: section_degree || section || null,
@@ -117,6 +124,7 @@ async function handleRegister(req, res) {
       activation_token: activationToken,
       created_at: new Date().toISOString()
     };
+    console.log('Creating user with verified:', newUser.verified);
 
     if (isSupabaseConfigured()) {
       const supabase = getServiceSupabase();
@@ -127,6 +135,7 @@ async function handleRegister(req, res) {
         .single();
 
       if (error) throw error;
+      console.log('Inserted user verified:', data.verified);
 
       const userId = data.id; // Use the auto-assigned integer ID
 

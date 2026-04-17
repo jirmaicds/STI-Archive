@@ -164,7 +164,7 @@ async function handleRegister(req, res) {
       res.statusCode = 201;
       res.end(JSON.stringify({
         success: true,
-        message: 'Registration successful! Welcome to STI Archives. Please wait for admin approval.',
+        message: 'Registration submitted successfully! Your account is pending admin approval. You will receive an email once approved.',
         user: { id: userId, email: data.email, fullname: data.fullname, role: data.role }
       }));
     } else {
@@ -214,7 +214,30 @@ async function handleRegister(req, res) {
             .select()
             .single();
 
-          if (error) throw error;
+      if (error) {
+        // Check for duplicate email error
+        if (error.code === '23505' && error.message.includes('users_email_key')) {
+          // Find existing user with this email
+          const { data: existingUsers, error: findError } = await supabase
+            .from('users')
+            .select('fullname, email')
+            .eq('email', email.toLowerCase())
+            .limit(1);
+
+          if (findError) throw findError;
+
+          const existingUser = existingUsers?.[0];
+          res.statusCode = 409;
+          res.end(JSON.stringify({
+            success: false,
+            error: 'User already exists',
+            existingName: existingUser?.fullname,
+            existingEmail: existingUser?.email
+          }));
+          return;
+        }
+        throw error;
+      }
 
           // Send welcome email (not activation - admin will manually approve)
           await emailService.sendWelcomeEmail(email, fullname);
@@ -222,7 +245,7 @@ async function handleRegister(req, res) {
           res.statusCode = 201;
           res.end(JSON.stringify({
             success: true,
-            message: 'Registration successful! Welcome to STI Archives. Please wait for admin approval.',
+            message: 'Registration submitted successfully! Your account is pending admin approval. You will receive an email once approved.',
             user: { id: data.id, email: data.email, fullname: data.fullname, role: data.role }
           }));
         } else {

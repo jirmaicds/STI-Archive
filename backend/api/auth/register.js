@@ -176,88 +176,7 @@ async function handleRegister(req, res) {
         user: { id: userId, email, fullname, role: 'pending' }
       }));
     }
-  } catch (error) {
-    console.error('Registration error:', error);
-    res.statusCode = 500;
-    res.end(JSON.stringify({ success: false, error: error.message }));
-  }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const activationToken = uuidv4();
-
-        // File upload temporarily disabled
-        let fileUrl = null;
-
-        // Create user object (let SERIAL auto-assign integer id)
-        const userRole = role || 'pending';
-        const isEducator = userRole === 'educator';
-        const newUser = {
-          email: email.toLowerCase(),
-          password: hashedPassword,
-          fullname: fullname,
-          role: userRole,
-      user_type: 'user',
-          verified: false,
-          grade: grade || null,
-          section_degree: section_degree || section || null,
-          registration_assessment_form: isEducator ? null : fileUrl,
-          educator_id: isEducator ? fileUrl : null,
-          activation_token: activationToken,
-          created_at: new Date().toISOString()
-        };
-
-        if (isSupabaseConfigured()) {
-          const supabase = getServiceSupabase();
-          const { data, error } = await supabase
-            .from('users')
-            .insert([newUser])
-            .select()
-            .single();
-
-      if (error) {
-        // Check for duplicate email error
-        if (error.code === '23505' && error.message.includes('users_email_key')) {
-          // Find existing user with this email
-          const { data: existingUsers, error: findError } = await supabase
-            .from('users')
-            .select('fullname, email')
-            .eq('email', email.toLowerCase())
-            .limit(1);
-
-          if (findError) throw findError;
-
-          const existingUser = existingUsers?.[0];
-          res.statusCode = 409;
-          res.end(JSON.stringify({
-            success: false,
-            error: 'User already exists',
-            existingName: existingUser?.fullname,
-            existingEmail: existingUser?.email
-          }));
-          return;
-        }
-        throw error;
-      }
-
-          // Send welcome email (not activation - admin will manually approve)
-          await emailService.sendWelcomeEmail(email, fullname);
-
-          res.statusCode = 201;
-          res.end(JSON.stringify({
-            success: true,
-            message: 'Registration submitted successfully! Your account is pending admin approval. You will receive an email once approved.',
-            user: { id: data.id, email: data.email, fullname: data.fullname, role: data.role }
-          }));
-        } else {
-          // Fallback to local storage simulation (for development)
-          res.statusCode = 201;
-          res.end(JSON.stringify({
-            success: true,
-            message: 'Registration successful (dev mode).',
-            user: { id: userId, email, fullname, role: 'pending' }
-          }));
-        }
-  } catch (error) {
+   } catch (error) {
     console.error('Registration error:', error);
     res.statusCode = 500;
     res.end(JSON.stringify({ success: false, error: error.message }));
@@ -378,12 +297,12 @@ async function handleLogin(req, res) {
       res.end(JSON.stringify({
         success: true,
         token: 'dev-token',
-        user: { 
-          id: 'dev-id', 
-          email: loginField, 
-          fullname: loginField, 
-          role: 'admin',
-          verified: true 
+        user: {
+          id: 'dev-id',
+          email: loginField,
+          fullname: loginField,
+          role: 'user',
+          verified: false
         }
       }));
     }

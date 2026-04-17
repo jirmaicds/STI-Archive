@@ -2560,13 +2560,13 @@ window.supabaseHelpers = {
             // Legacy localStorage login (fallback when API fails)
             const fullname = email;
             const users = await getUsers();
-            
+
             // Then check users from users.json
-            // Use fullname field and isActive for proper approval flow
-            const user = users.find(u => u.fullname === fullname && u.isActive !== false);
-            
-            // Check if user exists but is not active (pending approval)
-            const pendingUser = users.find(u => u.fullname === fullname && u.isActive === false);
+            // Use fullname field and verified for proper approval flow
+            const user = users.find(u => u.fullname === fullname && u.verified === true);
+
+            // Check if user exists but is not verified (pending approval)
+            const pendingUser = users.find(u => u.fullname === fullname && u.verified === false && !u.rejected && !u.banned);
             const rejectedUser = users.find(u => u.fullname === fullname && u.rejected === true);
             
             if (rejectedUser) {

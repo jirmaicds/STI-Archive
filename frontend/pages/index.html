@@ -3322,14 +3322,14 @@ window.supabaseHelpers = {
                console.log('DEBUG: Server response:', data);
                if (data.status === 'success' || data.message) {
                    console.log('DEBUG: Signup successful');
-                   // Check if account is pending approval
-                   if (data.pending) {
-                       // Show waiting for verification screen (email already sent by backend)
-                       sessionStorage.setItem('pendingVerificationUserId', userId);
-                       console.log('DEBUG: Showing waiting verification for pending user userId:', userId);
-                       
-                       // Show waiting for verification message
-                       showWaitingForVerification(userId);
+                    // Check if account is pending approval
+                    if (data.pending) {
+                        // Show waiting for verification screen (email already sent by backend)
+                        sessionStorage.setItem('pendingVerificationUserId', data.user.id);
+                        console.log('DEBUG: Showing waiting verification for pending user userId:', data.user.id);
+
+                        // Show waiting for verification message
+                        showWaitingForVerification(data.user.id);
                        
                        // Reset form
                        document.getElementById('signupForm').reset();
@@ -3348,13 +3348,13 @@ window.supabaseHelpers = {
                        window.location.href = 'Homepage.html';
                        return;
                    }
-                   // If we got here, signup was successful - show waiting for verification
-                   // Store user_id for verification polling
-                   sessionStorage.setItem('pendingVerificationUserId', userId);
-                   console.log('DEBUG: Showing waiting verification for userId:', userId);
-                   
-                   // Show waiting for verification message
-                   showWaitingForVerification(userId);
+                    // If we got here, signup was successful - show waiting for verification
+                    // Store user_id for verification polling
+                    sessionStorage.setItem('pendingVerificationUserId', data.user.id);
+                    console.log('DEBUG: Showing waiting verification for userId:', data.user.id);
+
+                    // Show waiting for verification message
+                    showWaitingForVerification(data.user.id);
                    
                    // Reset form
                    document.getElementById('signupForm').reset();

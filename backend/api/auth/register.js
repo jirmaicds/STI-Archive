@@ -99,34 +99,11 @@ async function handleRegister(req, res) {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const userId = uuidv4();
     const activationToken = uuidv4();
 
-    // Upload file if present
-    let fileUrl = null;
-    if (file && filename && mimetype) {
-      const supabase = getServiceSupabase();
-      const buffer = Buffer.from(file, 'base64');
-      const fileExt = filename.split('.').pop();
-      const fileName = `${userId}.${fileExt}`;
-      const filePath = `Raf/${fileName}`;
-
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('uploads')
-        .upload(filePath, buffer, {
-          contentType: mimetype,
-          upsert: false
-        });
-
-      if (uploadError) throw uploadError;
-
-      fileUrl = `https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/${filePath}`;
-    }
-
-    // Create user object
+    // Create user object without id (let Supabase auto-generate)
     const userRole = role || 'pending';
     const newUser = {
-      id: userId,
       email: email.toLowerCase(),
       password: hashedPassword,
       fullname: fullname,
@@ -151,6 +128,36 @@ async function handleRegister(req, res) {
 
       if (error) throw error;
 
+      const userId = data.id; // Auto-generated id
+
+      // Upload file if present
+      if (file && filename && mimetype) {
+        const buffer = Buffer.from(file, 'base64');
+        const fileExt = filename.split('.').pop();
+        const fileName = `${userId}.${fileExt}`;
+        const filePath = `Raf/${fileName}`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('uploads')
+          .upload(filePath, buffer, {
+            contentType: mimetype,
+            upsert: false
+          });
+
+        if (uploadError) throw uploadError;
+
+        const fileUrl = `https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/${filePath}`;
+
+        // Update user with file URL
+        const isEducator = userRole === 'educator';
+        const { error: updateError } = await supabase
+          .from('users')
+          .update({ [isEducator ? 'educator_id' : 'registration_assessment_form']: fileUrl })
+          .eq('id', userId);
+
+        if (updateError) throw updateError;
+      }
+
       // Send welcome email (not activation - admin will manually approve)
       await emailService.sendWelcomeEmail(email, fullname);
 
@@ -158,7 +165,7 @@ async function handleRegister(req, res) {
       res.end(JSON.stringify({
         success: true,
         message: 'Registration successful! Welcome to STI Archives. Please wait for admin approval.',
-        user: { id: data.id, email: data.email, fullname: data.fullname, role: data.role }
+        user: { id: userId, email: data.email, fullname: data.fullname, role: data.role }
       }));
     } else {
       // Fallback to local storage simulation (for development)

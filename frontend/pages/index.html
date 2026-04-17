@@ -3251,7 +3251,7 @@ window.supabaseHelpers = {
 
             // Create FormData for server
              const formData = new FormData();
-              formData.append('name', fullname);
+              formData.append('fullname', fullname);
               formData.append('email', email);
               formData.append('password', document.getElementById('signup-password').value);
               formData.append('role', role);
@@ -3274,7 +3274,7 @@ window.supabaseHelpers = {
                formData.append('raf', requiredFile);
            }
 
-           console.log('DEBUG: FormData created for signup:', {
+            console.log('DEBUG: FormData created for signup:', {
                 fullname: fullname,
                 email: email,
                 role: role,
@@ -3282,6 +3282,10 @@ window.supabaseHelpers = {
                grade: grade,
                hasFile: !!requiredFile
            });
+           console.log('DEBUG: FormData entries:');
+           for (let [key, value] of formData.entries()) {
+               console.log(`${key}: ${typeof value === 'string' ? value : '[File]'}`);
+           }
 
            // Send formData to server /signup_user
            console.log('DEBUG: Sending FormData to server');

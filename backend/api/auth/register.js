@@ -100,7 +100,7 @@ async function handleRegister(req, res) {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const activationToken = uuidv4();
-    const userId = Math.floor(Math.random() * 1000000); // Generate integer id
+    const userId = uuidv4(); // Generate UUID id
 
     // Create user object
     const userRole = role || 'pending';

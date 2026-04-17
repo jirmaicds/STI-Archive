@@ -100,12 +100,10 @@ async function handleRegister(req, res) {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const activationToken = uuidv4();
-    const userId = uuidv4(); // Generate UUID id
 
-    // Create user object
+    // Create user object (let SERIAL auto-assign integer id)
     const userRole = role || 'pending';
     const newUser = {
-      id: userId,
       email: email.toLowerCase(),
       password: hashedPassword,
       fullname: fullname,
@@ -130,7 +128,7 @@ async function handleRegister(req, res) {
 
       if (error) throw error;
 
-      // userId is already set
+      const userId = data.id; // Use the auto-assigned integer ID
 
       // Upload file if present
       if (file && filename && mimetype) {
@@ -185,17 +183,15 @@ async function handleRegister(req, res) {
   }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const userId = uuidv4();
         const activationToken = uuidv4();
 
         // File upload temporarily disabled
         let fileUrl = null;
 
-        // Create user object
+        // Create user object (let SERIAL auto-assign integer id)
         const userRole = role || 'pending';
         const isEducator = userRole === 'educator';
         const newUser = {
-          id: userId,
           email: email.toLowerCase(),
           password: hashedPassword,
           fullname: fullname,

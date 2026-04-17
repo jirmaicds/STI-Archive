@@ -3249,23 +3249,21 @@ window.supabaseHelpers = {
            }
            localStorage.setItem('users', JSON.stringify(users));
 
-            // Create FormData for server
-             const formData = new FormData();
-              formData.append('fullname', fullname);
-              formData.append('email', email);
-              formData.append('password', document.getElementById('signup-password').value);
-              formData.append('role', role);
-             if (role === 'senior_high') {
-                 formData.append('section', section);
-             } else if (role === 'college') {
-                 formData.append('section_degree', section);
-             }
-             formData.append('user_id', userId);
+            // Create JSON data for server (temporarily without file)
+             const signupData = {
+                 fullname,
+                 email,
+                 password: document.getElementById('signup-password').value,
+                 role,
+                 user_id: userId
+             };
 
-            // Add grade to formData if senior high
-            if (role === 'senior_high') {
-                formData.append('grade', grade);
-            }
+             if (role === 'senior_high') {
+                 signupData.section = section;
+                 signupData.grade = grade;
+             } else if (role === 'college') {
+                 signupData.section_degree = section;
+             }
 
            // Add document file
            if (role === 'educator') {
@@ -3282,17 +3280,17 @@ window.supabaseHelpers = {
                grade: grade,
                hasFile: !!requiredFile
            });
-           console.log('DEBUG: FormData entries:');
-           for (let [key, value] of formData.entries()) {
-               console.log(`${key}: ${typeof value === 'string' ? value : '[File]'}`);
-           }
+            console.log('DEBUG: Signup data:', signupData);
 
-           // Send formData to server /signup_user
-           console.log('DEBUG: Sending FormData to server');
-           fetch('/api/auth/register', {
-               method: 'POST',
-               body: formData
-           })
+            // Send JSON to server /signup_user
+            console.log('DEBUG: Sending JSON to server');
+            fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(signupData)
+            })
            .then(response => {
                 // Check response status before parsing JSON
                 if (!response.ok) {

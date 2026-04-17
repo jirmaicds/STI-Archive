@@ -10,7 +10,6 @@ const { config, isSupabaseConfigured } = require('../config/index.js');
 const path = require('path');
 const { getServiceSupabase } = require(path.resolve(__dirname, '../../services/supabase.js'));
 const emailService = require(path.resolve(__dirname, '../services/EmailService.js'));
-const Busboy = require('busboy');
 
 // Helper to set CORS headers
 function setCorsHeaders(res) {
@@ -89,62 +88,81 @@ async function handleRegister(req, res) {
     return;
   }
 
+  // Parse JSON data (temporarily without file)
+  const { email, password, fullname, role, grade, section, section_degree } = req.body;
+
+  if (!email || !password || !fullname) {
+    res.statusCode = 400;
+    res.end(JSON.stringify({ success: false, error: 'Missing required fields' }));
+    return;
+  }
+
   try {
-    // Parse multipart form data
-    const fields = {};
-    const files = {};
-    const busboy = Busboy({ headers: req.headers });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const userId = uuidv4();
+    const activationToken = uuidv4();
 
-    busboy.on('field', (fieldname, val) => {
-      fields[fieldname] = val;
-    });
+    // File upload temporarily disabled
+    let fileUrl = null;
 
-    busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-      const chunks = [];
-      file.on('data', (chunk) => chunks.push(chunk));
-      file.on('end', () => {
-        files[fieldname] = {
-          buffer: Buffer.concat(chunks),
-          filename,
-          mimetype
-        };
-      });
-    });
+    // Create user object
+    const userRole = role || 'pending';
+    const newUser = {
+      id: userId,
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      fullname: fullname,
+      role: userRole,
+      user_type: (userRole === 'admin' || userRole === 'coadmin' || userRole === 'subadmin') ? 'admin' : 'user',
+      verified: false,
+      grade: grade || null,
+      section_degree: section_degree || section || null,
+      registration_assessment_form: null,
+      educator_id: null,
+      activation_token: activationToken,
+      created_at: new Date().toISOString()
+    };
 
-    busboy.on('finish', async () => {
-      try {
-        const { email, password, fullname, role, grade, section, section_degree } = fields;
+    if (isSupabaseConfigured()) {
+      const supabase = getServiceSupabase();
+      const { data, error } = await supabase
+        .from('users')
+        .insert([newUser])
+        .select()
+        .single();
 
-        if (!email || !password || !fullname) {
-          res.statusCode = 400;
-          res.end(JSON.stringify({ success: false, error: 'Missing required fields' }));
-          return;
-        }
+      if (error) throw error;
+
+      // Send welcome email (not activation - admin will manually approve)
+      await emailService.sendWelcomeEmail(email, fullname);
+
+      res.statusCode = 201;
+      res.end(JSON.stringify({
+        success: true,
+        message: 'Registration successful! Welcome to STI Archives. Please wait for admin approval.',
+        user: { id: data.id, email: data.email, fullname: data.fullname, role: data.role }
+      }));
+    } else {
+      // Fallback to local storage simulation (for development)
+      res.statusCode = 201;
+      res.end(JSON.stringify({
+        success: true,
+        message: 'Registration successful (dev mode).',
+        user: { id: userId, email, fullname, role: 'pending' }
+      }));
+    }
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.statusCode = 500;
+    res.end(JSON.stringify({ success: false, error: error.message }));
+  }
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const userId = uuidv4();
         const activationToken = uuidv4();
 
-        // Upload file if present
+        // File upload temporarily disabled
         let fileUrl = null;
-        if (files.raf || files.educator_id) {
-          const supabase = getServiceSupabase();
-          const file = files.raf || files.educator_id;
-          const fileExt = file.filename.split('.').pop();
-          const fileName = `${userId}.${fileExt}`;
-          const filePath = `Raf/${fileName}`;
-
-          const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('uploads')
-            .upload(filePath, file.buffer, {
-              contentType: file.mimetype,
-              upsert: false
-            });
-
-          if (uploadError) throw uploadError;
-
-          fileUrl = `https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/${filePath}`;
-        }
 
         // Create user object
         const userRole = role || 'pending';
@@ -158,8 +176,8 @@ async function handleRegister(req, res) {
           verified: false,
           grade: grade || null,
           section_degree: section_degree || section || null,
-          registration_assessment_form: files.raf ? fileUrl : null,
-          educator_id: files.educator_id ? fileUrl : null,
+          registration_assessment_form: null,
+          educator_id: null,
           activation_token: activationToken,
           created_at: new Date().toISOString()
         };
@@ -192,14 +210,6 @@ async function handleRegister(req, res) {
             user: { id: userId, email, fullname, role: 'pending' }
           }));
         }
-      } catch (innerError) {
-        console.error('Registration error:', innerError);
-        res.statusCode = 500;
-        res.end(JSON.stringify({ success: false, error: innerError.message }));
-      }
-    });
-
-    req.pipe(busboy);
   } catch (error) {
     console.error('Registration error:', error);
     res.statusCode = 500;

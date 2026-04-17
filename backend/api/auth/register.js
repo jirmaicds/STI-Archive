@@ -88,8 +88,8 @@ async function handleRegister(req, res) {
     return;
   }
 
-  // Parse JSON data (temporarily without file)
-  const { email, password, fullname, role, grade, section, section_degree } = req.body;
+  // Parse JSON data with base64 file
+  const { email, password, fullname, role, grade, section, section_degree, file, filename, mimetype } = req.body;
 
   if (!email || !password || !fullname) {
     res.statusCode = 400;
@@ -102,8 +102,26 @@ async function handleRegister(req, res) {
     const userId = uuidv4();
     const activationToken = uuidv4();
 
-    // File upload temporarily disabled
+    // Upload file if present
     let fileUrl = null;
+    if (file && filename && mimetype) {
+      const supabase = getServiceSupabase();
+      const buffer = Buffer.from(file, 'base64');
+      const fileExt = filename.split('.').pop();
+      const fileName = `${userId}.${fileExt}`;
+      const filePath = `Raf/${fileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('uploads')
+        .upload(filePath, buffer, {
+          contentType: mimetype,
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      fileUrl = `https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/${filePath}`;
+    }
 
     // Create user object
     const userRole = role || 'pending';
@@ -166,6 +184,7 @@ async function handleRegister(req, res) {
 
         // Create user object
         const userRole = role || 'pending';
+        const isEducator = userRole === 'educator';
         const newUser = {
           id: userId,
           email: email.toLowerCase(),
@@ -176,8 +195,8 @@ async function handleRegister(req, res) {
           verified: false,
           grade: grade || null,
           section_degree: section_degree || section || null,
-          registration_assessment_form: null,
-          educator_id: null,
+          registration_assessment_form: isEducator ? null : fileUrl,
+          educator_id: isEducator ? fileUrl : null,
           activation_token: activationToken,
           created_at: new Date().toISOString()
         };

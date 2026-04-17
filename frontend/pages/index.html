@@ -3249,7 +3249,7 @@ window.supabaseHelpers = {
            }
            localStorage.setItem('users', JSON.stringify(users));
 
-            // Create JSON data for server (temporarily without file)
+            // Create JSON data for server with file as base64
              const signupData = {
                  fullname,
                  email,
@@ -3263,6 +3263,22 @@ window.supabaseHelpers = {
                  signupData.grade = grade;
              } else if (role === 'college') {
                  signupData.section_degree = section;
+             }
+
+             // Add file if present
+             if (requiredFile) {
+                 const reader = new FileReader();
+                 reader.onload = function(e) {
+                     signupData.file = e.target.result.split(',')[1]; // Remove data: URL prefix
+                     signupData.filename = requiredFile.name;
+                     signupData.mimetype = requiredFile.type;
+                     // Send the data after file is read
+                     sendSignupData(signupData);
+                 };
+                 reader.readAsDataURL(requiredFile);
+                 return; // Wait for file read
+             } else {
+                 sendSignupData(signupData);
              }
 
            // Add document file
@@ -3280,17 +3296,18 @@ window.supabaseHelpers = {
                grade: grade,
                hasFile: !!requiredFile
            });
-            console.log('DEBUG: Signup data:', signupData);
+            function sendSignupData(data) {
+                console.log('DEBUG: Signup data:', data);
 
-            // Send JSON to server /signup_user
-            console.log('DEBUG: Sending JSON to server');
-            fetch('/api/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(signupData)
-            })
+                // Send JSON to server
+                console.log('DEBUG: Sending JSON to server');
+                fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
            .then(response => {
                 // Check response status before parsing JSON
                 if (!response.ok) {

@@ -3280,23 +3280,8 @@ window.supabaseHelpers = {
              } else {
                  sendSignupData(signupData);
              }
-           }
+            }
 
-           // Add document file
-           if (role === 'educator') {
-               formData.append('educator_id', requiredFile);
-           } else {
-               formData.append('raf', requiredFile);
-           }
-
-            console.log('DEBUG: FormData created for signup:', {
-                fullname: fullname,
-                email: email,
-                role: role,
-               section: section,
-               grade: grade,
-               hasFile: !!requiredFile
-           });
             function sendSignupData(data) {
                 console.log('DEBUG: Signup data:', data);
 

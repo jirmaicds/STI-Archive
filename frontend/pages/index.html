@@ -3250,18 +3250,22 @@ window.supabaseHelpers = {
            localStorage.setItem('users', JSON.stringify(users));
 
             // Create FormData for server
-            const formData = new FormData();
-             formData.append('fullname', fullname);
-             formData.append('email', email);
-             formData.append('password', document.getElementById('signup-password').value);
-             formData.append('role', role);
-            formData.append('section', section);
-            formData.append('user_id', userId);
+             const formData = new FormData();
+              formData.append('name', fullname);
+              formData.append('email', email);
+              formData.append('password', document.getElementById('signup-password').value);
+              formData.append('role', role);
+             if (role === 'senior_high') {
+                 formData.append('section', section);
+             } else if (role === 'college') {
+                 formData.append('section_degree', section);
+             }
+             formData.append('user_id', userId);
 
-           // Add grade to formData if senior high
-           if (role === 'senior_high') {
-               formData.append('grade', grade);
-           }
+            // Add grade to formData if senior high
+            if (role === 'senior_high') {
+                formData.append('grade', grade);
+            }
 
            // Add document file
            if (role === 'educator') {

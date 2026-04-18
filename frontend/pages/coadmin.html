@@ -3331,23 +3331,17 @@
                             <option value="email">Email</option>
                         </select>
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'admins', document.getElementById('search-filter-admins').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                        <button class="btn" onclick="openCreateAdminModal()">Create New Admin</button>
-                    </div>
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-admins-main" onclick="toggleSelectAll('admins')">
-                        <button class="btn btn-danger" onclick="bulkAction('admins', 'remove')">Remove</button>
-                    </div>
+
                     
                     <table>
                         <thead>
                             <tr>
-                                <th><input type="checkbox" id="select-all-admins" onclick="toggleSelectAll('admins')"></th>
                                 <th>ID</th>
                                 <th>Name</th>
-                                <th>Permissions</th>
+                                <th>Email</th>
+                                <th>Role</th>
                                 <th>Created At</th>
                                 <th>Status</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="admins-tbody">
@@ -3451,15 +3445,11 @@
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'verified', document.getElementById('search-filter-verified').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                         <button class="btn" onclick="openAddUserModal()">Add New User</button>
                     </div>
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-verified-main" onclick="toggleSelectAll('verified')">
-                        <button class="btn btn-danger" onclick="bulkAction('verified', 'ban')">Ban</button>
-                        <button class="btn btn-danger" onclick="bulkAction('verified', 'remove')">Remove</button>
-                    </div>
+
                     
                     <div style="overflow-x: auto;">
                         <table id="verified-users-table">
-                            <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Section</th><th>Date Verified</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
+                            <thead><tr><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Str/B.S.</th><th>Date Verified</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="verified-users-tbody">
                         </tbody>
                         </table>
@@ -3564,16 +3554,11 @@
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'signing-up', document.getElementById('search-filter-signing-up').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                         <button class="btn" onclick="openAddUserModal()">Add New User</button>
                     </div>
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-signing-up-main" onclick="toggleSelectAll('signing-up')">
-                        <button class="btn btn-success" onclick="bulkAction('signing-up', 'accept')">Accept</button>
-                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'ban')">Ban</button>
-                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'remove')">Remove</button>
-                    </div>
+
                     
                     <div style="overflow-x: auto;">
                         <table id="signing-up-users-table">
-                            <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Str/B.S.</th><th>Date Signed Up</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
+                            <thead><tr><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Str/B.S.</th><th>Date Signed Up</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="signing-up-users-tbody"></tbody>
                         </table>
                     </div>
@@ -3630,7 +3615,7 @@
                         <div id="banned-department-table" style="display: none; margin-top: 20px;">
                             <h5 id="banned-department-title"></h5>
                             <table id="banned-department-users-table">
-                                <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Str/B.S.</th><th>Date Banned</th><th>RAF Preview</th><th>Actions</th></tr></thead>
+                                <thead><tr><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Str/B.S.</th><th>Date Banned</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                                 <tbody id="banned-department-users-tbody"></tbody>
                             </table>
                         </div>
@@ -3673,15 +3658,11 @@
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'banned', document.getElementById('search-filter-banned').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                         <button class="btn" onclick="openAddUserModal()">Add New User</button>
                     </div>
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-banned-main" onclick="toggleSelectAll('banned')">
-                        <button class="btn btn-success" onclick="bulkAction('banned', 'accept')">Accept</button>
-                        <button class="btn btn-danger" onclick="bulkAction('banned', 'remove')">Remove</button>
-                    </div>
+
                     
                     <div style="overflow-x: auto;">
                         <table id="banned-users-table">
-                            <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Str/B.S.</th><th>Date Banned</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
+                            <thead><tr><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Str/B.S.</th><th>Date Banned</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="banned-users-tbody"></tbody>
                         </table>
                     </div>
@@ -4193,6 +4174,36 @@
             document.getElementById('verified-users-count').textContent = verifiedCount;
             document.getElementById('admin-users-count').textContent = adminCount;
             document.getElementById('signing-up-users-count').textContent = signingUpCount;
+        }
+        function getSectionDisplay(user) {
+            if (user.role === 'senior_high') {
+                // Handle both old and new data formats
+                const grade = user.grade || user.section;
+                const strand = user.strand;
+
+                if (grade && strand) {
+                    // If grade contains "Grade" and strand is different, show both
+                    if (grade.includes('Grade') && strand.toLowerCase() !== grade.toLowerCase()) {
+                        return `${grade}<br><small>${strand.toUpperCase()}</small>`;
+                    } else if (grade.includes('Grade')) {
+                        // Grade is in section, check if strand exists separately
+                        return `${grade}<br><small>${strand.toUpperCase()}</small>`;
+                    } else {
+                        // Section contains strand value (like "abm"), use grade field
+                        return `${grade}<br><small>${strand.toUpperCase()}</small>`;
+                    }
+                } else if (grade) {
+                    return grade;
+                } else {
+                    return '-';
+                }
+            } else if (user.role === 'college') {
+                return user.Str_Degr || '-';
+            } else if (user.role === 'teacher') {
+                return user.Str_Degr || '-';
+            } else {
+                return '-';
+            }
         }
         function formatDate(dateString) {
             if (!dateString || dateString === 'N/A') return 'N/A';
@@ -5431,105 +5442,13 @@ STI Archives Admin`;
 
                     const emailToUse = user.personal_email || user.email;
                     const row = `<tr>
-                        <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
-                        <td>${user.id || '-'}</td>
-                        <td>${user.name || '-'}</td>
-                        <td>${emailToUse || '-'}</td>
-                        <td>${formatRole(user.role)}</td>
-                        <td>${date || '-'}</td>
-                        <td>${getStatus(user)}</td>
-                        <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
-                        <td>${actions}</td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                });
-
-            });
-        }
-
-        function getStatus(user) {
-            if (user.verified) return 'Verified';
-            if (user.rejected) return 'Rejected';
-            if (user.banned) return 'Banned';
-            if (user.role && user.role.toLowerCase() === 'admin') return 'Active';
-            // For signing up
-            if (!user.created_at) return 'N/A';
-            const now = new Date();
-            const created = new Date(user.created_at);
-            const diffMs = now - created;
-            const diffHours = diffMs / (1000 * 60 * 60);
-            if (diffHours < 1) {
-                return 'Just now';
-            } else {
-                return 'Pending';
-            }
-        }
-
-        // === LOAD USERS FUNCTION ===
-        async function loadUsers() {
-            try {
-                const response = await fetch('/api/users');
-                const data = await response.json();
-                if (data.users) {
-                    localStorage.setItem('users', JSON.stringify(data.users));
-                    updateDashboardCounts();
-                }
-            } catch (error) {
-                console.error('Error loading users:', error);
-            }
-        }
-            // Auto-delete rejected users after 24 hours
-            users = users.filter(user => {
-                if (user.rejected && user.rejected_at) {
-                    const rejectedTime = new Date(user.rejected_at);
-                    const now = new Date();
-                    const diff = now - rejectedTime;
-                    if (diff > 24 * 60 * 60 * 1000) {
-                        return false;
-                    }
-                }
-                return true;
-            });
-            saveUsers(users);
-            // Clear all tbodys
-            document.querySelectorAll('#users tbody').forEach(tbody => tbody.innerHTML = '');
-            // Duplicate prevention: use a Set to track already added user IDs for signing up table
-            const addedSigningUpUsers = new Set();
-            users.forEach(user => {
-                const date = formatDate(user.verified_at || user.created_at);
-                let actions = '';
-                if (user.verified) {
-                    actions = `
-                        <button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${user.user_id || user.id}')">Edit</button>
-                        <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'ban')">Ban</button>
-                    `;
-                } else if (user.rejected) {
-                    actions = `
-                        <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'accept')">Accept</button>
-                        <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'ban')">Ban</button>
-                    `;
-                } else if (user.banned) {
-                    actions = `
-                        <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'accept')">Accept</button>
-                        <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'reject')">Reject</button>
-                        <button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.fullname}')">Remove</button>
-                    `;
-                } else {
-                    actions = `
-                        <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'accept')">Accept</button>
-                        <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'ban')">Ban</button>
-                    `;
-                }
-                const emailToUse = user.personal_email || user.email;
-                const rowWithEmail = `<tr>
-                    <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
-                    <td>${user.id}</td>
+                        <td>${user.id}</td>
                     <td>${user.name}</td>
                     <td>${user.email}</td>
                     <td>${formatRole(user.role)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
-                    <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                     <td>${actions}</td>
                 </tr>`;
                 const rowWithoutEmail = `<tr>
@@ -5540,7 +5459,7 @@ STI Archives Admin`;
                     <td>${formatRole(user.role)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
-                    <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                     <td>${actions}</td>
                 </tr>`;
                 // categorized
@@ -5586,7 +5505,7 @@ STI Archives Admin`;
                         <td>${formatRole(user.role)}</td>
                         <td>${date}</td>
                         <td>${getStatus(user)}</td>
-                        <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                         <td>${actions}</td>
                     </tr>`;
                     document.getElementById('verified-users-tbody').innerHTML += row;
@@ -5599,7 +5518,7 @@ STI Archives Admin`;
                         <td>${formatRole(user.role)}</td>
                         <td>${date}</td>
                         <td>${getStatus(user)}</td>
-                        <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                         <td>${actions}</td>
                     </tr>`;
                     document.getElementById('banned-users-tbody').innerHTML += row;
@@ -5661,14 +5580,12 @@ STI Archives Admin`;
             tbody.innerHTML = '';
             users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).forEach(user => {
                 const row = `<tr>
-                    <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}"></td>
                     <td>${user.id}</td>
                     <td>${user.name || '-'}</td>
                     <td>${user.email || '-'}</td>
                     <td>${formatRole(user.role)}</td>
                     <td>${user.created_at || '-'}</td>
                     <td>Active</td>
-                    <td><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${user.id}')">Edit</button> <button class="btn btn-danger btn-sm" onclick="removeUser('${user.id}', '${user.name || 'User'}')">Remove</button></td>
                 </tr>`;
                 tbody.innerHTML += row;
             });
@@ -5839,15 +5756,7 @@ STI Archives Admin`;
 
        
 
-        // Update dashboard counts
-        function updateDashboardCounts() {
-            const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
-            const researchCount = allArticles.filter(a => a.category === 'research').length;
-            const capstoneCount = allArticles.filter(a => a.category === 'capstone').length;
-            const totalUploads = researchCount + capstoneCount;
 
-            document.getElementById('revenue-count').textContent = totalUploads;
-        }
 
         // === STUB FUNCTIONS (to prevent errors) ===
         function toggleSidebar() {
@@ -6391,7 +6300,7 @@ STI Archives Admin`;
                     <td>${formatRole(user.role)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
-                    <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                     <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
                     </tr>`;
                     tbody.innerHTML += row;
@@ -6438,7 +6347,7 @@ STI Archives Admin`;
                     <td>${formatRole(user.role)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
-                    <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                     <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
                     </tr>`;
                     tbody.innerHTML += row;
@@ -6483,7 +6392,7 @@ STI Archives Admin`;
                         <td>${user.name}</td>
                         <td>${user.email}</td>
                         <td>${formatRole(user.role)}</td>
-                        <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                         
                         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
                     </tr>`;
@@ -6505,7 +6414,7 @@ STI Archives Admin`;
                         <td>${user.email}</td>
                         <td>${formatRole(user.role)}</td>
                         <td>${date}</td>
-                        <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                         
                         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
                     </tr>`;

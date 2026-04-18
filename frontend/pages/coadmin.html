@@ -3342,6 +3342,7 @@
                                 <th>Role</th>
                                 <th>Created At</th>
                                 <th>Status</th>
+                                <th>Raf/Edu_ID</th>
                             </tr>
                         </thead>
                         <tbody id="admins-tbody">
@@ -5585,6 +5586,7 @@ STI Archives Admin`;
                     <td>${user.email || '-'}</td>
                     <td>${formatRole(user.role)}</td>
                     <td>${user.created_at || '-'}</td>
+                    <td><button onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                     <td>Active</td>
                 </tr>`;
                 tbody.innerHTML += row;

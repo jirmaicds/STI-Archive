@@ -3663,6 +3663,7 @@
                                 <th>Role</th>
                                 <th>Permissions</th>
                                 <th>Created At</th>
+                                <th>Raf/Edu_ID</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -4889,7 +4890,7 @@
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
-                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                    <td><button onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                     <td>${actions}</td>
                 </tr>`;
                 document.getElementById('signing-up-users-tbody').innerHTML += row;
@@ -6460,7 +6461,7 @@ STI Archives Admin`;
                     <td>${formatRole(user.role)}</td>
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
-                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                    <td><button onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                     <td>${actions}</td>
                 </tr>`;
                 const rowWithoutEmail = `<tr>
@@ -6471,7 +6472,7 @@ STI Archives Admin`;
                     <td>${formatRole(user.role)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
-                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                    <td><button onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                     <td>${actions}</td>
                 </tr>`;
                 // categorized
@@ -6530,6 +6531,7 @@ STI Archives Admin`;
                         <td><span class="badge ${badgeClass}">${roleDisplay}</span></td>
                         <td>${permissions}</td>
                         <td>${formatDate(user.created_at)}</td>
+                        <td><button onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                         <td>
                             <div style="display: flex; flex-direction: column; gap: 4px;">
                                 <button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${user.user_id || user.id}')">Edit</button>
@@ -6570,7 +6572,7 @@ STI Archives Admin`;
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
-                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                    <td><button onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                     <td>${actions}</td>
                 </tr>`;
                 document.getElementById('signing-up-users-tbody').innerHTML += row;
@@ -7491,7 +7493,7 @@ STI Archives Admin`;
                         <td>${getSectionDisplay(user)}</td>
                         <td>${date}</td>
                         <td>${getStatus(user)}</td>
-                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                        <td><button onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                         <td>
                             <div style="display: flex; flex-direction: column; gap: 4px;">
                                 <button type="button" class="btn btn-success btn-sm" onclick="acceptUser('${user.user_id || user.id}')">Accept</button>
@@ -7548,7 +7550,7 @@ STI Archives Admin`;
                         <td>${user.name}</td>
                         <td>${emailToUse}</td>
                         <td>${formatRole(user.role)}</td>
-                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                        <td><button onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                         <td>
                             <button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>
                         </td>
@@ -7598,7 +7600,7 @@ STI Archives Admin`;
                         <td>${getSectionDisplay(user)}</td>
                         <td>${date}</td>
                         <td>${getStatus(user)}</td>
-                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                        <td><button onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                         <td>${getStrandDegree(user)}</td>
                         <td>
                             <div style="display: flex; flex-direction: column; gap: 4px;">
@@ -7627,7 +7629,7 @@ STI Archives Admin`;
                         <td>${getSectionDisplay(user)}</td>
                         <td>${date}</td>
                         <td>${getStatus(user)}</td>
-                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                        <td><button onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                         <td>${getStrandDegree(user)}</td>
                         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
                     </tr>`;

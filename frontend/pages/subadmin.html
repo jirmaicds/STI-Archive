@@ -3001,6 +3001,7 @@
                                 <th>Permissions</th>
                                 <th>Created At</th>
                                 <th>Status</th>
+                                <th>Raf/Edu_ID</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -4683,6 +4684,7 @@ STI Archives Admin`;
                     <td>${user.name}</td>
                     <td>Content Moderator</td>
                     <td>${user.created_at}</td>
+                    <td><button onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                     <td>Active</td>
                     <td><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${user.id}')">Edit</button> <button class="btn btn-danger btn-sm" onclick="removeUser('${user.id}', '${user.name}')">Remove</button></td>
                 </tr>`;

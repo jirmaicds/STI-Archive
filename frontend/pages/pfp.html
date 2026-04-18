@@ -3764,6 +3764,8 @@
 
             if (savedFirstName && savedLastName) {
                 document.querySelectorAll('.full-name').forEach(el => el.textContent = `${savedFirstName} ${savedLastName}`);
+            } else if (currentUser.name) {
+                document.querySelectorAll('.full-name').forEach(el => el.textContent = currentUser.name);
             }
 
             // Update bio display on profile page

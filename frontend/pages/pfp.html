@@ -2598,6 +2598,20 @@
         .left-sidebar.expanded ~ .main-content {
             margin-left: 100px;
         }
+        .profile-info-block {
+            display: none;
+        }
+        @media (min-width: 1024px) {
+            .left-sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .profile-info-block {
+                display: block;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2621,69 +2635,30 @@
     </nav>
     <!-- Left Sidebar -->
     <div class="left-sidebar" id="left-sidebar">
-        <div class="profile-info-block" style="text-align: center;">
-            <div class="full-name" style="display: none;">Username</div>
+        <!-- Tab Navigation -->
+        <div class="profile-tabs">
+            <button class="profile-tabs-burger" onclick="toggleLeftSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <button class="tab-btn active" onclick="showMyUploadsTab('myuploads')">My Uploads</button>
+            <button class="tab-btn" onclick="showMyUploadsTab('upload')">Uploads</button>
+            <button class="tab-btn" onclick="showMyUploadsTab('cited')">Cited</button>
+            <button class="tab-btn" onclick="showMyUploadsTab('saved-articles')">Saved Article</button>
+        </div>
 
-            <!-- Tab Navigation -->
-            <div class="profile-tabs">
-                <button class="profile-tabs-burger" onclick="toggleLeftSidebar()">
-                    <i class="fas fa-bars"></i>
+        <!-- Profile Tabs Sidebar -->
+        <div class="profile-tabs-sidebar" id="profileTabsSidebar">
+            <div class="profile-tabs-sidebar-header">
+                <h3>Menu</h3>
+                <button class="profile-tabs-sidebar-close" onclick="closeProfileTabsSidebar()">
+                    <i class="fas fa-times"></i>
                 </button>
-                <button class="tab-btn active" onclick="showMyUploadsTab('myuploads')">My Uploads</button>
-                <button class="tab-btn" onclick="showMyUploadsTab('upload')">Uploads</button>
-                <button class="tab-btn" onclick="showMyUploadsTab('cited')">Cited</button>
-                <button class="tab-btn" onclick="showMyUploadsTab('saved-articles')">Saved Article</button>
             </div>
-
-            <!-- Profile Tabs Sidebar -->
-            <div class="profile-tabs-sidebar" id="profileTabsSidebar">
-                <div class="profile-tabs-sidebar-header">
-                    <h3>Menu</h3>
-                    <button class="profile-tabs-sidebar-close" onclick="closeProfileTabsSidebar()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="profile-tabs-sidebar-content">
-                    <button class="tab-btn active" onclick="showMyUploadsTab('myuploads'); closeProfileTabsSidebar();">My Uploads</button>
-                    <button class="tab-btn" onclick="showMyUploadsTab('upload'); closeProfileTabsSidebar();">Uploads</button>
-                    <button class="tab-btn" onclick="showMyUploadsTab('cited'); closeProfileTabsSidebar();">Cited</button>
-                    <button class="tab-btn" onclick="showMyUploadsTab('saved-articles'); closeProfileTabsSidebar();">Saved Article</button>
-                </div>
-            </div>
-
-            <!-- My Uploads Container -->
-            <div id="myuploads-list-container" style="display: block;">
-                <div id="uploaded-files-container" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
-                    <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet</p>
-                </div>
-            </div>
-
-            <!-- Upload Container -->
-            <div id="upload-form-container" style="display: none;">
-                <div class="upload-form-content">
-                    <div class="drop-zone" id="myuploads-drop-zone" onclick="document.getElementById('user-pdf-upload').click()">
-                        <div class="upload-icon">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                        </div>
-                        <p>Click to upload or drag and drop</p>
-                        <p>PDF files only (max 10MB)</p>
-                        <input type="file" id="user-pdf-upload" accept=".pdf" multiple style="display: none;">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cited Container -->
-            <div id="cited-list-container" style="display: none;">
-                <div id="cited-articles-container" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
-                    <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No cited articles yet</p>
-                </div>
-            </div>
-
-            <!-- Saved Articles Container -->
-            <div id="saved-articles-container" style="display: none;">
-                <div id="saved-articles-list" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
-                    <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No saved articles yet</p>
-                </div>
+            <div class="profile-tabs-sidebar-content">
+                <button class="tab-btn active" onclick="showMyUploadsTab('myuploads'); closeProfileTabsSidebar();">My Uploads</button>
+                <button class="tab-btn" onclick="showMyUploadsTab('upload'); closeProfileTabsSidebar();">Uploads</button>
+                <button class="tab-btn" onclick="showMyUploadsTab('cited'); closeProfileTabsSidebar();">Cited</button>
+                <button class="tab-btn" onclick="showMyUploadsTab('saved-articles'); closeProfileTabsSidebar();">Saved Article</button>
             </div>
         </div>
     </div>
@@ -2715,11 +2690,75 @@
                             <img src="/frontend/assets/images/Screenshot 2025-09-10 204105.png" alt="Profile" class="pfp-pic" id="pfpPic">
                         </label>
                         <input type="file" id="profileUpload" accept="image/*" onchange="changeProfile(event)" style="display: none;">
-                    </div>
-
                 </div>
 
+                <div class="profile-info-block" style="text-align: center;">
+                    <div class="full-name" style="display: none;">Username</div>
 
+                    <!-- Tab Navigation -->
+                    <div class="profile-tabs">
+                        <button class="profile-tabs-burger" onclick="toggleTabButtons()">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <button class="tab-btn active" onclick="showMyUploadsTab('myuploads')">My Uploads</button>
+                        <button class="tab-btn" onclick="showMyUploadsTab('upload')">Uploads</button>
+                        <button class="tab-btn" onclick="showMyUploadsTab('cited')">Cited</button>
+                        <button class="tab-btn" onclick="showMyUploadsTab('saved-articles')">Saved Article</button>
+                    </div>
+
+                    <!-- Profile Tabs Sidebar -->
+                    <div class="profile-tabs-sidebar" id="profileTabsSidebar">
+                        <div class="profile-tabs-sidebar-header">
+                            <h3>Menu</h3>
+                            <button class="profile-tabs-sidebar-close" onclick="closeProfileTabsSidebar()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="profile-tabs-sidebar-content">
+                            <button class="tab-btn active" onclick="showMyUploadsTab('myuploads'); closeProfileTabsSidebar();">My Uploads</button>
+                            <button class="tab-btn" onclick="showMyUploadsTab('upload'); closeProfileTabsSidebar();">Uploads</button>
+                            <button class="tab-btn" onclick="showMyUploadsTab('cited'); closeProfileTabsSidebar();">Cited</button>
+                            <button class="tab-btn" onclick="showMyUploadsTab('saved-articles'); closeProfileTabsSidebar();">Saved Article</button>
+                        </div>
+                    </div>
+
+                    <!-- My Uploads Container -->
+                    <div id="myuploads-list-container" style="display: block;">
+                        <div id="uploaded-files-container" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
+                            <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet</p>
+                        </div>
+                    </div>
+
+                    <!-- Upload Container -->
+                    <div id="upload-form-container" style="display: none;">
+                        <div class="upload-form-content">
+                            <div class="drop-zone" id="myuploads-drop-zone" onclick="document.getElementById('user-pdf-upload').click()">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <p>Click to upload or drag and drop</p>
+                                <p>PDF files only (max 10MB)</p>
+                                <input type="file" id="user-pdf-upload" accept=".pdf" multiple style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cited Container -->
+                    <div id="cited-list-container" style="display: none;">
+                        <div id="cited-articles-container" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
+                            <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No cited articles yet</p>
+                        </div>
+                    </div>
+
+                    <!-- Saved Articles Container -->
+                    <div id="saved-articles-container" style="display: none;">
+                        <div id="saved-articles-list" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
+                            <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No saved articles yet</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
 
                     <!-- Profile Tabs Sidebar -->
                     <div class="profile-tabs-sidebar" id="profileTabsSidebar">

@@ -3001,7 +3001,6 @@
                                 <th>Permissions</th>
                                 <th>Created At</th>
                                 <th>Status</th>
-                                <th>Raf/Edu_ID</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -3601,13 +3600,19 @@
             return [];
         }
 
+        // Current filter states
+        let currentFilters = {
+            admins: { role: '', search: '', filterType: 'unified' },
+            verified: { role: '', search: '', filterType: 'unified' },
+            'signing-up': { role: '', search: '', filterType: 'unified' }
+        };
+
         async function loadUsers() {
             try {
                 const response = await fetch('/api/users');
                 const data = await response.json();
                 if (data.users) {
                     localStorage.setItem('users', JSON.stringify(data.users));
-                    renderUserTable();
                     updateDashboardCounts();
                 }
             } catch (error) {
@@ -4684,7 +4689,6 @@ STI Archives Admin`;
                     <td>${user.name}</td>
                     <td>Content Moderator</td>
                     <td>${user.created_at}</td>
-                    <td><button onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                     <td>Active</td>
                     <td><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${user.id}')">Edit</button> <button class="btn btn-danger btn-sm" onclick="removeUser('${user.id}', '${user.name}')">Remove</button></td>
                 </tr>`;
@@ -6295,13 +6299,6 @@ STI Archives Admin`;
                 });
             }
         }
-
-        // Current filter states
-        let currentFilters = {
-            admins: { role: '', search: '', filterType: 'unified' },
-            verified: { role: '', search: '', filterType: 'unified' },
-            'signing-up': { role: '', search: '', filterType: 'unified' }
-        };
 
         function updateFilters(section) {
             const roleSelect = document.getElementById(`role-filter-${section}`);

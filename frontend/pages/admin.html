@@ -6823,7 +6823,13 @@ STI Archives Admin`;
 
             document.getElementById('revenue-count').textContent = totalUploads;
 
-            const users = JSON.parse(localStorage.getItem('users')) || [];
+            let users = [];
+            try {
+                const stored = localStorage.getItem('users');
+                users = stored ? JSON.parse(stored) : [];
+            } catch (e) {
+                users = [];
+            }
             const verifiedCount = users.filter(u => u.verified).length;
             const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;

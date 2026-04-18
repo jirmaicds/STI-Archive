@@ -6417,6 +6417,7 @@ STI Archives Admin`;
                 users = JSON.parse(localStorage.getItem('users')) || [];
                 console.log('DEBUG: Fallback to localStorage users:', users);
             }
+            if (!Array.isArray(users)) users = [];
             console.log('DEBUG: loadUsers got users, count:', users.length);
             const removedUsers = JSON.parse(localStorage.getItem('removedUsers')) || [];
             const filteredUsers = users.filter(user => !removedUsers.includes(user.id));
@@ -7112,7 +7113,10 @@ STI Archives Admin`;
                         `;
                         notificationList.appendChild(notifDiv);
                     });
-                    document.querySelector('.notification-placeholder').style.display = freshNotifications.length > 0 ? 'none' : 'block';
+                    const placeholder = document.querySelector('.notification-placeholder');
+                    if (placeholder) {
+                        placeholder.style.display = freshNotifications.length > 0 ? 'none' : 'block';
+                    }
                     updateNotificationBadge(freshNotifications);
                 }
             }

@@ -6420,7 +6420,7 @@ STI Archives Admin`;
             if (!Array.isArray(users)) users = [];
             console.log('DEBUG: loadUsers got users, count:', users.length);
             const removedUsers = JSON.parse(localStorage.getItem('removedUsers')) || [];
-            const filteredUsers = users.filter(user => !removedUsers.includes(user.id));
+            const filteredUsers = (users || []).filter(user => !removedUsers.includes(user.id));
             console.log('DEBUG: filteredUsers count:', filteredUsers.length);
             // Clear all tbodys
             document.querySelectorAll('#users tbody').forEach(tbody => tbody.innerHTML = '');

@@ -2786,53 +2786,7 @@
                             <button class="tab-btn" onclick="showMyUploadsTab('saved-articles'); closeProfileTabsSidebar();">Saved Article</button>
                         </div>
                     </div>
-
-                    <!-- My Uploads Container -->
-                    <div id="myuploads-list-container" style="display: block;">
-                        <div id="uploaded-files-container" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
-                            <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet</p>
-                        </div>
-                    </div>
-
-                    <!-- Upload Container -->
-                    <div id="upload-form-container" style="display: none;">
-                        <div class="upload-form-content">
-                            <div class="drop-zone" id="myuploads-drop-zone" onclick="document.getElementById('user-pdf-upload').click()">
-                                <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #0057b8;"></i>
-                                <p style="margin-top: 10px; color: #666;">Click or Drag & Drop to Upload PDF File</p>
-                                <p style="font-size: 12px; color: #999;">(Only PDF files are allowed)</p>
-                            </div>
-                            <input type="file" id="user-pdf-upload" accept=".pdf,application/pdf" style="display: none;" onchange="handleUserPdfSelect(event)">
-                            <div id="selected-pdf-info" style="display: none; margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                                <p id="selected-filename" style="font-weight: bold; color: #0057b8;"></p>
-                                <button onclick="showUserUploadModal()" style="margin-top: 10px; padding: 8px 16px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                    <i class="fas fa-edit"></i> Add Details & Upload
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Cited Articles Container -->
-                    <div id="cited-articles-container" style="display: none;">
-                        <div id="cited-articles-list" style="display: flex; flex-direction: column; gap: 20px; padding: 20px; min-height: 500px;">
-                <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; width: 100%; background: transparent;">No uploaded files yet</p>
-                        </div>
-                    </div>
-                    <div id="saved-articles-container" style="display: none; flex-direction: column; gap: 20px; padding: 20px; min-height: 500px; align-items: center; justify-content: center;">
-                        <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet</p>
-                    </div>
-                    <div id="articles-pagination" style="display: none; justify-content: center; align-items: center; gap: 10px; padding: 20px;">
-                        <button id="prev-page-btn" class="pagination-btn" style="padding: 8px 16px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer;">Previous</button>
-                        <span id="page-info" style="font-weight: bold; color: #333;">Page 1 of 1</span>
-                        <button id="next-page-btn" class="pagination-btn" style="padding: 8px 16px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer;">Next</button>
-                    </div>
-
-                </div>
-            </div>
         </div>
-
-
-
     </section>
 
 
@@ -3926,6 +3880,7 @@
 
         // Initialize all features when page loads
         document.addEventListener('DOMContentLoaded', function() {
+            currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
             loadSavedImages();
             loadSavedName();
             initializeProfileFeatures();

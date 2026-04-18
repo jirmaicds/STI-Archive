@@ -4875,14 +4875,14 @@
                 const date = formatDate(user.verified_at || user.created_at);
                 let actions = `
                     <div style="display: flex; flex-direction: column; gap: 4px;">
-                        <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'accept')">Accept</button>
-                        <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'ban')">Ban</button>
+                        <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.id}', 'accept')">Accept</button>
+                        <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${user.id}', 'ban')">Ban</button>
                     </div>
                 `;
                 let emailToUse = user.personal_email || user.email;
                 const row = `<tr>
-                    <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
-                    <td>${user.user_id || user.id}</td>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}"></td>
+                    <td>${user.id}</td>
                     <td>${user.name}</td>
                     <td>${emailToUse}</td>
                     <td>${formatRole(user.role)}</td>
@@ -6292,7 +6292,7 @@ STI Archives Admin`;
                         'Best regards,\n' +
                         'STI Archives Admin';
      
-                    fetch('/send_update_email', {
+                    fetch('/api/auth/send-update-email', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ to_email: email, subject: subject, message: message })
@@ -6437,13 +6437,12 @@ STI Archives Admin`;
                         </div>
                     `;
                 } else if (user.banned) {
-                    actions = `
-                        <div style="display: flex; flex-direction: column; gap: 4px;">
-                            <button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button>
-                            <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
-                            <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button>
-                        </div>
-                    `;
+                        actions = `
+                            <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.id}', 'accept')">Accept</button>
+                            <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'reject')">Reject</button>
+                            <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${user.id}', 'ban')">Ban</button>
+                            <button class="btn btn-danger btn-sm" onclick="removeUser('${user.id}', '${user.name}')">Remove</button>
+                        `;
                 } else {
                     actions = `
                         <div style="display: flex; flex-direction: column; gap: 4px;">
@@ -6524,7 +6523,7 @@ STI Archives Admin`;
                         permissions = user.permissions || (roleLower === 'admin' ? 'Full Access - All Features' : roleLower === 'coadmin' ? 'Limited Access - User & File Management' : roleLower === 'subadmin' ? 'User Approver - Accept/Reject Registrations' : 'Full Access');
                     }
                     const adminRow = `<tr>
-                        <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
+                        <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}"></td>
                         <td>${user.user_id || user.id}</td>
                         <td>${getUserName(user)}</td>
                         <td>${user.email || 'N/A'}</td>
@@ -6556,15 +6555,15 @@ STI Archives Admin`;
                 const date = formatDate(user.verified_at || user.created_at);
                 let actions = `
                     <div style="display: flex; flex-direction: column; gap: 4px;">
-                        <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'accept')">Accept</button>
-                        <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'reject')">Reject</button>
-                        <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'ban')">Ban</button>
+                        <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.id}', 'accept')">Accept</button>
+                        <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${user.id}', 'reject')">Reject</button>
+                        <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${user.id}', 'ban')">Ban</button>
                     </div>
                 `;
                 let emailToUse = user.personal_email || user.email;
                 const row = `<tr>
-                    <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
-                    <td>${user.user_id || user.id}</td>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}"></td>
+                    <td>${user.id}</td>
                     <td>${user.name}</td>
                     <td>${emailToUse}</td>
                     <td>${formatRole(user.role)}</td>

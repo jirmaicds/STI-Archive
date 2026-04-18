@@ -3450,7 +3450,6 @@
                 <input type="password" id="create-admin-password" required>
                 <label>Permissions:</label>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <label><input type="checkbox" id="perm-upload-article"> Upload Article</label>
                     <label><input type="checkbox" id="perm-remove-user"> Remove User</label>
                     <label><input type="checkbox" id="perm-manage-users"> Manage Users</label>
                     <label><input type="checkbox" id="perm-view-notifications"> View Notifications</label>
@@ -3601,36 +3600,95 @@
             return [];
         }
 
-        function getArticles() {
-            return JSON.parse(localStorage.getItem('articles')) || [];
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/users');
+                const data = await response.json();
+                if (data.users) {
+                    localStorage.setItem('users', JSON.stringify(data.users));
+                    renderUserTable();
+                    updateDashboardCounts();
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
         }
-        function saveArticles(articles) {
-            localStorage.setItem('articles', JSON.stringify(articles));
-        }
-        function getAdminArticles() {
-            return JSON.parse(localStorage.getItem('adminArticles')) || [];
-        }
-        function saveAdminArticles(articles) {
-            localStorage.setItem('adminArticles', JSON.stringify(articles));
-        }
-        function loadArticlesFromServer() {
-            fetch('/api/articles')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        const articles = data.articles;
-                        saveArticles(articles);
-                        saveAdminArticles(articles);
-                        localStorage.setItem('allArticles', JSON.stringify(articles));
-                        updateDashboardCounts();
-                        console.log('✓ Loaded', articles.length, 'articles from server');
-                    } else {
-                        console.error('✗ Failed to load articles:', data.error || data);
-                    }
-                })
-                .catch(error => {
-                    console.error('✗ Error fetching articles:', error);
+
+        function paginateTable(tbodyId, itemsPerPage) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            const totalPages = Math.ceil(rows.length / itemsPerPage);
+            let currentPage = 1;
+
+            function showPage(page) {
+                rows.forEach((row, index) => {
+                    row.style.display = (index >= (page - 1) * itemsPerPage && index < page * itemsPerPage) ? '' : 'none';
                 });
+            }
+
+            // Add pagination controls if not exists
+            let paginationDiv = tbody.parentElement.querySelector('.pagination');
+            if (!paginationDiv) {
+                paginationDiv = document.createElement('div');
+                paginationDiv.className = 'pagination';
+                tbody.parentElement.appendChild(paginationDiv);
+            }
+            paginationDiv.innerHTML = '';
+
+            if (totalPages > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'page-btn';
+                prevBtn.textContent = 'Previous';
+                prevBtn.disabled = currentPage === 1;
+                prevBtn.onclick = () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        showPage(currentPage);
+                        updateButtons();
+                    }
+                };
+                paginationDiv.appendChild(prevBtn);
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = 'page-number';
+                    pageBtn.textContent = i;
+                    if (i === currentPage) pageBtn.classList.add('active');
+                    pageBtn.onclick = () => {
+                        currentPage = i;
+                        showPage(currentPage);
+                        updateButtons();
+                    };
+                    paginationDiv.appendChild(pageBtn);
+                }
+
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'page-btn';
+                nextBtn.textContent = 'Next';
+                nextBtn.disabled = currentPage === totalPages;
+                nextBtn.onclick = () => {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        showPage(currentPage);
+                        updateButtons();
+                    }
+                };
+                paginationDiv.appendChild(nextBtn);
+            }
+
+            function updateButtons() {
+                const pageNumbers = paginationDiv.querySelectorAll('.page-number');
+                pageNumbers.forEach((btn, index) => {
+                    btn.classList.toggle('active', index + 1 === currentPage);
+                });
+                const prevBtn = paginationDiv.querySelector('.page-btn:first-child');
+                const nextBtn = paginationDiv.querySelector('.page-btn:last-child');
+                if (prevBtn) prevBtn.disabled = currentPage === 1;
+                if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+            }
+
+            showPage(currentPage);
         }
 
         function getActivityLogs() {
@@ -3725,8 +3783,6 @@
                 }
             });
 
-            // Load articles from server
-            loadArticlesFromServer();
             // Dark mode
             const darkModeToggle = document.querySelector('.dark-mode-toggle');
             const darkModeIcon = darkModeToggle ? darkModeToggle.querySelector('i') : null;
@@ -4724,14 +4780,7 @@ STI Archives Admin`;
        
 
         // Update dashboard counts
-        function updateDashboardCounts() {
-            const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
-            const researchCount = allArticles.filter(a => a.category === 'research').length;
-            const capstoneCount = allArticles.filter(a => a.category === 'capstone').length;
-            const totalUploads = researchCount + capstoneCount;
 
-            document.getElementById('revenue-count').textContent = totalUploads;
-        }
 
         // === STUB FUNCTIONS (to prevent errors) ===
         function toggleSidebar() {
@@ -5824,7 +5873,6 @@ STI Archives Admin`;
             document.getElementById('create-admin-email').value = '';
             document.getElementById('create-admin-password').value = '';
             // Uncheck all permission checkboxes
-            document.getElementById('perm-upload-article').checked = false;
             document.getElementById('perm-remove-user').checked = false;
             document.getElementById('perm-manage-users').checked = false;
             document.getElementById('perm-view-notifications').checked = false;
@@ -5899,7 +5947,6 @@ STI Archives Admin`;
             const email = document.getElementById('create-admin-email').value;
             const password = document.getElementById('create-admin-password').value;
             const permissions = [];
-            if (document.getElementById('perm-upload-article').checked) permissions.push('Upload Article');
             if (document.getElementById('perm-remove-user').checked) permissions.push('Remove User');
             if (document.getElementById('perm-manage-users').checked) permissions.push('Manage Users');
             if (document.getElementById('perm-view-notifications').checked) permissions.push('View Notifications');

@@ -3064,10 +3064,19 @@
     <div class="main-content" id="main-content">
         <div id="dashboard" class="content-section active">
             <div class="dashboard">
-                <div class="card" onclick="navigateToUsers()">
+                <div class="card" onclick="navigateToUsers(); showUserSection('verified');">
                     <h3>Total Users</h3>
                     <p id="verified-users-count">0</p>
                 </div>
+                <div class="card" onclick="navigateToUsers(); showUserSection('admins');">
+                    <h3>Admin Users</h3>
+                    <p id="admin-users-count">0</p>
+                </div>
+                <div class="card" onclick="navigateToUsers(); showUserSection('signing-up');">
+                    <h3>New Signups</h3>
+                    <p id="signing-up-users-count">0</p>
+                </div>
+            </div>
                 <div class="card" onclick="navigateToUsers(); showUserSection('admins');">
                     <h3>Admin Users</h3>
                     <p id="admin-users-count">0</p>
@@ -4166,13 +4175,24 @@
             localStorage.setItem('activityLogs', JSON.stringify(logs));
         }
         function formatRole(role) {
+            if (!role) return '-';
             if (role === 'senior_high') return 'SHS';
             if (role === 'college') return 'College';
             if (role === 'admin') return 'Admin';
             if (role === 'coadmin') return 'CO-Admin';
             if (role === 'subadmin') return 'SUB-Admin';
             if (role === 'tester') return 'Tester';
-            return 'Teacher';
+            if (role === 'teacher') return 'Teacher';
+            return '-';
+        }
+        function updateDashboardCounts() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const verifiedCount = users.filter(u => u.verified).length;
+            const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+            const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
+            document.getElementById('verified-users-count').textContent = verifiedCount;
+            document.getElementById('admin-users-count').textContent = adminCount;
+            document.getElementById('signing-up-users-count').textContent = signingUpCount;
         }
         function formatDate(dateString) {
             if (!dateString || dateString === 'N/A') return 'N/A';
@@ -5363,7 +5383,7 @@ STI Archives Admin`;
                 } else if (status === 'banned') {
                     filteredUsers = users.filter(user => user.banned);
                 } else if (status === 'admins') {
-                    filteredUsers = users.filter(user => user.role === 'coadmin');
+                    filteredUsers = users.filter(user => ['admin', 'coadmin', 'subadmin'].includes(user.role));
                 }
 
                 if (category === 'shs') {
@@ -5412,11 +5432,11 @@ STI Archives Admin`;
                     const emailToUse = user.personal_email || user.email;
                     const row = `<tr>
                         <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
-                        <td>${user.id}</td>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
+                        <td>${user.id || '-'}</td>
+                        <td>${user.name || '-'}</td>
+                        <td>${emailToUse || '-'}</td>
                         <td>${formatRole(user.role)}</td>
-                        <td>${date}</td>
+                        <td>${date || '-'}</td>
                         <td>${getStatus(user)}</td>
                         <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                         <td>${actions}</td>
@@ -5447,11 +5467,17 @@ STI Archives Admin`;
 
         // === LOAD USERS FUNCTION ===
         async function loadUsers() {
-            let users = await getUsers();
-            if (!Array.isArray(users)) {
-                console.error('Users data is not an array:', users);
-                users = [];
+            try {
+                const response = await fetch('/api/users');
+                const data = await response.json();
+                if (data.users) {
+                    localStorage.setItem('users', JSON.stringify(data.users));
+                    updateDashboardCounts();
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
             }
+        }
             // Auto-delete rejected users after 24 hours
             users = users.filter(user => {
                 if (user.rejected && user.rejected_at) {
@@ -5633,15 +5659,16 @@ STI Archives Admin`;
             const users = await getUsers();
             const tbody = document.getElementById('admins-tbody');
             tbody.innerHTML = '';
-            users.filter(u => u.role === 'coadmin').forEach(user => {
+            users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).forEach(user => {
                 const row = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}"></td>
                     <td>${user.id}</td>
-                    <td>${user.name}</td>
-                    <td>Full Access</td>
-                    <td>${user.created_at}</td>
+                    <td>${user.name || '-'}</td>
+                    <td>${user.email || '-'}</td>
+                    <td>${formatRole(user.role)}</td>
+                    <td>${user.created_at || '-'}</td>
                     <td>Active</td>
-                    <td><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${user.id}')">Edit</button> <button class="btn btn-danger btn-sm" onclick="removeUser('${user.id}', '${user.name}')">Remove</button></td>
+                    <td><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${user.id}')">Edit</button> <button class="btn btn-danger btn-sm" onclick="removeUser('${user.id}', '${user.name || 'User'}')">Remove</button></td>
                 </tr>`;
                 tbody.innerHTML += row;
             });

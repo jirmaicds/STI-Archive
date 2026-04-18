@@ -590,7 +590,17 @@
       color: #e2e8f0;
     }
     .dark-mode .result-count {
-      color: #b0b7c3;
+      color: #ccc;
+    }
+    .dark-mode .upload-date {
+      color: #888;
+    }
+    .dark-mode .no-results-title {
+      color: #fff;
+    }
+    .dark-mode .no-results-desc,
+    .dark-mode .no-results-suggestion {
+      color: #ccc;
     }
     .dark-mode .upload-date {
       color: #b0b7c3;
@@ -1827,13 +1837,20 @@
          font-size: 28px;
        }
 
-       /* Hide nav dropdowns and show sidebar dropdowns on tablet/cellphone */
-       .nav-icons-center .dropdown {
-         display: none;
-       }
-       .sidebarlft .dropdown {
-         display: block;
-       }
+        /* Hide nav dropdowns and show sidebar dropdowns on tablet/cellphone */
+        .nav-icons-center .dropdown {
+          display: none;
+        }
+        .sidebarlft .dropdown {
+          display: block;
+        }
+        /* Hide navbar filter button and show sidebar filter button */
+        #filterIconBtnNavbar {
+          display: none;
+        }
+        .sidebar-filter-btn {
+          display: block;
+        }
      }
 
       /* Mobile and tablet screens - below 1140px */
@@ -1860,6 +1877,9 @@
           justify-content: center;
           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        .dark-mode #mainSearchContainer {
+          background: #2d2d2d;
+        }
         #mainSearchContainer .search-bar {
           width: 100%;
           max-width: 400px;
@@ -1868,7 +1888,14 @@
           justify-content: center;
         }
       }
-      
+
+      /* Screens below 1059px - show hamburger */
+      @media (max-width: 1059px) {
+        .hamburger-icon {
+          display: block;
+        }
+      }
+
       /* Desktop screens above 1140px */
       @media (min-width: 1141px) {
         /* Hide main content search on desktop */
@@ -2104,6 +2131,9 @@
   <nav class="main-navbar" id="main-navbar">
     <div class="sti-logo">
       <div class="nav-left">
+        <button class="hamburger-icon" onclick="toggleSidebarLft()" style="display: none;">
+          <i class="fas fa-bars"></i>
+        </button>
         <a href="/Homepage.html"><img src="/frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg" alt="STI Logo" ></a>
                 <a href="/Homepage.html"><span>ARCHIVES</span></a>
         
@@ -2189,7 +2219,7 @@
         <i class="fas fa-filter"></i>
       </button>
       <div class="search-container in-main" id="mainSearchContainer" style="flex: 1; max-width: 100%;">
-        <input type="text" id="mainArticleSearch" placeholder="Search works, authors, or topics... " class="search-input" style="width: 100%; position: relative; top: 1px;">
+        <input type="text" id="mainArticleSearch" placeholder="Search works, authors, or topics... " class="search-input" style="width: 100%; position: relative; top: 7px;">
         <i class="fas fa-times clear-icon" id="mainClearIcon" style="display: none;"></i>
         <div class="search-suggestions" id="mainSearchSuggestions"></div>
       </div>
@@ -2210,8 +2240,11 @@
   <div class="content-wrapper" style="padding-top: 50px;">
     <!-- Sidebar -->
     <div class="sidebarlft">
-      
+
       <button class="sidebar-close" onclick="closeSidebar()">&times;</button>
+      <button class="filter-icon-btn sidebar-filter-btn" id="sidebarFilterBtn" onclick="toggleTopicsModal()" title="Filter by topic" style="display: none;">
+        <i class="fas fa-filter"></i> Filter
+      </button>
       <!-- Research Dropdown -->
       <div class="dropdown">
         <div class="dropdown-toggle research-btn" onclick="toggleCategory('research')">
@@ -2824,9 +2857,9 @@
       if (currentQuery) {
         noResultsMsg.innerHTML = `
           <i class="fas fa-search" style="font-size: 48px; color: #ccc; margin-bottom: 20px;"></i>
-          <h3 style="color: #333; margin-bottom: 10px;">No results found</h3>
-          <p style="color: #666;">No articles match "${currentQuery}"${filterInfo}.</p>
-          <p style="color: #888; margin-top: 15px;">Try adjusting your search terms or clearing the filter.</p>
+          <h3 class="no-results-title">No results found</h3>
+          <p class="no-results-desc">No articles match "${currentQuery}"${filterInfo}.</p>
+          <p class="no-results-suggestion">Try adjusting your search terms or clearing the filter.</p>
           <button onclick="clearAllFilters()" style="margin-top: 20px; padding: 10px 20px; background: #0057b8; color: white; border: none; border-radius: 6px; cursor: pointer;">Clear Filters</button>
         `;
       } else {
@@ -3105,6 +3138,13 @@
     const sidebar = document.querySelector('.sidebarlft');
     if (sidebar) {
       sidebar.classList.remove('open');
+    }
+  }
+
+  function toggleSidebarLft() {
+    const sidebar = document.querySelector('.sidebarlft');
+    if (sidebar) {
+      sidebar.classList.toggle('open');
     }
   }
 

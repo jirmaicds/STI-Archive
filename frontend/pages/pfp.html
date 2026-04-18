@@ -3754,7 +3754,7 @@
             }
 
             if (savedFirstName && savedLastName) {
-                document.querySelector('.full-name').textContent = `${savedFirstName} ${savedLastName}`;
+                document.querySelectorAll('.full-name').forEach(el => el.textContent = `${savedFirstName} ${savedLastName}`);
             }
 
             // Update bio display on profile page
@@ -5357,13 +5357,13 @@
 
             if (firstName && lastName) {
                 const fullName = `${firstName} ${lastName}`;
-                document.querySelector('.full-name').textContent = fullName;
+                document.querySelectorAll('.full-name').forEach(el => el.textContent = fullName);
                 localStorage.setItem('userFirstName', firstName);
                 localStorage.setItem('userLastName', lastName);
                 showNotification('Name updated successfully!', 'success');
             } else if (firstName || lastName) {
                 const partialName = firstName || lastName;
-                document.querySelector('.full-name').textContent = partialName;
+                document.querySelectorAll('.full-name').forEach(el => el.textContent = partialName);
                 localStorage.setItem('userFirstName', firstName);
                 localStorage.setItem('userLastName', lastName);
                 showNotification('Name updated successfully!', 'success');

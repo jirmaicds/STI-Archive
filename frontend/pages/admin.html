@@ -3721,7 +3721,7 @@
                     
                     <div style="overflow-x: auto;">
                         <table id="verified-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Section</th><th>Date Verified</th><th>RAF Preview</th><th>Actions</th></tr></thead>
+                                                    <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Str/B.S.</th><th>Date Verified</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="verified-users-tbody">
                             </tbody>
                         </table>
@@ -3774,7 +3774,7 @@
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="signing-up-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Section</th><th>Date Signed Up</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
+                                                    <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Str/B.S.</th><th>Date Signed Up</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="signing-up-users-tbody"></tbody>
                         </table>
                     </div>
@@ -3826,7 +3826,7 @@
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="banned-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Section</th><th>Date Banned</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
+                                                    <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Str/B.S.</th><th>Date Banned</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="banned-users-tbody"></tbody>
                         </table>
                     </div>
@@ -4889,7 +4889,7 @@
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
-                    <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                     <td>${actions}</td>
                 </tr>`;
                 document.getElementById('signing-up-users-tbody').innerHTML += row;
@@ -6460,7 +6460,7 @@ STI Archives Admin`;
                     <td>${formatRole(user.role)}</td>
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
-                    <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                     <td>${actions}</td>
                 </tr>`;
                 const rowWithoutEmail = `<tr>
@@ -6471,7 +6471,7 @@ STI Archives Admin`;
                     <td>${formatRole(user.role)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
-                    <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                     <td>${actions}</td>
                 </tr>`;
                 // categorized
@@ -6570,7 +6570,7 @@ STI Archives Admin`;
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
-                    <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                     <td>${actions}</td>
                 </tr>`;
                 document.getElementById('signing-up-users-tbody').innerHTML += row;
@@ -6596,6 +6596,8 @@ STI Archives Admin`;
                     filterTable(f.search, section, f.filterType);
                 }
             }
+
+            updateDashboardCounts();
 
             // Update dashboard counts by counting actual table rows
             // This ensures counts always match what's displayed
@@ -6819,6 +6821,15 @@ STI Archives Admin`;
             const totalUploads = researchCount + capstoneCount;
 
             document.getElementById('revenue-count').textContent = totalUploads;
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const verifiedCount = users.filter(u => u.verified).length;
+            const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+            const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
+
+            document.getElementById('verified-users-count').textContent = verifiedCount;
+            document.getElementById('admin-users-count').textContent = adminCount;
+            document.getElementById('signing-up-users-count').textContent = signingUpCount;
         }
 
         // === STUB FUNCTIONS (to prevent errors) ===
@@ -7480,7 +7491,7 @@ STI Archives Admin`;
                         <td>${getSectionDisplay(user)}</td>
                         <td>${date}</td>
                         <td>${getStatus(user)}</td>
-                        <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                         <td>
                             <div style="display: flex; flex-direction: column; gap: 4px;">
                                 <button type="button" class="btn btn-success btn-sm" onclick="acceptUser('${user.user_id || user.id}')">Accept</button>
@@ -7537,7 +7548,7 @@ STI Archives Admin`;
                         <td>${user.name}</td>
                         <td>${emailToUse}</td>
                         <td>${formatRole(user.role)}</td>
-                        <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                         <td>
                             <button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>
                         </td>
@@ -7587,7 +7598,7 @@ STI Archives Admin`;
                         <td>${getSectionDisplay(user)}</td>
                         <td>${date}</td>
                         <td>${getStatus(user)}</td>
-                        <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                         <td>${getStrandDegree(user)}</td>
                         <td>
                             <div style="display: flex; flex-direction: column; gap: 4px;">
@@ -7616,7 +7627,7 @@ STI Archives Admin`;
                         <td>${getSectionDisplay(user)}</td>
                         <td>${date}</td>
                         <td>${getStatus(user)}</td>
-                        <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                         <td>${getStrandDegree(user)}</td>
                         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
                     </tr>`;

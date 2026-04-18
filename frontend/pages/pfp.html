@@ -151,6 +151,9 @@
             position: fixed;
             transition: height 0.3s ease;
         }
+        .dark-mode .main-navbar {
+            background: #232f41;
+        }
 
         .main-navbar.shrink {
             position: fixed;
@@ -2501,10 +2504,10 @@
         /* Sidebar styles */
         .sidebar {
             position: fixed;
-            top: 50px;
+            top: 0;
             right: -320px;
             width: 320px;
-            height: calc(100vh - 50px);
+            height: 100vh;
             background: #fff;
             transition: right 0.3s ease;
             z-index: 1000;
@@ -2563,6 +2566,12 @@
 
         .dark-mode .sidebar-content ul li a:hover {
             background: #374151;
+        }
+        .dark-mode #mainSearchContainer {
+          background: #232f41;
+        }
+        .main-navbar.shrink #mainSearchContainer {
+          top: 50px;
         }
     </style>
 </head>

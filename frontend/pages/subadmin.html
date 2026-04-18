@@ -3266,6 +3266,68 @@
                             <li onclick="showSettingsSection('privacy-policy')" style="cursor: pointer; padding-top: 10px;">Privacy Policy</li>
                         </ul>
                     </div>
+                    <div class="settings-content" style="flex: 1; padding: 20px;">
+                        <div id="general-settings" class="settings-subsection">
+                            <h4>General Settings</h4>
+                            <div style="margin-bottom: 20px;">
+                                <label for="admin-name">Admin Name:</label>
+                                <input type="text" id="admin-name" value="Sub-Admin" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            </div>
+                            <div style="margin-bottom: 20px;">
+                                <label for="admin-email">Admin Email:</label>
+                                <input type="email" id="admin-email" value="subadmin@example.com" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            </div>
+                            <button class="btn btn-primary" onclick="saveGeneralSettings()">Save Changes</button>
+                        </div>
+                        <div id="account-settings" class="settings-subsection" style="display: none;">
+                            <h4>Account Settings</h4>
+                            <div style="margin-bottom: 20px;">
+                                <label for="current-password">Current Password:</label>
+                                <input type="password" id="current-password" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            </div>
+                            <div style="margin-bottom: 20px;">
+                                <label for="new-password">New Password:</label>
+                                <input type="password" id="new-password" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            </div>
+                            <div style="margin-bottom: 20px;">
+                                <label for="confirm-password">Confirm New Password:</label>
+                                <input type="password" id="confirm-password" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            </div>
+                            <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
+                        </div>
+                        <div id="terms-conditions" class="settings-subsection" style="display: none;">
+                            <h4>Terms & Conditions</h4>
+                            <p>Terms and conditions content here...</p>
+                        </div>
+                        <div id="privacy-policy" class="settings-subsection" style="display: none;">
+                            <h4>Privacy Policy</h4>
+                            <p>Privacy policy content here...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="notifications" class="content-section">
+            <div class="notifications-section">
+                <h3>All Notifications</h3>
+                <div class="notification-controls">
+                    <label><input type="checkbox" id="select-all-notifications"> Select All</label>
+                    <button id="mark-selected-read" class="btn btn-info">Mark as Read</button>
+                    <button id="delete-selected" class="btn btn-danger">Delete</button>
+                </div>
+                <div id="all-notifications-list" class="notification-list-section"></div>
+            </div>
+        </div>
+            <div class="settings-section">
+                <div style="display: flex;">
+                    <div class="settings-sidebar" style="width: 200px; padding: 20px; background-color: #f8f9fa; border-right: 1px solid #ddd;">
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 10px 0; cursor: pointer; color: #007bff;" onclick="showSettingsSection('general')">General</li>
+                            <li style="padding: 10px 0; cursor: pointer;" onclick="showSettingsSection('account')">Account</li>
+                            <li onclick="showSettingsSection('terms-conditions')" style="cursor: pointer; padding-top: 10px; padding-bottom: 10px;">Terms & Conditions</li>
+                            <li onclick="showSettingsSection('privacy-policy')" style="cursor: pointer; padding-top: 10px;">Privacy Policy</li>
+                        </ul>
+                    </div>
                     <div class="settings-content" style="flex: 1; padding: 20px; min-height: calc(100vh - 200px);">
                         <div id="general-settings" class="settings-subsection active">
                             <h2>General Settings</h2>
@@ -4827,32 +4889,7 @@ STI Archives Admin`;
         // Update dashboard counts
 
 
-        // === STUB FUNCTIONS (to prevent errors) ===
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            const mainContent = document.getElementById('main-content');
-            const header = document.querySelector('.header');
-            const body = document.body;
-            // Check if mobile view
-            if (window.innerWidth <= 767) {
-                // Mobile: toggle overlay and sidebar
-                sidebar.classList.toggle('open');
-                overlay.classList.toggle('show');
-            } else {
-                // Desktop/tablet: collapse sidebar
-                sidebar.classList.toggle('collapsed');
-                if (sidebar.classList.contains('collapsed')) {
-                    mainContent.style.marginLeft = '0';
-                    header.style.left = '0';
-                    header.style.width = '100%';
-                    body.classList.add('sidebar-collapsed');
-                } else {
-                    mainContent.style.marginLeft = '';
-                    header.style.left = '';
-                    header.style.width = '';
-                    body.classList.remove('sidebar-collapsed');
-                }
+
             }
         }
 

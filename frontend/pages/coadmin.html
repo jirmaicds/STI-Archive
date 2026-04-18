@@ -5424,19 +5424,19 @@ STI Archives Admin`;
                     if (status === 'verified') {
                         actions = `
                             <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'ban')">Ban</button>
-                            <button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name}')">Remove</button>
+                            <button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name.replace(/'/g, '\\\'')}')">Remove</button>
                         `;
                     } else if (status === 'signing-up') {
                         actions = `
                             <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'accept')">Accept</button>
                             <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'reject')">Reject</button>
                             <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'ban')">Ban</button>
-                            <button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name}')">Remove</button>
+                            <button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name.replace(/'/g, '\\\'')}')">Remove</button>
                         `;
                     } else if (status === 'banned') {
                         actions = `
                             <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'accept')">Accept</button>
-                            <button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name}')">Remove</button>
+                            <button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name.replace(/'/g, '\\\'')}')">Remove</button>
                         `;
                     }
 
@@ -5493,7 +5493,7 @@ STI Archives Admin`;
                         <td>${user.email}</td>
                         <td>${user.role}</td>
                         <td>${user.created_at}</td>
-                        <td><button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name}')">Remove</button></td>
+                        <td><button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name.replace(/'/g, '\\\'')}')">Remove</button></td>
                     </tr>`;
                     document.getElementById('admins-tbody').innerHTML += adminRow;
                 } else if (!addedToSpecific && user.verified) {

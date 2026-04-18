@@ -117,6 +117,7 @@ async function handleRegister(req, res) {
       role: userRole,
            user_type: 'user',
       verified: false,
+      isactive: false,
       grade: grade || null,
       section_degree: section_degree || section || null,
       registration_assessment_form: null,
@@ -271,17 +272,16 @@ async function handleLogin(req, res) {
         return;
       }
 
-      // Check if user is verified
-      // Allow login for verified users or admin/coadmin/subadmin roles
-      // Temporarily allow all users for debugging
-      console.log('User verification check:', { verified: user.verified, user_type: user.user_type, role: user.role });
+      // Check if user is active
+      // Allow login for active users or admin/coadmin/subadmin roles
+      console.log('User active check:', { isactive: user.isactive, user_type: user.user_type, role: user.role });
       const isAdminRole = user.role === 'admin' || user.role === 'coadmin' || user.role === 'subadmin';
-      if (!user.verified && !isAdminRole) {
-        console.log('User not verified and not admin role - blocking login');
+      if (!user.isactive && !isAdminRole) {
+        console.log('User not active and not admin role - blocking login');
         res.statusCode = 403;
         res.end(JSON.stringify({
           success: false,
-          error: 'Account not verified. Please wait for admin approval to access the system.'
+          error: 'Account not active. Please wait for admin approval to access the system.'
         }));
         return;
       }
@@ -297,7 +297,7 @@ async function handleLogin(req, res) {
           email: user.email,
           fullname: user.fullname,
           role: user.user_type,
-          verified: user.verified
+          isactive: user.isactive
         }
       }));
     } else {
@@ -311,7 +311,7 @@ async function handleLogin(req, res) {
           email: loginField,
           fullname: loginField,
           role: 'user',
-          verified: false
+          isactive: false
         }
       }));
     }
@@ -710,7 +710,7 @@ async function handleApproveUser(req, res) {
       if (action === 'approve') {
         await supabase
           .from('users')
-          .update({ verified: true, role: 'user' })
+          .update({ verified: true, role: 'user', isactive: true })
           .eq('id', user.id);
 
         await emailService.sendApprovalNotification(user.email, user.fullname);
@@ -720,7 +720,7 @@ async function handleApproveUser(req, res) {
       } else if (action === 'reject') {
         await supabase
           .from('users')
-          .update({ verified: false, role: 'rejected' })
+          .update({ verified: false, role: 'rejected', isactive: false })
           .eq('id', user.id);
 
         await emailService.sendRejectionNotification(user.email, user.fullname, reason);
@@ -730,7 +730,7 @@ async function handleApproveUser(req, res) {
       } else if (action === 'ban') {
         await supabase
           .from('users')
-          .update({ verified: false, role: 'banned' })
+          .update({ verified: false, role: 'banned', isactive: false })
           .eq('id', user.id);
         
         res.statusCode = 200;

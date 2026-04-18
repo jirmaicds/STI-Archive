@@ -48,7 +48,7 @@ async function handleVerify(req, res) {
       const supabase = getServiceSupabase();
       const { data, error } = await supabase
         .from('users')
-        .select('id, verified')
+        .select('id, isactive')
         .eq('id', parseInt(userId))
         .single();
 
@@ -59,7 +59,7 @@ async function handleVerify(req, res) {
       }
 
       res.statusCode = 200;
-      res.end(JSON.stringify({ success: true, verified: data.verified }));
+      res.end(JSON.stringify({ success: true, isactive: data.isactive }));
     } else {
       // Dev mode fallback
       res.statusCode = 200;

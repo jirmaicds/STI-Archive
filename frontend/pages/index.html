@@ -2562,11 +2562,11 @@ window.supabaseHelpers = {
             const users = await getUsers();
 
             // Then check users from users.json
-            // Use fullname field and verified for proper approval flow
-            const user = users.find(u => u.fullname === fullname && u.verified === true);
+            // Use fullname field and isactive for proper approval flow
+            const user = users.find(u => u.fullname === fullname && u.isactive === true);
 
-            // Check if user exists but is not verified (pending approval)
-            const pendingUser = users.find(u => u.fullname === fullname && u.verified === false && !u.rejected && !u.banned);
+            // Check if user exists but is not active (pending approval)
+            const pendingUser = users.find(u => u.fullname === fullname && u.isactive === false && !u.rejected && !u.banned);
             const rejectedUser = users.find(u => u.fullname === fullname && u.rejected === true);
             
             if (rejectedUser) {
@@ -3203,9 +3203,9 @@ window.supabaseHelpers = {
             const newUser = {
                 id: userId,
                 user_id: userId,
-                 name: fullname,
-                 email: email,
-                 personal_email: email,
+                  name: fullname,
+                  email: email,
+                  personal_email: email,
                 password: document.getElementById('signup-password').value,
                 role: role,
                 section: section,
@@ -3213,6 +3213,7 @@ window.supabaseHelpers = {
                 strand: section,
                 created_at: new Date().toISOString(),
                 verified: false,
+                isactive: false,
                 rejected: false,
                 banned: false,
                 status: 'signing-up',
@@ -3424,8 +3425,8 @@ window.supabaseHelpers = {
                     if (response.ok) {
                         const user = await response.json();
                         console.log('DEBUG: User data from server:', user);
-                        if (user.verified) {
-                            console.log('DEBUG: User verified, showing approval message');
+                        if (user.isactive) {
+                            console.log('DEBUG: User active, showing approval message');
                             clearInterval(pollInterval);
                             sessionStorage.removeItem('verificationPollInterval');
                             sessionStorage.removeItem('pendingVerificationUserId');
@@ -3443,8 +3444,8 @@ window.supabaseHelpers = {
                     const users = JSON.parse(localStorage.getItem('users')) || [];
                     const localUser = users.find(u => String(u.id) === String(userId) || String(u.student_id) === String(userId) || String(u.user_id) === String(userId));
                     console.log('DEBUG: Local user found:', localUser);
-                    if (localUser && localUser.verified) {
-                        console.log('DEBUG: Local user verified, showing approval message');
+                    if (localUser && localUser.isactive) {
+                        console.log('DEBUG: Local user active, showing approval message');
                         clearInterval(pollInterval);
                         sessionStorage.removeItem('verificationPollInterval');
                         sessionStorage.removeItem('pendingVerificationUserId');

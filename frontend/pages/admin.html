@@ -57,7 +57,7 @@
             max-width: 200px;
             height: 100%;
             border-radius: 0px 20px 0px 0px;
-            background-color: #8A2BE2;
+            background-color: #0f1a41;
             color: white;
             position: absolute;
             top: 0;
@@ -526,7 +526,7 @@
             top: -60px;
             left: 0;
             right: 0;
-            background-color: #8A2BE2;
+            background-color: #0f1a41;
             z-index: 1002;
             list-style: none;
             padding: 0;
@@ -596,7 +596,7 @@
             background-color: #4d2d2d;
         }
         body.dark-mode .sidebar-profile-menu {
-            background-color: #8A2BE2;
+            background-color: #0f1a41;
         }
         body.dark-mode .sidebar-profile-menu li a:hover {
             color: #ffd700;
@@ -5907,8 +5907,8 @@
             });
             const notificationList = document.getElementById('notification-list');
             if (notificationList) {
-                const maxNotifications = 10;
-                const limitedNotifications = notifications.slice(0, maxNotifications);
+                    const maxNotifications = 10;
+                    const limitedNotifications = notifications.slice(-maxNotifications).reverse();
                 limitedNotifications.forEach(notif => {
                     const notifDiv = document.createElement('div');
                     notifDiv.className = 'notification-item';
@@ -6654,10 +6654,10 @@ STI Archives Admin`;
                 admin: 5
             };
             const barColors = [
-                '#003366', // SHS dark blue
-                '#FFD700', // College gold/yellow
-                '#00CED1', // Teacher light blue/cyan
-                '#808080'  // Admin gray
+                '#008000', // SHS Emerald Green
+                '#00008B', // College Deep Blue
+                '#FFA500', // Teacher Warm Orange
+                '#8A2BE2'  // Admin Cool Purple
             ];
             const labels = ['SHS', 'COLLEGE', 'TEACHER', 'ADMIN'];
             const ctx = document.getElementById('user-chart').getContext('2d');
@@ -6770,10 +6770,10 @@ STI Archives Admin`;
             }
 
             const barColors = [
-                '#808080', // Admin gray
-                '#00CED1', // Teacher light blue/cyan
-                '#003366', // SHS dark blue
-                '#FFD700'  // College gold/yellow
+                '#8A2BE2', // Admin Cool Purple
+                '#FFA500', // Teacher Warm Orange
+                '#008000', // SHS Emerald Green
+                '#00008B'  // College Deep Blue
             ];
             const labels = ['ADMIN', 'TEACHER', 'SHS', 'COLLEGE'];
             const data = [1, 1, 1, 1]; // Demo data
@@ -8555,10 +8555,10 @@ STI Archives Admin`;
             let data = [30, 25, 40, 35];
 
             const barColors = [
-                '#007bff', // SHS
-                '#28a745', // College
-                '#dc3545', // Teacher
-                '#6f42c1'  // Admin
+                '#008000', // SHS Emerald Green
+                '#00008B', // College Deep Blue
+                '#FFA500', // Teacher Warm Orange
+                '#8A2BE2'  // Admin Cool Purple
             ];
             const total = data.reduce((a, b) => a + b, 0);
             const percentageData = data.map(d => (d / total) * 100);

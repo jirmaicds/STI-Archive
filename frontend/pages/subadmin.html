@@ -43,7 +43,7 @@
             max-width: 200px;
             height: 100%;
             border-radius: 0px 20px 0px 0px;
-            background-color: #FFA500;
+            background-color: #0f1a41;
             color: white;
             position: absolute;
             top: 0;
@@ -461,7 +461,7 @@
             top: -60px;
             left: 0;
             right: 0;
-            background-color: #FFA500;
+            background-color: #0f1a41;
             z-index: 1002;
             list-style: none;
             padding: 0;
@@ -531,7 +531,7 @@
             background-color: #4d2d2d;
         }
         body.dark-mode .sidebar-profile-menu {
-            background-color: #FFA500;
+            background-color: #0f1a41;
         }
         body.dark-mode .sidebar-profile-menu li a:hover {
             color: #ffd700;
@@ -3991,7 +3991,7 @@
                 if (notificationList) {
                     notificationList.innerHTML = '';
                     const maxNotifications = 10;
-                    const limitedNotifications = notifications.slice(0, maxNotifications);
+                    const limitedNotifications = notifications.slice(-maxNotifications).reverse();
                     const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
                     limitedNotifications.forEach(notif => {
                         const notifDiv = document.createElement('div');
@@ -4036,7 +4036,7 @@
                 if (allNotificationsContainer) {
                     allNotificationsContainer.innerHTML = ''; // Clear existing
                     const maxNotifications = 10;
-                    const limitedNotifications = notifications.slice(0, maxNotifications);
+                    const limitedNotifications = notifications.slice(-maxNotifications).reverse();
                     const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
                     limitedNotifications.forEach(notif => {
                         const notifDiv = document.createElement('div');
@@ -4613,10 +4613,10 @@ STI Archives Admin`;
                 admin: 5
             };
             const barColors = [
-                '#007bff', // SHS blue
-                '#28a745', // College green
-                '#ffc107', // Teacher yellow
-                '#dc3545'  // Admin red
+                '#008000', // SHS Emerald Green
+                '#00008B', // College Deep Blue
+                '#FFA500', // Teacher Warm Orange
+                '#8A2BE2'  // Admin Cool Purple
             ];
             const labels = ['SHS', 'COLLEGE', 'TEACHER', 'ADMIN'];
             const ctx = document.getElementById('user-chart').getContext('2d');
@@ -4970,10 +4970,10 @@ STI Archives Admin`;
             const labels = ['SHS', 'College', 'Teacher', 'Admin'];
             const data = [roleCounts.senior_high, roleCounts.college, roleCounts.teacher, roleCounts.admin];
             const barColors = [
-                '#007bff',
-                '#28a745',
-                '#dc3545',
-                '#6f42c1'
+                '#008000', // SHS Emerald Green
+                '#00008B', // College Deep Blue
+                '#FFA500', // Teacher Warm Orange
+                '#8A2BE2'  // Admin Cool Purple
             ];
             window.userChart = new Chart(ctx, {
                 type: 'bar',

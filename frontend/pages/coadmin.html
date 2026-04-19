@@ -3424,51 +3424,64 @@
                                 </div>
                                 <div class="actions-row">
                                     <label>Category:</label>
-                                    <select id="article-category" class="category-select" required>
-                                        <option value="research">Research</option>
-                                        <option value="capstone">Capstone</option>
-                                    </select>
-                                    <label style="margin-left: 10px;">Topic:</label>
-                                    <select id="article-topic" required>
-                                        <option value="">Select Topic</option>
-                                        <option value="agriculture">Agriculture</option>
-                                        <option value="business">Business</option>
-                                        <option value="cosmetics">Cosmetics</option>
-                                        <option value="education">Education</option>
-                                        <option value="environment">Environment</option>
-                                        <option value="food">Food</option>
-                                        <option value="technology">Technology</option>
-                                    </select>
-                                    <div class="research-options" style="display: inline;">
-                                        <label id="qualitative-quantitative-label">Type:</label>
-                                        <select id="article-qualitative-quantitative" required>
-                                            <option value="qualitative">Qualitative</option>
-                                            <option value="quantitative">Quantitative</option>
-                                            <option value="bsba">BSBA</option>
-                                            <option value="bscs">BSCS</option>
-                                            <option value="bsit">BSIT</option>
-                                        </select>
-                                        <label id="level-label" style="margin-left: 10px;">Grade:</label>
-                                        <select id="article-level" required>
-                                            <option value="shs">Senior High School</option>
-                                            <option value="college">College</option>
-                                        </select>
-                                        <label id="strand-degree-label" style="margin-left: 10px;">Strand:</label>
-                                        <select id="article-strand" required>
-                                            <option value="ABM">ABM</option>
-                                            
-                                            <option value="ITMAWD">ITMAWD</option>
-                                            <option value="STEM">STEM</option>
-                                        </select>
-                                    </div>
-                                    <div class="capstone-options" style="display: none;">
-                                        <label>Program:</label>
-                                        <select id="article-program" required>
-                                            <option value="BSBA">BSBA</option>
-                                            <option value="BSCS">BSCS</option>
-                                            <option value="BSIT">BSIT</option>
-                                        </select>
-                                    </div>
+                                     <select id="article-category" class="category-select" required>
+                                         <option value="research">Research</option>
+                                         <option value="capstone">Capstone</option>
+                                     </select>
+                                     <div class="research-options" style="display: inline;">
+                                         <label id="qualitative-quantitative-label">Type:</label>
+                                         <select id="article-qualitative-quantitative" required>
+                                             <option value="qualitative">Qualitative</option>
+                                             <option value="quantitative">Quantitative</option>
+                                         </select>
+                                         <label id="level-label" style="margin-left: 10px;">Grade:</label>
+                                         <select id="article-level" required>
+                                             <option value="shs">Senior High School</option>
+                                             <option value="college">College</option>
+                                         </select>
+                                         <label id="strand-degree-label" style="margin-left: 10px;">Strand:</label>
+                                         <select id="article-strand" required>
+                                             <option value="ABM">ABM</option>
+
+                                             <option value="ITMAWD">ITMAWD</option>
+                                             <option value="STEM">STEM</option>
+                                         </select>
+                                         <label style="margin-left: 10px;">Topic:</label>
+                                         <select id="research-topic" required>
+                                             <option value="">Select Topic</option>
+                                             <option value="agriculture">Agriculture</option>
+                                             <option value="business">Business</option>
+                                             <option value="cosmetics">Cosmetics</option>
+                                             <option value="education">Education</option>
+                                             <option value="environment">Environment</option>
+                                             <option value="food">Food</option>
+                                             <option value="technology">Technology</option>
+                                         </select>
+                                     </div>
+                                     <div class="capstone-options" style="display: none;">
+                                         <label style="margin-left: 10px;">Topic:</label>
+                                         <select id="capstone-topic" required>
+                                             <option value="">Select Topic</option>
+                                             <option value="agriculture">Agriculture</option>
+                                             <option value="business">Business</option>
+                                             <option value="cosmetics">Cosmetics</option>
+                                             <option value="education">Education</option>
+                                             <option value="environment">Environment</option>
+                                             <option value="food">Food</option>
+                                             <option value="technology">Technology</option>
+                                         </select>
+                                         <label style="margin-left: 10px;">Grade:</label>
+                                         <select id="capstone-grade" required>
+                                             <option value="grade_11">Grade 11</option>
+                                             <option value="grade_12">Grade 12</option>
+                                         </select>
+                                         <label>Program:</label>
+                                         <select id="article-program" required>
+                                             <option value="BSBA">BSBA</option>
+                                             <option value="BSCS">BSCS</option>
+                                             <option value="BSIT">BSIT</option>
+                                         </select>
+                                     </div>
                                     <label>Year:</label>
                                     <input type="number" id="article-year" required min="2020" max="2030" style="width: 80px;">
                                     <label>Citation:</label>
@@ -5270,6 +5283,9 @@
                 }
             }
             
+            const topicValue = category === 'research' ? document.getElementById('research-topic').value : document.getElementById('capstone-topic').value;
+            const levelValue = category === 'research' ? document.getElementById('article-level').value : document.getElementById('capstone-grade').value;
+
             const formData = {
                 title: document.getElementById('article-title').value,
                 authors: document.getElementById('article-authors-year').value,
@@ -5277,12 +5293,12 @@
                 summary: document.getElementById('article-summary').value,
                 category: category,
                 strand: category === 'research' ? document.getElementById('article-strand').value : document.getElementById('article-program').value,
-                level: document.getElementById('article-level').value,
+                level: levelValue,
                 program: document.getElementById('article-program').value,
                 year: document.getElementById('article-year').value,
                 citation: document.getElementById('article-citation').value,
                 qualitativeQuantitative: category === 'research' ? document.getElementById('article-qualitative-quantitative').value : '',
-                topic: document.getElementById('article-topic').value,
+                topic: topicValue,
                 pdfId: pdfId,
                 pdfFilename: pdfFilename
             };
@@ -5301,8 +5317,10 @@
             this.reset();
             document.getElementById('article-category').value = 'research';
             document.getElementById('article-level').value = 'shs';
-            // Reset topic dropdown
-            document.getElementById('article-topic').innerHTML = '<option value="">Select Topic</option><option value="agriculture">Agriculture</option><option value="business">Business</option><option value="cosmetics">Cosmetics</option><option value="education">Education</option><option value="environment">Environment</option><option value="food">Food</option><option value="technology">Technology</option>';
+            // Reset topic dropdowns
+            const topicOptions = '<option value="">Select Topic</option><option value="agriculture">Agriculture</option><option value="business">Business</option><option value="cosmetics">Cosmetics</option><option value="education">Education</option><option value="environment">Environment</option><option value="food">Food</option><option value="technology">Technology</option>';
+            document.getElementById('research-topic').innerHTML = topicOptions;
+            document.getElementById('capstone-topic').innerHTML = topicOptions;
             // Reset visibility
             document.querySelector('.research-options').style.display = 'inline';
             document.querySelector('.capstone-options').style.display = 'none';
@@ -5319,8 +5337,6 @@
             const researchOpts = document.querySelector('.research-options');
             const capstoneOpts = document.querySelector('.capstone-options');
             const template = document.querySelector('.article-template');
-            const topicSelect = document.getElementById('article-topic');
-            
             // Update topic options based on category
             const baseTopics = [
                 { value: 'agriculture', text: 'Agriculture' },
@@ -5331,30 +5347,24 @@
                 { value: 'food', text: 'Food' },
                 { value: 'technology', text: 'Technology' }
             ];
-            
+
             let topicOptions = '<option value="">Select Topic</option>';
-            
+            baseTopics.forEach(t => {
+                topicOptions += `<option value="${t.value}">${t.text}</option>`;
+            });
+
             if (this.value === 'research') {
                 researchOpts.style.display = 'inline';
                 capstoneOpts.style.display = 'none';
                 template.classList.remove('capstone');
-                // Only add base topics for Research
-                baseTopics.forEach(t => {
-                    topicOptions += `<option value="${t.value}">${t.text}</option>`;
-                });
+                document.getElementById('research-topic').innerHTML = topicOptions;
             } else {
                 researchOpts.style.display = 'none';
                 capstoneOpts.style.display = 'inline';
                 template.classList.add('capstone');
-                // Only add base topics for Capstone
-                baseTopics.forEach(t => {
-                    topicOptions += `<option value="${t.value}">${t.text}</option>`;
-                });
-                topicOptions += '<option value="bsba">BSBA</option>';
-                topicOptions += '<option value="bscs">BSCS</option>';
-                topicOptions += '<option value="bsit">BSIT</option>';
+                // For capstone, only base topics, no bsba bscs bsit
+                document.getElementById('capstone-topic').innerHTML = topicOptions;
             }
-            topicSelect.innerHTML = topicOptions;
         });
 
         // Add event listener for level change in upload form

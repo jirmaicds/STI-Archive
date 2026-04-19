@@ -4683,6 +4683,7 @@ STI Archives Admin`;
                     <td>${user.grade || '-'}</td>
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
+                    <td>STATUS</td>
                     <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                     <td>${actions}</td>
                 </tr>`;
@@ -4715,7 +4716,7 @@ STI Archives Admin`;
                 if (tbodyId) {
                     const tbody = document.getElementById(tbodyId);
                     if (tbody) {
-                        tbody.innerHTML += rowWithEmail;
+                        tbody.innerHTML += rowWithEmail.replace('STATUS', 'Pending');
                     }
                 }
                 // status - filter admin roles to admins table, not signing up
@@ -4732,11 +4733,11 @@ STI Archives Admin`;
                     </tr>`;
                     document.getElementById('admins-tbody').innerHTML += adminRow;
                 } else if (user.verified) {
-                    document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
+                    document.getElementById('verified-users-tbody').innerHTML += rowWithEmail.replace('STATUS', 'Verified');
                 } else if (user.rejected) {
-                    document.getElementById('rejected-users-tbody').innerHTML += rowWithEmail;
+                    document.getElementById('rejected-users-tbody').innerHTML += rowWithEmail.replace('STATUS', 'Rejected');
                 } else if (user.banned) {
-                    document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
+                    document.getElementById('banned-users-tbody').innerHTML += rowWithEmail.replace('STATUS', 'Banned');
                 } else {
                     // Duplicate prevention: check if user ID already added
                     const userId = user.user_id || user.id;

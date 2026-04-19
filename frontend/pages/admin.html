@@ -4657,6 +4657,10 @@
 
         // Save user upload edits
         function saveUserUploadEdit(id) {
+            const upload = uploads.find(u => u.id == id);
+            const hasPdf = upload && upload.pdfUrl && upload.pdfUrl.length > 0;
+            const pdfName = hasPdf ? upload.pdfUrl.split('/').pop() : '';
+
             const userUploadedDiv = document.querySelector(`.user-uploaded[data-id="${id}"]`);
             const uploadedArticle = userUploadedDiv.querySelector('.uploaded-article');
 
@@ -4676,7 +4680,7 @@
                 <strong>Topic:</strong> ${topic ? topic.charAt(0).toUpperCase() + topic.slice(1) : 'Not set'}<br>
                 <strong>Type:</strong> ${type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Not set'}<br>
                 <strong>Level:</strong> ${level}<br>
-                <strong>Year:</strong> ${year}
+                <strong>Year:</strong> ${year}${hasPdf ? '<br><strong>PDF:</strong> ' + pdfName : ''}
             `;
 
             // Here you would typically send the update to the server

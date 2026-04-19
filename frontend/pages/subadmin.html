@@ -2950,18 +2950,7 @@
                 
                 <!-- Verified Users Section -->
                 <div id="verified-section" class="user-subsection" style="--border-color: #28a745; --header-color: #28a745;">
-                    <!-- Filter by Category above table -->
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="margin: 0 0 10px 0; color: #007bff;">Filter by Category:</h4>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="radio" id="verified-shs" name="verified-category" value="shs" onclick="openFilterModal('verified', 'shs')">
-                            <label for="verified-shs" style="cursor: pointer;">SHS</label>
-                            <input type="radio" id="verified-college" name="verified-category" value="college" onclick="openFilterModal('verified', 'college')">
-                            <label for="verified-college" style="cursor: pointer;">College</label>
-                            <input type="radio" id="verified-teacher" name="verified-category" value="teacher" onclick="openFilterModal('verified', 'teacher')">
-                            <label for="verified-teacher" style="cursor: pointer;">Teacher</label>
-                        </div>
-                    </div>
+                    
                     <!-- SHS Specification -->
                     <div id="shs-spec" style="display: none; margin-top: 20px;">
                         <h4>Grade:</h4>
@@ -3074,18 +3063,7 @@
                 </div>
                 <!-- Signing Up Users Section -->
                 <div id="signing-up-section" class="user-subsection" style="--border-color: #ffc107; --header-color: #ffc107;">
-                    <!-- Filter by Category above table -->
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="margin: 0 0 10px 0; color: #ffc107;">Filter by Category:</h4>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="radio" id="signing-up-shs" name="signing-up-category" value="shs" onclick="openFilterModal('signing-up', 'shs')">
-                            <label for="signing-up-shs" style="cursor: pointer;">SHS</label>
-                            <input type="radio" id="signing-up-college" name="signing-up-category" value="college" onclick="openFilterModal('signing-up', 'college')">
-                            <label for="signing-up-college" style="cursor: pointer;">College</label>
-                            <input type="radio" id="signing-up-teacher" name="signing-up-category" value="teacher" onclick="openFilterModal('signing-up', 'teacher')">
-                            <label for="signing-up-teacher" style="cursor: pointer;">Teacher</label>
-                        </div>
-                    </div>
+                   
                     <!-- SHS Specification for Signing Up -->
                     <div id="signing-up-shs-spec" style="display: none; margin-top: 20px;">
                         <h4>Grade:</h4>
@@ -4129,12 +4107,19 @@
                         notificationList.appendChild(notifDiv);
                     });
                 }
+                // Add placeholder if no notifications
+                if (notifications.length === 0) {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'notification-placeholder';
+                    placeholder.textContent = 'No new notifications.';
+                    notificationList.appendChild(placeholder);
+                }
                 const placeholder = document.querySelector('.notification-placeholder');
-                console.log('DEBUG: Second notification placeholder element:', placeholder);
+                console.log('DEBUG: Notification placeholder element:', placeholder);
                 if (placeholder) {
                     placeholder.style.display = notifications.length > 0 ? 'none' : 'block';
                 } else {
-                    console.error('DEBUG: Second notification placeholder not found');
+                    console.error('DEBUG: Notification placeholder not found');
                 }
                 const badge = document.querySelector('.notification-badge');
                 console.log('DEBUG: Notification badge element:', badge);

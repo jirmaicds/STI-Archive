@@ -4471,7 +4471,7 @@ STI Archives Admin`;
                 alert('Failed to send email. Please check your connection.');
             });
         }
-        function updateUserStatus(userId, action) {
+        function updateUserStatus(userId, action, reason = '') {
             // Handle case where userId might be undefined
             if (typeof userId === 'undefined' || userId === null || userId === '') {
                 console.error('updateUserStatus called without userId');
@@ -4500,6 +4500,19 @@ STI Archives Admin`;
                     currentUser.verified = false;
                     currentUser.banned = false;
                     currentUser.status = "rejected";
+                    // Send rejection email
+                    fetch(`/api/auth/reject-user/${encodeURIComponent(userEmail)}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ reason: reason })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Rejection email sent:', data);
+                    })
+                    .catch(error => {
+                        console.error('Error sending rejection email:', error);
+                    });
                 } else if (action === 'ban') {
                     currentUser.banned = true;
                     currentUser.verified = false;
@@ -4714,6 +4727,7 @@ STI Archives Admin`;
                 } else {
                     // Duplicate prevention: check if user ID already added
                     const userId = user.user_id || user.id;
+                    const actions = `<button type="button" class="btn btn-warning btn-sm" onclick="openRejectModal('${user.user_id || user.id}')">Reject</button> <button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>`;
                     if (!addedSigningUpUsers.has(userId)) {
                         addedSigningUpUsers.add(userId);
                         document.getElementById('signing-up-users-tbody').innerHTML += rowWithoutEmail;
@@ -5748,6 +5762,50 @@ STI Archives Admin`;
         }
         function openPasswordChangeModal() { document.getElementById('password-change-modal').style.display = 'block'; }
         function closePasswordChangeModal() { document.getElementById('password-change-modal').style.display = 'none'; }
+
+        function openRejectModal(userId) {
+            // Create the modal
+            let modal = document.getElementById('reject-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'reject-modal';
+                modal.className = 'modal';
+                modal.style.display = 'flex';
+                modal.style.justifyContent = 'center';
+                modal.style.alignItems = 'center';
+                modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                modal.innerHTML = `
+                    <div class="modal-content" style="background-color: #ffebee; border: 1px solid #f44336; max-width: 400px; text-align: center;">
+                        <h3 style="color: #f44336; margin-bottom: 15px;">Rejected for a reason</h3>
+                        <p style="margin-bottom: 15px; color: #333;">Message: did not fulfill the requirements needed</p>
+                        <textarea id="reject-reason" placeholder="Optional additional reason..." style="width: 100%; height: 60px; margin-bottom: 20px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" maxlength="200"></textarea>
+                        <div style="display: flex; gap: 10px; justify-content: center;">
+                            <button id="confirm-reject" style="background-color: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Reject</button>
+                            <button id="cancel-reject" style="background-color: #ccc; color: #333; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Cancel</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                // Add event listeners
+                document.getElementById('confirm-reject').addEventListener('click', function() {
+                    const reason = document.getElementById('reject-reason').value.trim();
+                    updateUserStatus(userId, 'reject', reason);
+                    closeRejectModal();
+                });
+                document.getElementById('cancel-reject').addEventListener('click', function() {
+                    closeRejectModal();
+                });
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeRejectModal() {
+            const modal = document.getElementById('reject-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('admin-password');
             const eyeIcon = event.target;

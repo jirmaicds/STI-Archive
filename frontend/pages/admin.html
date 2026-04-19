@@ -64,7 +64,7 @@
             left: 0;
             padding: 20px;
             transition: transform 0.3s ease;
-            z-index: 1002;
+            z-index: 1000;
             box-shadow: 2px 0 5px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
@@ -335,7 +335,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            z-index: 1003;
+            z-index: 2;
             transition: padding-left 0.3s;
         }
         .main-content {
@@ -352,7 +352,7 @@
             font-size:30px;
             font-weight: bold;
             color: #333;
-            margin-left:0;
+            margin-left:20px;
         }
         body.dark-mode .header  #page-title{
             background-color: #232f41;
@@ -596,6 +596,14 @@
             background-color: #181f2a;
             color: #ffffff;
         }
+        /* When sidebar collapsed, move toggle-btn and page-title left */
+        body.sidebar-collapsed .toggle-btn {
+            margin-left: 0;
+        }
+        body.sidebar-collapsed #page-title {
+            margin-left: 0;
+        }
+
         body.dark-mode .header {
             background-color: #232f41;
             color: #ffffff;
@@ -704,7 +712,7 @@
             color: #ccc;
         }
         .toggle-btn {
-            margin-left:0;
+            margin-left:20px;
             background: none;
             border: none;
             font-size: 24px;
@@ -1388,8 +1396,7 @@
                 position: fixed;
                 left: 160px;
                 width: calc(100% - 160px);
-                padding: 20px 20px 20px 40px;
-                margin-left: 0;
+                padding: 20px 20px 20px 160px;
             }
         }
         @media (max-width: 480px) {
@@ -1459,7 +1466,7 @@
                 margin-left: 220px;
             }
             .header {
-                /* margin-left set dynamically to 220px when open */
+                padding-left: 200px;
             }
         }
         @media (min-width: 1025px) and (max-width: 1199px) {
@@ -1470,7 +1477,7 @@
                 margin-left: 200px;
             }
             .header {
-                /* margin-left set dynamically */
+                padding-left: 220px;
             }
         }
         @media (min-width: 1200px) {
@@ -1486,8 +1493,7 @@
                 margin-left: 200px;
             }
             .header {
-                padding: 20px;
-                /* margin-left set dynamically */
+                padding: 20px 20px 20px 200px;
             }
             .graph-container {
                 flex-wrap: nowrap;
@@ -5877,9 +5883,9 @@
         console.log('DEBUG: Initializing admin page - defaulting to dashboard');
         showSection('dashboard');
         // Set initial header padding and main-content margin for open sidebar
-        if (window.innerWidth > 768) {
-            const marginValue = window.innerWidth >= 1025 ? '200px' : '220px';
-            document.querySelector('.header').style.paddingLeft = '200px';
+        if (window.innerWidth >= 768) {
+            const marginValue = window.innerWidth >= 1025 ? '200px' : window.innerWidth >= 769 ? '220px' : '160px';
+            document.querySelector('.header').style.paddingLeft = marginValue;
             document.getElementById('main-content').style.marginLeft = marginValue;
         }
         loadUsers().then(() => {
@@ -6717,12 +6723,17 @@ STI Archives Admin`;
                 // Desktop/tablet: collapse sidebar
                 sidebar.classList.toggle('collapsed');
                 const isCollapsed = sidebar.classList.contains('collapsed');
-                const marginValue = window.innerWidth >= 1025 ? '200px' : '220px';
+                const marginValue = window.innerWidth >= 1025 ? '200px' : window.innerWidth >= 769 ? '220px' : window.innerWidth >= 768 ? '160px' : '0';
+                const paddingValue = isCollapsed ? '20px' : marginValue;
                 if (isCollapsed) {
                     mainContent.style.marginLeft = '0';
-                    if (window.innerWidth > 768) {
-                        header.style.paddingLeft = '20px';
-                    }
+                    header.style.paddingLeft = paddingValue;
+                    body.classList.add('sidebar-collapsed');
+                } else {
+                    mainContent.style.marginLeft = marginValue;
+                    header.style.paddingLeft = paddingValue;
+                    body.classList.remove('sidebar-collapsed');
+                }
                     body.classList.add('sidebar-collapsed');
                 } else {
                     mainContent.style.marginLeft = marginValue;

@@ -71,10 +71,8 @@
             align-items: center;
             justify-content: flex-start;
         }
-        @media (min-width: 875px) {
-            .sidebar {
-            }
-        }
+       
+           
         .sidebar img {
             max-width: 120px;
             height: 105px;
@@ -8614,7 +8612,7 @@ STI Archives Admin`;
 
 
         // General Settings Functionality
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded'), function() {
             const siteTitleInput = document.getElementById('site-title');
             const siteFaviconInput = document.getElementById('site-favicon');
             const settingsForm = document.getElementById('settings-form');
@@ -8736,7 +8734,7 @@ STI Archives Admin`;
                 }
             }
         }
-        });
+        
 
         function updateDocumentTitle(siteTitle) {
             const pageName = 'Admin Panel';
@@ -8862,6 +8860,8 @@ STI Archives Admin`;
         });
  
 
+    
+    
     </script>
     <!-- Retry build after rate limit failure -->
     <script>
@@ -9934,6 +9934,7 @@ STI Archives Admin`;
             paginationDiv.dataset.currentPage = page;
             paginateTable(tbodyId, 10);
         }
+    }}
     </script>
 </body>
-</html>
+</html>    

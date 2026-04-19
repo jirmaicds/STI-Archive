@@ -5902,6 +5902,12 @@
                     sub.style.display = 'none';
                 }
             });
+
+            // Add event listener to toggle button
+            const toggleBtn = document.getElementById('toggle-btn');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', toggleSidebar);
+            }
         
 
         // === SEND UPDATE MODAL FUNCTIONS ===

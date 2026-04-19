@@ -5611,64 +5611,14 @@
                 
                 // If no currentUser, try to get from users array based on role
                 if (!currentUser || !currentUser.name) {
-            let localUsers = [];
-            try {
-                const stored = localStorage.getItem('users');
-                localUsers = stored ? JSON.parse(stored) : [];
-            } catch (e) {
-                localUsers = [];
-            }
-            let filteredUsers = localUsers.filter(user => !user.verified && !user.rejected && !user.banned);
-            if (filter) {
-                filteredUsers = filteredUsers.filter(user => user.role === filter);
-            }
-            const now = new Date();
-            let labels = [];
-            let data = [];
-            if (period === 'day') {
-                // Last 7 days
-                for (let i = 6; i >= 0; i--) {
-                    const date = new Date(now);
-                    date.setDate(now.getDate() - i);
-                    const dateStr = date.toISOString().split('T')[0];
-                    labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-                    const count = filteredUsers.filter(user => user.created_at && user.created_at.split('T')[0] === dateStr).length;
-                    data.push(count);
-                }
-            } else if (period === 'month') {
-                // Last 12 months
-                for (let i = 11; i >= 0; i--) {
-                    const date = new Date(now);
-                    date.setMonth(now.getMonth() - i);
-                    const monthStr = date.toISOString().slice(0, 7);
-                    labels.push(date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }));
-                    const count = filteredUsers.filter(user => user.created_at && user.created_at.slice(0, 7) === monthStr).length;
-                    data.push(count);
-                }
-            }
-            window.signingUpChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Sign-ups',
-                        data: data,
-                        borderColor: '#007bff',
-                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                        borderWidth: 2,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                    // Load user from users array as fallback
+                    const users = JSON.parse(localStorage.getItem('users')) || [];
+                    const userFromArray = users.find(u => u.verified);
+                    if (userFromArray) {
+                        currentUser = userFromArray;
                     }
                 }
-            });
-        }
+            }); // Close loadUsers promise
 
 
         function renderDashboardUploadsChart() {
@@ -9026,10 +8976,7 @@
             paginationDiv.dataset.currentPage = page;
             paginateTable(tbodyId, 10);
         }
-            })
-
-
-        })
+    })
     </script>
 </body>
-</html>    
+</html>

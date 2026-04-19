@@ -5789,165 +5789,6 @@
                 }
             });
 
-                // Populate notification modal with fallback
-                const notificationList = document.getElementById('notification-list');
-                if (notificationList) {
-                    notificationList.innerHTML = '';
-                    const maxNotifications = 10;
-                    const limitedNotifications = notifications.slice(0, maxNotifications);
-                    const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
-                    limitedNotifications.forEach(notif => {
-                        const notifDiv = document.createElement('div');
-                        notifDiv.className = 'notification-item';
-                        notifDiv.setAttribute('data-id', notif.id);
-
-                        // Apply read state if previously marked as read
-                        const isRead = readNotifications.includes(notif.id);
-                        if (isRead) {
-                            notifDiv.classList.add('read');
-                        }
-
-                        notifDiv.innerHTML = `
-                            <div class="notification-type ${notif.type}">${notif.typeText}</div>
-                            <div class="notification-content">${notif.content}</div>
-                            <div class="notification-time">${notif.time}</div>
-                            <div class="notification-actions">
-                                <i class="fas ${isRead ? 'fa-check' : 'fa-times'}" title="${isRead ? 'Mark as Unread' : 'Mark as Read'}" onclick="${isRead ? 'markNotificationUnread' : 'markNotificationRead'}(this)"></i>
-                            </div>
-                        `;
-                        notificationList.appendChild(notifDiv);
-                    });
-                }
-                const placeholder = document.querySelector('.notification-placeholder');
-                console.log('DEBUG: Second notification placeholder element:', placeholder);
-                if (placeholder) {
-                    placeholder.style.display = notifications.length > 0 ? 'none' : 'block';
-                } else {
-                    console.error('DEBUG: Second notification placeholder not found');
-                }
-                const badge = document.querySelector('.notification-badge');
-                console.log('DEBUG: Notification badge element:', badge);
-                if (badge) {
-                    badge.textContent = notifications.length;
-                    badge.style.display = notifications.length > 0 ? 'flex' : 'none';
-                } else {
-                    console.error('DEBUG: Notification badge not found');
-                }
-
-                // Populate all notifications list with fallback and pagination
-                const allNotificationsContainer = document.getElementById('all-notifications-list');
-                if (allNotificationsContainer) {
-                    allNotificationsContainer.innerHTML = ''; // Clear existing
-                    const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
-                    const itemsPerPage = 10;
-                    const totalPages = Math.ceil(notifications.length / itemsPerPage);
-                    let currentPage = 1;
-                    
-                    // Store pagination state globally
-                    window.notificationPagination = {
-                        currentPage: currentPage,
-                        totalPages: totalPages,
-                        itemsPerPage: itemsPerPage,
-                        notifications: notifications
-                    };
-                    
-                    // Show notifications for current page (newest first)
-                    const startIndex = (currentPage - 1) * itemsPerPage;
-                    const endIndex = Math.min(startIndex + itemsPerPage, notifications.length);
-                    
-                    for (let i = endIndex - 1; i >= startIndex; i--) {
-                        const notif = notifications[i];
-                        const notifDiv = document.createElement('div');
-                        notifDiv.className = 'notification-item';
-                        notifDiv.setAttribute('data-id', notif.id);
-
-                        // Apply read state if previously marked as read
-                        const isRead = readNotifications.includes(notif.id);
-                        if (isRead) {
-                            notifDiv.classList.add('read');
-                        }
-
-                        notifDiv.innerHTML = `
-                            <input type="checkbox" class="notification-checkbox">
-                            <div class="notification-type ${notif.type}">${notif.typeText}</div>
-                            <div class="notification-content">${notif.content}</div>
-                            <div class="notification-time">${formatNotificationDate(notif.time)}</div>
-                            <div class="notification-actions">
-                                <i class="fas ${isRead ? 'fa-check' : 'fa-times'}" title="${isRead ? 'Mark as Unread' : 'Mark as Read'}" onclick="${isRead ? 'markNotificationUnread' : 'markNotificationRead'}(this)"></i>
-                            </div>
-                        `;
-                        allNotificationsContainer.insertBefore(notifDiv, allNotificationsContainer.firstChild);
-                    }
-                    
-                    // Update pagination controls
-                    updatePaginationControls();
-                }
-            });
-            const notificationList = document.getElementById('notification-list');
-            if (notificationList) {
-                    const maxNotifications = 10;
-                    const notificationsArray = Array.isArray(notifications) ? notifications : [];
-                    const limitedNotifications = notificationsArray.slice(-maxNotifications).reverse();
-                limitedNotifications.forEach(notif => {
-                    const notifDiv = document.createElement('div');
-                    notifDiv.className = 'notification-item';
-                    notifDiv.innerHTML = `
-                        <div class="notification-type ${notif.type}">${notif.typeText}</div>
-                        <div class="notification-content">${notif.content}</div>
-                        <div class="notification-time">${notif.time}</div>
-                    `;
-                    notificationList.appendChild(notifDiv);
-                });
-            }
-            const placeholder = document.querySelector('.notification-placeholder');
-            if (placeholder) {
-                placeholder.style.display = notifications.length > 0 ? 'none' : 'block';
-            }
-            const badge = document.querySelector('.notification-badge');
-            if (badge) {
-                badge.textContent = notifications.length;
-                badge.style.display = notifications.length > 0 ? 'flex' : 'none';
-            }
-            // Populate notification lists in notifications
-            const categories = {
-                'new-users-notifications': notifications.filter(n => n.type === 'new-user' && n.typeText === 'New User'),
-                'new-signups-notifications': notifications.filter(n => n.type === 'new-user' && n.typeText === 'New Signing Up'),
-                'co-admin-uploads-notifications': notifications.filter(n => n.type === 'upload'),
-                'user-suggestions-notifications': notifications.filter(n => n.type === 'suggestion' && n.typeText === 'User Suggestion'),
-                'sub-admin-bugs-notifications': notifications.filter(n => n.type === 'bug')
-            };
-            Object.keys(categories).forEach(id => {
-                const container = document.getElementById(id);
-                categories[id].forEach(notif => {
-                    const notifDiv = document.createElement('div');
-                    notifDiv.style.padding = '5px';
-                    notifDiv.style.borderBottom = '1px solid #eee';
-                    notifDiv.innerHTML = `<strong>${notif.content}</strong><br><small>${notif.time}</small>`;
-                    container.appendChild(notifDiv);
-                });
-            });
-            // Sidebar navigation
-            console.log('DEBUG: Setting up sidebar navigation listeners');
-            const sidebarLinks = document.querySelectorAll('.sidebar a[data-section]');
-            console.log('DEBUG: Found sidebar links:', sidebarLinks.length);
-            sidebarLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const section = this.getAttribute('data-section');
-                    console.log('DEBUG: Sidebar clicked, section:', section);
-                    // Close PDF viewer modal when navigating
-                    if (typeof closePDFModal === 'function') {
-                        closePDFModal();
-                    }
-                    showSection(section);
-                });
-            });
-            // Buttons
-            document.getElementById('toggle-btn').addEventListener('click', toggleSidebar);
-            document.querySelector('.dark-mode-toggle').addEventListener('click', toggleDarkMode);
-            // Overlay click to close sidebar on mobile
-            document.getElementById('sidebar-overlay').addEventListener('click', closeSidebarOnOverlayClick);
-
             // Account form
             document.getElementById('account-form').addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -10131,6 +9972,10 @@ STI Archives Admin`;
             paginationDiv.dataset.currentPage = page;
             paginateTable(tbodyId, 10);
         }
+    
+
+    });
     </script>
 </body>
 </html>
+        

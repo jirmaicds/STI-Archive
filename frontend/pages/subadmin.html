@@ -4773,6 +4773,9 @@ STI Archives Admin`;
 
 
             // Update dashboard counts
+            if (!Array.isArray(users)) {
+                users = [];
+            }
             let totalUsers = users.filter(u => u.verified && u.role !== 'subadmin').length;
             let admins = users.filter(u => u.role === 'subadmin').length;
             let signingUp = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
@@ -5290,7 +5293,10 @@ STI Archives Admin`;
                     `;
                     notificationList.appendChild(notifDiv);
                 });
-                document.querySelector('.notification-placeholder').style.display = freshNotifications.length > 0 ? 'none' : 'block';
+                const notifPlaceholder = document.querySelector('.notification-placeholder');
+                if (notifPlaceholder) {
+                    notifPlaceholder.style.display = freshNotifications.length > 0 ? 'none' : 'block';
+                }
                 updateNotificationBadge(freshNotifications);
             }
         }

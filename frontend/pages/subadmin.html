@@ -5119,7 +5119,13 @@ STI Archives Admin`;
             if (window.userChart) {
                 window.userChart.destroy();
             }
-            const users = JSON.parse(localStorage.getItem('users')) || [];
+            let users = [];
+            try {
+                const stored = localStorage.getItem('users');
+                users = stored ? JSON.parse(stored) : [];
+            } catch (e) {
+                users = [];
+            }
             const roleCounts = {
                 senior_high: 0,
                 college: 0,

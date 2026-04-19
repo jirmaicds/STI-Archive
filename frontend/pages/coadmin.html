@@ -5446,19 +5446,14 @@
             loadUserUploadsForAdmin();
             // Load settings
             const savedSettings = JSON.parse(localStorage.getItem('adminSettings')) || {};
-            document.getElementById('site-title').value = savedSettings.siteTitle || 'STI Archives';
+            const siteTitleEl = document.getElementById('site-title');
+            if (siteTitleEl) siteTitleEl.value = savedSettings.siteTitle || 'STI Archives';
             // Update title preview on load
             updateTitlePreview();
-            // Update favicon preview on load
-            if (savedSettings.siteLogo) {
-                updateFaviconPreview(savedSettings.siteLogo);
-            }
             // Load logo if exists
             if (savedSettings.siteLogo) {
                 const sidebarImg = document.querySelector('.sidebar-header img');
-                sidebarImg.src = savedSettings.siteLogo;
-                // Update favicon
-                updateFavicon(savedSettings.siteLogo);
+                if (sidebarImg) sidebarImg.src = savedSettings.siteLogo;
             }
             // Load account settings
             const accountSettings = JSON.parse(localStorage.getItem('accountSettings')) || {};
@@ -5985,52 +5980,7 @@
                 }
             }
 
-            // Add event listeners to inputs
-            document.getElementById('site-title').addEventListener('input', function() {
-                showSaveButton();
-                updateTitlePreview();
-            });
-            document.getElementById('site-favicon').addEventListener('change', function(e) {
-                showSaveButton();
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        updateFaviconPreview(e.target.result);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
 
-            // Settings form
-            document.getElementById('settings-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const faviconFile = document.getElementById('site-favicon').files[0];
-                const settings = {
-                    siteTitle: document.getElementById('site-title').value,
-                    siteFavicon: faviconFile ? URL.createObjectURL(faviconFile) : null
-                };
-                localStorage.setItem('adminSettings', JSON.stringify(settings));
-
-                // Update page title immediately
-                document.title = 'Admin Panel | ' + settings.siteTitle;
-
-                // Update favicon if provided
-                if (settings.siteFavicon) {
-                    const faviconLink = document.querySelector('link[rel="icon"]');
-                    if (faviconLink) {
-                        // Add timestamp to force browser refresh
-                        faviconLink.href = settings.siteFavicon + '?t=' + Date.now();
-                    }
-                    // Update preview favicon
-                    updateFaviconPreview(settings.siteFavicon);
-                }
-
-                // Hide save button after saving
-                document.getElementById('save-settings-btn').style.display = 'none';
-
-                alert('Settings saved!');
-            });
             // Initialize - always default to dashboard on fresh page load
             // Clear any saved section to ensure we start fresh
             localStorage.removeItem('adminCurrentSection');
@@ -8694,9 +8644,9 @@ STI Archives Admin`;
                         console.log('DEBUG: Invalid blob URL detected, resetting to default favicon');
                         settings.siteFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
                     }
-                    siteTitleInput.value = settings.siteTitle || 'STI Archives';
-                    siteTitlePreview.textContent = settings.siteTitle || 'STI Archives';
-                    faviconPreview.src = settings.siteFavicon || '370044409_696741882497707_8408055328080058811_n.jpg';
+                    if (siteTitleInput) siteTitleInput.value = settings.siteTitle || 'STI Archives';
+                    if (siteTitlePreview) siteTitlePreview.textContent = settings.siteTitle || 'STI Archives';
+                    if (faviconPreview) faviconPreview.src = settings.siteFavicon || '370044409_696741882497707_8408055328080058811_n.jpg';
                     updateDocumentTitle(settings.siteTitle || 'STI Archives');
                     updateDocumentFavicon(settings.siteFavicon || '370044409_696741882497707_8408055328080058811_n.jpg');
                 } catch (error) {
@@ -8704,9 +8654,9 @@ STI Archives Admin`;
                     // Fallback to defaults
                     const defaultTitle = 'STI Archives';
                     const defaultFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
-                    siteTitleInput.value = defaultTitle;
-                    siteTitlePreview.textContent = defaultTitle;
-                    faviconPreview.src = defaultFavicon;
+                    if (siteTitleInput) siteTitleInput.value = defaultTitle;
+                    if (siteTitlePreview) siteTitlePreview.textContent = defaultTitle;
+                    if (faviconPreview) faviconPreview.src = defaultFavicon;
                     updateDocumentTitle(defaultTitle);
                     updateDocumentFavicon(defaultFavicon);
                 } finally {
@@ -8715,12 +8665,15 @@ STI Archives Admin`;
             }
 
             // Real-time preview updates
-            siteTitleInput.addEventListener('input', function() {
-                const newTitle = this.value || 'STI Archives';
-                siteTitlePreview.textContent = newTitle;
-            });
+            if (siteTitleInput) {
+                siteTitleInput.addEventListener('input', function() {
+                    const newTitle = this.value || 'STI Archives';
+                    siteTitlePreview.textContent = newTitle;
+                });
+            }
 
-            siteFaviconInput.addEventListener('change', function() {
+            if (siteFaviconInput) {
+                siteFaviconInput.addEventListener('change', function() {
                 const file = this.files[0];
                 if (file) {
                     const reader = new FileReader();
@@ -8733,9 +8686,10 @@ STI Archives Admin`;
             });
 
             // Save settings on form submit
-            settingsForm.addEventListener('submit', async function(e) {
+            if (settingsForm) {
+                settingsForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                const title = siteTitleInput.value || 'STI Archives';
+                const title = (siteTitleInput && siteTitleInput.value) || 'STI Archives';
                 const faviconFile = siteFaviconInput.files[0];
 
                 let faviconData = '370044409_696741882497707_8408055328080058811_n.jpg'; // Default

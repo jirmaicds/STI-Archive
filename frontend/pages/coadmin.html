@@ -329,7 +329,7 @@
         }
         .header {
             background-color: white;
-            padding: 20px 20px 20px 220px;
+            padding: 20px 20px 20px 200px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
@@ -338,8 +338,8 @@
             top: 0;
             left: 0;
             width: 100%;
-            z-index: 1001;
-            transition: left 0.3s, width 0.3s;
+            z-index: 1003;
+            transition: padding-left 0.3s;
         }
         .main-content {
             margin-left: 200px;
@@ -355,20 +355,14 @@
             font-size:30px;
             font-weight: bold;
             color: #333;
-            margin-left:20px;
+            margin-left:0;
         }
         body.dark-mode .header  #page-title{
             background-color: #232f41;
             color: #ffffff;
         }
 
-        /* When sidebar collapsed, move toggle-btn and page-title left */
-        body.sidebar-collapsed .toggle-btn {
-            margin-left: 0;
-        }
-        body.sidebar-collapsed #page-title {
-            margin-left: 0;
-        }
+
 
 
         .header-right {
@@ -393,7 +387,19 @@
                 font-size: 18px;
                 }
         }
-        
+        .notification-bell {
+            position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #FFA500;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
         .notification-bell i {
             font-size: 20px;
         }
@@ -701,7 +707,7 @@
             color: #ccc;
         }
         .toggle-btn {
-            margin-left:20px;
+            margin-left:0;
             background: none;
             border: none;
             font-size: 24px;
@@ -1381,8 +1387,11 @@
                 padding: 20px 15px;
             }
             .header {
-                left: 140px;
-                width: calc(100% - 130px);
+                position: fixed;
+                left: 160px;
+                width: calc(100% - 160px);
+                padding: 20px 20px 20px 40px;
+                margin-left: 0;
             }
         }
         @media (max-width: 480px) {
@@ -1452,8 +1461,7 @@
                 margin-left: 195px;
             }
             .header {
-                left: 180px;
-                width: calc(100% - 180px);
+                /* margin-left set dynamically */
             }
         }
         @media (min-width: 1025px) and (max-width: 1199px) {
@@ -1464,8 +1472,7 @@
                 margin-left: 200px;
             }
             .header {
-                left: 200px;
-                width: calc(100% - 200px);
+                /* margin-left set dynamically */
             }
         }
         @media (min-width: 1200px) {
@@ -1481,9 +1488,8 @@
                 margin-left: 200px;
             }
             .header {
-                left: 0;
-                width: 100%;
-                padding-left: 200px;
+                padding: 20px;
+                /* margin-left set dynamically */
             }
             .graph-container {
                 flex-wrap: nowrap;
@@ -1555,8 +1561,7 @@
                 padding: 20px 15px;
             }
             .header {
-                left: 160px;
-                width: calc(100% - 160px);
+                /* margin-left set dynamically */
             }
             .graph-container {
                 display: grid;
@@ -1610,9 +1615,11 @@
                 padding: 20px 10px;
             }
             .header {
+                position: fixed;
                 left: 0;
                 width: 100%;
                 padding-left: 200px;
+                margin-left: 0;
             }
             .main-content {
                 margin-top: 70px;
@@ -5463,6 +5470,11 @@
                 }
             }
 
+            // Add event listener to dark mode toggle
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('click', toggleDarkMode);
+            }
+
             // Load articles from server (await to ensure they're loaded before proceeding)
             await loadArticlesFromServer();
             // Load user uploads for admin
@@ -5749,15 +5761,19 @@
             } else {
                 // Desktop/tablet: collapse sidebar
                 sidebar.classList.toggle('collapsed');
-                if (sidebar.classList.contains('collapsed')) {
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                const marginValue = window.innerWidth >= 1025 ? '200px' : '220px';
+                if (isCollapsed) {
                     mainContent.style.marginLeft = '0';
-                    header.style.left = '0';
-                    header.style.width = '100%';
+                    if (window.innerWidth > 768) {
+                        header.style.paddingLeft = '20px';
+                    }
                     body.classList.add('sidebar-collapsed');
                 } else {
-                    mainContent.style.marginLeft = '';
-                    header.style.left = '';
-                    header.style.width = '';
+                    mainContent.style.marginLeft = marginValue;
+                    if (window.innerWidth > 768) {
+                        header.style.paddingLeft = '200px';
+                    }
                     body.classList.remove('sidebar-collapsed');
                 }
             }
@@ -5780,6 +5796,234 @@
                 }
                 localStorage.setItem('darkMode', 'off');
             }
+        }
+
+        async function renderUserChart() {
+            // Example data for demonstration
+            const exampleData = {
+                shs: 150,
+                college: 80,
+                teacher: 25,
+                admin: 5
+            };
+            const barColors = [
+                '#008000', // SHS Emerald Green
+                '#00008B', // College Deep Blue
+                '#FFA500', // Teacher Warm Orange
+                '#8A2BE2'  // Admin Cool Purple
+            ];
+            const labels = ['SHS', 'COLLEGE', 'TEACHER', 'ADMIN'];
+            const ctx = document.getElementById('user-chart').getContext('2d');
+            if (window.userChart) {
+                window.userChart.destroy();
+            }
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const textColor = isDarkMode ? '#ffffff' : '#000000';
+            window.userChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: [exampleData.shs, exampleData.college, exampleData.teacher, exampleData.admin],
+                        backgroundColor: barColors,
+                        borderColor: barColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: textColor
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: 400,
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderSigningUpChart(period = 'day', filter = null) {
+            console.log('DEBUG: Rendering signing up chart');
+            const ctx = document.getElementById('signing-up-chart').getContext('2d');
+            if (window.signingUpChart) {
+                window.signingUpChart.destroy();
+            }
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            let filteredUsers = users.filter(user => !user.verified && !user.rejected && !user.banned);
+            if (filter) {
+                filteredUsers = filteredUsers.filter(user => user.role === filter);
+            }
+            const now = new Date();
+            let labels = [];
+            let data = [];
+            if (period === 'day') {
+                // Last 7 days
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date(now);
+                    date.setDate(now.getDate() - i);
+                    const dateStr = date.toISOString().split('T')[0];
+                    labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                    const count = filteredUsers.filter(user => user.created_at && user.created_at.split('T')[0] === dateStr).length;
+                    data.push(count);
+                }
+            } else if (period === 'month') {
+                // Last 12 months
+                for (let i = 11; i >= 0; i--) {
+                    const date = new Date(now);
+                    date.setMonth(now.getMonth() - i);
+                    const monthStr = date.toISOString().slice(0, 7);
+                    labels.push(date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }));
+                    const count = filteredUsers.filter(user => user.created_at && user.created_at.slice(0, 7) === monthStr).length;
+                    data.push(count);
+                }
+            }
+            window.signingUpChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Sign-ups',
+                        data: data,
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderDashboardUploadsChart() {
+            const ctx = document.getElementById('dashboard-uploadsChart').getContext('2d');
+            if (window.dashboardUploadsChart) {
+                window.dashboardUploadsChart.destroy();
+            }
+
+            const barColors = [
+                '#8A2BE2', // Admin Cool Purple
+                '#FFA500', // Teacher Warm Orange
+                '#008000', // SHS Emerald Green
+                '#00008B'  // College Deep Blue
+            ];
+            const labels = ['ADMIN', 'TEACHER', 'SHS', 'COLLEGE'];
+            const data = [1, 1, 1, 1]; // Demo data
+            const total = data.reduce((a, b) => a + b, 0);
+            const percentageData = data.map(d => (d / total) * 100);
+
+            window.dashboardUploadsChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: percentageData,
+                        backgroundColor: barColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderGaugeChart(canvasId, label, averageDuration, gaugeColor) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+
+            // Destroy existing chart if it exists
+            if (window[canvasId + 'Chart']) {
+                window[canvasId + 'Chart'].destroy();
+            }
+
+            const maxDuration = 5; // Max hours for gauge
+            const percentage = (averageDuration / maxDuration) * 100;
+
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const textColor = isDarkMode ? '#ffffff' : '#000000';
+            const emptyColor = isDarkMode ? '#444' : '#e0e0e0';
+
+            window[canvasId + 'Chart'] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [percentage, 100 - percentage],
+                        backgroundColor: [gaugeColor, emptyColor],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '50%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false },
+                        centerText: {
+                            averageDuration: averageDuration,
+                            textColor: textColor
+                        }
+                    },
+                    rotation: 0,
+                    circumference: 360,
+                    elements: {
+                        arc: {
+                            borderRadius: 10
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'centerText',
+                    afterDraw: function(chart) {
+                        const ctx = chart.ctx;
+                        const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                        const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+                        const averageDuration = chart.options.plugins.centerText.averageDuration;
+                        const textColor = chart.options.plugins.centerText.textColor;
+                        ctx.save();
+                        ctx.font = 'bold 16px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillStyle = textColor;
+                        ctx.fillText(averageDuration + ' hours', centerX, centerY);
+                        ctx.restore();
+                    }
+                }]
+            });
         }
 
         let currentPeriod = '';
@@ -5922,6 +6166,38 @@
                 showSection(section);
             });
         }
+
+        // Add event listener to toggle button
+        const toggleBtn = document.getElementById('toggle-btn');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', toggleSidebar);
+        }
+
+
+
+        // Initialize - always default to dashboard on fresh page load
+        // Clear any saved section to ensure we start fresh
+        localStorage.removeItem('adminCurrentSection');
+        console.log('DEBUG: Initializing coadmin page - defaulting to dashboard');
+        showSection('dashboard');
+        // Set initial header padding and main-content margin for open sidebar
+        if (window.innerWidth > 768) {
+            const marginValue = window.innerWidth >= 1025 ? '200px' : '220px';
+            document.querySelector('.header').style.paddingLeft = '200px';
+            document.getElementById('main-content').style.marginLeft = marginValue;
+        }
+        loadUsers().then(() => {
+            // Counts are now updated automatically when tables are populated
+            renderUserChart();
+            renderSigningUpChart();
+            renderDashboardUploadsChart();
+            renderGaugeChart('session-duration-gauge', 'Average Session Duration', 2.5, '#007bff');
+        }).catch(() => {
+            // Fallback if async fails
+            renderUserChart();
+            renderSigningUpChart();
+            renderDashboardUploadsChart();
+        });
 
         function toggleProfileDropdown() {
             const dropdown = document.getElementById('profile-dropdown');

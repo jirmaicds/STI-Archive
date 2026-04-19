@@ -326,17 +326,17 @@
         }
         .header {
             background-color: white;
-            padding: 20px;
+            padding: 20px 20px 20px 200px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
+            position: fixed;
             top: 0;
-            margin-left: 200px;
-            width: calc(100% - 200px);
-            z-index: 1001;
-            transition: margin-left 0.3s, width 0.3s;
+            left: 0;
+            width: 100%;
+            z-index: 1003;
+            transition: padding-left 0.3s;
         }
         .main-content {
             margin-left: 200px;
@@ -359,11 +359,7 @@
             color: #ffffff;
         }
 
-        /* When sidebar collapsed, move header left */
-        body.sidebar-collapsed .header {
-            margin-left: 0;
-            width: 100%;
-        }
+
 
 
         .header-right {
@@ -1337,6 +1333,7 @@
         @media (max-width: 768px) {
             .sidebar {
                 width: 160px;
+                z-index: 1200;
             }
             .sidebar .admin-info {
                 padding-top: 10px;
@@ -1388,10 +1385,11 @@
                 padding: 20px 15px;
             }
             .header {
-                position: relative;
-                margin-left: 160px;
+                position: fixed;
+                left: 160px;
                 width: calc(100% - 160px);
-                padding: 20px;
+                padding: 20px 20px 20px 40px;
+                margin-left: 0;
             }
         }
         @media (max-width: 480px) {
@@ -1461,8 +1459,7 @@
                 margin-left: 220px;
             }
             .header {
-                margin-left: 220px;
-                width: calc(100% - 220px);
+                /* margin-left set dynamically to 220px when open */
             }
         }
         @media (min-width: 1025px) and (max-width: 1199px) {
@@ -1473,8 +1470,7 @@
                 margin-left: 200px;
             }
             .header {
-                margin-left: 200px;
-                width: calc(100% - 200px);
+                /* margin-left set dynamically */
             }
         }
         @media (min-width: 1200px) {
@@ -1490,9 +1486,8 @@
                 margin-left: 200px;
             }
             .header {
-                margin-left: 200px;
-                width: calc(100% - 200px);
                 padding: 20px;
+                /* margin-left set dynamically */
             }
             .graph-container {
                 flex-wrap: nowrap;
@@ -5876,23 +5871,29 @@
 
                 alert('Settings saved!');
             });
-            // Initialize - always default to dashboard on fresh page load
-            // Clear any saved section to ensure we start fresh
-            localStorage.removeItem('adminCurrentSection');
-            console.log('DEBUG: Initializing admin page - defaulting to dashboard');
-            showSection('dashboard');
-            loadUsers().then(() => {
-                // Counts are now updated automatically when tables are populated
-                renderUserChart();
-                renderDashboardUploadsChart();
-                renderSigningUpChart('day', null);
-                renderSuggestionsChart();
-            }).catch(() => {
-                // Fallback if async fails
-                renderUserChart();
-                renderDashboardUploadsChart();
-                renderSigningUpChart('day');
-            });
+        // Initialize - always default to dashboard on fresh page load
+        // Clear any saved section to ensure we start fresh
+        localStorage.removeItem('adminCurrentSection');
+        console.log('DEBUG: Initializing admin page - defaulting to dashboard');
+        showSection('dashboard');
+        // Set initial header padding and main-content margin for open sidebar
+        if (window.innerWidth > 768) {
+            const marginValue = window.innerWidth >= 1025 ? '200px' : '220px';
+            document.querySelector('.header').style.paddingLeft = '200px';
+            document.getElementById('main-content').style.marginLeft = marginValue;
+        }
+        loadUsers().then(() => {
+            // Counts are now updated automatically when tables are populated
+            renderUserChart();
+            renderSigningUpChart();
+            renderDashboardUploadsChart();
+            renderGaugeChart('session-duration-gauge', 'Average Session Duration', 2.5, '#007bff');
+        }).catch(() => {
+            // Fallback if async fails
+            renderUserChart();
+            renderSigningUpChart();
+            renderDashboardUploadsChart();
+        });
             // Clear the saved section after loading
             localStorage.removeItem('adminCurrentSection');
 
@@ -6715,15 +6716,19 @@ STI Archives Admin`;
             } else {
                 // Desktop/tablet: collapse sidebar
                 sidebar.classList.toggle('collapsed');
-                if (sidebar.classList.contains('collapsed')) {
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                const marginValue = window.innerWidth >= 1025 ? '200px' : '220px';
+                if (isCollapsed) {
                     mainContent.style.marginLeft = '0';
-                    header.style.left = '0';
-                    header.style.width = '100%';
+                    if (window.innerWidth > 768) {
+                        header.style.paddingLeft = '20px';
+                    }
                     body.classList.add('sidebar-collapsed');
                 } else {
-                    mainContent.style.marginLeft = '';
-                    header.style.left = '';
-                    header.style.width = '';
+                    mainContent.style.marginLeft = marginValue;
+                    if (window.innerWidth > 768) {
+                        header.style.paddingLeft = '200px';
+                    }
                     body.classList.remove('sidebar-collapsed');
                 }
             }

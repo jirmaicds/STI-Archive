@@ -306,8 +306,8 @@
             align-items: center;
             position: fixed;
             top: 0;
-            left:100px;
-            width: 100%;
+            left: 200px;
+            width: calc(100% - 200px);
             z-index: 2;
             transition: left 0.3s, width 0.3s;
         }
@@ -3174,58 +3174,7 @@
                 </div>
             </div>
         </div>
-        <div id="settings" class="content-section">
-            <div class="settings-section">
-                <div style="display: flex;">
-                    <div class="settings-sidebar" style="width: 200px; padding: 20px; background-color: #f8f9fa; border-right: 1px solid #ddd;">
-                        <ul style="list-style: none; padding: 0;">
-                            <li style="padding: 10px 0; cursor: pointer; color: #007bff;" onclick="showSettingsSection('general')">General</li>
-                            <li style="padding: 10px 0; cursor: pointer;" onclick="showSettingsSection('account')">Account</li>
-                            <li onclick="showSettingsSection('terms-conditions')" style="cursor: pointer; padding-top: 10px; padding-bottom: 10px;">Terms & Conditions</li>
-                            <li onclick="showSettingsSection('privacy-policy')" style="cursor: pointer; padding-top: 10px;">Privacy Policy</li>
-                        </ul>
-                    </div>
-                    <div class="settings-content" style="flex: 1; padding: 20px;">
-                        <div id="general-settings" class="settings-subsection">
-                            <h4>General Settings</h4>
-                            <div style="margin-bottom: 20px;">
-                                <label for="admin-name">Admin Name:</label>
-                                <input type="text" id="admin-name" value="Sub-Admin" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            </div>
-                            <div style="margin-bottom: 20px;">
-                                <label for="admin-email">Admin Email:</label>
-                                <input type="email" id="admin-email" value="subadmin@example.com" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            </div>
-                            <button class="btn btn-primary" onclick="saveGeneralSettings()">Save Changes</button>
-                        </div>
-                        <div id="account-settings" class="settings-subsection" style="display: none;">
-                            <h4>Account Settings</h4>
-                            <div style="margin-bottom: 20px;">
-                                <label for="current-password">Current Password:</label>
-                                <input type="password" id="current-password" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            </div>
-                            <div style="margin-bottom: 20px;">
-                                <label for="new-password">New Password:</label>
-                                <input type="password" id="new-password" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            </div>
-                            <div style="margin-bottom: 20px;">
-                                <label for="confirm-password">Confirm New Password:</label>
-                                <input type="password" id="confirm-password" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            </div>
-                            <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
-                        </div>
-                        <div id="terms-conditions" class="settings-subsection" style="display: none;">
-                            <h4>Terms & Conditions</h4>
-                            <p>Terms and conditions content here...</p>
-                        </div>
-                        <div id="privacy-policy" class="settings-subsection" style="display: none;">
-                            <h4>Privacy Policy</h4>
-                            <p>Privacy policy content here...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
         <div id="notifications" class="content-section">
             <div class="notifications-section">
                 <h3>All Notifications</h3>
@@ -3237,6 +3186,7 @@
                 <div id="all-notifications-list" class="notification-list-section"></div>
             </div>
         </div>
+        <div id="settings" class="content-section">
             <div class="settings-section">
                 <div style="display: flex;">
                     <div class="settings-sidebar" style="width: 200px; padding: 20px; background-color: #f8f9fa; border-right: 1px solid #ddd;">
@@ -3404,94 +3354,9 @@
         <button class="citation-copy-btn" onclick="copyCitation()">Copy Citation</button>
       </div>
     </div>
-    <!-- Create Admin Modal -->
-    <div id="create-admin-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeCreateAdminModal()">&times;</span>
-            <h3>Create New Admin</h3>
-            <form id="create-admin-form">
-                <label for="create-admin-id">Admin ID:</label>
-                <input type="text" id="create-admin-id" required>
-                <label for="create-admin-fullname">Full Name:</label>
-                <input type="text" id="create-admin-fullname" required>
-                <label for="create-admin-email">Email:</label>
-                <input type="email" id="create-admin-email" required>
-                <label for="create-admin-password">Password:</label>
-                <input type="password" id="create-admin-password" required>
-                <label>Permissions:</label>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <label><input type="checkbox" id="perm-remove-user"> Remove User</label>
-                    <label><input type="checkbox" id="perm-manage-users"> Manage Users</label>
-                    <label><input type="checkbox" id="perm-view-notifications"> View Notifications</label>
-                    <label><input type="checkbox" id="perm-edit-settings"> Edit Settings</label>
-                </div>
-                <button type="submit" class="btn">Create Admin</button>
-            </form>
-        </div>
-    </div>
-    <!-- Add User Modal -->
-    <div id="add-user-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeAddUserModal()">&times;</span>
-            <h3>Add New User</h3>
-            <form id="add-user-form">
-                <label for="add-user-id">User ID:</label>
-                <input type="text" id="add-user-id" required>
-                <label for="add-user-fullname">Full Name:</label>
-                <input type="text" id="add-user-fullname" required>
-                <label for="add-user-email">School Email:</label>
-                <input type="email" id="add-user-email" required>
-                <label for="add-user-personal-email">Personal Email:</label>
-                <input type="email" id="add-user-personal-email" required>
-                <label for="add-user-password">Password:</label>
-                <input type="password" id="add-user-password" required>
-                <label for="add-user-role">Role:</label>
-                <select id="add-user-role" required>
-                    <option value="senior_high">Senior High</option>
-                    <option value="college">College</option>
-                    <option value="teacher">Teacher</option>
-                </select>
-                <div id="add-user-grade-section" style="display: none;">
-                    <label for="add-user-grade">Grade:</label>
-                    <select id="add-user-grade">
-                        <option value="Grade 11">Grade 11</option>
-                        <option value="Grade 12">Grade 12</option>
-                    </select>
-                </div>
-                <label for="add-user-section">Section/Strand:</label>
-                <input type="text" id="add-user-section" required>
-                <button type="submit" class="btn">Add User</button>
-            </form>
-        </div>
-    </div>
-    <!-- Edit User Modal -->
-    <div id="edit-user-modal" class="modal">
-        <div class="modal-content">
-            <div style="position: relative; margin-bottom: 20px;">
-                <h3 style="margin: 0;">Edit User</h3>
-                <span class="close-modal" onclick="closeEditUserModal()" style="position: absolute; right: 0; top: 0; cursor: pointer; font-size: 28px; color: #aaa;">&times;</span>
-            </div>
-            <form id="edit-user-form">
-                <label for="edit-user-id">Id:</label>
-                <input type="text" id="edit-user-id" readonly>
-                <label for="edit-student-id">Student ID:</label>
-                <input type="text" id="edit-student-id" required>
-                <label for="edit-user-fullname">Full Name:</label>
-                <input type="text" id="edit-user-fullname" required>
-                <label for="edit-user-role">Role:</label>
-                <select id="edit-user-role" required>
-                    <option value="senior_high">Senior High</option>
-                    <option value="college">College</option>
-                    <option value="teacher">Teacher</option>
-                    <option value="admin">Admin</option>
-                </select>
-                <label for="edit-user-section">Sec_Degr:</label>
-                <input type="text" id="edit-user-section" required>
-                <button type="submit" class="btn">Save</button>
-                <button type="button" onclick="closeEditUserModal()" class="btn">Cancel</button>
-            </form>
-        </div>
-    </div>
+    
+    
+    
     <script>
         // === PDF MODAL FUNCTIONS ===
         // For subadmin users - just close the modal and stay in current location

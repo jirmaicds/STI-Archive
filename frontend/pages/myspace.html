@@ -5132,10 +5132,24 @@ color: #ffd700;
 
         // Page indicator functionality
         function updateCurrentPage() {
+            // Ensure pageIndicator exists
+            let pageIndicator = document.getElementById('pageIndicator');
+            if (!pageIndicator) {
+                const toolbar = document.querySelector('.toolbar');
+                if (toolbar) {
+                    pageIndicator = document.createElement('span');
+                    pageIndicator.id = 'pageIndicator';
+                    pageIndicator.style.marginLeft = 'auto';
+                    pageIndicator.style.fontSize = '14px';
+                    pageIndicator.style.color = '#666';
+                    toolbar.appendChild(pageIndicator);
+                }
+            }
+
             const container = document.getElementById('documentContainer');
             const pages = document.querySelectorAll('.page');
             if (pages.length === 0) {
-                document.getElementById('pageIndicator').textContent = 'Page 0 of 0';
+                if (pageIndicator) pageIndicator.textContent = 'Page 0 of 0';
                 updateWordCounter();
                 return;
             }
@@ -5154,7 +5168,7 @@ color: #ffd700;
             // Update active class
             pages.forEach((p, i) => p.classList.toggle('active', i === currentIndex));
             // Update indicator
-            document.getElementById('pageIndicator').textContent = `Page ${currentIndex + 1} of ${pages.length}`;
+            if (pageIndicator) pageIndicator.textContent = `Page ${currentIndex + 1} of ${pages.length}`;
             updateWordCounter();
             console.log('updateCurrentPage: currentIndex:', currentIndex, 'pages.length:', pages.length, 'scrollTop:', container.scrollTop);
         }

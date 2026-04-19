@@ -57,10 +57,7 @@
             align-items: center;
             justify-content: flex-start;
         }
-        @media (min-width: 875px) {
-            .sidebar {
-            }
-        }
+
         .sidebar img {
             max-width: 120px;
             height: 105px;
@@ -3977,55 +3974,79 @@
 
         // === UTILS ===
         let isLoadingUsers = false;
-        async function getUsers(forceRefresh = false) {
+        function getUsers(forceRefresh = false) {
             if (forceRefresh) {
                 localStorage.removeItem('users');
                 isLoadingUsers = false;
                 console.log('DEBUG: Force refresh requested for users');
             }
-            if (isLoadingUsers) return JSON.parse(localStorage.getItem('users')) || [];
+            if (isLoadingUsers) return Promise.resolve(JSON.parse(localStorage.getItem('users')) || []);
             isLoadingUsers = true;
             console.log('DEBUG: Attempting to fetch users from server...');
-            try {
-                const response = await fetch('/api/users');
-                console.log('DEBUG: Fetch response status:', response.status);
-                if (response.ok) {
-                    console.log('DEBUG: Server responded successfully, parsing JSON...');
-                    let users = await response.json();
-                    if (users && typeof users === 'object' && users.users) {
-                        users = users.users;
+            return fetch('/api/users')
+                .then(function(response) {
+                    console.log('DEBUG: Fetch response status:', response.status);
+                    if (response.ok) {
+                        console.log('DEBUG: Server responded successfully, parsing JSON...');
+                        return response.json().then(function(users) {
+                            if (users && typeof users === 'object' && users.users) {
+                                users = users.users;
+                            }
+                            isLoadingUsers = false;
+                            localStorage.setItem('users', JSON.stringify(users));
+                            return users;
+                        });
+                    } else {
+                        console.log('DEBUG: Server returned error:', response.status, 'falling back to localStorage');
+                        var localUsers = [];
+                        try {
+                            localUsers = JSON.parse(localStorage.getItem('users')) || [];
+                        } catch (e) {
+                            console.error('Error parsing local users:', e);
+                        }
+                        // Auto-delete rejected users after 24 hours
+                        var now = new Date();
+                        localUsers = localUsers.filter(function(user) {
+                            if (user.rejected && user.rejected_at) {
+                                var rejectedTime = new Date(user.rejected_at);
+                                var diff = now - rejectedTime;
+                                if (diff > 24 * 60 * 60 * 1000) {
+                                    return false; // Remove this user
+                                }
+                            }
+                            return true;
+                        });
+                        localStorage.setItem('users', JSON.stringify(localUsers)); // Save filtered users
+                        console.log('DEBUG: Loaded users from localStorage, count:', localUsers.length);
+                        isLoadingUsers = false;
+                        return localUsers;
                     }
+                })
+                .catch(function(e) {
+                    console.log('DEBUG: Could not load from server, error:', e.message, 'using localStorage');
+                    var localUsers = [];
+                    try {
+                        localUsers = JSON.parse(localStorage.getItem('users')) || [];
+                    } catch (e) {
+                        console.error('Error parsing local users:', e);
+                    }
+                    // Auto-delete rejected users after 24 hours
+                    var now = new Date();
+                    localUsers = localUsers.filter(function(user) {
+                        if (user.rejected && user.rejected_at) {
+                            var rejectedTime = new Date(user.rejected_at);
+                            var diff = now - rejectedTime;
+                            if (diff > 24 * 60 * 60 * 1000) {
+                                return false; // Remove this user
+                            }
+                        }
+                        return true;
+                    });
+                    localStorage.setItem('users', JSON.stringify(localUsers)); // Save filtered users
+                    console.log('DEBUG: Loaded users from localStorage, count:', localUsers.length);
                     isLoadingUsers = false;
-                    localStorage.setItem('users', JSON.stringify(users));
-                    return users;
-                } else {
-                    console.log('DEBUG: Server returned error:', response.status, 'falling back to localStorage');
-                }
-            } catch (e) {
-                console.log('DEBUG: Could not load from server, error:', e.message, 'using localStorage');
-            }
-            let localUsers = [];
-            try {
-                localUsers = JSON.parse(localStorage.getItem('users')) || [];
-            } catch (e) {
-                console.error('Error parsing local users:', e);
-            }
-            // Auto-delete rejected users after 24 hours
-            const now = new Date();
-            localUsers = localUsers.filter(user => {
-                if (user.rejected && user.rejected_at) {
-                    const rejectedTime = new Date(user.rejected_at);
-                    const diff = now - rejectedTime;
-                    if (diff > 24 * 60 * 60 * 1000) {
-                        return false; // Remove this user
-                    }
-                }
-                return true;
-            });
-            localStorage.setItem('users', JSON.stringify(localUsers)); // Save filtered users
-            console.log('DEBUG: Loaded users from localStorage, count:', localUsers.length);
-            isLoadingUsers = false;
-            return localUsers;
+                    return localUsers;
+                });
         }
         function saveUsers(users) {
             localStorage.setItem('users', JSON.stringify(users));
@@ -4483,12 +4504,10 @@
         // === INIT ===
         document.addEventListener('DOMContentLoaded', function() {
             // Auto-update users every 5 seconds
-            async function autoRefreshUsers() {
-                try {
-                    await refreshUsers();
-                } catch (error) {
+            function autoRefreshUsers() {
+                refreshUsers().catch(error => {
                     console.error('Auto user refresh failed:', error);
-                }
+                });
             }
             autoRefreshUsers();
             // Removed auto-refresh interval due to API issues
@@ -5571,41 +5590,41 @@ STI Archives Admin`;
             document.getElementById('verified-users-count').textContent = totalUsers;
             document.getElementById('admin-users-count').textContent = adminCount;
             document.getElementById('signing-up-users-count').textContent = signingUpCount;
-        }
 
         // === LOAD ADMINS FUNCTION ===
-        async function loadAdmins() {
-            const users = await getUsers();
-            const tbody = document.getElementById('admins-tbody');
-            tbody.innerHTML = '';
-            users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).forEach(user => {
-                const row = `<tr>
-                    <td>${user.id}</td>
-                    <td>${user.name || '-'}</td>
-                    <td>${user.email || '-'}</td>
-                    <td>${formatRole(user.role)}</td>
-                    <td>${user.created_at || '-'}</td>
-                    <td>Active</td>
-                </tr>`;
-                tbody.innerHTML += row;
+        function loadAdmins() {
+            getUsers().then(function(users) {
+                var tbody = document.getElementById('admins-tbody');
+                tbody.innerHTML = '';
+                users.filter(function(u) { return ['admin', 'coadmin', 'subadmin'].includes(u.role); }).forEach(function(user) {
+                    var row = '<tr>' +
+                        '<td>' + user.id + '</td>' +
+                        '<td>' + (user.name || '-') + '</td>' +
+                        '<td>' + (user.email || '-') + '</td>' +
+                        '<td>' + formatRole(user.role) + '</td>' +
+                        '<td>' + (user.created_at || '-') + '</td>' +
+                        '<td>Active</td>' +
+                        '</tr>';
+                    tbody.innerHTML += row;
+                });
             });
         }
 
-        async function renderUserChart() {
+        function renderUserChart() {
             // Example data for demonstration
-            const exampleData = {
+            var exampleData = {
                 shs: 150,
                 college: 80,
                 teacher: 25,
                 admin: 5
             };
-            const barColors = [
+            var barColors = [
                 '#008000', // SHS Emerald Green
                 '#00008B', // College Deep Blue
                 '#FFA500', // Teacher Warm Orange
                 '#8A2BE2'  // Admin Cool Purple
             ];
-            const labels = ['SHS', 'COLLEGE', 'TEACHER', 'ADMIN'];
+            var labels = ['SHS', 'COLLEGE', 'TEACHER', 'ADMIN'];
             const ctx = document.getElementById('user-chart').getContext('2d');
             if (window.userChart) {
                 window.userChart.destroy();
@@ -6284,74 +6303,77 @@ STI Archives Admin`;
             loadDepartmentUsersForStatus(status, dept);
         }
 
-        async function loadStrandUsersForStatus(status, grade, strand) {
-            const users = await getUsers();
-            const tbody = document.getElementById(status + '-strand-users-tbody');
-            tbody.innerHTML = '';
-            const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
-                                status === 'banned' ? user.banned : false;
-            users.forEach(user => {
-                if (user.role === 'senior_high' && user.section === 'Grade ' + grade && user.strand === strand && statusFilter) {
-                    const date = formatDate(user.verified_at || user.created_at);
-                    const dateHeader = status === 'signing-up' ? 'Date Signed Up' : 'Date Banned';
-                    const row = `<tr>
-                    <td>${user.name}</td>
-                    <td>${user.email}</td>
-                    <td>${formatRole(user.role)}</td>
-                    <td>${date}</td>
-                    <td>${getStatus(user)}</td>
-                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
-                    <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                }
+        function loadStrandUsersForStatus(status, grade, strand) {
+            getUsers().then(function(users) {
+                var tbody = document.getElementById(status + '-strand-users-tbody');
+                tbody.innerHTML = '';
+                users.forEach(function(user) {
+                    var statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
+                                        status === 'banned' ? user.banned : false;
+                    if (user.role === 'senior_high' && user.section === 'Grade ' + grade && user.strand === strand && statusFilter) {
+                        var date = formatDate(user.verified_at || user.created_at);
+                        var dateHeader = status === 'signing-up' ? 'Date Signed Up' : 'Date Banned';
+                        var row = '<tr>' +
+                        '<td>' + user.name + '</td>' +
+                        '<td>' + user.email + '</td>' +
+                        '<td>' + formatRole(user.role) + '</td>' +
+                        '<td>' + date + '</td>' +
+                        '<td>' + getStatus(user) + '</td>' +
+                        '<td>' + (user.raf_path || '') + ' / ' + (user.educator_id || '') + '</td>' +
+                        '<td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser(\'' + (user.user_id || user.id) + '\')">Remove</button></td>' +
+                        '</tr>';
+                        tbody.innerHTML += row;
+                    }
+                });
             });
         }
 
-        async function loadDegreeUsersForStatus(status, degree) {
-            const users = await getUsers();
-            const tbody = document.getElementById(status + '-degree-users-tbody');
-            tbody.innerHTML = '';
-            const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
-                                status === 'banned' ? user.banned : false;
-            users.forEach(user => {
-                if (user.role === 'college' && user.section === degree.toUpperCase() && statusFilter) {
-                    const date = formatDate(user.verified_at || user.created_at);
-                    const row = `<tr>
+        function loadDegreeUsersForStatus(status, degree) {
+            getUsers().then(users => {
+                const tbody = document.getElementById(status + '-degree-users-tbody');
+                tbody.innerHTML = '';
+                users.forEach(user => {
+                    const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
+                                        status === 'banned' ? user.banned : false;
+                    if (user.role === 'college' && user.section === degree.toUpperCase() && statusFilter) {
+                        const date = formatDate(user.verified_at || user.created_at);
+                        const row = `<tr>
+                            <td>${user.id}</td>
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td>${formatRole(user.role)}</td>
+                            <td>${date}</td>
+                            <td><button class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                            <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    }
+                });
+            });
+        }
+
+        function loadDepartmentUsersForStatus(status, dept) {
+            getUsers().then(users => {
+                const tbody = document.getElementById(status + '-department-users-tbody');
+                tbody.innerHTML = '';
+                users.forEach(user => {
+                    const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
+                                        status === 'banned' ? user.banned : false;
+                    if (user.role === 'teacher' && user.section === 'Department ' + dept.toUpperCase() && statusFilter) {
+                        const date = formatDate(user.verified_at || user.created_at);
+                        const row = `<tr>
                         <td>${user.id}</td>
                         <td>${user.name}</td>
                         <td>${user.email}</td>
                         <td>${formatRole(user.role)}</td>
                         <td>${date}</td>
-                        <td><button class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                        <td>${getStatus(user)}</td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                }
-            });
-        }
-
-        async function loadDepartmentUsersForStatus(status, dept) {
-            const users = await getUsers();
-            const tbody = document.getElementById(status + '-department-users-tbody');
-            tbody.innerHTML = '';
-            const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
-                                status === 'banned' ? user.banned : false;
-            users.forEach(user => {
-                if (user.role === 'teacher' && user.section === 'Department ' + dept.toUpperCase() && statusFilter) {
-                    const date = formatDate(user.verified_at || user.created_at);
-                    const row = `<tr>
-                    <td>${user.id}</td>
-                    <td>${user.name}</td>
-                    <td>${user.email}</td>
-                    <td>${formatRole(user.role)}</td>
-                    <td>${date}</td>
-                    <td>${getStatus(user)}</td>
-                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
-                    <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                }
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    }
+                });
             });
         }
 
@@ -6380,75 +6402,68 @@ STI Archives Admin`;
             loadDepartmentUsers(dept);
         }
 
-        async function loadStrandUsers(grade, strand) {
-            const users = await getUsers();
-            const tbody = document.getElementById('strand-users-tbody');
-            tbody.innerHTML = '';
-            users.forEach(user => {
-                if (user.role === 'senior_high' && user.section === 'Grade ' + grade && user.strand === strand) {
-                    const date = formatDate(user.verified_at || user.created_at);
-                    const row = `<tr>
-                        <td>${user.id}</td>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <td>${formatRole(user.role)}</td>
-                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
-                        
-                        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                }
+        function loadStrandUsers(grade, strand) {
+            getUsers().then(users => {
+                const tbody = document.getElementById('strand-users-tbody');
+                tbody.innerHTML = '';
+                users.forEach(user => {
+                    if (user.role === 'senior_high' && user.section === 'Grade ' + grade && user.strand === strand) {
+                        const date = formatDate(user.verified_at || user.created_at);
+                        const row = `<tr>
+                            <td>${user.id}</td>
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td>${formatRole(user.role)}</td>
+                            <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                            
+                            <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    }
+                });
             });
         }
 
-        async function loadDegreeUsers(degree) {
-            const users = await getUsers();
-            const tbody = document.getElementById('degree-users-tbody');
-            tbody.innerHTML = '';
-            users.forEach(user => {
-                if (user.role === 'college' && user.section === degree.toUpperCase()) {
-                    const date = formatDate(user.verified_at || user.created_at);
-                    const row = `<tr>
-                        <td>${user.id}</td>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <td>${formatRole(user.role)}</td>
-                        <td>${date}</td>
-                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
-                        
-                        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                }
+        function loadDegreeUsers(degree) {
+            getUsers().then(users => {
+                const tbody = document.getElementById('degree-users-tbody');
+                tbody.innerHTML = '';
+                users.forEach(user => {
+                    if (user.role === 'college' && user.section === degree.toUpperCase()) {
+                        const date = formatDate(user.verified_at || user.created_at);
+                        const row = `<tr>
+                            <td>${user.id}</td>
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td>${formatRole(user.role)}</td>
+                            <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                            
+                            <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    }
+                });
             });
-        }
-
-        async function loadDepartmentUsers(dept) {
-            const users = await getUsers();
-            const tbody = document.getElementById('department-users-tbody');
-            tbody.innerHTML = '';
-            users.forEach(user => {
-                if (user.role === 'teacher' && user.section === 'Department ' + dept.toUpperCase()) {
-                    const date = formatDate(user.verified_at || user.created_at);
-                    const row = `<tr>
-                        <td>${user.user_id || user.id}</td>
-                        <td>${user.student_id}</td>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <td>${formatRole(user.role)}</td>
-                        <td>${date}</td>
-                        <td>${getStatus(user)}</td>
-                        <td><button class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
-                        <td>
-                            <button type="button" class="btn btn-success btn-sm" onclick="acceptUser('${user.user_id || user.id}')">Accept</button>
-                            <button class="btn btn-danger btn-sm">Actions</button>
-                        </td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                }
+        function loadDepartmentUsers(dept) {
+            getUsers().then(users => {
+                const tbody = document.getElementById('department-users-tbody');
+                tbody.innerHTML = '';
+                users.forEach(user => {
+                    if (user.role === 'teacher' && user.section === 'Department ' + dept.toUpperCase()) {
+                        const date = formatDate(user.verified_at || user.created_at);
+                        const row = `<tr>
+                            <td>${user.id}</td>
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td>${formatRole(user.role)}</td>
+                            <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                            
+                            <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    }
+                });
             });
-        }
-
         function navigateToUploads(type) { 
             showSection('upload');
             // Update sidebar active state
@@ -6524,15 +6539,14 @@ STI Archives Admin`;
         function saveUsers(users) {
             localStorage.setItem('users', JSON.stringify(users));
         }
-        async function refreshUsers() {
+        function refreshUsers() {
             console.log('DEBUG: Auto refreshing users data from server...');
-            try {
-                const users = await getUsers(true);
+            getUsers(true).then(users => {
                 saveUsers(users);
-                await loadUsers();
-            } catch (error) {
+                loadUsers();
+            }).catch(error => {
                 console.error('Error auto-refreshing users:', error);
-            }
+            });
         }
         function previewRaf(rafPath) {
             // For testing, use a hardcoded PDF from Supabase
@@ -7117,44 +7131,48 @@ STI Archives Admin`;
             loadProfilePicture();
 
             var isLoadingSiteSettings = false;
-            async function loadSiteSettings() {
+            function loadSiteSettings() {
                 if (isLoadingSiteSettings) return;
                 isLoadingSiteSettings = true;
                 console.log('DEBUG: Attempting to load site settings from server...');
-                try {
-                    const response = await fetch('/api/site-settings');
-                    console.log('DEBUG: Site settings fetch response status:', response.status);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const settings = await response.json();
-                    console.log('DEBUG: Loaded settings:', settings);
-                    // Check if favicon is a blob URL and reset to default if so
-                    if (settings.siteFavicon && settings.siteFavicon.startsWith('blob:')) {
-                        console.log('DEBUG: Invalid blob URL detected, resetting to default favicon');
-                        settings.siteFavicon = 'frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg';
-                    }
-                    if (!settings.siteFavicon) {
-                        settings.siteFavicon = 'frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg';
-                    }
-                    siteTitleInput.value = settings.siteTitle;
-                    siteTitlePreview.textContent = settings.siteTitle;
-                    faviconPreview.src = settings.siteFavicon;
-                    updateDocumentTitle(settings.siteTitle);
-                    updateDocumentFavicon(settings.siteFavicon);
-                } catch (error) {
-                    console.error('Failed to load site settings:', error);
-                    // Fallback to defaults
-                    const defaultTitle = 'STI Archives';
-                    const defaultFavicon = 'frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg';
-                    siteTitleInput.value = defaultTitle;
-                    siteTitlePreview.textContent = defaultTitle;
-                    faviconPreview.src = defaultFavicon;
-                    updateDocumentTitle(defaultTitle);
-                    updateDocumentFavicon(defaultFavicon);
-                } finally {
-                    isLoadingSiteSettings = false;
+                fetch('/api/site-settings')
+                    .then(response => {
+                        console.log('DEBUG: Site settings fetch response status:', response.status);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                return response.json();
+            })
+            .then(function(settings) {
+                console.log('DEBUG: Loaded settings:', settings);
+                // Check if favicon is a blob URL and reset to default if so
+                if (settings.siteFavicon && settings.siteFavicon.startsWith('blob:')) {
+                    console.log('DEBUG: Invalid blob URL detected, resetting to default favicon');
+                    settings.siteFavicon = 'frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg';
                 }
+                if (!settings.siteFavicon) {
+                    settings.siteFavicon = 'frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg';
+                }
+                siteTitleInput.value = settings.siteTitle;
+                siteTitlePreview.textContent = settings.siteTitle;
+                faviconPreview.src = settings.siteFavicon;
+                updateDocumentTitle(settings.siteTitle);
+                updateDocumentFavicon(settings.siteFavicon);
+            })
+            .catch(function(error) {
+                console.error('Failed to load site settings:', error);
+                // Fallback to defaults
+                var defaultTitle = 'STI Archives';
+                var defaultFavicon = 'frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg';
+                siteTitleInput.value = defaultTitle;
+                siteTitlePreview.textContent = defaultTitle;
+                faviconPreview.src = defaultFavicon;
+                updateDocumentTitle(defaultTitle);
+                updateDocumentFavicon(defaultFavicon);
+            })
+            .finally(function() {
+                isLoadingSiteSettings = false;
+            });
             }
 
             // Real-time preview updates
@@ -7176,7 +7194,7 @@ STI Archives Admin`;
             });
 
             // Save settings on form submit
-            settingsForm.addEventListener('submit', async function(e) {
+            settingsForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 const title = siteTitleInput.value || 'STI Archives';
                 const faviconFile = siteFaviconInput.files[0];
@@ -7186,31 +7204,29 @@ STI Archives Admin`;
                 if (faviconFile) {
                     // Convert file to base64 for server storage
                     const reader = new FileReader();
-                    reader.onload = async function(e) {
+                    reader.onload = function(e) {
                         faviconData = e.target.result;
-                        await saveSettings(title, faviconData);
+                        saveSettings(title, faviconData);
                     };
                     reader.readAsDataURL(faviconFile);
                 } else {
                     // Use current favicon preview src
                     faviconData = faviconPreview.src;
-                    await saveSettings(title, faviconData);
+                    saveSettings(title, faviconData);
                 }
             });
 
-            async function saveSettings(title, favicon) {
-                try {
-                    const response = await fetch('/api/site-settings/update', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            siteTitle: title,
-                            siteFavicon: favicon
-                        })
-                    });
-
+            function saveSettings(title, favicon) {
+                return fetch('/api/site-settings/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        siteTitle: title,
+                        siteFavicon: favicon
+                    })
+                }).then(function(response) {
                     if (response.ok) {
                         // Update document title and favicon only on successful save
                         updateDocumentTitle(title);
@@ -7219,10 +7235,10 @@ STI Archives Admin`;
                     } else {
                         alert('Failed to save settings. Please try again.');
                     }
-                } catch (error) {
+                }).catch(function(error) {
                     console.error('Error saving settings:', error);
                     alert('Failed to save settings. Please try again.');
-                }
+                });
             }
         });
 
@@ -7290,28 +7306,27 @@ STI Archives Admin`;
         }
 
         // Accept user function
-        async function acceptUser(userId) {
+        function acceptUser(userId) {
             if (confirm('Are you sure you want to accept this user? This will generate login credentials for them.')) {
-                try {
-                    const response = await fetch('/api/auth/accept-user', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ user_id: userId })
-                    });
-
+                fetch('/api/auth/accept-user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId })
+                }).then(response => {
                     if (response.ok) {
-                        const result = await response.json();
-                        alert('User accepted successfully! Login credentials have been generated.');
-                        // Refresh the users list
-                        loadUsers();
-                        loadAdmins();
+                        return response.json();
                     } else {
-                        alert('Failed to accept user. Please try again.');
+                        throw new Error('Failed to accept user');
                     }
-                } catch (error) {
+                }).then(result => {
+                    alert('User accepted successfully! Login credentials have been generated.');
+                    // Refresh the users list
+                    loadUsers();
+                    loadAdmins();
+                }).catch(error => {
                     console.error('Error accepting user:', error);
-                    alert('Failed to accept user. Please check your connection.');
-                }
+                    alert('Failed to accept user. Please try again.');
+                });
             }
         }
 
@@ -7790,9 +7805,22 @@ STI Archives Admin`;
                 // Escape special characters for onclick handler
                 const safePdfUrl = pdfUrl.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 const safeTitle = (upload.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const safeTitleDisplay = (upload.title || '').replace(/`/g, '&#96;');
+                const safeUserName = (upload.userName || '').replace(/`/g, '&#96;');
+                const safeAbstract = (upload.abstract || 'N/A').replace(/`/g, '&#96;');
+                const safeCategory = (upload.category || '').replace(/`/g, '&#96;');
+                const safeTopic = (upload.topic || '').replace(/`/g, '&#96;');
+                const safeType = (upload.type || '').replace(/`/g, '&#96;');
+                const safeLevel = (upload.level || '').replace(/`/g, '&#96;');
+                const safeYear = (upload.year || '').replace(/`/g, '&#96;');
+                const safeFilename = (upload.filename || '').replace(/`/g, '&#96;');
+                const safeStatus = (upload.status || '').replace(/`/g, '&#96;');
+                const safeUploadedAt = new Date(upload.uploadedAt).toLocaleString().replace(/`/g, '&#96;');
+                const safeId = upload.id.replace(/'/g, "\\'");
+                const safeIdHtml = upload.id.replace(/"/g, '&quot;');
 
                 // Create onclick handler - call displayArticlePDF for inline viewing
-                const cardClick = hasPdf ? `displayArticlePDF('${safePdfUrl}', '${safeTitle}')` : '';
+                const cardClick = hasPdf ? "displayArticlePDF('" + safePdfUrl + "', '" + safeTitle + "')" : '';
 
                 // Get user initials for profile picture
                 const userInitials = (upload.userName || '').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'U';
@@ -7812,43 +7840,32 @@ STI Archives Admin`;
                 }
 
                 return `
-                <div class="user-uploaded" data-id="${upload.id}">
+                <div class="user-uploaded" data-id="${safeIdHtml}">
                     <div class="user-info">
                         <div class="user-pfp">${userInitials}</div>
                         <div class="user-details">
-                            <div class="user-fullname">${upload.userName}</div>
+                            <div class="user-fullname">${safeUserName}</div>
                             <div class="user-meta">${userMeta}</div>
                         </div>
                     </div>
-                    <div class="uploaded-article" data-id="${upload.id}" ${hasPdf ? "onclick=\"" + cardClick + "\" style=\"cursor: pointer;\"" : ''}>
-                        <h3>${upload.title}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : ''}</h3>
-                        <div class="summary">${upload.abstract || 'N/A'}</div>
+                    <div class="uploaded-article" data-id="${safeIdHtml}" ${hasPdf ? "onclick=\"" + cardClick + "\" style=\"cursor: pointer;\"" : ''}>
+                        <h3>${safeTitleDisplay}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : ''}</h3>
+                        <div class="summary">${safeAbstract}</div>
                         <div class="meta">
-                            <strong>Category:</strong> ${upload.category}<br>
-                            <strong>Topic:</strong> ${upload.topic ? upload.topic.charAt(0).toUpperCase() + upload.topic.slice(1) : 'Not set'}<br>
-                            <strong>Type:</strong> ${upload.type ? upload.type.charAt(0).toUpperCase() + upload.type.slice(1) : 'Not set'}<br>
-                            <strong>Level:</strong> ${upload.level}<br>
-                            <strong>Year:</strong> ${upload.year}
+                            <strong>Category:</strong> ${safeCategory}<br>
+                            <strong>Topic:</strong> ${safeTopic ? safeTopic.charAt(0).toUpperCase() + safeTopic.slice(1) : 'Not set'}<br>
+                            <strong>Type:</strong> ${safeType ? safeType.charAt(0).toUpperCase() + safeType.slice(1) : 'Not set'}<br>
+                            <strong>Level:</strong> ${safeLevel}<br>
+                            <strong>Year:</strong> ${safeYear}
                         </div>
                         <div class="source-tag">
-                            <strong>File:</strong> ${upload.filename}<br>
-                            <strong>Status:</strong> <span style="color: ${upload.status === 'approved' ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">${upload.status}</span><br>
-                            <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}
+                            <strong>File:</strong> ${safeFilename}<br>
+                            <strong>Status:</strong> <span style="color: ${upload.status === 'approved' ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">${safeStatus}</span><br>
+                            <strong>Uploaded:</strong> ${safeUploadedAt}
                         </div>
                         <div class="actions">
-                            ${hasPdf ? `
-                            <button class="view-pdf-btn" onclick="event.stopPropagation(); displayArticlePDF('${safePdfUrl}', '${safeTitle}')">
-                                <i class="fas fa-eye"></i> View PDF
-                            </button>
-                            ` : ''}
-                            ${upload.status === 'pending' ? `
-                                <button class="upload-btn" onclick="approveUserUploadCoadmin('${upload.id}')">
-                                    <i class="fas fa-check"></i> Approve
-                                </button>
-                                <button class="delete-btn" onclick="rejectUserUploadCoadmin('${upload.id}')">
-                                    <i class="fas fa-times"></i> Reject
-                                </button>
-                            ` : ''}
+                            ${hasPdf ? '<button class="view-pdf-btn" onclick="event.stopPropagation(); displayArticlePDF(\'' + safePdfUrl + '\', \'' + safeTitle + '\')"><i class="fas fa-eye"></i> View PDF</button>' : ''}
+                            ${upload.status === 'pending' ? '<button class="upload-btn" onclick="approveUserUploadCoadmin(\'' + safeId + '\')"><i class="fas fa-check"></i> Approve</button><button class="delete-btn" onclick="rejectUserUploadCoadmin(\'' + safeId + '\')"><i class="fas fa-times"></i> Reject</button>' : ''}
                     </div>
                 </div>
             </div>
@@ -7904,68 +7921,62 @@ STI Archives Admin`;
         }
         
         // Approve user upload for coadmin
-        async function approveUserUploadCoadmin(id) {
-            try {
-                const response = await fetch(`/api/admin/user-upload/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: 'approved' })
-                });
-                const result = await response.json();
+        function approveUserUploadCoadmin(id) {
+            fetch(`/api/admin/user-upload/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'approved' })
+            }).then(function(response) { return response.json(); }).then(function(result) {
                 if (result.success) {
                     alert('Upload approved successfully!');
                     loadUserUploadsForCoadmin();
                 } else {
                     alert('Failed to approve: ' + result.error);
                 }
-            } catch (error) {
+            }).catch(function(error) {
                 console.error('Error approving upload:', error);
                 alert('Failed to approve upload');
-            }
+            });
         }
         
         // Reject user upload for coadmin
-        async function rejectUserUploadCoadmin(id) {
-            try {
-                const response = await fetch(`/api/admin/user-upload/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: 'rejected' })
-                });
-                const result = await response.json();
+        function rejectUserUploadCoadmin(id) {
+            fetch(`/api/admin/user-upload/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'rejected' })
+            }).then(function(response) { return response.json(); }).then(function(result) {
                 if (result.success) {
                     alert('Upload rejected successfully!');
                     loadUserUploadsForCoadmin();
                 } else {
                     alert('Failed to reject: ' + result.error);
                 }
-            } catch (error) {
+            }).catch(function(error) {
                 console.error('Error rejecting upload:', error);
                 alert('Failed to reject upload');
-            }
+            });
         }
         
         // Delete user upload for coadmin
-        async function deleteUserUploadCoadmin(id) {
-            if (!confirm('Are you sure you want to delete this upload? This action cannot be undone.')) {
+        function deleteUserUploadCoadmin(id) {
+            if (!confirm('Are you sure you want to delete this upload?')) {
                 return;
             }
-            try {
-                const response = await fetch(`/api/admin/user-upload/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const result = await response.json();
+            fetch(`/api/admin/user-upload/${id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            }).then(function(response) { return response.json(); }).then(function(result) {
                 if (result.success) {
                     alert('Upload deleted successfully!');
                     loadUserUploadsForCoadmin();
                 } else {
                     alert('Failed to delete: ' + result.error);
                 }
-            } catch (error) {
+            }).catch(function(error) {
                 console.error('Error deleting upload:', error);
                 alert('Failed to delete upload');
-            }
+            });
         }
     </script>
     <script src="/frontend/assets/js/pdf-viewer.js"></script>

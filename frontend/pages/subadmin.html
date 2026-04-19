@@ -3685,7 +3685,12 @@
                 updateDashboardCounts();
             } catch (error) {
                 console.error('Error loading users:', error);
-                users = JSON.parse(localStorage.getItem('users')) || [];
+                try {
+                    const stored = localStorage.getItem('users');
+                    users = stored ? JSON.parse(stored) : [];
+                } catch (e) {
+                    users = [];
+                }
             }
         }
 

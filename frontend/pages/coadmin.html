@@ -5611,7 +5611,13 @@
                 
                 // If no currentUser, try to get from users array based on role
                 if (!currentUser || !currentUser.name) {
-                    const users = JSON.parse(localStorage.getItem('users')) || [];
+            let chartUsers = [];
+            try {
+                const stored = localStorage.getItem('users');
+                chartUsers = stored ? JSON.parse(stored) : [];
+            } catch (e) {
+                chartUsers = [];
+            }
                     currentUser = users.find(u => u.role === 'admin');
                 }
                 
@@ -6344,9 +6350,13 @@ STI Archives Admin`;
                 users = await getUsers();
                 console.log('DEBUG: getUsers returned:', users);
             } catch (error) {
-                console.error('DEBUG: Error loading users:', error);
-                users = JSON.parse(localStorage.getItem('users')) || [];
-                console.log('DEBUG: Fallback to localStorage users:', users);
+                console.error('Error loading users:', error);
+                try {
+                    const stored = localStorage.getItem('users');
+                    users = stored ? JSON.parse(stored) : [];
+                } catch (e) {
+                    users = [];
+                }
             }
             if (!Array.isArray(users)) users = [];
             console.log('DEBUG: loadUsers got users, count:', users.length);
@@ -6662,7 +6672,7 @@ STI Archives Admin`;
                 window.signingUpChart.destroy();
             }
             const users = JSON.parse(localStorage.getItem('users')) || [];
-            let filteredUsers = users.filter(user => !user.verified && !user.rejected && !user.banned);
+            let filteredUsers = chartUsers.filter(user => !user.verified && !user.rejected && !user.banned);
             if (filter) {
                 filteredUsers = filteredUsers.filter(user => user.role === filter);
             }

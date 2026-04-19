@@ -4231,7 +4231,8 @@
                     typeText: 'New User Access Request',
                     content: `${user.name} signed up!`,
                     time: user.created_at ? new Date(user.created_at).toLocaleString() : 'Just now',
-                    timestamp: user.created_at ? new Date(user.created_at).getTime() : Date.now()
+                    timestamp: user.created_at ? new Date(user.created_at).getTime() : Date.now(),
+                    priority: 1
                 });
             });
 
@@ -4244,16 +4245,22 @@
                     typeText: 'New User Access Request',
                     content: `${user.name} signed up!`,
                     time: user.verified_at ? new Date(user.verified_at).toLocaleString() : 'Recently',
-                    timestamp: user.verified_at ? new Date(user.verified_at).getTime() : Date.now() - 1000
+                    timestamp: user.verified_at ? new Date(user.verified_at).getTime() : Date.now() - 1000,
+                    priority: 2
                 });
             });
 
             // Filter out deleted notifications
             const deletedNotifications = JSON.parse(localStorage.getItem('deletedNotifications')) || [];
             let filteredNotifications = notifications.filter(notif => !deletedNotifications.includes(notif.id));
-            
-            // Sort by timestamp (newest first)
-            filteredNotifications.sort((a, b) => b.timestamp - a.timestamp);
+
+            // Sort by priority (signing up first), then by timestamp (newest first)
+            filteredNotifications.sort((a, b) => {
+                if (a.priority !== b.priority) {
+                    return a.priority - b.priority;
+                }
+                return b.timestamp - a.timestamp;
+            });
             
             return filteredNotifications;
         }
@@ -4860,7 +4867,7 @@
                     <td>${user.id}</td>
                     <td>${user.name}</td>
                     <td>${emailToUse}</td>
-                    <td>${formatRole(user.role)}</td>
+                    <td>${user.role}</td>
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
@@ -4882,26 +4889,7 @@
         }
         function getSectionDisplay(user) {
             if (user.role === 'senior_high') {
-                // Handle both old and new data formats
-                const grade = user.grade || user.section;
-                const strand = user.strand;
-                
-                if (grade && strand) {
-                    // If grade contains "Grade" and strand is different, show both
-                    if (grade.includes('Grade') && strand.toLowerCase() !== grade.toLowerCase()) {
-                        return `${grade}<br><small>${strand.toUpperCase()}</small>`;
-                    } else if (grade.includes('Grade')) {
-                        // Grade is in section, check if strand exists separately
-                        return `${grade}<br><small>${strand.toUpperCase()}</small>`;
-                    } else {
-                        // Section contains strand value (like "abm"), use grade field
-                        return `${grade}<br><small>${strand.toUpperCase()}</small>`;
-                    }
-                } else if (grade) {
-                    return grade;
-                } else {
-                    return '-';
-                }
+                return user.strand || '-';
             } else if (user.role === 'college') {
                 return user.section || '-';
             } else if (user.role === 'teacher') {
@@ -5771,15 +5759,20 @@
             }).catch(() => {
                 // Fallback
                 notifications = [
-                    { id: 'fallback-1', type: 'new-user', typeText: 'New User Access Request', content: 'New user signed up!', time: '2 hours ago', timestamp: Date.now() - (2 * 60 * 60 * 1000) },
-                    { id: 'fallback-2', type: 'new-user', typeText: 'New User Access Request', content: 'New user signed up!', time: '1 hour ago', timestamp: Date.now() - (1 * 60 * 60 * 1000) },
-                    { id: 'fallback-3', type: 'upload', typeText: 'Co-Admin Upload', content: 'Co-Admin uploaded a new research article.', time: '30 minutes ago', timestamp: Date.now() - (30 * 60 * 1000) },
-                    { id: 'fallback-4', type: 'suggestion', typeText: 'User Suggestion', content: 'User suggested adding a bookmark feature.', time: '45 minutes ago', timestamp: Date.now() - (45 * 60 * 1000) },
-                    { id: 'fallback-5', type: 'bug', typeText: 'Sub-Admin Bug Report', content: 'Sub-Admin reported a bug in the login system.', time: '20 minutes ago', timestamp: Date.now() - (20 * 60 * 1000) }
+                    { id: 'fallback-1', type: 'new-user', typeText: 'New User Access Request', content: 'New user signed up!', time: '2 hours ago', timestamp: Date.now() - (2 * 60 * 60 * 1000), priority: 1 },
+                    { id: 'fallback-2', type: 'new-user', typeText: 'New User Access Request', content: 'New user signed up!', time: '1 hour ago', timestamp: Date.now() - (1 * 60 * 60 * 1000), priority: 1 },
+                    { id: 'fallback-3', type: 'upload', typeText: 'Co-Admin Upload', content: 'Co-Admin uploaded a new research article.', time: '30 minutes ago', timestamp: Date.now() - (30 * 60 * 1000), priority: 2 },
+                    { id: 'fallback-4', type: 'suggestion', typeText: 'User Suggestion', content: 'User suggested adding a bookmark feature.', time: '45 minutes ago', timestamp: Date.now() - (45 * 60 * 1000), priority: 3 },
+                    { id: 'fallback-5', type: 'bug', typeText: 'Sub-Admin Bug Report', content: 'Sub-Admin reported a bug in the login system.', time: '20 minutes ago', timestamp: Date.now() - (20 * 60 * 1000), priority: 4 }
                 ];
 
-                // Sort by timestamp (newest first)
-                notifications.sort((a, b) => b.timestamp - a.timestamp);
+                // Sort by priority, then timestamp (newest first)
+                notifications.sort((a, b) => {
+                    if (a.priority !== b.priority) {
+                        return a.priority - b.priority;
+                    }
+                    return b.timestamp - a.timestamp;
+                });
 
                 // Populate notification modal with fallback
                 const notificationList = document.getElementById('notification-list');
@@ -6386,7 +6379,7 @@ STI Archives Admin`;
                     <td>${user.user_id || user.id}</td>
                     <td>${getUserName(user)}</td>
                     <td>${emailToUse}</td>
-                    <td>${formatRole(user.role)}</td>
+                    <td>${user.role}</td>
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
                     <td>
@@ -6402,7 +6395,7 @@ STI Archives Admin`;
                     <td>${user.user_id || user.id}</td>
                     <td>${user.name}</td>
                     <td>${emailToUse}</td>
-                    <td>${formatRole(user.role)}</td>
+                    <td>${user.role}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
                     <td>
@@ -6505,14 +6498,14 @@ STI Archives Admin`;
                     <td>${user.id}</td>
                     <td>${user.name}</td>
                     <td>${emailToUse}</td>
-                    <td>${formatRole(user.role)}</td>
+                    <td>${user.role}</td>
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
                     <td>
                         <div style="display: flex; align-items: center; gap: 5px;">
-                            <span>${user.raf_path || ''} / ${user.educator_id || ''}</span>
-                            <button class="btn btn-sm btn-info" onclick="previewUserDocs('${user.id}')">Preview</button>
+                            <span>${user.raf_path || ''} ${user.educator_id || ''}</span>
+                            <button class="btn btn-sm btn-info" onclick="previewUserDocs('${user.user_id || user.id}')">Preview</button>
                         </div>
                     </td>
                     <td>${actions}</td>
@@ -7440,7 +7433,7 @@ STI Archives Admin`;
                         <td>${user.user_id || user.id}</td>
                         <td>${user.name}</td>
                         <td>${emailToUse}</td>
-                        <td>${formatRole(user.role)}</td>
+                        <td>${user.role}</td>
                         <td>${getSectionDisplay(user)}</td>
                         <td>${date}</td>
                         <td>${getStatus(user)}</td>
@@ -7471,7 +7464,7 @@ STI Archives Admin`;
                         <td>${user.user_id || user.id}</td>
                         <td>${user.name}</td>
                         <td>${emailToUse}</td>
-                        <td>${formatRole(user.role)}</td>
+                        <td>${user.role}</td>
                         <td>${date}</td>
                         <td><button class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                         <td>
@@ -7500,7 +7493,7 @@ STI Archives Admin`;
                         <td>${user.user_id || user.id}</td>
                         <td>${user.name}</td>
                         <td>${emailToUse}</td>
-                        <td>${formatRole(user.role)}</td>
+                        <td>${user.role}</td>
                         <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                         <td>
                             <button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>
@@ -7547,7 +7540,7 @@ STI Archives Admin`;
                         <td>${user.user_id || user.id}</td>
                         <td>${user.name}</td>
                         <td>${user.email}</td>
-                        <td>${formatRole(user.role)}</td>
+                        <td>${user.role}</td>
                         <td>${getSectionDisplay(user)}</td>
                         <td>${date}</td>
                         <td>${getStatus(user)}</td>
@@ -7576,7 +7569,7 @@ STI Archives Admin`;
                         <td>${user.user_id || user.id}</td>
                         <td>${user.name}</td>
                         <td>${user.email}</td>
-                        <td>${formatRole(user.role)}</td>
+                        <td>${user.role}</td>
                         <td>${getSectionDisplay(user)}</td>
                         <td>${date}</td>
                         <td>${getStatus(user)}</td>
@@ -7600,7 +7593,7 @@ STI Archives Admin`;
                         <td>${user.user_id || user.id}</td>
                         <td>${user.name}</td>
                         <td>${user.email}</td>
-                        <td>${formatRole(user.role)}</td>
+                        <td>${user.role}</td>
                         <td>${date}</td>
                         <td><button class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                         <td>
@@ -7740,7 +7733,7 @@ STI Archives Admin`;
                 modal.style.justifyContent = 'center';
                 modal.style.alignItems = 'center';
                 modal.innerHTML = `
-                    <div class="modal-content" style="margin: 0; max-width: 800px;">
+                    <div class="modal-content" style="margin: 0; max-width: 800px; max-height: 80vh; overflow-y: auto;">
                         <span class="close-modal" onclick="closeUserDocsModal()">&times;</span>
                         <h3>User Documents Preview</h3>
                         <div id="user-docs-preview-content" style="margin-top: 15px;"></div>
@@ -7750,15 +7743,37 @@ STI Archives Admin`;
             }
             modal.style.display = 'flex';
             const content = document.getElementById('user-docs-preview-content');
-            content.innerHTML = `
-                <p><strong>User:</strong> ${user.name}</p>
-                <p><strong>RAF Path:</strong> ${user.raf_path || 'Not provided'}</p>
-                <p><strong>Educator ID:</strong> ${user.educator_id || 'Not provided'}</p>
-                <div style="margin-top: 20px;">
-                    ${user.raf_path ? `<button class="btn btn-primary" onclick="previewRaf('${user.raf_path}')">Preview RAF</button>` : ''}
-                    ${user.educator_id ? `<button class="btn btn-primary" onclick="previewEducatorId('${user.educator_id}')">Preview Educator ID</button>` : ''}
-                </div>
-            `;
+            let html = `<p><strong>User:</strong> ${user.name}</p>`;
+
+            // Display RAF document
+            if (user.raf_path) {
+                const rafUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/Raf-edu_id/' + user.raf_path;
+                const rafExt = user.raf_path.split('.').pop().toLowerCase();
+                html += `<h4>RAF Document</h4>`;
+                if (['jpg', 'jpeg', 'png'].includes(rafExt)) {
+                    html += `<img src="${rafUrl}" alt="RAF Document" style="max-width: 100%; max-height: 400px;">`;
+                } else if (rafExt === 'pdf') {
+                    html += `<embed src="${rafUrl}" type="application/pdf" width="100%" height="400px">`;
+                } else {
+                    html += `<a href="${rafUrl}" target="_blank">Download RAF Document</a>`;
+                }
+            }
+
+            // Display Educator ID document
+            if (user.educator_id) {
+                const eduUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/Raf-edu_id/' + user.educator_id;
+                const eduExt = user.educator_id.split('.').pop().toLowerCase();
+                html += `<h4>Educator ID</h4>`;
+                if (['jpg', 'jpeg', 'png'].includes(eduExt)) {
+                    html += `<img src="${eduUrl}" alt="Educator ID" style="max-width: 100%; max-height: 400px;">`;
+                } else if (eduExt === 'pdf') {
+                    html += `<embed src="${eduUrl}" type="application/pdf" width="100%" height="400px">`;
+                } else {
+                    html += `<a href="${eduUrl}" target="_blank">Download Educator ID</a>`;
+                }
+            }
+
+            content.innerHTML = html;
         }
 
         function closeUserDocsModal() {

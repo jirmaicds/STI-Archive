@@ -3715,7 +3715,7 @@
                     
                     <div style="overflow-x: auto;">
                         <table id="verified-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Sec_Degr</th><th>Grade</th><th>Date Verified</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
+                                                    <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Verified</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="verified-users-tbody">
                             </tbody>
                         </table>
@@ -3768,7 +3768,7 @@
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="signing-up-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Sec_Degr</th><th>Grade</th><th>Date Signed Up</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
+                                                    <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Signed Up</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="signing-up-users-tbody"></tbody>
                         </table>
                     </div>
@@ -3820,7 +3820,7 @@
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="banned-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Sec_Degr</th><th>Grade</th><th>Date Banned</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
+                                                    <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Banned</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="banned-users-tbody"></tbody>
                         </table>
                     </div>
@@ -6377,8 +6377,8 @@ STI Archives Admin`;
                     <td>${getUserName(user)}</td>
                     <td>${emailToUse}</td>
                     <td>${user.role}</td>
-                    <td>${getSectionDisplay(user)}</td>
                     <td>${user.grade || ''}</td>
+                    <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
                     <td>
                         <div style="display: flex; align-items: center; gap: 5px;">
@@ -6394,11 +6394,13 @@ STI Archives Admin`;
                     <td>${user.name}</td>
                     <td>${emailToUse}</td>
                     <td>${user.role}</td>
+                    <td>${user.grade || ''}</td>
+                    <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
                     <td>
                         <div style="display: flex; align-items: center; gap: 5px;">
-                            <span>${user.raf_path || ''} / ${user.educator_id || ''}</span>
+                            <span>${user.raf_path || ''} ${user.educator_id || ''}</span>
                             <button class="btn btn-sm btn-info" onclick="previewUserDocs('${user.user_id || user.id}')">Preview</button>
                         </div>
                     </td>
@@ -6497,8 +6499,8 @@ STI Archives Admin`;
                     <td>${user.name}</td>
                     <td>${emailToUse}</td>
                     <td>${user.role}</td>
-                    <td>${getSectionDisplay(user)}</td>
                     <td>${user.grade || ''}</td>
+                    <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
                     <td>

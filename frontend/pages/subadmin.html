@@ -2881,7 +2881,7 @@
             <div class="logout-only">
                 <a href="#" onclick="handleLogoutClick()"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
-            <div class="avatar-name-row" onclick="showSection('profile')">
+            <div class="avatar-name-row" data-section="profile">
                 <div class="profile-avatar">S</div>
                 <div class="admin-name"><span class="a-prefix">S </span>SubAdmin</div>
             </div>
@@ -3418,7 +3418,7 @@
         </div>
         <div class="notification-footer">
             <div class="left-btns">
-                <button class="view-all-btn" onclick="showSection('notifications'); toggleNotificationModal();">
+                <button class="view-all-btn" data-action="view-all">
                     <i class="fas fa-list"></i> View All
                 </button>
                 <button class="mark-all-read-btn" onclick="showMarkAllConfirm()">
@@ -5023,6 +5023,24 @@ STI Archives Admin`;
                     renderGaugeChart('session-duration-gauge', 'Average Session Duration', 2.5, '#007bff');
                 }, 100);
             }
+        }
+
+        // Add event listener for profile avatar
+        const avatarRow = document.querySelector('.avatar-name-row[data-section]');
+        if (avatarRow) {
+            avatarRow.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                showSection(section);
+            });
+        }
+
+        // Add event listener for view all notifications
+        const viewAllBtn = document.querySelector('.view-all-btn[data-action="view-all"]');
+        if (viewAllBtn) {
+            viewAllBtn.addEventListener('click', function() {
+                showSection('notifications');
+                toggleNotificationModal();
+            });
         }
 
         function toggleProfileDropdown() {

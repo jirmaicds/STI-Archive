@@ -3306,11 +3306,11 @@
             <img src="/frontend/assets/images/STI Logo.png" alt="STI Logo" >
         </div>
         <ul>
-            <li class="active"><a href="#" data-section="dashboard" onclick="handleSidebarClick(event, 'dashboard')"><i class="fas fa-tachometer-alt"></i> <span class="text">Dashboard</span></a></li>
-             <li><a href="#" data-section="users" onclick="handleSidebarClick(event, 'users')"><i class="fas fa-users"></i> <span class="text">Users</span></a></li>
-            <li><a href="#" data-section="upload" onclick="handleSidebarClick(event, 'upload')"><i class="fas fa-upload"></i> <span class="text">Upload</span></a></li>
-            <li><a href="#" data-section="notifications" onclick="handleSidebarClick(event, 'notifications')"><i class="fas fa-bell"></i> <span class="text">Notifications</span></a></li>
-            <li><a href="#" data-section="settings" onclick="handleSidebarClick(event, 'settings')"><i class="fas fa-cog"></i> <span class="text">Settings</span></a></li>
+            <li class="active"><a href="#" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> <span class="text">Dashboard</span></a></li>
+             <li><a href="#" data-section="users"><i class="fas fa-users"></i> <span class="text">Users</span></a></li>
+            <li><a href="#" data-section="upload"><i class="fas fa-upload"></i> <span class="text">Upload</span></a></li>
+            <li><a href="#" data-section="notifications"><i class="fas fa-bell"></i> <span class="text">Notifications</span></a></li>
+            <li><a href="#" data-section="settings"><i class="fas fa-cog"></i> <span class="text">Settings</span></a></li>
 
 
         </ul>
@@ -3318,7 +3318,7 @@
             <div class="logout-only">
                 <a href="#" onclick="handleLogoutClick()"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
-            <div class="avatar-name-row" onclick="showSection('profile')">
+            <div class="avatar-name-row" data-section="profile">
                 <div class="profile-avatar">A</div>
                 <div class="admin-name"><span class="a-prefix">A </span>Admin</div>
             </div>
@@ -3393,16 +3393,16 @@
             <div class="upload-section">
                 <!-- Upload Navigation Bar -->
                 <div class="upload-nav" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #007bff; padding-bottom: 15px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    <button id="btn-pdf-upload" class="nav-btn active" onclick="showUploadSection('pdf-form')">
+                    <button id="btn-pdf-upload" class="nav-btn active" data-section="pdf-form">
                         <i class="fas fa-file-pdf" style="margin-right: 8px;"></i>PDF Upload
                     </button>
-                    <button id="btn-admin-uploads" class="nav-btn" onclick="showUploadSection('admin')">
+                    <button id="btn-admin-uploads" class="nav-btn" data-section="admin">
                         <i class="fas fa-user-tie" style="margin-right: 8px;"></i>Admin Uploads
                     </button>
-                    <button id="btn-user-uploads" class="nav-btn" onclick="showUploadSection('users')">
+                    <button id="btn-user-uploads" class="nav-btn" data-section="users">
                         <i class="fas fa-users" style="margin-right: 8px;"></i>User Uploads
                     </button>
-                    <button id="btn-carousel" class="nav-btn" onclick="showUploadSection('carousel')">
+                    <button id="btn-carousel" class="nav-btn" data-section="carousel">
                         <i class="fas fa-images" style="margin-right: 8px;"></i>Carousel
                     </button>
                 </div>
@@ -6862,6 +6862,24 @@ STI Archives Admin`;
             }
         }
 
+        // Add event listeners for sidebar navigation
+        document.querySelectorAll('.sidebar a[data-section]').forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                const section = this.getAttribute('data-section');
+                handleSidebarClick(event, section);
+            });
+        });
+
+        // Add event listener for profile avatar
+        const avatarRow = document.querySelector('.avatar-name-row[data-section]');
+        if (avatarRow) {
+            avatarRow.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                showSection(section);
+            });
+        }
+
         function toggleProfileDropdown() {
             const dropdown = document.getElementById('profile-dropdown');
             const isOpen = dropdown.classList.contains('open');
@@ -7246,6 +7264,14 @@ STI Archives Admin`;
                 document.getElementById('btn-carousel').classList.add('active');
             }
         }
+
+        // Add event listeners for upload navigation buttons
+        document.querySelectorAll('.upload-nav .nav-btn[data-section]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                showUploadSection(section, this);
+            });
+        });
 
         // Load articles from server specifically for admin uploads section
         function loadArticlesFromServerForAdmin() {

@@ -6145,12 +6145,7 @@
                 showUserSection('verified');
             }
             if (sectionId === 'dashboard') {
-                setTimeout(() => {
-                    renderUserChart();
-                    renderSigningUpChart();
-                    renderDashboardUploadsChart();
-                    renderGaugeChart('session-duration-gauge', 'Average Session Duration', 2.5, '#007bff');
-                }, 100);
+                // Dashboard renders are now handled in loadUsers.then
             }
         }
 
@@ -6201,6 +6196,7 @@
             renderSigningUpChart();
             renderDashboardUploadsChart();
             renderGaugeChart('session-duration-gauge', 'Average Session Duration', 2.5, '#007bff');
+            updateDashboardCounts();
         }).catch(() => {
             // Fallback if async fails
             renderUserChart();

@@ -3673,13 +3673,18 @@
             try {
                 const response = await fetch('/api/users');
                 const data = await response.json();
-        if (data.users) {
-            users = Array.isArray(data.users) ? data.users : [];
-            localStorage.setItem('users', JSON.stringify(users));
-            // updateDashboardCounts(); // Not needed for subadmin
-        }
+                if (data.users) {
+                    users = Array.isArray(data.users) ? data.users : [];
+                } else if (Array.isArray(data)) {
+                    users = data;
+                } else {
+                    users = [];
+                }
+                localStorage.setItem('users', JSON.stringify(users));
+                // updateDashboardCounts(); // Not needed for subadmin
             } catch (error) {
                 console.error('Error loading users:', error);
+                users = JSON.parse(localStorage.getItem('users')) || [];
             }
         }
 

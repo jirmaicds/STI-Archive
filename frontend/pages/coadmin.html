@@ -6780,12 +6780,13 @@ STI Archives Admin`;
             } catch (e) {
                 users = [];
             }
-            const verifiedCount = users.filter(u => u.verified).length;
+            const verifiedCount = users.filter(u => u.verified && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
 
+            document.getElementById('total-users-count').textContent = verifiedCount;
             document.getElementById('verified-users-count').textContent = verifiedCount;
-            document.getElementById('admin-users-count').textContent = adminCount;
+            document.getElementById('admins-count').textContent = adminCount;
             document.getElementById('signing-up-users-count').textContent = signingUpCount;
         }
 

@@ -3673,13 +3673,16 @@
             try {
                 const response = await fetch('/api/users');
                 const data = await response.json();
-        if (data.users) {
-            users = Array.isArray(data.users) ? data.users : [];
-            localStorage.setItem('users', JSON.stringify(users));
-            updateDashboardCounts();
-        }
+                if (Array.isArray(data)) {
+                    users = data;
+                } else if (data.users && Array.isArray(data.users)) {
+                    users = data.users;
+                } else {
+                    users = [];
+                }
+                users = Array.isArray(users) ? users : [];
                 localStorage.setItem('users', JSON.stringify(users));
-                // updateDashboardCounts(); // Not needed for subadmin
+                updateDashboardCounts();
             } catch (error) {
                 console.error('Error loading users:', error);
                 users = JSON.parse(localStorage.getItem('users')) || [];
@@ -3810,11 +3813,11 @@
         }
         function updateDashboardCounts() {
             const users = JSON.parse(localStorage.getItem('users')) || [];
-            const verifiedCount = users.filter(u => u.verified).length;
-            const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+            const verifiedCount = users.filter(u => u.verified && u.role !== 'subadmin').length;
+            const adminCount = users.filter(u => u.role === 'subadmin').length;
             const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
-            document.getElementById('verified-users-count').textContent = verifiedCount;
-            document.getElementById('admin-users-count').textContent = adminCount;
+            document.getElementById('total-users-count').textContent = verifiedCount;
+            document.getElementById('admins-count').textContent = adminCount;
             document.getElementById('signing-up-users-count').textContent = signingUpCount;
         }
         function formatDate(dateString) {
@@ -4761,11 +4764,14 @@ STI Archives Admin`;
 
 
             // Update dashboard counts
-            let totalUsers = users.filter(u => u.verified).length;
+            let totalUsers = users.filter(u => u.verified && u.role !== 'subadmin').length;
+            let admins = users.filter(u => u.role === 'subadmin').length;
             let signingUp = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
-            const standardCountEl = document.getElementById('standard-users-count');
+            const totalCountEl = document.getElementById('total-users-count');
+            const adminsCountEl = document.getElementById('admins-count');
             const signupCountEl = document.getElementById('signing-up-users-count');
-            if (standardCountEl) standardCountEl.textContent = totalUsers;
+            if (totalCountEl) totalCountEl.textContent = totalUsers;
+            if (adminsCountEl) adminsCountEl.textContent = admins;
             if (signupCountEl) signupCountEl.textContent = signingUp;
 
 

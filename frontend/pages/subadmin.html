@@ -5256,6 +5256,11 @@ STI Archives Admin`;
             });
         }
 
+        function generateNotifications(users) {
+            // For subadmin, return empty array as notifications are not implemented
+            return [];
+        }
+
         function toggleNotificationModal() {
             const modal = document.getElementById('notification-modal');
             modal.style.display = modal.style.display === 'block' ? 'none' : 'block';

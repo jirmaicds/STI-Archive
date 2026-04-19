@@ -5780,20 +5780,13 @@
                     });
                 });
             }).catch(() => {
-                // Fallback
-                notifications = [
-                    { id: 'fallback-1', type: 'new-user', typeText: 'New User Access Request', content: 'New user signed up!', time: '2 hours ago', timestamp: Date.now() - (2 * 60 * 60 * 1000), priority: 1 },
-                    { id: 'fallback-2', type: 'new-user', typeText: 'New User Access Request', content: 'New user signed up!', time: '1 hour ago', timestamp: Date.now() - (1 * 60 * 60 * 1000), priority: 1 },
-                    { id: 'fallback-3', type: 'upload', typeText: 'Co-Admin Upload', content: 'Co-Admin uploaded a new research article.', time: '30 minutes ago', timestamp: Date.now() - (30 * 60 * 1000), priority: 2 },
-                    { id: 'fallback-4', type: 'suggestion', typeText: 'User Suggestion', content: 'User suggested adding a bookmark feature.', time: '45 minutes ago', timestamp: Date.now() - (45 * 60 * 1000), priority: 3 },
-                    { id: 'fallback-5', type: 'bug', typeText: 'Sub-Admin Bug Report', content: 'Sub-Admin reported a bug in the login system.', time: '20 minutes ago', timestamp: Date.now() - (20 * 60 * 1000), priority: 4 }
-                ];
-
-                // Sort by priority, then timestamp (newest first)
-                notifications.sort((a, b) => {
-                    if (a.priority !== b.priority) {
-                        return a.priority - b.priority;
-                    }
+                // No fallback notifications
+                const notificationList = document.getElementById('notification-list');
+                if (notificationList) {
+                    notificationList.innerHTML = '';
+                    // Update pagination controls
+                    updatePaginationControls();
+                }
                     return b.timestamp - a.timestamp;
                 });
 
@@ -6066,7 +6059,7 @@
                     sub.style.display = 'none';
                 }
             });
-        });
+        
 
         // === SEND UPDATE MODAL FUNCTIONS ===
         function openSendUpdateModal(email, name) {

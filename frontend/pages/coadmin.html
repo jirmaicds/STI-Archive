@@ -5102,6 +5102,8 @@
             showSection(savedSection);
             getUsers().then(users => {
                 saveUsers(users);
+                // Update dashboard counts
+                updateDashboardCounts(users);
                 renderUserChart();
                 renderDashboardUploadsChart();
                 renderSigningUpChart('day', null);
@@ -5583,6 +5585,17 @@ STI Archives Admin`;
             document.getElementById('admin-users-count').textContent = adminCount;
             document.getElementById('signing-up-users-count').textContent = signingUpCount;
         });
+        }
+
+        // === UPDATE DASHBOARD COUNTS FUNCTION ===
+        function updateDashboardCounts(users) {
+            const verifiedUsers = users.filter(user => user.verified && ['senior_high', 'college', 'teacher'].includes(user.role));
+            const adminUsers = users.filter(user => ['admin', 'coadmin', 'subadmin'].includes(user.role));
+            const signingUpUsers = users.filter(user => !user.verified && !user.rejected && !user.banned);
+
+            document.getElementById('verified-users-count').textContent = verifiedUsers.length;
+            document.getElementById('admin-users-count').textContent = adminUsers.length;
+            document.getElementById('signing-up-users-count').textContent = signingUpUsers.length;
         }
 
         // === LOAD ADMINS FUNCTION ===

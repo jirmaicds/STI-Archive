@@ -3980,8 +3980,9 @@
             ];
             // Generate dynamic notifications from users
             function generateNotifications(users) {
-                const signingUpUsers = users.filter(u => !u.verified && !u.rejected && !u.banned);
-                const verifiedUsers = users.filter(u => u.verified);
+                const normalizedUsers = Array.isArray(users) ? users : [];
+                const signingUpUsers = normalizedUsers.filter(u => !u.verified && !u.rejected && !u.banned);
+                const verifiedUsers = normalizedUsers.filter(u => u.verified);
                 const notifications = [];
 
                 // Add notifications for signing up users

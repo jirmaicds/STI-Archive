@@ -5787,8 +5787,7 @@
                     // Update pagination controls
                     updatePaginationControls();
                 }
-                    return b.timestamp - a.timestamp;
-                });
+            });
 
                 // Populate notification modal with fallback
                 const notificationList = document.getElementById('notification-list');
@@ -5887,7 +5886,8 @@
             const notificationList = document.getElementById('notification-list');
             if (notificationList) {
                     const maxNotifications = 10;
-                    const limitedNotifications = notifications.slice(-maxNotifications).reverse();
+                    const notificationsArray = Array.isArray(notifications) ? notifications : [];
+                    const limitedNotifications = notificationsArray.slice(-maxNotifications).reverse();
                 limitedNotifications.forEach(notif => {
                     const notifDiv = document.createElement('div');
                     notifDiv.className = 'notification-item';

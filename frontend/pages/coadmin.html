@@ -19,6 +19,8 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJxYXR2aWFucmprZGJ5cHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzA4OTIsImV4cCI6MjA4OTEwNjg5Mn0.k9_xTbjwRdwAQJ9UgGGsosjLWywzxHuYOq-JbGeII8g';
         // Supabase script creates global supabase object, just initialize it
         window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
@@ -3279,6 +3281,31 @@
                 width: 100%;
             }
         }
+
+        /* Dark mode for profile section */
+        body.dark-mode #profile {
+            background-color: #2c2c2c;
+            color: #ffffff;
+        }
+        body.dark-mode #profile h2,
+        body.dark-mode #profile h3,
+        body.dark-mode #profile label {
+            color: #ffffff;
+        }
+        body.dark-mode #profile input,
+        body.dark-mode #profile textarea,
+        body.dark-mode #profile select {
+            background-color: #3c3c3c;
+            color: #ffffff;
+            border-color: #555;
+        }
+        body.dark-mode #profile button {
+            background-color: #555;
+            color: #ffffff;
+        }
+        body.dark-mode #profile button:hover {
+            background-color: #666;
+        }
     </style>
 </head>
 <body>
@@ -5627,7 +5654,7 @@
                 notifications = generateNotifications(users);
 
                 // Set sidebar admin info from current logged in user
-                let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                currentUser = JSON.parse(localStorage.getItem('currentUser'));
                 
                 // If no currentUser, try to get from users array based on role
                 if (!currentUser || !currentUser.name) {
@@ -6892,8 +6919,19 @@
         function showUserSection(section) {
             // Hide all user subsections
             document.querySelectorAll('.user-subsection').forEach(sub => sub.style.display = 'none');
-            // Show the selected section
-            document.getElementById(section + '-section').style.display = 'block';
+            
+            // For coadmin, hide admins section
+            if (currentUser && currentUser.role === 'coadmin') {
+                const adminsSection = document.getElementById('admins-section');
+                if (adminsSection) adminsSection.style.display = 'none';
+            }
+            
+            // Show the selected section if not hidden
+            const targetSection = document.getElementById(section + '-section');
+            if (targetSection && targetSection.style.display !== 'none') {
+                targetSection.style.display = 'block';
+            }
+            
             // Update nav button active state
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             const activeBtn = document.querySelector(`.nav-btn[data-section="${section}"]`);

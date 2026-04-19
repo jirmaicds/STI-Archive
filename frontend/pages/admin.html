@@ -5447,7 +5447,7 @@
             // Load articles from server (await to ensure they're loaded before proceeding)
             await loadArticlesFromServer();
             // Load user uploads for admin
-            loadUserUploadsForAdmin();
+            // loadUserUploadsForAdmin(); // Commented out to prevent network error if API not available
             // Load settings
             const savedSettings = JSON.parse(localStorage.getItem('adminSettings')) || {};
             document.getElementById('site-title').value = savedSettings.siteTitle || 'STI Archives';

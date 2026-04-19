@@ -4869,6 +4869,7 @@
                     <td>${user.name}</td>
                     <td>${emailToUse}</td>
                     <td>${user.role}</td>
+                    <td>${user.grade || '-'}</td>
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
@@ -4876,6 +4877,27 @@
                     <td>${actions}</td>
                 </tr>`;
                 document.getElementById('signing-up-users-tbody').innerHTML += row;
+            });
+
+            // Append verified users
+            const verifiedUsers = users.filter(u => u.verified && !['admin', 'coadmin', 'subadmin'].includes(u.role));
+            verifiedUsers.forEach(user => {
+                const date = formatDate(user.verified_at || user.created_at);
+                let actions = `<button class="btn btn-danger btn-sm" onclick="removeUser('${user.id}')">Remove</button>`;
+                let emailToUse = user.personal_email || user.email;
+                const row = `<tr>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}"></td>
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${emailToUse}</td>
+                    <td>${user.role}</td>
+                    <td>${user.grade || '-'}</td>
+                    <td>${getSectionDisplay(user)}</td>
+                    <td>${date}</td>
+                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                    <td>${actions}</td>
+                </tr>`;
+                document.getElementById('verified-users-tbody').innerHTML += row;
             });
         }
 
@@ -5974,6 +5996,7 @@
                 }
             }
         }
+        window.toggleNotificationModal = toggleNotificationModal;
 
         function markNotificationRead(icon) {
             const notificationItem = icon.closest('.notification-item');
@@ -7900,10 +7923,8 @@
             }
         });
         });
- 
- 
-    
-    
+        }); // Close DOMContentLoaded
+
     </script>
     <!-- Retry build after rate limit failure -->
     <script>
@@ -8976,7 +8997,7 @@
             paginationDiv.dataset.currentPage = page;
             paginateTable(tbodyId, 10);
         }
-    })
+
     </script>
 </body>
 </html>

@@ -3072,11 +3072,13 @@
             <div class="dashboard">
                 <div class="card" onclick="navigateToUsers(); showUserSection('verified');">
                     <i class="fas fa-users"></i>
-                    <span>Verified Users</span>
+                    <h3>Verified Users</h3>
+                    <p id="verified-users-count">0</p>
                 </div>
                 <div class="card" onclick='navigateToUsers(); showUserSection("admins");'>
                     <i class="fas fa-user-shield"></i>
-                    <span>Admins</span>
+                    <h3>Admins</h3>
+                    <p id="admin-users-count">0</p>
                 </div>
                 <div class="card" onclick='navigateToUsers(); showUserSection("signing-up");'>
                     <h3>New Signups</h3>
@@ -4517,16 +4519,7 @@
                 if (e.key === 'users') {
                     console.log('DEBUG: Users changed in another tab, reloading data silently...');
                     // Just reload users data without switching sections
-                    loadUsers().then(() => {
-                        console.log('DEBUG: User data refreshed after sync');
-                    });
-                }
-            });
-            window.addEventListener('storage', function(e) {
-                if (e.key === 'users') {
-                    console.log('DEBUG: Users changed in another tab, reloading data silently...');
-                    // Just reload users data without switching sections
-                    loadUsers().then(() => {
+                    getUsers().then(() => {
                         console.log('DEBUG: User data refreshed after sync');
                     });
                 }
@@ -4674,8 +4667,8 @@
 
             // Load users first, then generate notifications
             let notifications = [];
-            loadUsers().then(() => {
-                const users = JSON.parse(localStorage.getItem('users')) || [];
+            getUsers().then(users => {
+                saveUsers(users);
                 notifications = generateNotifications(users);
 
                 // Set sidebar admin info from current logged in user
@@ -5109,7 +5102,8 @@
             // Initialize
             const savedSection = localStorage.getItem('adminCurrentSection') || 'dashboard';
             showSection(savedSection);
-            loadUsers().then(() => {
+            getUsers().then(users => {
+                saveUsers(users);
                 renderUserChart();
                 renderDashboardUploadsChart();
                 renderSigningUpChart('day', null);
@@ -5248,7 +5242,7 @@ STI Archives Admin`;
             }
             
             // Reload users to reflect changes
-            loadUsers();
+            getUsers().then(users => saveUsers(users));
         }
         function removeUser(userId, userName) {
             if (confirm(`Are you sure you want to remove ${userName}'s information? This action cannot be undone.`)) {
@@ -5435,7 +5429,7 @@ STI Archives Admin`;
                         filteredUsers = filteredUsers.filter(user => user.section === `Department ${department.toUpperCase()}`);
                     }
                 }
-            });}
+
                 // Populate table with filtered users
                 filteredUsers.forEach(user => {
                     const date = formatDate(user.verified_at || user.created_at);
@@ -6545,7 +6539,7 @@ STI Archives Admin`;
             console.log('DEBUG: Auto refreshing users data from server...');
             getUsers(true).then(users => {
                 saveUsers(users);
-                loadUsers();
+                // Refresh users display if needed
             }).catch(error => {
                 console.error('Error auto-refreshing users:', error);
             });
@@ -6842,7 +6836,7 @@ STI Archives Admin`;
                             row.cells[5].textContent = userData.section;
                         }
                     }
-                    loadUsers(); // Refresh the users list
+                    getUsers().then(users => saveUsers(users)); // Refresh the users list
                     loadAdmins(); // Refresh admins if needed
                 } else {
                     alert('Failed to update user: ' + (result.error || 'Unknown error'));
@@ -6924,7 +6918,7 @@ STI Archives Admin`;
                     alert('User added successfully!');
                     closeAddUserModal();
                     this.reset();
-                    loadUsers(); // Refresh the users list
+                    getUsers().then(users => saveUsers(users)); // Refresh the users list
                 } else {
                     alert('Failed to add user: ' + (result.error || 'Unknown error'));
                 }
@@ -7323,7 +7317,7 @@ STI Archives Admin`;
                 }).then(result => {
                     alert('User accepted successfully! Login credentials have been generated.');
                     // Refresh the users list
-                    loadUsers();
+                    getUsers().then(users => saveUsers(users));
                     loadAdmins();
                 }).catch(error => {
                     console.error('Error accepting user:', error);

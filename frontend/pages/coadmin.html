@@ -5966,8 +5966,11 @@
 
             // Function to update title preview
             function updateTitlePreview() {
-                const siteTitle = document.getElementById('site-title').value || 'STI Archives';
-                document.getElementById('site-title-preview').textContent = siteTitle;
+                const input = document.getElementById('site-title');
+                if (!input) return;
+                const siteTitle = input.value || 'STI Archives';
+                const preview = document.getElementById('site-title-preview');
+                if (preview) preview.textContent = siteTitle;
             }
 
             // Function to update favicon preview
@@ -8740,7 +8743,8 @@ STI Archives Admin`;
         function updateDocumentTitle(siteTitle) {
             const pageName = 'Admin Panel';
             document.title = `${pageName} | ${siteTitle}`;
-            document.getElementById('page-title-preview').textContent = pageName;
+            const preview = document.getElementById('page-title-preview');
+            if (preview) preview.textContent = pageName;
         }
 
         function updateDocumentFavicon(faviconSrc) {

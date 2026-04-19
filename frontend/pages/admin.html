@@ -4235,6 +4235,9 @@
         </div>
     </div>
     <script>
+        // === GLOBAL VARIABLES ===
+        let currentPeriod = '';
+
         // === GLOBAL FUNCTIONS ===
         // Moved outside DOMContentLoaded to ensure availability on page load
         function generateNotifications(users) {
@@ -6734,14 +6737,6 @@ STI Archives Admin`;
                     header.style.paddingLeft = paddingValue;
                     body.classList.remove('sidebar-collapsed');
                 }
-                    body.classList.add('sidebar-collapsed');
-                } else {
-                    mainContent.style.marginLeft = marginValue;
-                    if (window.innerWidth > 768) {
-                        header.style.paddingLeft = '200px';
-                    }
-                    body.classList.remove('sidebar-collapsed');
-                }
             }
         }
 
@@ -6764,9 +6759,15 @@ STI Archives Admin`;
             }
         }
 
-        let currentPeriod = '';
+        const closeDropdownOnOutsideClick = function(e) {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown').forEach(dd => dd.classList.remove('show'));
+                document.querySelectorAll('.dropdown-content').forEach(dd => dd.classList.remove('show'));
+                document.removeEventListener('click', closeDropdownOnOutsideClick);
+            }
+        };
 
-        function toggleDropdown(dropdownId) {
+        const toggleDropdown = function(dropdownId) {
             // Close all dropdowns first
             document.querySelectorAll('.dropdown').forEach(dd => dd.classList.remove('show'));
             document.querySelectorAll('.dropdown-content').forEach(dd => dd.classList.remove('show'));
@@ -6778,14 +6779,6 @@ STI Archives Admin`;
                 setTimeout(() => {
                     document.addEventListener('click', closeDropdownOnOutsideClick);
                 }, 1);
-            }
-        }
-
-        function closeDropdownOnOutsideClick(e) {
-            if (!e.target.closest('.dropdown')) {
-                document.querySelectorAll('.dropdown').forEach(dd => dd.classList.remove('show'));
-                document.querySelectorAll('.dropdown-content').forEach(dd => dd.classList.remove('show'));
-                document.removeEventListener('click', closeDropdownOnOutsideClick);
             }
         }
 
@@ -8967,7 +8960,7 @@ STI Archives Admin`;
                 closeRafModal();
             }
         });
-        }); // Close DOMContentLoaded
+        
 
     </script>
     <!-- Retry build after rate limit failure -->
@@ -10042,7 +10035,7 @@ STI Archives Admin`;
             paginateTable(tbodyId, 10);
         }
     
-    
+    });
     </script>
 </body>
 </html>

@@ -1467,9 +1467,7 @@
             .main-content {
                 margin-left: 195px;
             }
-            .header {
-                /* margin-left set dynamically */
-            }
+            
         }
         @media (min-width: 1025px) and (max-width: 1199px) {
             .sidebar {
@@ -5777,14 +5775,6 @@
                 } else {
                     mainContent.style.marginLeft = marginValue;
                     header.style.paddingLeft = paddingValue;
-                    body.classList.remove('sidebar-collapsed');
-                }
-                    body.classList.add('sidebar-collapsed');
-                } else {
-                    mainContent.style.marginLeft = marginValue;
-                    if (window.innerWidth > 768) {
-                        header.style.paddingLeft = '200px';
-                    }
                     body.classList.remove('sidebar-collapsed');
                 }
             }

@@ -6389,7 +6389,12 @@ STI Archives Admin`;
                     <td>${formatRole(user.role)}</td>
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
-                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span>${user.raf_path || ''} / ${user.educator_id || ''}</span>
+                            <button class="btn btn-sm btn-info" onclick="previewUserDocs('${user.user_id || user.id}')">Preview</button>
+                        </div>
+                    </td>
                     <td>${actions}</td>
                 </tr>`;
                 const rowWithoutEmail = `<tr>
@@ -6400,7 +6405,12 @@ STI Archives Admin`;
                     <td>${formatRole(user.role)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
-                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span>${user.raf_path || ''} / ${user.educator_id || ''}</span>
+                            <button class="btn btn-sm btn-info" onclick="previewUserDocs('${user.user_id || user.id}')">Preview</button>
+                        </div>
+                    </td>
                     <td>${actions}</td>
                 </tr>`;
                 // categorized
@@ -6499,7 +6509,12 @@ STI Archives Admin`;
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
-                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span>${user.raf_path || ''} / ${user.educator_id || ''}</span>
+                            <button class="btn btn-sm btn-info" onclick="previewUserDocs('${user.id}')">Preview</button>
+                        </div>
+                    </td>
                     <td>${actions}</td>
                 </tr>`;
                 document.getElementById('signing-up-users-tbody').innerHTML += row;
@@ -7706,6 +7721,59 @@ STI Archives Admin`;
         function saveUsers(users) {
             localStorage.setItem('users', JSON.stringify(users));
         }
+        function previewUserDocs(userId) {
+            // Find the user by ID
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => (u.user_id || u.id) === userId);
+            if (!user) {
+                alert('User not found.');
+                return;
+            }
+
+            // Check if modal exists, create if not
+            let modal = document.getElementById('user-docs-preview-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'user-docs-preview-modal';
+                modal.className = 'modal';
+                modal.style.display = 'flex';
+                modal.style.justifyContent = 'center';
+                modal.style.alignItems = 'center';
+                modal.innerHTML = `
+                    <div class="modal-content" style="margin: 0; max-width: 800px;">
+                        <span class="close-modal" onclick="closeUserDocsModal()">&times;</span>
+                        <h3>User Documents Preview</h3>
+                        <div id="user-docs-preview-content" style="margin-top: 15px;"></div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+            modal.style.display = 'flex';
+            const content = document.getElementById('user-docs-preview-content');
+            content.innerHTML = `
+                <p><strong>User:</strong> ${user.name}</p>
+                <p><strong>RAF Path:</strong> ${user.raf_path || 'Not provided'}</p>
+                <p><strong>Educator ID:</strong> ${user.educator_id || 'Not provided'}</p>
+                <div style="margin-top: 20px;">
+                    ${user.raf_path ? `<button class="btn btn-primary" onclick="previewRaf('${user.raf_path}')">Preview RAF</button>` : ''}
+                    ${user.educator_id ? `<button class="btn btn-primary" onclick="previewEducatorId('${user.educator_id}')">Preview Educator ID</button>` : ''}
+                </div>
+            `;
+        }
+
+        function closeUserDocsModal() {
+            const modal = document.getElementById('user-docs-preview-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function previewEducatorId(educatorId) {
+            // Similar to previewRaf but for educator ID
+            alert('Preview functionality for Educator ID: ' + educatorId);
+            // Implement similar to previewRaf if needed
+        }
+
         function previewRaf(rafPath) {
             // For testing, use a hardcoded PDF from Supabase
             rafPath = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Santibanez%20et%20al.pdf';

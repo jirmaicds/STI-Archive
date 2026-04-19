@@ -7227,7 +7227,7 @@
 
             // Load data for specific sections
             if (section === 'admins') {
-                loadAdmins();
+                loadUsers();
             } else if (section === 'verified') {
                 // Ensure verified users table is populated
                 loadUsers();
@@ -8243,19 +8243,25 @@
         async function acceptUser(userId) {
             if (confirm('Are you sure you want to accept this user? This will generate login credentials for them.')) {
                 try {
+                    // Get the user role from localStorage
+                    const users = JSON.parse(localStorage.getItem('users')) || [];
+                    const user = users.find(u => u.id === userId);
+                    const role = user ? user.role : 'user';
+                    
                     const response = await fetch('/api/auth/accept-user', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ user_id: userId })
+                        body: JSON.stringify({ user_id: userId, role: role })
                     });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    const users = data.success ? data.users : data;
-                    const userData = Array.isArray(users) ? users : (users.users || []);
-                    localStorage.setItem('users', JSON.stringify(userData));
-                    return userData;
-                }
+                    if (response.ok) {
+                        const result = await response.json();
+                        alert('User accepted successfully! Login credentials have been generated.');
+                        // Refresh the users list
+                        loadUsers();
+                    } else {
+                        alert('Failed to accept user. Please try again.');
+                    }
                 } catch (error) {
                     console.error('Error accepting user:', error);
                     alert('Failed to accept user. Please check your connection.');

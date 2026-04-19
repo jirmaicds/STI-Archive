@@ -3071,12 +3071,10 @@
         <div id="dashboard" class="content-section active">
             <div class="dashboard">
                 <div class="card" onclick="navigateToUsers(); showUserSection('verified');">
-                    <i class="fas fa-users"></i>
                     <h3>Verified Users</h3>
                     <p id="verified-users-count">0</p>
                 </div>
                 <div class="card" onclick='navigateToUsers(); showUserSection("admins");'>
-                    <i class="fas fa-user-shield"></i>
                     <h3>Admins</h3>
                     <p id="admin-users-count">0</p>
                 </div>
@@ -5584,6 +5582,7 @@ STI Archives Admin`;
             document.getElementById('verified-users-count').textContent = totalUsers;
             document.getElementById('admin-users-count').textContent = adminCount;
             document.getElementById('signing-up-users-count').textContent = signingUpCount;
+        });
 
         // === LOAD ADMINS FUNCTION ===
         function loadAdmins() {

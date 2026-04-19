@@ -3051,8 +3051,6 @@
                 <a href="#" onclick="handleLogoutClick()"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
             <div class="avatar-name-row" onclick="showSection('profile')">
-                <div class="profile-avatar"></div>
-                <div class="admin-name"><span class="a-prefix">CA </span>Co-Admin</div>
             </div>
         </div>
     </div>
@@ -3073,23 +3071,14 @@
         <div id="dashboard" class="content-section active">
             <div class="dashboard">
                 <div class="card" onclick="navigateToUsers(); showUserSection('verified');">
-                    <h3>Total Users</h3>
-                    <p id="verified-users-count">0</p>
+                    <i class="fas fa-users"></i>
+                    <span>Verified Users</span>
                 </div>
-                <div class="card" onclick="navigateToUsers(); showUserSection('admins');">
-                    <h3>Admin Users</h3>
-                    <p id="admin-users-count">0</p>
+                <div class="card" onclick='navigateToUsers(); showUserSection("admins");'>
+                    <i class="fas fa-user-shield"></i>
+                    <span>Admins</span>
                 </div>
-                <div class="card" onclick="navigateToUsers(); showUserSection('signing-up');">
-                    <h3>New Signups</h3>
-                    <p id="signing-up-users-count">0</p>
-                </div>
-            </div>
-                <div class="card" onclick="navigateToUsers(); showUserSection('admins');">
-                    <h3>Admin Users</h3>
-                    <p id="admin-users-count">0</p>
-                </div>
-                <div class="card" onclick="navigateToUsers(); showUserSection('signing-up');">
+                <div class="card" onclick='navigateToUsers(); showUserSection("signing-up");'>
                     <h3>New Signups</h3>
                     <p id="signing-up-users-count">0</p>
                 </div>
@@ -3288,16 +3277,16 @@
             <div class="users-section">
                 <!-- Users Navigation Bar -->
                 <div class="users-nav" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #007bff; padding-bottom: 15px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    <button class="nav-btn active" onclick="showUserSection('verified')">
+                    <button class="nav-btn active" onclick='showUserSection("verified")'>
                         <i class="fas fa-check-circle" style="margin-right: 8px;"></i>Verified
                     </button>
-                    <button class="nav-btn" onclick="showUserSection('signing-up')">
+                    <button class="nav-btn" onclick='showUserSection("signing-up")'>
                         <i class="fas fa-clock" style="margin-right: 8px;"></i>Signups
                     </button>
-                    <button class="nav-btn" onclick="showUserSection('banned')">
+                    <button class="nav-btn" onclick='showUserSection("banned")'>
                         <i class="fas fa-ban" style="margin-right: 8px;"></i>Banned
                     </button>
-                    <button class="nav-btn" onclick="showUserSection('admins')">
+                    <button class="nav-btn" onclick='showUserSection("admins")'>
                         <i class="fas fa-user-shield" style="margin-right: 8px;"></i>Admin
                     </button>
                 </div>
@@ -3364,16 +3353,16 @@
                     <div id="shs-spec" style="display: none; margin-top: 20px;">
                         <h4>Grade:</h4>
                         <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                            <button class="btn btn-info" onclick="showGrade('11')">Grade 11</button>
-                            <button class="btn btn-info" onclick="showGrade('12')">Grade 12</button>
+                            <button class="btn btn-info" onclick='showGrade("11")'>Grade 11</button>
+                            <button class="btn btn-info" onclick='showGrade("12")'>Grade 12</button>
                         </div>
                         <div id="grade-selection" style="display: none;">
                             <h5 id="grade-title"></h5>
                             <div style="display: flex; gap: 10px; margin-top: 10px;">
-                                <button class="btn btn-secondary" onclick="showStrand('abm')">ABM</button>
+                                <button class="btn btn-secondary" onclick='showStrand("abm")'>ABM</button>
                                 
-                                <button class="btn btn-secondary" onclick="showStrand('itmawd')">ITMAWD</button>
-                                <button class="btn btn-secondary" onclick="showStrand('stem')">STEM</button>
+                                <button class="btn btn-secondary" onclick='showStrand("itmawd")'>ITMAWD</button>
+                                <button class="btn btn-secondary" onclick='showStrand("stem")'>STEM</button>
                             </div>
                         </div>
                         <div id="strand-table" style="display: none; margin-top: 20px; overflow-x: auto;">
@@ -3388,9 +3377,9 @@
                     <div id="college-spec" style="display: none; margin-top: 20px;">
                         <h4>Degree:</h4>
                         <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-success" onclick="showDegree('bsba')">BSBA</button>
-                            <button class="btn btn-success" onclick="showDegree('bscs')">BSCS</button>
-                            <button class="btn btn-success" onclick="showDegree('bsit')">BSIT</button>
+                            <button class="btn btn-success" onclick='showDegree("bsba")'>BSBA</button>
+                            <button class="btn btn-success" onclick='showDegree("bscs")'>BSCS</button>
+                            <button class="btn btn-success" onclick='showDegree("bsit")'>BSIT</button>
                         </div>
                         <div id="degree-table" style="display: none; margin-top: 20px; overflow-x: auto;">
                             <h5 id="degree-title"></h5>
@@ -3404,8 +3393,8 @@
                     <div id="teacher-spec" style="display: none; margin-top: 20px;">
                         <h4>Department:</h4>
                         <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-danger" onclick="showDepartment('shs')">SHS</button>
-                            <button class="btn btn-danger" onclick="showDepartment('college')">College</button>
+                            <button class="btn btn-danger" onclick='showDepartment("shs")'>SHS</button>
+                            <button class="btn btn-danger" onclick='showDepartment("college")'>College</button>
                         </div>
                         <div id="department-table" style="display: none; margin-top: 20px; overflow-x: auto;">
                             <h5 id="department-title"></h5>
@@ -3473,16 +3462,16 @@
                     <div id="signing-up-shs-spec" style="display: none; margin-top: 20px;">
                         <h4>Grade:</h4>
                         <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                            <button class="btn btn-info" onclick="showGradeForStatus('signing-up', '11')">Grade 11</button>
-                            <button class="btn btn-info" onclick="showGradeForStatus('signing-up', '12')">Grade 12</button>
+                            <button class="btn btn-info" onclick='showGradeForStatus("signing-up", "11")'>Grade 11</button>
+                            <button class="btn btn-info" onclick='showGradeForStatus("signing-up", "12")'>Grade 12</button>
                         </div>
                         <div id="signing-up-grade-selection" style="display: none;">
                             <h5 id="signing-up-grade-title"></h5>
                             <div style="display: flex; gap: 10px; margin-top: 10px;">
-                                <button class="btn btn-secondary" onclick="showStrandForStatus('signing-up', 'abm')">ABM</button>
+                                <button class="btn btn-secondary" onclick='showStrandForStatus("signing-up", "abm")'>ABM</button>
                                
-                                <button class="btn btn-secondary" onclick="showStrandForStatus('signing-up', 'itmawd')">ITMAWD</button>
-                                <button class="btn btn-secondary" onclick="showStrandForStatus('signing-up', 'stem')">STEM</button>
+                                <button class="btn btn-secondary" onclick='showStrandForStatus("signing-up", "itmawd")'>ITMAWD</button>
+                                <button class="btn btn-secondary" onclick='showStrandForStatus("signing-up", "stem")'>STEM</button>
                             </div>
                         </div>
                         <div id="signing-up-strand-table" style="display: none; margin-top: 20px;">
@@ -3497,9 +3486,9 @@
                     <div id="signing-up-college-spec" style="display: none; margin-top: 20px;">
                         <h4>Degree:</h4>
                         <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-success" onclick="showDegreeForStatus('signing-up', 'bsba')">BSBA</button>
-                            <button class="btn btn-success" onclick="showDegreeForStatus('signing-up', 'bscs')">BSCS</button>
-                            <button class="btn btn-success" onclick="showDegreeForStatus('signing-up', 'bsit')">BSIT</button>
+                            <button class="btn btn-success" onclick='showDegreeForStatus("signing-up", "bsba")'>BSBA</button>
+                            <button class="btn btn-success" onclick='showDegreeForStatus("signing-up", "bscs")'>BSCS</button>
+                            <button class="btn btn-success" onclick='showDegreeForStatus("signing-up", "bsit")'>BSIT</button>
                         </div>
                         <div id="signing-up-degree-table" style="display: none; margin-top: 20px;">
                             <h5 id="signing-up-degree-title"></h5>
@@ -3513,8 +3502,8 @@
                     <div id="signing-up-teacher-spec" style="display: none; margin-top: 20px;">
                         <h4>Department:</h4>
                         <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-danger" onclick="showDepartmentForStatus('signing-up', 'shs')">SHS</button>
-                            <button class="btn btn-danger" onclick="showDepartmentForStatus('signing-up', 'college')">College</button>
+                            <button class="btn btn-danger" onclick='showDepartmentForStatus("signing-up", "shs")'>SHS</button>
+                            <button class="btn btn-danger" onclick='showDepartmentForStatus("signing-up", "college")'>College</button>
                         </div>
                         <div id="signing-up-department-table" style="display: none; margin-top: 20px;">
                             <h5 id="signing-up-department-title"></h5>
@@ -3578,15 +3567,15 @@
                     <div id="banned-shs-spec" style="display: none; margin-top: 20px;">
                         <h4>Grade:</h4>
                         <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                            <button class="btn btn-info" onclick="showGradeForStatus('banned', '11')">Grade 11</button>
-                            <button class="btn btn-info" onclick="showGradeForStatus('banned', '12')">Grade 12</button>
+                            <button class="btn btn-info" onclick='showGradeForStatus("banned", "11")'>Grade 11</button>
+                            <button class="btn btn-info" onclick='showGradeForStatus("banned", "12")'>Grade 12</button>
                         </div>
                         <div id="banned-grade-selection" style="display: none;">
                             <h5 id="banned-grade-title"></h5>
                             <div style="display: flex; gap: 10px; margin-top: 10px;">
-                                <button class="btn btn-secondary" onclick="showStrandForStatus('banned', 'abm')">ABM</button>
-                                <button class="btn btn-secondary" onclick="showStrandForStatus('banned', 'itmawd')">ITMAWD</button>
-                                <button class="btn btn-secondary" onclick="showStrandForStatus('banned', 'stem')">STEM</button>
+                                <button class="btn btn-secondary" onclick='showStrandForStatus("banned", "abm")'>ABM</button>
+                                <button class="btn btn-secondary" onclick='showStrandForStatus("banned", "itmawd")'>ITMAWD</button>
+                                <button class="btn btn-secondary" onclick='showStrandForStatus("banned", "stem")'>STEM</button>
                             </div>
                         </div>
                         <div id="banned-strand-table" style="display: none; margin-top: 20px;">
@@ -3601,9 +3590,9 @@
                     <div id="banned-college-spec" style="display: none; margin-top: 20px;">
                         <h4>Degree:</h4>
                         <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-success" onclick="showDegreeForStatus('banned', 'bsba')">BSBA</button>
-                            <button class="btn btn-success" onclick="showDegreeForStatus('banned', 'bscs')">BSCS</button>
-                            <button class="btn btn-success" onclick="showDegreeForStatus('banned', 'bsit')">BSIT</button>
+                            <button class="btn btn-success" onclick='showDegreeForStatus("banned", "bsba")'>BSBA</button>
+                            <button class="btn btn-success" onclick='showDegreeForStatus("banned", "bscs")'>BSCS</button>
+                            <button class="btn btn-success" onclick='showDegreeForStatus("banned", "bsit")'>BSIT</button>
                         </div>
                         <div id="banned-degree-table" style="display: none; margin-top: 20px;">
                             <h5 id="banned-degree-title"></h5>
@@ -3617,8 +3606,8 @@
                     <div id="banned-teacher-spec" style="display: none; margin-top: 20px;">
                         <h4>Department:</h4>
                         <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-danger" onclick="showDepartmentForStatus('banned', 'shs')">SHS</button>
-                            <button class="btn btn-danger" onclick="showDepartmentForStatus('banned', 'college')">College</button>
+                            <button class="btn btn-danger" onclick='showDepartmentForStatus("banned", "shs")'>SHS</button>
+                            <button class="btn btn-danger" onclick='showDepartmentForStatus("banned", "college")'>College</button>
                         </div>
                         <div id="banned-department-table" style="display: none; margin-top: 20px;">
                             <h5 id="banned-department-title"></h5>
@@ -3682,10 +3671,10 @@
                 <div style="display: flex;">
                     <div class="settings-sidebar" style="width: 200px; padding: 20px; background-color: #f8f9fa; border-right: 1px solid #ddd;">
                         <ul style="list-style: none; padding: 0;">
-                            <li style="padding: 10px 0; cursor: pointer; color: #007bff;" onclick="showSettingsSection('general')">General</li>
-                            <li style="padding: 10px 0; cursor: pointer;" onclick="showSettingsSection('account')">Account</li>
-                            <li onclick="showSettingsSection('terms-conditions')" style="cursor: pointer; padding-top: 10px; padding-bottom: 10px;">Terms & Conditions</li>
-                            <li onclick="showSettingsSection('privacy-policy')" style="cursor: pointer; padding-top: 10px;">Privacy Policy</li>
+                            <li style="padding: 10px 0; cursor: pointer; color: #007bff;" onclick='showSettingsSection("general")'>General</li>
+                            <li style="padding: 10px 0; cursor: pointer;" onclick='showSettingsSection("account")'>Account</li>
+                            <li onclick='showSettingsSection("terms-conditions")' style="cursor: pointer; padding-top: 10px; padding-bottom: 10px;">Terms & Conditions</li>
+                            <li onclick='showSettingsSection("privacy-policy")' style="cursor: pointer; padding-top: 10px;">Privacy Policy</li>
                         </ul>
                     </div>
                     <div class="settings-content" style="flex: 1; padding: 20px; min-height: calc(100vh - 200px);">
@@ -3732,12 +3721,12 @@
                             <div class="editable-content" id="terms-content">
                                 <div class="view-mode">
                                     <div class="content-text" id="terms-text" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 20px; background: #fff; border-radius: 8px; color: #333;"></div>
-                                    <button onclick="editContent('terms')" style="margin-top: 10px; background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Edit</button>
+                                    <button onclick='editContent("terms")' style="margin-top: 10px; background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Edit</button>
                                 </div>
                                 <div class="edit-mode" style="display: none;">
                                     <textarea id="terms-textarea" rows="20" style="width: 100%; padding: 12px; border: 1px solid #bfc9d9; border-radius: 8px; font-size: 16px; outline: none;"></textarea>
-                                    <button onclick="saveContent('terms')" style="margin-top: 10px; background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Save</button>
-                                    <button onclick="cancelEdit('terms')" style="margin-left: 10px; background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Cancel</button>
+                                    <button onclick='saveContent("terms")' style="margin-top: 10px; background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Save</button>
+                                    <button onclick='cancelEdit("terms")' style="margin-left: 10px; background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Cancel</button>
                                 </div>
                             </div>
                         </div>
@@ -3745,12 +3734,12 @@
                             <div class="editable-content" id="privacy-content">
                                 <div class="view-mode">
                                     <div class="content-text" id="privacy-text" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 20px; background: #fff; border-radius: 8px; color: #333;"></div>
-                                    <button onclick="editContent('privacy')" style="margin-top: 10px; background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Edit</button>
+                                    <button onclick='editContent("privacy")' style="margin-top: 10px; background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Edit</button>
                                 </div>
                                 <div class="edit-mode" style="display: none;">
                                     <textarea id="privacy-textarea" rows="20" style="width: 100%; padding: 12px; border: 1px solid #bfc9d9; border-radius: 8px; font-size: 16px; outline: none;"></textarea>
-                                    <button onclick="saveContent('privacy')" style="margin-top: 10px; background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Save</button>
-                                    <button onclick="cancelEdit('privacy')" style="margin-left: 10px; background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Cancel</button>
+                                    <button onclick='saveContent("privacy")' style="margin-top: 10px; background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Save</button>
+                                    <button onclick='cancelEdit("privacy")' style="margin-left: 10px; background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Cancel</button>
                                 </div>
                             </div>
                         </div>
@@ -3807,7 +3796,7 @@
         </div>
         <div class="notification-footer">
             <div class="left-btns">
-                <button class="view-all-btn" onclick="showSection('notifications'); toggleNotificationModal();">
+                <button class="view-all-btn" onclick='showSection("notifications"); toggleNotificationModal();'>
                     <i class="fas fa-list"></i> View All
                 </button>
                 <button class="mark-all-read-btn" onclick="showMarkAllConfirm()">
@@ -3873,11 +3862,11 @@
           <button class="citation-close" onclick="closeCitationModal()">&times;</button>
         </div>
         <div class="citation-format-tabs">
-          <button class="citation-tab active" onclick="switchCitationTab('APA')">APA</button>
-          <button class="citation-tab" onclick="switchCitationTab('MLA')">MLA</button>
-          <button class="citation-tab" onclick="switchCitationTab('Chicago')">Chicago</button>
-          <button class="citation-tab" onclick="switchCitationTab('IEEE')">IEEE</button>
-          <button class="citation-tab" onclick="switchCitationTab('Harvard')">Harvard</button>
+          <button class="citation-tab active" onclick='switchCitationTab("APA")'>APA</button>
+          <button class="citation-tab" onclick='switchCitationTab("MLA")'>MLA</button>
+          <button class="citation-tab" onclick='switchCitationTab("Chicago")'>Chicago</button>
+          <button class="citation-tab" onclick='switchCitationTab("IEEE")'>IEEE</button>
+          <button class="citation-tab" onclick='switchCitationTab("Harvard")'>Harvard</button>
         </div>
         <div class="citation-content" id="citationContent">
           APA citation format will appear here.
@@ -4293,7 +4282,7 @@
                 const hasPdf = articleData.pdfPath || articleData.pdf_path || articleData.pdfId;
                 const pdfUrl = hasPdf ? (articleData.pdfPath || articleData.pdf_path ? safePdfPath : '/api/pdf/' + articleData.pdfId) : '';
                 // Make article title clickable to show PDF when clicked
-                const titleClickHandler = hasPdf ? `onclick="event.preventDefault(); displayArticlePDF('${pdfUrl}', '${safeTitle}')" style="cursor: pointer;"` : '';
+                const titleClickHandler = hasPdf ? `onclick='event.preventDefault(); displayArticlePDF("${pdfUrl}", "${safeTitle}")' style="cursor: pointer;"` : '';
                 template.innerHTML = `
                     <h3><a href="#" ${titleClickHandler}>${articleData.title}</a></h3>
                     <div class="meta">${articleData.meta}</div>
@@ -4325,12 +4314,12 @@
                         ${articleData.pdfPath || articleData.pdf_path ? `
                         <div class="current-pdf" style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
                             <span style="flex: 1; color: #333; word-break: break-all;">${(articleData.pdfPath || articleData.pdf_path || '').split('/').pop()}</span>
-                            <button type="button" onclick="removeArticlePDF(this, '${articleData.id || articleData.title}')" style="background: #dc3545; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; font-size: 16px;">&times;</button>
+                            <button type="button" onclick='removeArticlePDF(this, "${articleData.id || articleData.title}")' style="background: #dc3545; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; font-size: 16px;">&times;</button>
                         </div>
                         ` : '<p style="color: #666; margin: 5px 0;">No PDF uploaded</p>'}
                         <div class="pdf-upload" style="margin-top: 10px;">
                             <input type="file" id="pdf-upload-${articleData.id || articleData.title}" accept=".pdf" style="display: none;" onchange="handleArticlePDFUpload(this, '${articleData.id || articleData.title}')">
-                            <button type="button" onclick="document.getElementById('pdf-upload-${articleData.id || articleData.title}').click()" style="background: #0057b8; color: white; border: none; border-radius: 4px; padding: 8px 15px; cursor: pointer;">${articleData.pdfPath || articleData.pdf_path ? 'Replace PDF' : 'Upload PDF'}</button>
+                            <button type="button" onclick='document.getElementById("pdf-upload-${articleData.id || articleData.title}").click()' style="background: #0057b8; color: white; border: none; border-radius: 4px; padding: 8px 15px; cursor: pointer;">${articleData.pdfPath || articleData.pdf_path ? 'Replace PDF' : 'Upload PDF'}</button>
                         </div>
                     </div>
                     <div class="actions">
@@ -5320,18 +5309,18 @@ STI Archives Admin`;
                         <span class="close-modal" onclick="closeFilterModal()" style="cursor: pointer; font-size: 18px; color: #666;">&times;</span>
                     </div>
                     <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                        <input type="radio" id="grade-11" name="grade" value="11" onclick="filterTable('${status}', 'shs', '11')">
+                        <input type="radio" id="grade-11" name="grade" value="11" onclick='filterTable("${status}", "shs", "11")'>
                         <label for="grade-11">Grade 11</label>
-                        <input type="radio" id="grade-12" name="grade" value="12" onclick="filterTable('${status}', 'shs', '12')">
+                        <input type="radio" id="grade-12" name="grade" value="12" onclick='filterTable("${status}", "shs", "12")'>
                         <label for="grade-12">Grade 12</label>
                     </div>
                     <h4 style="margin-bottom: 10px;">Strand:</h4>
                     <div style="display: flex; gap: 10px;">
-                        <input type="radio" id="abm" name="strand" value="abm" onclick="filterTable('${status}', 'shs', null, 'abm')">
+                        <input type="radio" id="abm" name="strand" value="abm" onclick='filterTable("${status}", "shs", null, "abm")'>
                         <label for="abm">ABM</label>
-                        <input type="radio" id="itmawd" name="strand" value="itmawd" onclick="filterTable('${status}', 'shs', null, 'itmawd')">
+                        <input type="radio" id="itmawd" name="strand" value="itmawd" onclick='filterTable("${status}", "shs", null, "itmawd")'>
                         <label for="itmawd">ITMAWD</label>
-                        <input type="radio" id="stem" name="strand" value="stem" onclick="filterTable('${status}', 'shs', null, 'stem')">
+                        <input type="radio" id="stem" name="strand" value="stem" onclick='filterTable("${status}", "shs", null, "stem")'>
                         <label for="stem">STEM</label>
                     </div>
                 `;
@@ -5342,11 +5331,11 @@ STI Archives Admin`;
                         <span class="close-modal" onclick="closeFilterModal()" style="cursor: pointer; font-size: 18px; color: #666;">&times;</span>
                     </div>
                     <div style="display: flex; gap: 10px;">
-                        <input type="radio" id="bsba" name="degree" value="bsba" onclick="filterTable('${status}', 'college', null, null, 'bsba')">
+                        <input type="radio" id="bsba" name="degree" value="bsba" onclick='filterTable("${status}", "college", null, null, "bsba")'>
                         <label for="bsba">BSBA</label>
-                        <input type="radio" id="bscs" name="degree" value="bscs" onclick="filterTable('${status}', 'college', null, null, 'bscs')">
+                        <input type="radio" id="bscs" name="degree" value="bscs" onclick='filterTable("${status}", "college", null, null, "bscs")'>
                         <label for="bscs">BSCS</label>
-                        <input type="radio" id="bsit" name="degree" value="bsit" onclick="filterTable('${status}', 'college', null, null, 'bsit')">
+                        <input type="radio" id="bsit" name="degree" value="bsit" onclick='filterTable("${status}", "college", null, null, "bsit")'>
                         <label for="bsit">BSIT</label>
                     </div>
                 `;
@@ -5357,9 +5346,9 @@ STI Archives Admin`;
                         <span class="close-modal" onclick="closeFilterModal()" style="cursor: pointer; font-size: 18px; color: #666;">&times;</span>
                     </div>
                     <div style="display: flex; gap: 10px;">
-                        <input type="radio" id="dept-shs" name="department" value="shs" onclick="filterTable('${status}', 'teacher', null, null, null, 'shs')">
+                        <input type="radio" id="dept-shs" name="department" value="shs" onclick='filterTable("${status}", "teacher", null, null, null, "shs")'>
                         <label for="dept-shs">SHS</label>
-                        <input type="radio" id="dept-college" name="department" value="college" onclick="filterTable('${status}', 'teacher', null, null, null, 'college')">
+                        <input type="radio" id="dept-college" name="department" value="college" onclick='filterTable("${status}", "teacher", null, null, null, "college")'>
                         <label for="dept-college">College</label>
                     </div>
                 `;
@@ -5446,7 +5435,7 @@ STI Archives Admin`;
                         filteredUsers = filteredUsers.filter(user => user.section === `Department ${department.toUpperCase()}`);
                     }
                 }
-
+            });}
                 // Populate table with filtered users
                 filteredUsers.forEach(user => {
                     const date = formatDate(user.verified_at || user.created_at);
@@ -6455,6 +6444,7 @@ STI Archives Admin`;
                     }
                 });
             });
+        }
         function loadDepartmentUsers(dept) {
             getUsers().then(users => {
                 const tbody = document.getElementById('department-users-tbody');
@@ -6475,6 +6465,7 @@ STI Archives Admin`;
                     }
                 });
             });
+        }
         function navigateToUploads(type) { 
             showSection('upload');
             // Update sidebar active state
@@ -8110,15 +8101,15 @@ STI Archives Admin`;
             // Generate pagination buttons
             let buttons = '';
             if (totalPages > 1) {
-                if (currentPage > 1) buttons += `<button onclick="changePage('${tbodyId}', ${currentPage - 1})">Previous</button>`;
+                if (currentPage > 1) buttons += `<button onclick='changePage("${tbodyId}", ${currentPage - 1})'>Previous</button>`;
                 for (let i = 1; i <= totalPages; i++) {
                     if (i === currentPage) {
-                        buttons += `<button class="active" onclick="changePage('${tbodyId}', ${i})">${i}</button>`;
+                        buttons += `<button class="active" onclick='changePage("${tbodyId}", ${i})'>${i}</button>`;
                     } else {
-                        buttons += `<button onclick="changePage('${tbodyId}', ${i})">${i}</button>`;
+                        buttons += `<button onclick='changePage("${tbodyId}", ${i})'>${i}</button>`;
                     }
                 }
-                if (currentPage < totalPages) buttons += `<button onclick="changePage('${tbodyId}', ${currentPage + 1})">Next</button>`;
+                if (currentPage < totalPages) buttons += `<button onclick='changePage("${tbodyId}", ${currentPage + 1})'>Next</button>`;
             }
             paginationDiv.innerHTML = buttons;
         }

@@ -3224,7 +3224,7 @@
                 </div>
             </div>
         </div>
-        <div id="notifications" class="content-section">
+        <div id="notifications" class="content-section settings-section">
             <div class="notifications-section">
                 <h3>All Notifications</h3>
                 <div class="notification-controls">
@@ -3601,7 +3601,7 @@
                 localStorage.setItem('users', JSON.stringify(users));
                 updateDashboardCounts();
             } catch (error) {
-                console.error('Error loading users:', error);
+                // console.error('Error loading users:', error);
                 try {
                     const stored = localStorage.getItem('users');
                     users = stored ? JSON.parse(stored) : [];
@@ -4119,7 +4119,13 @@
                 if (placeholder) {
                     placeholder.style.display = notifications.length > 0 ? 'none' : 'block';
                 } else {
-                    console.error('DEBUG: Notification placeholder not found');
+                    // console.error('DEBUG: Notification placeholder not found');
+                    // Create placeholder if not found
+                    const placeholderDiv = document.createElement('div');
+                    placeholderDiv.className = 'notification-placeholder';
+                    placeholderDiv.innerHTML = '<p>No notifications available.</p>';
+                    notificationList.appendChild(placeholderDiv);
+                    placeholderDiv.style.display = 'block';
                 }
                 const badge = document.querySelector('.notification-badge');
                 console.log('DEBUG: Notification badge element:', badge);

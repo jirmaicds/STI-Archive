@@ -4279,6 +4279,9 @@
         }
 
         let isLoadingUsers = false;
+        async         function loadUsers() {
+            return getUsers(false);
+        }
         async function getUsers(forceRefresh = false) {
             if (forceRefresh) {
                 // Clear localStorage and force reload from server

@@ -3812,13 +3812,15 @@
             }
         }
         function updateDashboardCounts() {
-            const users = JSON.parse(localStorage.getItem('users')) || [];
             const verifiedCount = users.filter(u => u.verified && u.role !== 'subadmin').length;
             const adminCount = users.filter(u => u.role === 'subadmin').length;
             const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
-            document.getElementById('total-users-count').textContent = verifiedCount;
-            document.getElementById('admins-count').textContent = adminCount;
-            document.getElementById('signing-up-users-count').textContent = signingUpCount;
+            const totalEl = document.getElementById('total-users-count');
+            const adminsEl = document.getElementById('admins-count');
+            const signupEl = document.getElementById('signing-up-users-count');
+            if (totalEl) totalEl.textContent = verifiedCount;
+            if (adminsEl) adminsEl.textContent = adminCount;
+            if (signupEl) signupEl.textContent = signingUpCount;
         }
         function formatDate(dateString) {
             if (!dateString || dateString === 'N/A') return 'N/A';

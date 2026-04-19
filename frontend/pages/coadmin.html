@@ -6766,28 +6766,18 @@ STI Archives Admin`;
 
         // Update dashboard counts
         function updateDashboardCounts() {
-            const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
-            const researchCount = allArticles.filter(a => a.category === 'research').length;
-            const capstoneCount = allArticles.filter(a => a.category === 'capstone').length;
-            const totalUploads = researchCount + capstoneCount;
-
-            document.getElementById('revenue-count').textContent = totalUploads;
-
-            let users = [];
-            try {
-                const stored = localStorage.getItem('users');
-                users = stored ? JSON.parse(stored) : [];
-            } catch (e) {
-                users = [];
-            }
             const verifiedCount = users.filter(u => u.verified && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
 
-            document.getElementById('total-users-count').textContent = verifiedCount;
-            document.getElementById('verified-users-count').textContent = verifiedCount;
-            document.getElementById('admins-count').textContent = adminCount;
-            document.getElementById('signing-up-users-count').textContent = signingUpCount;
+            const totalEl = document.getElementById('total-users-count');
+            const verifiedEl = document.getElementById('verified-users-count');
+            const adminsEl = document.getElementById('admins-count');
+            const signupEl = document.getElementById('signing-up-users-count');
+            if (totalEl) totalEl.textContent = verifiedCount;
+            if (verifiedEl) verifiedEl.textContent = verifiedCount;
+            if (adminsEl) adminsEl.textContent = adminCount;
+            if (signupEl) signupEl.textContent = signingUpCount;
         }
 
         // === STUB FUNCTIONS (to prevent errors) ===

@@ -6842,14 +6842,6 @@ STI Archives Admin`;
             const totalUploads = researchCount + capstoneCount;
 
             document.getElementById('revenue-count').textContent = totalUploads;
-
-            let users = [];
-            try {
-                const stored = localStorage.getItem('users');
-                users = stored ? JSON.parse(stored) : [];
-            } catch (e) {
-                users = [];
-            }
             const verifiedCount = users.filter(u => u.verified && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;

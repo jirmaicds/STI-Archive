@@ -6676,18 +6676,20 @@ STI Archives Admin`;
             const capstoneCount = allArticles.filter(a => a.category === 'capstone').length;
             const totalUploads = researchCount + capstoneCount;
 
-            const researchEl = document.getElementById('research-count');
-            const capstoneEl = document.getElementById('capstone-count');
-            if (researchEl) researchEl.textContent = researchCount;
-            if (capstoneEl) capstoneEl.textContent = capstoneCount;
+            const revenueEl = document.getElementById('revenue-count');
+            if (revenueEl) revenueEl.textContent = totalUploads;
+
             const verifiedCount = users.filter(u => u.verified && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
 
-            document.getElementById('total-users-count').textContent = verifiedCount;
-            document.getElementById('verified-users-count').textContent = verifiedCount;
-            document.getElementById('admins-count').textContent = adminCount;
-            document.getElementById('signing-up-users-count').textContent = signingUpCount;
+            const verifiedEl = document.getElementById('verified-users-count');
+            const adminEl = document.getElementById('admin-users-count');
+            const signingUpEl = document.getElementById('signing-up-users-count');
+
+            if (verifiedEl) verifiedEl.textContent = verifiedCount;
+            if (adminEl) adminEl.textContent = adminCount;
+            if (signingUpEl) signingUpEl.textContent = signingUpCount;
         }
 
         // === STUB FUNCTIONS (to prevent errors) ===

@@ -3626,7 +3626,7 @@
                     .badge-created { background: #6f42c1; color: white; }
                 </style>
                 <!-- Admin Accounts Section -->
-                <div id="admins-section" class="user-subsection" style="--border-color: #6f42c1; --header-color: #6f42c1;">
+                <div id="admins-section" class="user-subsection" style="--border-color: #6f42c1; --header-color: #6f42c1; display: none;">
                     
                     
                     <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
@@ -3748,7 +3748,7 @@
                     </div>
                 </div>
                 <!-- Signing Up Users Section -->
-                <div id="signing-up-section" class="user-subsection" style="--border-color: #ffc107; --header-color: #ffc107;">
+                <div id="signing-up-section" class="user-subsection" style="--border-color: #ffc107; --header-color: #ffc107; display: none;">
                     <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                         <select id="role-filter-signing-up" onchange="updateFilters('signing-up')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             <option value="">All Roles</option>
@@ -3800,7 +3800,7 @@
                     </div>
                 </div>
                 <!-- Banned Users Section -->
-                <div id="banned-section" class="user-subsection" style="--border-color: #dc3545; --header-color: #dc3545;">
+                <div id="banned-section" class="user-subsection" style="--border-color: #dc3545; --header-color: #dc3545; display: none;">
                     
                     <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                         <select id="role-filter-banned" onchange="updateFilters('banned')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
@@ -6140,6 +6140,10 @@
                 document.querySelectorAll('.upload-nav .nav-btn').forEach(btn => btn.classList.remove('active'));
                 document.getElementById('btn-pdf-upload').classList.add('active');
             }
+            // Reset users section to verified when navigating to users
+            if (sectionId === 'users') {
+                showUserSection('verified');
+            }
             if (sectionId === 'dashboard') {
                 setTimeout(() => {
                     renderUserChart();
@@ -7198,6 +7202,9 @@
 
         // Users Navigation Functions
         function showUserSection(section) {
+            // Hide all user subsections first
+            document.querySelectorAll('.user-subsection').forEach(sub => sub.style.display = 'none');
+
             // For coadmin, hide admins section if not selected
             if (currentUser && currentUser.role === 'coadmin' && section !== 'admins') {
                 const adminsSection = document.getElementById('admins-section');
@@ -7206,13 +7213,13 @@
                 const adminsSection = document.getElementById('admins-section');
                 if (adminsSection) adminsSection.style.display = 'block';
             }
-            
+
             // Ensure the selected section is visible
             const targetSection = document.getElementById(section + '-section');
             if (targetSection) {
                 targetSection.style.display = 'block';
             }
-            
+
             // Update nav button active state
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             const activeBtn = document.querySelector(`.nav-btn[data-section="${section}"]`);

@@ -6766,6 +6766,7 @@ STI Archives Admin`;
 
         // Update dashboard counts
         function updateDashboardCounts() {
+            if (!Array.isArray(users)) users = [];
             const verifiedCount = users.filter(u => u.verified && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
@@ -6942,7 +6943,6 @@ STI Archives Admin`;
                 document.getElementById('btn-pdf-upload').classList.add('active');
             }
             if (sectionId === 'dashboard') {
-                updateDashboardCounts();
                 setTimeout(() => {
                     renderUserChart();
                     renderSigningUpChart();

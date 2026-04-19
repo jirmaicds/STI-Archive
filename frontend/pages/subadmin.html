@@ -3812,6 +3812,7 @@
             }
         }
         function updateDashboardCounts() {
+            if (!Array.isArray(users)) users = [];
             const verifiedCount = users.filter(u => u.verified && u.role !== 'subadmin').length;
             const adminCount = users.filter(u => u.role === 'subadmin').length;
             const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;

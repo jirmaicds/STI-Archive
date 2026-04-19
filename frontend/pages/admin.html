@@ -6836,6 +6836,7 @@ STI Archives Admin`;
 
         // Update dashboard counts
         function updateDashboardCounts() {
+            if (!Array.isArray(users)) users = [];
             const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
             const researchCount = allArticles.filter(a => a.category === 'research').length;
             const capstoneCount = allArticles.filter(a => a.category === 'capstone').length;

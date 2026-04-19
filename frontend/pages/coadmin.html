@@ -6187,6 +6187,10 @@
             document.querySelector('.header').style.paddingLeft = marginValue;
             document.getElementById('main-content').style.marginLeft = marginValue;
         }
+
+        // Make all user subsections visible
+        document.querySelectorAll('.user-subsection').forEach(sub => sub.style.display = 'block');
+
         loadUsers().then(() => {
             // Counts are now updated automatically when tables are populated
             renderUserChart();
@@ -7194,18 +7198,18 @@
 
         // Users Navigation Functions
         function showUserSection(section) {
-            // Hide all user subsections
-            document.querySelectorAll('.user-subsection').forEach(sub => sub.style.display = 'none');
-            
-            // For coadmin, hide admins section
-            if (currentUser && currentUser.role === 'coadmin') {
+            // For coadmin, hide admins section if not selected
+            if (currentUser && currentUser.role === 'coadmin' && section !== 'admins') {
                 const adminsSection = document.getElementById('admins-section');
                 if (adminsSection) adminsSection.style.display = 'none';
+            } else {
+                const adminsSection = document.getElementById('admins-section');
+                if (adminsSection) adminsSection.style.display = 'block';
             }
             
-            // Show the selected section if not hidden
+            // Ensure the selected section is visible
             const targetSection = document.getElementById(section + '-section');
-            if (targetSection && targetSection.style.display !== 'none') {
+            if (targetSection) {
                 targetSection.style.display = 'block';
             }
             

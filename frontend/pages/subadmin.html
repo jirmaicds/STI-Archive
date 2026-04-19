@@ -4774,7 +4774,7 @@ STI Archives Admin`;
             if (!Array.isArray(users)) {
                 users = [];
             }
-            let totalUsers = users.filter(u => u.verified && u.role !== 'subadmin').length;
+            let totalUsers = users.filter(u => u.verified && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             let admins = users.filter(u => u.role === 'subadmin').length;
             let signingUp = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
             const totalCountEl = document.getElementById('standard-users-count');

@@ -389,21 +389,9 @@
             }
             .dark-mode-toggle i {
                 font-size: 18px;
-            }
+                }
         }
-        .notification-bell {
-            position: relative;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #FFA500;
-            padding: 8px;
-            border-radius: 50%;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        
         .notification-bell i {
             font-size: 20px;
         }
@@ -8812,8 +8800,6 @@
         // Explicitly bind functions to window to make them globally accessible for onclick handlers
         // This ensures functions work even when served through PHP
         if (typeof showSection === 'function') window.showSection = showSection;
-        if (typeof showUserSection === 'function') window.showUserSection = showUserSection;
-        if (typeof handleSidebarClick === 'function') window.handleSidebarClick = handleSidebarClick;
         if (typeof navigateToUsers === 'function') window.navigateToUsers = navigateToUsers;
         if (typeof navigateToNotifications === 'function') window.navigateToNotifications = navigateToNotifications;
         if (typeof scrollToUserSection === 'function') window.scrollToUserSection = scrollToUserSection;

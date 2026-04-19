@@ -5453,6 +5453,13 @@
             const savedSettings = JSON.parse(localStorage.getItem('adminSettings')) || {};
             const siteTitleEl = document.getElementById('site-title');
             if (siteTitleEl) siteTitleEl.value = savedSettings.siteTitle || 'STI Archives';
+            function updateTitlePreview() {
+                const siteTitleInput = document.getElementById('site-title');
+                const siteTitlePreview = document.getElementById('site-title-preview');
+                if (siteTitlePreview) {
+                    siteTitlePreview.textContent = siteTitleInput ? siteTitleInput.value : 'STI Archives';
+                }
+            }
             // Update title preview on load
             updateTitlePreview();
             // Load logo if exists

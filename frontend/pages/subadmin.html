@@ -3821,7 +3821,7 @@
             const verifiedCount = users.filter(u => u.verified && u.role !== 'subadmin').length;
             const adminCount = users.filter(u => u.role === 'subadmin').length;
             const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
-            const totalEl = document.getElementById('total-users-count');
+            const totalEl = document.getElementById('standard-users-count');
             const adminsEl = document.getElementById('admins-count');
             const signupEl = document.getElementById('signing-up-users-count');
             if (totalEl) totalEl.textContent = verifiedCount;
@@ -4159,11 +4159,7 @@
                 });
             }).catch(() => {
                 // Fallback
-                notifications = [
-                    { id: 'fallback-1', type: 'new-user', typeText: 'New User', content: 'John Doe has registered as a new user.', time: '2 hours ago' },
-                    { id: 'fallback-2', type: 'new-user', typeText: 'New Signing Up', content: 'Jane Smith is signing up for an account.', time: '1 hour ago' },
-                    { id: 'fallback-3', type: 'upload', typeText: 'Co-Admin Upload', content: 'Co-Admin uploaded a new research article.', time: '30 minutes ago' }
-                ];
+                notifications = [];
 
                 // Populate notification modal with fallback
                 const notificationList = document.getElementById('notification-list');
@@ -4699,6 +4695,7 @@ STI Archives Admin`;
                     <td>${user.grade || '-'}</td>
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
+                    <td>Pending</td>
                     <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
                     <td>${actions}</td>
                 </tr>`;
@@ -4779,7 +4776,7 @@ STI Archives Admin`;
             let totalUsers = users.filter(u => u.verified && u.role !== 'subadmin').length;
             let admins = users.filter(u => u.role === 'subadmin').length;
             let signingUp = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
-            const totalCountEl = document.getElementById('total-users-count');
+            const totalCountEl = document.getElementById('standard-users-count');
             const adminsCountEl = document.getElementById('admins-count');
             const signupCountEl = document.getElementById('signing-up-users-count');
             if (totalCountEl) totalCountEl.textContent = totalUsers;

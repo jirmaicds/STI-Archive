@@ -6537,7 +6537,7 @@ STI Archives Admin`;
         }
         function refreshUsers() {
             console.log('DEBUG: Auto refreshing users data from server...');
-            getUsers(true).then(users => {
+            return getUsers(true).then(users => {
                 saveUsers(users);
                 // Refresh users display if needed
             }).catch(error => {

@@ -6512,8 +6512,8 @@ STI Archives Admin`;
             paginateTable('banned-users-tbody', 10);
 
             // Reapply current filters after reload
-            for (const section in currentFilters) {
-                const f = currentFilters[section];
+            for (const section in window.currentFilters) {
+                const f = window.currentFilters[section];
                 if (f.role) {
                     document.getElementById(`role-filter-${section}`).value = f.role;
                     updateFilters(section);
@@ -6929,7 +6929,7 @@ STI Archives Admin`;
                 document.getElementById('btn-pdf-upload').classList.add('active');
             }
             if (sectionId === 'dashboard') {
-                // Dashboard counts are updated when tables are populated
+                updateDashboardCounts();
                 setTimeout(() => {
                     renderUserChart();
                     renderSigningUpChart();
@@ -8770,7 +8770,7 @@ STI Archives Admin`;
         }
 
         // Current filter states
-        let currentFilters = {
+        window.currentFilters = {
             admins: { role: '', search: '', filterType: 'unified' },
             verified: { role: '', search: '', filterType: 'unified' },
             'signing-up': { role: '', search: '', filterType: 'unified' },
@@ -9822,7 +9822,7 @@ STI Archives Admin`;
             filterTable(searchInput ? searchInput.value : '', section, filterType);
 
             // Store current filter state
-            currentFilters[section].role = selectedRole;
+            window.currentFilters[section].role = selectedRole;
         }
 
         function filterTable(query, tableType, filterType = 'unified') {
@@ -9831,8 +9831,8 @@ STI Archives Admin`;
             if (!tbody) return;
 
             // Store current filter state
-            currentFilters[tableType].search = query;
-            currentFilters[tableType].filterType = filterType;
+            window.currentFilters[tableType].search = query;
+            window.currentFilters[tableType].filterType = filterType;
 
             const rows = tbody.getElementsByTagName('tr');
             const filter = query.toLowerCase();

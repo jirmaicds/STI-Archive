@@ -4654,8 +4654,8 @@ STI Archives Admin`;
                     <td>${user.id}</td>
                     <td>${user.name}</td>
                     <td>${emailToUse}</td>
-                    <td>${formatRole(user.role)}</td>
-                    <td>${user.grade || ''}</td>
+                    <td>${user.role}</td>
+                    <td>${user.grade || '-'}</td>
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
                     <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
@@ -4666,8 +4666,8 @@ STI Archives Admin`;
                     <td>${user.id}</td>
                     <td>${user.name}</td>
                     <td>${emailToUse}</td>
-                    <td>${formatRole(user.role)}</td>
-                    <td>${user.grade || ''}</td>
+                    <td>${user.role}</td>
+                    <td>${user.grade || '-'}</td>
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
                     <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
@@ -5456,8 +5456,8 @@ STI Archives Admin`;
                         <td>${user.id}</td>
                         <td>${user.name}</td>
                         <td>${user.email}</td>
-                        <td>${formatRole(user.role)}</td>
-                        <td>${user.grade || ''}</td>
+                        <td>${user.role}</td>
+                        <td>${user.grade || '-'}</td>
                         <td>${getSectionDisplay(user)}</td>
                         <td>${date}</td>
                         <td>Verified</td>
@@ -5483,8 +5483,8 @@ STI Archives Admin`;
                         <td>${user.id}</td>
                         <td>${user.name}</td>
                         <td>${user.email}</td>
-                        <td>${formatRole(user.role)}</td>
-                        <td>${user.grade || ''}</td>
+                        <td>${user.role}</td>
+                        <td>${user.grade || '-'}</td>
                         <td>${getSectionDisplay(user)}</td>
                         <td>${date}</td>
                         <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
@@ -5509,8 +5509,8 @@ STI Archives Admin`;
                         <td>${user.id}</td>
                         <td>${user.name}</td>
                         <td>${user.email}</td>
-                        <td>${formatRole(user.role)}</td>
-                        <td>${user.grade || ''}</td>
+                        <td>${user.role}</td>
+                        <td>${user.grade || '-'}</td>
                         <td>${getSectionDisplay(user)}</td>
                         <td>${date}</td>
                         <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
@@ -5557,8 +5557,8 @@ STI Archives Admin`;
                         <td>${user.id}</td>
                         <td>${user.name}</td>
                         <td>${user.email}</td>
-                        <td>${formatRole(user.role)}</td>
-                        <td>${user.grade || ''}</td>
+                        <td>${user.role}</td>
+                        <td>${user.grade || '-'}</td>
                         <td>${getSectionDisplay(user)}</td>
                         <td>${date}</td>
                         <td>Signing Up</td>
@@ -5581,8 +5581,8 @@ STI Archives Admin`;
                         <td>${user.id}</td>
                         <td>${user.name}</td>
                         <td>${user.email}</td>
-                        <td>${formatRole(user.role)}</td>
-                        <td>${user.grade || ''}</td>
+                        <td>${user.role}</td>
+                        <td>${user.grade || '-'}</td>
                         <td>${getSectionDisplay(user)}</td>
                         <td>${date}</td>
                         <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
@@ -5604,12 +5604,12 @@ STI Archives Admin`;
                         <td>${user.user_id || user.id}</td>
                         <td>${user.name}</td>
                         <td>${user.email}</td>
-                        <td>${formatRole(user.role)}</td>
-                        <td>${user.grade || ''}</td>
+                        <td>${user.role}</td>
+                        <td>${user.grade || '-'}</td>
                         <td>${getSectionDisplay(user)}</td>
                         <td>${date}</td>
                         <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
-                        <td><button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
                     </tr>`;
                     tbody.innerHTML += row;
                 }

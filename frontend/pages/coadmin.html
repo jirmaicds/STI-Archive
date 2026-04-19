@@ -3329,15 +3329,15 @@
     <div class="main-content" id="main-content">
         <div id="dashboard" class="content-section active">
             <div class="dashboard">
-                <div class="card" onclick="navigateToUsers(); showUserSection('verified');">
+                <div class="card user-card" data-section="verified">
                     <h3>Total Users</h3>
                     <p id="verified-users-count">0</p>
                 </div>
-                <div class="card" onclick="navigateToUsers(); showUserSection('admins');">
+                <div class="card user-card" data-section="admins">
                     <h3>Admin Users</h3>
                     <p id="admin-users-count">0</p>
                 </div>
-                <div class="card" onclick="navigateToUsers(); showUserSection('signing-up');">
+                <div class="card user-card" data-section="signing-up">
                     <h3>New Signups</h3>
                     <p id="signing-up-users-count">0</p>
                 </div>
@@ -3558,16 +3558,16 @@
             <div class="users-section">
                 <!-- Users Navigation Bar -->
                 <div class="users-nav" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #007bff; padding-bottom: 15px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    <button class="nav-btn active" onclick="showUserSection('verified')">
+                    <button class="nav-btn active" data-section="verified">
                         <i class="fas fa-check-circle" style="margin-right: 8px;"></i>Verified
                     </button>
-                    <button class="nav-btn" onclick="showUserSection('signing-up')">
+                    <button class="nav-btn" data-section="signing-up">
                         <i class="fas fa-clock" style="margin-right: 8px;"></i>Signups
                     </button>
-                    <button class="nav-btn" onclick="showUserSection('banned')">
+                    <button class="nav-btn" data-section="banned">
                         <i class="fas fa-ban" style="margin-right: 8px;"></i>Banned
                     </button>
-                    <button class="nav-btn" onclick="showUserSection('admins')">
+                    <button class="nav-btn" data-section="admins">
                         <i class="fas fa-user-shield" style="margin-right: 8px;"></i>Admin
                     </button>
 
@@ -6870,7 +6870,7 @@
             document.getElementById(section + '-section').style.display = 'block';
             // Update nav button active state
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtn = document.querySelector(`.nav-btn[onclick*="showUserSection('${section}')"]`);
+            const activeBtn = document.querySelector(`.nav-btn[data-section="${section}"]`);
             if (activeBtn) activeBtn.classList.add('active');
 
             // Load data for specific sections
@@ -6883,7 +6883,23 @@
                 loadActivityLogs();
             }
         }
-        
+
+        // Add event listeners for user cards
+        document.querySelectorAll('.user-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const section = card.getAttribute('data-section');
+                navigateToUsers();
+                showUserSection(section);
+            });
+        });
+
+        // Add event listeners for nav buttons
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            const section = btn.getAttribute('data-section');
+            if (section) {
+                btn.addEventListener('click', () => showUserSection(section));
+            }
+        });
 
         function toggleReportsDropdown(e) {
             e.preventDefault();

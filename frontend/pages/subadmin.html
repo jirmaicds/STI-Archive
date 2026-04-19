@@ -2907,7 +2907,7 @@
                     <h3>Total Users</h3>
                     <p id="standard-users-count">0</p>
                 </div>
-                <div class="card" onclick="navigateToUsers(); showUserSection('signing-up');">
+                <div class="card user-card" data-section="signing-up">
                     <h3>New Signups</h3>
                     <p id="signing-up-users-count">0</p>
                 </div>
@@ -2940,10 +2940,10 @@
             <div class="users-section">
                 <!-- Users Navigation Bar -->
                 <div class="users-nav" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #007bff; padding-bottom: 15px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    <button class="nav-btn active" onclick="showUserSection('verified')">
+                    <button class="nav-btn active" data-section="verified">
                         <i class="fas fa-check-circle" style="margin-right: 8px;"></i>Verified
                     </button>
-                    <button class="nav-btn" onclick="showUserSection('signing-up')">
+                    <button class="nav-btn" data-section="signing-up">
                         <i class="fas fa-clock" style="margin-right: 8px;"></i>Signups
                     </button>
                 </div>
@@ -5762,7 +5762,7 @@ STI Archives Admin`;
             document.getElementById(section + '-section').style.display = 'block';
             // Update nav button active state
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtn = document.querySelector(`.nav-btn[onclick*="showUserSection('${section}')"]`);
+            const activeBtn = document.querySelector(`.nav-btn[data-section="${section}"]`);
             if (activeBtn) activeBtn.classList.add('active');
 
             // Load data for specific sections
@@ -5770,6 +5770,24 @@ STI Archives Admin`;
                 loadAdmins();
             }
         }
+
+        // Add event listeners for user cards
+        document.querySelectorAll('.user-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const section = card.getAttribute('data-section');
+                navigateToUsers();
+                showUserSection(section);
+            });
+        });
+
+        // Add event listeners for nav buttons
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            const section = btn.getAttribute('data-section');
+            if (section) {
+                btn.addEventListener('click', () => showUserSection(section));
+            }
+        });
+
         function toggleReportsDropdown(e) {
             e.preventDefault();
             e.stopPropagation();

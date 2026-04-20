@@ -297,10 +297,10 @@ function displayArticlePDF(pdfPath, title) {
     function getModalPosition() {
         const sidebar = document.getElementById('sidebar');
         const header = document.querySelector('.header');
-        
+
         let leftOffset = 0;
         let topOffset = 0;
-        
+
         // Check if sidebar exists and is collapsed
         if (sidebar) {
             if (sidebar.classList.contains('collapsed')) {
@@ -309,12 +309,12 @@ function displayArticlePDF(pdfPath, title) {
                 leftOffset = 200; // Sidebar width
             }
         }
-        
+
         // Check if header exists
         if (header) {
             topOffset = 80; // Header height approx
         }
-        
+
         return { left: leftOffset, top: topOffset };
     }
     

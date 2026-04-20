@@ -2386,7 +2386,7 @@ color: #ffd700;
         </div>
        </div>
 
-<div id="pdf-viewer-modal" style="display: none; position: fixed; top: 0; left: 30px; width: calc(50% - 30px); height: 100%; padding: 0; margin: 0;">
+<div id="pdf-viewer-modal" style="display: none; position: fixed;">
             <div style="
                 position: absolute;
                 top: 0;
@@ -6037,6 +6037,52 @@ color: #ffd700;
             }
         });
     });
-    </script>
-</body>
-</html>
+        // Function to position PDF modal accounting for sidebars
+        function positionPDFModal() {
+            const modal = document.getElementById('pdf-viewer-modal');
+            if (!modal) return;
+            
+            const adminSidebar = document.querySelector('.sidebar[style*="left: 0"]') || 
+                               document.querySelector('.sidebar:not([style*="left: -"])') ||
+                               document.querySelector('.sidebar');
+            const togglePanel = document.querySelector('.toggle-panel');
+            const header = document.querySelector('.main-navbar');
+            
+            let leftOffset = 0;
+            let topOffset = 0;
+            
+            // Check for admin sidebar (left side)
+            if (adminSidebar && (adminSidebar.style.left === '0px' || 
+                               adminSidebar.style.left === '' || 
+                               !adminSidebar.style.left.includes('-'))) {
+                leftOffset = 200; // Admin sidebar width
+            }
+            
+            // Add toggle panel width if visible
+            if (togglePanel && togglePanel.style.display !== 'none' && togglePanel.style.display !== '') {
+                leftOffset += 30; // Toggle panel width
+            }
+            
+            // Header height
+            if (header) {
+                topOffset = header.offsetHeight || 50;
+            }
+            
+            modal.style.top = topOffset + 'px';
+            modal.style.left = leftOffset + 'px';
+            modal.style.width = 'calc(100vw - ' + leftOffset + 'px)';
+            modal.style.height = 'calc(100vh - ' + topOffset + 'px)';
+        }
+        
+        // Position modal when shown
+        const originalShowModal = window.showModal || function() {};
+        window.showModal = function() {
+            positionPDFModal();
+            originalShowModal.apply(this, arguments);
+        };
+        
+        // Also position on window resize
+        window.addEventListener('resize', positionPDFModal);
+        
+        // Initial positioning
+        document.addEventListener('DOMContentLoaded', positionPDFModal);

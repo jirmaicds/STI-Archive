@@ -5861,58 +5861,6 @@ STI Archives Admin`;
             document.getElementById('add-user-modal').style.display = 'none';
         }
 
-        // Handle role change in add user form
-        document.getElementById('add-user-role').addEventListener('change', function() {
-            const gradeSection = document.getElementById('add-user-grade-section');
-            if (this.value === 'senior_high') {
-                gradeSection.style.display = 'block';
-            } else {
-                gradeSection.style.display = 'none';
-            }
-        });
-
-        // Add user form submission
-        document.getElementById('add-user-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const userData = {
-                user_id: document.getElementById('add-user-id').value,
-                name: document.getElementById('add-user-fullname').value,
-                email: document.getElementById('add-user-email').value,
-                personal_email: document.getElementById('add-user-personal-email').value,
-                password: document.getElementById('add-user-password').value,
-                role: document.getElementById('add-user-role').value,
-                grade: document.getElementById('add-user-grade').value || null,
-                section: document.getElementById('add-user-section').value,
-                strand: document.getElementById('add-user-section').value,
-                verified: 1,
-                rejected: 0,
-                banned: 0,
-                status: 'verified',
-                raf_path: null
-            };
-
-            fetch('/api/users/add', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userData)
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.message) {
-                    alert('User added successfully!');
-                    closeAddUserModal();
-                    this.reset();
-                    loadUsers(); // Refresh the users list
-                } else {
-                    alert('Failed to add user: ' + (result.error || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error adding user:', error);
-                alert('Failed to add user. Please check your connection.');
-            });
-        });
-
         document.getElementById('create-admin-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const adminId = document.getElementById('create-admin-id').value;

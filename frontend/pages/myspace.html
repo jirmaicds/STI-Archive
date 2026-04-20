@@ -4316,87 +4316,54 @@ color: #ffd700;
           const leftBtn = document.querySelector('.toggle-half.toggle-editor');
           const rightBtn = document.querySelector('.toggle-half.toggle-file-viewer');
            // HomeEditor functions - attached to window for global access
-          window.showEditor = function() {
-              var homeEditor = document.getElementById('homeEditor');
-              var editor = document.getElementById('editor');
-              var fileViewer = document.querySelector('.file-viewer');
+           window.showEditor = function() {
+               var homeEditor = document.getElementById('homeEditor');
+               var editor = document.getElementById('editor');
+               var fileViewer = document.querySelector('.file-viewer');
 
-              console.log('showEditor called');
-              console.log('homeEditor:', homeEditor);
-              console.log('editor:', editor);
-               
-              // Check if homeEditor is in fullscreen/expanded mode
-              var isHomeEditorFullscreen = (toggleState === 'homeEditorExpanded') || 
-                  (homeEditor && homeEditor.style.flex === '0 0 100%') ||
-                  (homeEditor && homeEditor.style.width === '100%');
-               
-              // Hide homeEditor when showing editor
-              if (homeEditor) {
-                  homeEditor.style.display = 'none';
-                  homeEditor.classList.remove('visible');
-              }
-              // Hide footer toggle when editor is shown
-              const footerToggle = document.querySelector('.footer-toggle-container');
-              if (footerToggle) {
-                  footerToggle.style.display = 'none';
-              }
-              if (editor) {
-                  editor.classList.add('visible');
-                  editor.style.display = 'flex';
-                  
-                  // If homeEditor was in fullscreen, editor should take full width
-                  if (isHomeEditorFullscreen) {
-                      editor.style.flex = '0 0 100%';
-                      editor.style.width = '100%';
-                      editor.style.position = 'absolute';
-                      editor.style.left = '0';
-                      editor.style.right = 'auto';
-                      editor.classList.add('fullscreen');
-                      // Set toggleState so toggleFileViewer knows editor is in fullscreen
-                      toggleState = 'editor';
-                      // Update toggle panel for editor fullscreen
-                      // Position toggle panel on LEFT side
-                      togglePanel.classList.add('left', 'no-left-space');
-                      togglePanel.classList.remove('right', 'no-right-space');
-                      togglePanel.style.display = 'flex';
-                      // Show only right button with chevron-right icon
-                      toggleBtn.style.width = '15px';
-                      rightBtn.querySelector('i').className = 'fa fa-chevron-right';
-                      leftBtn.style.display = 'none';
-                      rightBtn.style.display = 'flex';
-                      // Hide file-viewer when homeEditor was in fullscreen
-                      if (fileViewer) {
-                          fileViewer.style.display = 'none';
-                      }
-                  } else {
-                      // Make editor fullscreen for new documents
-                      editor.style.flex = '0 0 100%';
-                      editor.style.width = '100%';
-                      editor.style.position = 'relative';
-                      editor.style.left = 'auto';
-                      editor.style.right = 'auto';
-                      editor.classList.add('fullscreen');
-                      toggleState = 'editor';
-                      // Hide file-viewer for fullscreen editor
-                      if (fileViewer) {
-                          fileViewer.style.display = 'none';
-                      }
-                      // Update toggle panel
-                      togglePanel.classList.add('left', 'no-left-space');
-                      togglePanel.classList.remove('right', 'no-right-space');
-                      togglePanel.style.display = 'flex';
-                      toggleBtn.style.width = '15px';
-                      rightBtn.querySelector('i').className = 'fa fa-chevron-right';
-                      leftBtn.style.display = 'none';
-                      rightBtn.style.display = 'flex';
-                  }
-                  
-                   editor.style.zIndex = '1100';
-                  // Initialize a new blank document if needed
-                  var container = document.getElementById('documentContainer');
-                  if (!container || container.children.length === 0) {
-                      resetDocument();
-                  }
+               console.log('showEditor called');
+               console.log('homeEditor:', homeEditor);
+               console.log('editor:', editor);
+
+               // Hide homeEditor when showing editor
+               if (homeEditor) {
+                   homeEditor.style.display = 'none';
+                   homeEditor.classList.remove('visible');
+               }
+               // Hide footer toggle when editor is shown
+               const footerToggle = document.querySelector('.footer-toggle-container');
+               if (footerToggle) {
+                   footerToggle.style.display = 'none';
+               }
+               if (editor) {
+                   editor.classList.add('fullscreen');
+                   editor.classList.add('visible');
+                   editor.style.display = 'flex';
+                   // Set editor to full width for creating blank document
+                   editor.style.flex = '0 0 100%';
+                   editor.style.width = '100%';
+                   editor.style.position = 'relative';
+                   editor.style.left = 'auto';
+                   editor.style.right = 'auto';
+                   toggleState = 'editor';
+                   // Hide file-viewer when creating document
+                   if (fileViewer) {
+                       fileViewer.style.display = 'none';
+                   }
+                   // Update toggle panel for fullscreen editor
+                   togglePanel.classList.add('left', 'no-left-space');
+                   togglePanel.classList.remove('right', 'no-right-space');
+                   togglePanel.style.display = 'flex';
+                   toggleBtn.style.width = '15px';
+                   rightBtn.querySelector('i').className = 'fa fa-chevron-right';
+                   leftBtn.style.display = 'none';
+                   rightBtn.style.display = 'flex';
+
+                   // Initialize a new blank document if needed
+                   var container = document.getElementById('documentContainer');
+                   if (!container || container.children.length === 0) {
+                       resetDocument();
+                   }
               }
           };
           

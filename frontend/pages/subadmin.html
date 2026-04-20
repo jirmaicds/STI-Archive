@@ -4932,6 +4932,10 @@ STI Archives Admin`;
             } catch (e) {
                 users = [];
             }
+            // Ensure users is always an array
+            if (!Array.isArray(users)) {
+                users = [];
+            }
             const roleCounts = {
                 senior_high: 0,
                 college: 0,

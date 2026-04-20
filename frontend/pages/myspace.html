@@ -752,6 +752,12 @@
         flex: 0 0 100%;
       }
 
+      .file-viewer {
+        width: 100%;
+        left: 0;
+        right: auto;
+      }
+
       .dark-mode .home-editor {
         background: #2d2d2d;
       }
@@ -5091,7 +5097,7 @@ CURRICULUM VITAE`;
                   (homeEditor && homeEditor.style.flex === '0 0 100%') ||
                   (homeEditor && homeEditor.style.width === '100%');
                
-              // First hide homeEditor completely
+              // Hide homeEditor when showing editor
               if (homeEditor) {
                   homeEditor.style.display = 'none';
                   homeEditor.classList.remove('visible');
@@ -5369,14 +5375,13 @@ CURRICULUM VITAE`;
           // Make loadDocumentById globally accessible
           window.loadDocumentById = function(id) {
               console.log('Loading document by ID:', id);
-              window.showEditor();
+              // Don't show editor for existing documents, only for new
               window.loadDocument(id);
           };
           
           // Make loadDocument globally accessible - enhanced to load from API
           window.loadDocument = async function(id) {
-              // Show the editor first
-              window.showEditor();
+              // Don't show editor for existing documents
               
               var savedDocuments = JSON.parse(localStorage.getItem('savedDocuments')) || [];
               var doc = savedDocuments.find(function(d) { return d.id === id; });

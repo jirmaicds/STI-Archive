@@ -224,7 +224,8 @@
       position: fixed;
       top: 0;
       left: 0;
-      width: 50%;
+      width: 100%;
+      max-width: 100%;
       height: 100%;
       padding: 0;
       margin: 0;
@@ -4339,16 +4340,20 @@ color: #ffd700;
                    editor.classList.add('fullscreen');
                    editor.classList.add('visible');
                    editor.style.display = 'flex';
-                   // Set editor to full width for creating blank document
-                   editor.style.flex = '0 0 100%';
+                   // Set editor to full width for creating blank document, positioned absolutely
+                   editor.style.position = 'absolute';
+                   editor.style.top = '50px';
+                   editor.style.left = '0';
                    editor.style.width = '100%';
-                   editor.style.position = 'relative';
-                   editor.style.left = 'auto';
-                   editor.style.right = 'auto';
+                   editor.style.height = 'calc(100vh - 50px)';
                    toggleState = 'editor';
                    // Hide file-viewer when creating document
                    if (fileViewer) {
                        fileViewer.style.display = 'none';
+                   }
+                   // Hide home-editor
+                   if (homeEditor) {
+                       homeEditor.style.display = 'none';
                    }
                    // Update toggle panel for fullscreen editor
                    togglePanel.classList.add('left', 'no-left-space');

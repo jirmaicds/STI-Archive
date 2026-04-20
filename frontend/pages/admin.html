@@ -247,6 +247,75 @@
                 location.reload();
             });
         }
+
+        function previewUserDocs(userId) {
+            // Find the user by ID
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => (u.user_id || u.id) === userId);
+            if (!user) {
+                alert('User not found.');
+                return;
+            }
+
+            // Check if modal exists, create if not
+            let modal = document.getElementById('user-docs-preview-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'user-docs-preview-modal';
+                modal.className = 'modal';
+                modal.style.display = 'flex';
+                modal.style.justifyContent = 'center';
+                modal.style.alignItems = 'center';
+                modal.innerHTML = `
+                    <div class="modal-content" style="margin: 0; max-width: 800px; max-height: 80vh; overflow-y: auto;">
+                        <span class="close-modal" onclick="closeUserDocsModal()">&times;</span>
+                        <h3>User Documents Preview</h3>
+                        <div id="user-docs-preview-content" style="margin-top: 15px;"></div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+            modal.style.display = 'flex';
+            const content = document.getElementById('user-docs-preview-content');
+            let html = `<p><strong>User:</strong> ${user.name}</p>`;
+
+            // Display RAF document
+            if (user.raf_path) {
+                const rafUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/Raf-edu_id/' + user.raf_path;
+                const rafExt = user.raf_path.split('.').pop().toLowerCase();
+                html += `<h4>RAF Document</h4>`;
+                if (['jpg', 'jpeg', 'png'].includes(rafExt)) {
+                    html += `<img src="${rafUrl}" alt="RAF Document" style="max-width: 100%; max-height: 400px;">`;
+                } else if (rafExt === 'pdf') {
+                    html += `<embed src="${rafUrl}" type="application/pdf" width="100%" height="400px">`;
+                } else {
+                    html += `<a href="${rafUrl}" target="_blank">Download RAF Document</a>`;
+                }
+            }
+
+            // Display Educator ID document
+            if (user.educator_id) {
+                const eduUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/Raf-edu_id/' + user.educator_id;
+                const eduExt = user.educator_id.split('.').pop().toLowerCase();
+                html += `<h4>Educator ID</h4>`;
+                if (['jpg', 'jpeg', 'png'].includes(eduExt)) {
+                    html += `<img src="${eduUrl}" alt="Educator ID" style="max-width: 100%; max-height: 400px;">`;
+                } else if (eduExt === 'pdf') {
+                    html += `<embed src="${eduUrl}" type="application/pdf" width="100%" height="400px">`;
+                } else {
+                    html += `<a href="${eduUrl}" target="_blank">Download Educator ID</a>`;
+                }
+            }
+
+            content.innerHTML = html;
+        }
+
+        function closeUserDocsModal() {
+            const modal = document.getElementById('user-docs-preview-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
@@ -7693,74 +7762,6 @@ STI Archives Admin`;
 
         function saveUsers(users) {
             localStorage.setItem('users', JSON.stringify(users));
-        }
-        function previewUserDocs(userId) {
-            // Find the user by ID
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            const user = users.find(u => (u.user_id || u.id) === userId);
-            if (!user) {
-                alert('User not found.');
-                return;
-            }
-
-            // Check if modal exists, create if not
-            let modal = document.getElementById('user-docs-preview-modal');
-            if (!modal) {
-                modal = document.createElement('div');
-                modal.id = 'user-docs-preview-modal';
-                modal.className = 'modal';
-                modal.style.display = 'flex';
-                modal.style.justifyContent = 'center';
-                modal.style.alignItems = 'center';
-                modal.innerHTML = `
-                    <div class="modal-content" style="margin: 0; max-width: 800px; max-height: 80vh; overflow-y: auto;">
-                        <span class="close-modal" onclick="closeUserDocsModal()">&times;</span>
-                        <h3>User Documents Preview</h3>
-                        <div id="user-docs-preview-content" style="margin-top: 15px;"></div>
-                    </div>
-                `;
-                document.body.appendChild(modal);
-            }
-            modal.style.display = 'flex';
-            const content = document.getElementById('user-docs-preview-content');
-            let html = `<p><strong>User:</strong> ${user.name}</p>`;
-
-            // Display RAF document
-            if (user.raf_path) {
-                const rafUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/Raf-edu_id/' + user.raf_path;
-                const rafExt = user.raf_path.split('.').pop().toLowerCase();
-                html += `<h4>RAF Document</h4>`;
-                if (['jpg', 'jpeg', 'png'].includes(rafExt)) {
-                    html += `<img src="${rafUrl}" alt="RAF Document" style="max-width: 100%; max-height: 400px;">`;
-                } else if (rafExt === 'pdf') {
-                    html += `<embed src="${rafUrl}" type="application/pdf" width="100%" height="400px">`;
-                } else {
-                    html += `<a href="${rafUrl}" target="_blank">Download RAF Document</a>`;
-                }
-            }
-
-            // Display Educator ID document
-            if (user.educator_id) {
-                const eduUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/Raf-edu_id/' + user.educator_id;
-                const eduExt = user.educator_id.split('.').pop().toLowerCase();
-                html += `<h4>Educator ID</h4>`;
-                if (['jpg', 'jpeg', 'png'].includes(eduExt)) {
-                    html += `<img src="${eduUrl}" alt="Educator ID" style="max-width: 100%; max-height: 400px;">`;
-                } else if (eduExt === 'pdf') {
-                    html += `<embed src="${eduUrl}" type="application/pdf" width="100%" height="400px">`;
-                } else {
-                    html += `<a href="${eduUrl}" target="_blank">Download Educator ID</a>`;
-                }
-            }
-
-            content.innerHTML = html;
-        }
-
-        function closeUserDocsModal() {
-            const modal = document.getElementById('user-docs-preview-modal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
         }
 
         function openRejectModal(userId) {

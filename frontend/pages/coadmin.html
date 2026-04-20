@@ -3664,7 +3664,7 @@
                             <option value="email">Email</option>
                         </select>
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'admins', document.getElementById('search-filter-admins').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                        <button id="create-admin-btn" class="btn" onclick="openCreateAdminModal()">Create New Admin</button>
+                        
                     </div>
 
                     <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
@@ -3731,7 +3731,7 @@
                             <option value="email">Email</option>
                         </select>
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'verified', document.getElementById('search-filter-verified').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                        <button class="btn" onclick="openAddUserModal()">Add New User</button>
+                        
                     </div>
                     <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
                         <input type="checkbox" id="select-all-verified-main" onclick="toggleSelectAll('verified')">
@@ -4054,187 +4054,8 @@
         <button class="citation-copy-btn" onclick="copyCitation()">Copy Citation</button>
       </div>
     </div>
-    <!-- Create Admin Modal -->
-    <div id="create-admin-modal" class="modal">
-        <div class="modal-content" style="max-height: 600px; overflow-y: auto;">
-            <div style="position: relative; margin-bottom: 20px;">
-                <h3 style="margin: 0;" id="create-user-modal-title">Create New User</h3>
-                <span class="close-modal" onclick="closeCreateAdminModal()" style="position: absolute; right: 0; top: 0; cursor: pointer; font-size: 28px; color: #aaa;">&times;</span>
-            </div>
-            <form id="create-admin-form" onsubmit="return handleCreateAdminSubmit(event)">
-                <!-- Admin Roles Section First -->
-                <label style="font-weight: bold; display: block; margin-bottom: 10px;">Admin Role:</label>
-                 <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                     <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                         <input type="radio" name="admin-role" value="admin" onchange="showAdminInputs()">
-                         <strong>Admin (Full Access)</strong>
-                     </label>
-                     <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                         Complete system control. Create, edit, delete other admin accounts. Full access to all features and settings.
-                     </div>
-                     <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                         <input type="radio" name="admin-role" value="co-admin" onchange="showAdminInputs()">
-                         <strong>Co-Admin (Limited Access)</strong>
-                     </label>
-                     <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                         User & File Management. Approve/reject user registrations. Limited access to features.
-                     </div>
-                     <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                         <input type="radio" name="admin-role" value="sub-admin" onchange="showAdminInputs()">
-                         <strong>Sub-Admin (Approver)</strong>
-                     </label>
-                     <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                         User Approver. Accept/Reject Registrations. Basic access to user management.
-                     </div>
-                 </div>
-                
-                <!-- Hidden Input Fields (shown when role is selected) -->
-                <div id="admin-inputs-container" style="display: none;">
-                    <!-- Stacked/Vertical Input Fields -->
-                    <div style="margin-bottom: 15px;">
-                        <label for="create-admin-fullname" style="display: block; margin-bottom: 5px; font-weight: bold;">Full Name:</label>
-                        <input type="text" id="create-admin-fullname" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <label for="create-admin-email" style="display: block; margin-bottom: 5px; font-weight: bold;">Email:</label>
-                        <input type="email" id="create-admin-email" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <label for="create-admin-password" style="display: block; margin-bottom: 5px; font-weight: bold;">Password:</label>
-                        <div style="position: relative;">
-                            <input type="password" id="create-admin-password" style="width: 100%; padding: 10px; padding-right: 40px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                            <span id="create-admin-password-toggle" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #888; font-size: 14px;" onclick="togglePasswordVisibility()">
-                                <i class="fas fa-eye"></i>
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div id="grade-section" style="display: none; margin-bottom: 15px;">
-                        <label for="create-admin-grade" style="display: block; margin-bottom: 5px; font-weight: bold;">Grade:</label>
-                        <select id="create-admin-grade" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                            <option value="Grade 11">Grade 11</option>
-                            <option value="Grade 12">Grade 12</option>
-                        </select>
-                    </div>
-                    <div id="section-section" style="display: none; margin-bottom: 15px;">
-                        <label for="create-admin-section" style="display: block; margin-bottom: 5px; font-weight: bold;">Section/Strand/Program:</label>
-                        <input type="text" id="create-admin-section" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                    </div>
-                    <button type="submit" class="btn" id="create-user-btn" style="width: 100%; padding: 12px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Create User</button>
-                </div>
-                <div id="select-role-message" style="text-align: center; padding: 20px; color: #666; font-style: italic;">
-                    Please select an Admin Role above to continue
-                </div>
-            </form>
-        </div>
-    </div>
-    <!-- Add User Modal -->
-    <div id="add-user-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeAddUserModal()">&times;</span>
-            <h3>Add New User</h3>
-            <form id="add-user-form">
-                <label for="add-user-id">User ID:</label>
-                <input type="text" id="add-user-id" required>
-                <label for="add-user-fullname">Full Name:</label>
-                <input type="text" id="add-user-fullname" required>
-                <label for="add-user-email">School Email:</label>
-                <input type="email" id="add-user-email" required>
-                <label for="add-user-personal-email">Personal Email:</label>
-                <input type="email" id="add-user-personal-email" required>
-                <label for="add-user-password">Password:</label>
-                <input type="password" id="add-user-password" required>
-                <label for="add-user-role">Role:</label>
-                <select id="add-user-role" required>
-                    <option value="senior_high">Senior High</option>
-                    <option value="college">College</option>
-                    <option value="teacher">Teacher</option>
-                    <option value="educator">Educator</option>
-                </select>
-                <div id="add-user-grade-section" style="display: none;">
-                    <label for="add-user-grade">Grade:</label>
-                    <select id="add-user-grade">
-                        <option value="Grade 11">Grade 11</option>
-                        <option value="Grade 12">Grade 12</option>
-                    </select>
-                </div>
-                <label for="add-user-section">Section/Strand:</label>
-                <input type="text" id="add-user-section" required>
-                <button type="submit" class="btn">Add User</button>
-            </form>
-        </div>
-    </div>
-    <!-- Edit User Modal -->
-    <div id="edit-user-modal" class="modal">
-        <div class="modal-content">
-            <div style="position: relative; margin-bottom: 20px;">
-                <h3 style="margin: 0;">Edit User</h3>
-                <span class="close-modal" onclick="closeEditUserModal()" style="position: absolute; right: 0; top: 0; cursor: pointer; font-size: 28px; color: #aaa;">&times;</span>
-            </div>
-            <form id="edit-user-form">
-                <!-- Stacked Input Fields -->
-                <div style="margin-bottom: 15px;">
-                    <label for="edit-user-id" style="display: block; margin-bottom: 5px; font-weight: bold;">ID:</label>
-                    <input type="text" id="edit-user-id" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                </div>
-                
-                <div style="margin-bottom: 15px;">
-                    <label for="edit-user-fullname" style="display: block; margin-bottom: 5px; font-weight: bold;">Full Name:</label>
-                    <input type="text" id="edit-user-fullname" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" required>
-                </div>
-                
-                <div style="margin-bottom: 15px;">
-                    <label for="edit-user-email" style="display: block; margin-bottom: 5px; font-weight: bold;">Email:</label>
-                    <input type="email" id="edit-user-email" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                </div>
-                
-                <!-- Admin Roles Section -->
-                <div id="edit-admin-roles-section" style="margin-bottom: 15px;">
-                    <label style="font-weight: bold; display: block; margin-bottom: 10px;">Admin Role:</label>
-                    <div style="display: flex; flex-direction: column; gap: 10px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                        <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                            <input type="radio" name="edit-admin-role" value="admin"> 
-                            <strong>Admin (Full Access)</strong>
-                        </label>
-                        <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                            Complete system control. Create, edit, delete other admin accounts.
-                        </div>
-                        <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                            <input type="radio" name="edit-admin-role" value="coadmin"> 
-                            <strong>Co-Admin (Limited Access)</strong>
-                        </label>
-                        <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                            User management and file oversight. Cannot view other admins.
-                        </div>
-                        <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                            <input type="radio" name="edit-admin-role" value="subadmin">
-                            <strong>Sub-Admin (User Approver)</strong>
-                        </label>
-                        <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                            Accept or reject user registrations. Manage pending user accounts.
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Regular user fields (for non-admin roles) -->
-                <div id="edit-regular-user-fields" style="display: none;">
-                    <label for="edit-user-role">Role:</label>
-                    <select id="edit-user-role" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 15px;">
-                        <option value="senior_high">Senior High</option>
-                        <option value="college">College</option>
-                        <option value="teacher">Teacher</option>
-                    </select>
-                    <label for="edit-user-section">Section/Strand:</label>
-                    <input type="text" id="edit-user-section" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-                </div>
-                
-                <button type="submit" class="btn" style="width: 100%; padding: 12px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Save</button>
-                <button type="button" onclick="closeEditUserModal()" class="btn" style="width: 100%; padding: 12px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px;">Cancel</button>
-            </form>
-        </div>
-    </div>
+    
+
     <script>
         // === GLOBAL FUNCTIONS ===
         // Moved outside DOMContentLoaded to ensure availability on page load
@@ -7291,48 +7112,7 @@
             }
         }
 
-        function toggleCreateAdminPasswordVisibility() {
-            const passwordInput = document.getElementById('create-admin-password');
-            const passwordToggleBtn = document.getElementById('create-admin-password-toggle');
-            const eyeIcon = passwordToggleBtn.querySelector('i');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.className = 'fas fa-eye-slash';
-            } else {
-                passwordInput.type = 'password';
-                eyeIcon.className = 'fas fa-eye';
-            }
-        }
-        
-        function togglePasswordVisibility() {
-            console.log('togglePasswordVisibility called');
-            const passwordInput = document.getElementById('create-admin-password');
-            const toggle = document.getElementById('create-admin-password-toggle');
-            const eyeIcon = toggle.querySelector('i');
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.className = 'fas fa-eye-slash';
-            } else {
-                passwordInput.type = 'password';
-                eyeIcon.className = 'fas fa-eye';
-            }
-        }
-        
-        // Add event listener to Create New Admin button
-        document.addEventListener('DOMContentLoaded', function() {
-            const createAdminBtn = document.getElementById('create-admin-btn');
-            console.log('Create New Admin button found:', createAdminBtn);
-            if (createAdminBtn) {
-                createAdminBtn.addEventListener('click', function() {
-                    console.log('Create New Admin button clicked');
-                    const modal = document.getElementById('create-admin-modal');
-                    modal.style.display = 'flex';
-                    modal.style.justifyContent = 'center';
-                    modal.style.alignItems = 'center';
-                });
-            }
-        });
+
         function getVerificationCode() {
             document.getElementById('get-code-btn').disabled = true;
             let time = 60;
@@ -7433,157 +7213,9 @@
             });
         }
 
-        // Edit User Modal Functions
-        function openEditUserModal(button, userId) {
-            const row = button.closest('tr');
-            const tbody = row.closest('tbody');
-            const tds = row.querySelectorAll('td');
-            let oldUserId;
-            
-            // Reset form fields
-            document.getElementById('edit-user-id').value = '';
-            document.getElementById('edit-user-fullname').value = '';
-            document.getElementById('edit-user-email').value = '';
-            document.getElementById('edit-user-section').value = '';
-            
-            // Hide both sections initially
-            document.getElementById('edit-admin-roles-section').style.display = 'none';
-            document.getElementById('edit-regular-user-fields').style.display = 'none';
-            
-            // Reset radio buttons
-            document.querySelectorAll('input[name="edit-admin-role"]').forEach(rb => rb.checked = false);
-            
-            if (tbody.id === 'admins-tbody') {
-                // Admin user - show admin roles section
-                oldUserId = tds[1].textContent;
-                document.getElementById('edit-user-id').value = oldUserId;
-                document.getElementById('edit-user-id').setAttribute('data-old-id', oldUserId);
-                document.getElementById('edit-user-fullname').value = tds[2].textContent;
-                document.getElementById('edit-user-email').value = tds[3].textContent !== 'N/A' ? tds[3].textContent : '';
-                
-                // Show admin roles section
-                document.getElementById('edit-admin-roles-section').style.display = 'block';
-                
-                // Set admin role based on what's in the table
-                const permissionsText = tds[5].textContent;
-                if (permissionsText.includes('Admin') && permissionsText.includes('Full Access')) {
-                    document.querySelector('input[name="edit-admin-role"][value="admin"]').checked = true;
-                } else if (permissionsText.includes('Co-Admin')) {
-                    document.querySelector('input[name="edit-admin-role"][value="coadmin"]').checked = true;
-                } else if (permissionsText.includes('Sub-Admin')) {
-                    document.querySelector('input[name="edit-admin-role"][value="subadmin"]').checked = true;
-                } else {
-                    document.querySelector('input[name="edit-admin-role"][value="admin"]').checked = true;
-                }
-            } else {
-                // Regular user - show regular fields
-                oldUserId = tds[1].textContent;
-                document.getElementById('edit-user-id').value = oldUserId;
-                document.getElementById('edit-user-id').setAttribute('data-old-id', oldUserId);
-                document.getElementById('edit-user-fullname').value = tds[2].textContent;
-                document.getElementById('edit-user-email').value = tds[3].textContent !== 'N/A' ? tds[3].textContent : '';
-                
-                const roleText = tds[4].textContent;
-                let roleValue = 'senior_high';
-                if (roleText === 'SHS') roleValue = 'senior_high';
-                else if (roleText === 'College') roleValue = 'college';
-                else if (roleText === 'Teacher') roleValue = 'teacher';
-                document.getElementById('edit-user-role').value = roleValue;
-                document.getElementById('edit-user-section').value = tds[5].textContent;
-                
-                // Show regular user fields
-                document.getElementById('edit-regular-user-fields').style.display = 'block';
-            }
-            document.getElementById('edit-user-modal').style.display = 'block';
-        }
-
-        function closeEditUserModal() {
-            document.getElementById('edit-user-modal').style.display = 'none';
-        }
 
 
-        // Edit user form submission
-        document.getElementById('edit-user-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const oldUserId = document.getElementById('edit-user-id').getAttribute('data-old-id') || document.getElementById('edit-user-id').value;
-            const newUserId = document.getElementById('edit-user-id').value;
-            const userEmail = document.getElementById('edit-user-email').value;
-            
-            // Check if we're editing an admin (check if admin roles section is visible)
-            const isAdmin = document.getElementById('edit-admin-roles-section').style.display !== 'none';
-            
-            let userData;
-            let permissionsText = '';
-            
-            if (isAdmin) {
-                // Get admin role from radio buttons
-                const selectedRole = document.querySelector('input[name="edit-admin-role"]:checked');
-                const adminRole = selectedRole ? selectedRole.value : 'admin';
-                
-                // Build permissions text based on role
-                if (adminRole === 'admin') {
-                    permissionsText = 'Full Access - All Features';
-                } else if (adminRole === 'coadmin') {
-                    permissionsText = 'Limited Access - User & File Management';
-                } else if (adminRole === 'subadmin') {
-                    permissionsText = 'User Approver - Accept/Reject Registrations';
-                }
-                
-                userData = {
-                    user_id: oldUserId,
-                    student_id: newUserId,
-                    name: document.getElementById('edit-user-fullname').value,
-                    email: userEmail,
-                    role: adminRole,
-                    admin_role: adminRole,
-                    permissions: permissionsText
-                };
-            } else {
-                userData = {
-                    user_id: oldUserId,
-                    student_id: newUserId,
-                    name: document.getElementById('edit-user-fullname').value,
-                    email: userEmail,
-                    role: document.getElementById('edit-user-role').value,
-                    section: document.getElementById('edit-user-section').value,
-                    strand: document.getElementById('edit-user-section').value
-                };
-            }
 
-            fetch('/api/update_user', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userData)
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.message) {
-                    alert('User updated successfully!');
-                    closeEditUserModal();
-                    // Force refresh from server to update login system and admin table
-                    getUsers(true).then(() => {
-                        loadUsers();
-                    });
-                } else {
-                    alert('Failed to update user: ' + (result.error || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error updating user:', error);
-                alert('Failed to update user. Please check your connection.');
-            });
-        });
-
-        // Create Admin Modal Functions
-        // Create Admin Modal Functions
-        function openCreateAdminModal() {
-            document.getElementById('create-admin-modal').style.display = 'block';
-            console.log('Modal opened');
-            // Force reset - unselect ALL radio buttons by setting checked to false
-            const roleRadios = document.getElementsByName('admin-role');
-            for (let i = 0; i < roleRadios.length; i++) {
-                roleRadios[i].checked = false;
-            }
             // Hide inputs and show select role message
             document.getElementById('admin-inputs-container').style.display = 'none';
             document.getElementById('select-role-message').style.display = 'block';
@@ -7603,258 +7235,16 @@
                 password.value = '';
                 password.removeAttribute('required');
             }
-        }
-        
-        // Add event listener to the Create New Admin button
-        document.addEventListener('DOMContentLoaded', function() {
-            const createAdminBtn = document.getElementById('create-admin-btn');
-            if (createAdminBtn) {
-                createAdminBtn.addEventListener('click', function() {
-                    console.log('Create Admin button clicked');
-                    openCreateAdminModal();
-                });
-            } else {
-                console.error('Create Admin button not found');
-            }
-        });
-
-        function closeCreateAdminModal() {
-            document.getElementById('create-admin-modal').style.display = 'none';
-            // Clear all input fields
-            document.getElementById('create-admin-fullname').value = '';
-            document.getElementById('create-admin-email').value = '';
-            document.getElementById('create-admin-password').value = '';
-            document.getElementById('create-admin-grade').value = 'Grade 11';
-            document.getElementById('create-admin-section').value = '';
-            // Uncheck all role radio buttons (no selection)
-            const roleRadios = document.querySelectorAll('input[name="admin-role"]');
-            roleRadios.forEach(radio => radio.checked = false);
-            // Hide inputs and show select role message
-            document.getElementById('admin-inputs-container').style.display = 'none';
-            document.getElementById('select-role-message').style.display = 'block';
-        }
-        
-        // Show admin input fields when role is selected
-        function showAdminInputs() {
-            const roleRadios = document.querySelectorAll('input[name="admin-role"]');
-            let selectedRole = '';
-            roleRadios.forEach(radio => {
-                if (radio.checked) {
-                    selectedRole = radio.value;
-                }
-            });
-            
-            if (selectedRole) {
-                document.getElementById('admin-inputs-container').style.display = 'block';
-                document.getElementById('select-role-message').style.display = 'none';
-                // Add required attribute to inputs when shown
-                document.getElementById('create-admin-fullname').setAttribute('required', 'required');
-                document.getElementById('create-admin-email').setAttribute('required', 'required');
-                document.getElementById('create-admin-password').setAttribute('required', 'required');
-
-                // Move modal slightly up for better centering with inputs
-                const modalContent = document.querySelector('#create-admin-modal .modal-content');
-                if (modalContent) {
-                    modalContent.style.top = '40%';
-                }
-            } else {
-                document.getElementById('admin-inputs-container').style.display = 'none';
-                document.getElementById('select-role-message').style.display = 'block';
-                // Remove required attributes when hidden
-                document.getElementById('create-admin-fullname').removeAttribute('required');
-                document.getElementById('create-admin-email').removeAttribute('required');
-                document.getElementById('create-admin-password').removeAttribute('required');
-
-                // Reset modal position
-                const modalContent = document.querySelector('#create-admin-modal .modal-content');
-                if (modalContent) {
-                    modalContent.style.top = '50%';
-                }
-            }
-        }
+        },
         
 
-        // Toggle all permissions based on Manage Users checkbox
-        function toggleAllPermissions(checkbox) {
-            const specificPermissions = checkbox.closest('div[style*="flex-direction: column"]').querySelector('#specific-permissions, #edit-specific-permissions');
-            const checkboxes = specificPermissions.querySelectorAll('input[type="checkbox"]');
-            if (checkbox.checked) {
-                // Check all specific permissions
-                checkboxes.forEach(cb => cb.checked = true);
-            } else {
-                // Uncheck all specific permissions
-                checkboxes.forEach(cb => cb.checked = false);
-            }
-        }
+        
 
-        // Toggle password visibility
-        function togglePasswordVisibility() {
-            const passwordInput = document.getElementById('create-admin-password');
-            const toggleIcon = document.getElementById('create-admin-password-toggle');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.innerHTML = '<i class="fas fa-eye-slash"></i>';
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.innerHTML = '<i class="fas fa-eye"></i>';
-            }
-        }
 
-        // Add User Modal Functions
-        function openAddUserModal() {
-            document.getElementById('add-user-modal').style.display = 'block';
-        }
 
-        function closeAddUserModal() {
-            document.getElementById('add-user-modal').style.display = 'none';
-        }
 
-        // Handle role change in add user form
-        document.getElementById('add-user-role').addEventListener('change', function() {
-            const gradeSection = document.getElementById('add-user-grade-section');
-            if (this.value === 'senior_high') {
-                gradeSection.style.display = 'block';
-            } else {
-                gradeSection.style.display = 'none';
-            }
-        });
 
-        // Add user form submission
-        document.getElementById('add-user-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const userData = {
-                name: document.getElementById('add-user-fullname').value,
-                email: document.getElementById('add-user-email').value,
-                personal_email: document.getElementById('add-user-personal-email').value,
-                password: document.getElementById('add-user-password').value,
-                role: document.getElementById('add-user-role').value,
-                grade: document.getElementById('add-user-grade').value || null,
-                section: document.getElementById('add-user-section').value
-            };
 
-            fetch('/api/auth/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userData)
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 'success') {
-                    alert('User added successfully!');
-                    closeAddUserModal();
-                    this.reset();
-                    getUsers(true).then(() => loadUsers()); // Refresh the users list
-                } else {
-                    alert('Failed to add user: ' + (result.message || result.error || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error adding user:', error);
-                alert('Failed to add user. Please check your connection.');
-            });
-        });
-
-        // Handle Create Admin Form Submission (inline handler)
-        async function handleCreateAdminSubmit(e) {
-            e.preventDefault();
-            
-            console.log('[DEBUG ADMIN CREATE] Form submission started');
-            
-            const fullname = document.getElementById('create-admin-fullname').value;
-            const email = document.getElementById('create-admin-email').value;
-            const password = document.getElementById('create-admin-password').value;
-            
-            if (!fullname || !email || !password) {
-                alert('Please fill in all fields');
-                return false;
-            }
-            
-            // Get selected role
-            const roleRadios = document.getElementsByName('admin-role');
-            let selectedRole = 'admin';
-            for (const radio of roleRadios) {
-                if (radio.checked) {
-                    selectedRole = radio.value;
-                    break;
-                }
-            }
-            
-            console.log('[DEBUG ADMIN CREATE] Submitting:', { fullname, email, role: selectedRole });
-            
-            try {
-                const response = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: fullname,
-                        email: email,
-                        password: password,
-                        role: selectedRole,
-                        personal_email: email
-                    })
-                });
-                
-                console.log('[DEBUG ADMIN CREATE] Response status:', response.status);
-                
-                // Check if response is OK and has content
-                if (!response.ok) {
-                    // Try to parse error response, otherwise use generic message
-                    try {
-                        const errorResult = await response.json();
-                        alert('Failed: ' + (errorResult.error || errorResult.message || 'Unknown error'));
-                    } catch (e) {
-                        // Response is not JSON or empty
-                        const text = await response.text();
-                        console.error('[DEBUG ADMIN CREATE] Non-JSON error response:', text);
-                        alert('Failed to create admin. Server returned error: ' + response.status);
-                    }
-                    // Reset form on error
-                    document.getElementById('create-admin-form').reset();
-                    return false;
-                }
-                
-                // Try to parse successful response
-                const text = await response.text();
-                if (!text || text.trim() === '') {
-                    // Empty but OK response - treat as success
-                    console.log('[DEBUG ADMIN CREATE] Empty success response, treating as success');
-                    alert('Admin created successfully!');
-                    closeCreateAdminModal();
-                    document.getElementById('create-admin-form').reset();
-                    await getUsers(true);
-                    loadUsers();
-                    return false;
-                }
-                
-                // Try to parse JSON response safely
-                let result;
-                try {
-                    result = JSON.parse(text);
-                } catch (parseError) {
-                    console.log('[DEBUG ADMIN CREATE] Non-JSON response, treating as success:', text);
-                    alert('Admin created successfully!');
-                    closeCreateAdminModal();
-                    document.getElementById('create-admin-form').reset();
-                    await getUsers(true);
-                    loadUsers();
-                    return false;
-                }
-                console.log('[DEBUG ADMIN CREATE] Response:', result);
-                
-                alert('Admin created successfully!');
-                closeCreateAdminModal();
-                document.getElementById('create-admin-form').reset();
-                await getUsers(true);
-                loadUsers();
-            } catch (error) {
-                console.error('[DEBUG ADMIN CREATE] Error:', error);
-                alert('Failed to create admin. Please try again.');
-                // Reset form on error
-                document.getElementById('create-admin-form').reset();
-            }
-            return false;
-        }
 
         // Update role description and show/hide additional fields
         function updateRoleDescription() {
@@ -7910,7 +7300,7 @@
                 sectionSection.style.display = 'none';
                 submitBtn.textContent = 'Create Admin';
             }
-        }
+        },
 
 
 
@@ -7960,7 +7350,7 @@
                     }
                 }
             });
-        }
+        },
 
 
 
@@ -8029,7 +7419,7 @@
                     }
                 }]
             });
-        }
+        },
 
 
 
@@ -8290,12 +7680,12 @@
                 closeRafModal();
             }
         });
-        });
-        }); // Close DOMContentLoaded
+        }),
+        // Close DOMContentLoaded
 
-    </script>
+    
     <!-- Retry build after rate limit failure -->
-    <script>
+    
         // === CAROUSEL MANAGEMENT FUNCTIONS ===
         
         // Load carousel items from server
@@ -8326,7 +7716,7 @@
                         carouselItemsList.innerHTML = '<p class="empty-state">Error loading carousel items</p>';
                     }
                 });
-        }
+        },
         
         // Render carousel items in the list
         function renderCarouselItems(items) {
@@ -8363,7 +7753,7 @@
                     </div>
                 </div>
             `).join('');
-        }
+        },
         
         // Load articles for PDF selection dropdown
         function loadArticlesForCarouselSelect() {
@@ -8393,7 +7783,7 @@
                 .catch(error => {
                     console.error('Error loading articles for carousel:', error);
                 });
-        }
+        },
         
         // Handle carousel form submission
         document.getElementById('carousel-form').addEventListener('submit', function(e) {
@@ -8471,7 +7861,7 @@
                     alert('Error adding carousel item');
                 });
             }
-        });
+        },
         
         // Edit carousel item - populate form with existing data
         function editCarouselItem(id) {
@@ -8521,7 +7911,7 @@
                 .catch(error => {
                     console.error('Error loading carousel item for edit:', error);
                 });
-        }
+        },
         
         // Delete carousel item
         function deleteCarouselItem(id) {
@@ -8545,7 +7935,7 @@
                 console.error('Error deleting carousel item:', error);
                 alert('Error deleting carousel item');
             });
-        }
+        },
         
         // Reset carousel form
         function resetCarouselForm() {
@@ -8576,7 +7966,7 @@
             if (carouselFormContainer) carouselFormContainer.style.display = 'none';
             // Show the add button
             if (carouselAddBtn) carouselAddBtn.style.display = 'inline-block';
-        }
+        },
         
         // Show carousel form for adding new item
         function showCarouselForm() {
@@ -8585,7 +7975,7 @@
             document.getElementById('carousel-add-btn').style.display = 'none';
             // Load articles for PDF selection
             loadArticlesForCarouselSelect();
-        }
+        },
         
         // Show carousel items list
         function showCarouselItemsList() {
@@ -8594,7 +7984,7 @@
             document.getElementById('carousel-add-btn').style.display = 'inline-block';
             // Load carousel items
             loadCarouselItems();
-        }
+        },
         
         // Handle carousel image upload
         function handleCarouselImageUpload(input) {
@@ -8641,13 +8031,12 @@
                 });
             };
             reader.readAsDataURL(file);
-        }
-        
+        },
+    ),
         // === END CAROUSEL MANAGEMENT ===
-    </script>
-    <script>
+    
         // === REAL-TIME SYNCHRONIZATION ===
-        let ws = null;
+        let ,ws = null);
         let isRealTimeEnabled = false; // Disabled - WebSocket server not integrated with main server
 
         // Initialize WebSocket client using native browser WebSocket API
@@ -8846,7 +8235,7 @@
                         if (action === 'accept') {
                             newActions = `
                                 <div style="display: flex; flex-direction: column; gap: 4px;">
-                                    <button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button>
+                                    <button class="btn btn-info btn-sm">Edit</button>
                                     <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button>
                                     <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
                                     <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${userData.name}')">Remove</button>
@@ -8855,7 +8244,7 @@
                         } else if (action === 'reject') {
                             newActions = `
                                 <div style="display: flex; flex-direction: column; gap: 4px;">
-                                    <button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button>
+                                    <button class="btn btn-info btn-sm">Edit</button>
                                     <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
                                     <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
                                     <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${userData.name}')">Remove</button>
@@ -8864,7 +8253,7 @@
                         } else if (action === 'ban') {
                             newActions = `
                                 <div style="display: flex; flex-direction: column; gap: 4px;">
-                                    <button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button>
+                                    <button class="btn btn-info btn-sm">Edit</button>
                                     <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
                                     <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button>
                                     <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${userData.name}')">Remove</button>

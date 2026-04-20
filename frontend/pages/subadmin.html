@@ -3591,8 +3591,8 @@
         }
         function updateDashboardCounts() {
             if (!Array.isArray(users)) users = [];
-            const verifiedCount = users.filter(u => u.verified && u.role !== 'subadmin').length;
-            const adminCount = users.filter(u => u.role === 'subadmin').length;
+            const verifiedCount = users.filter(u => u.verified && u.role !== 'subadmin' && u.role !== 'admin').length;
+            const adminCount = users.filter(u => u.role === 'subadmin' || u.role === 'admin').length;
             const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
             const totalEl = document.getElementById('standard-users-count');
             const adminsEl = document.getElementById('admins-count');
@@ -5067,8 +5067,32 @@ STI Archives Admin`;
         }
 
         function generateNotifications(users) {
-            // For subadmin, return empty array as notifications are not implemented
-            return [];
+            const notifications = [];
+            const notificationTypes = [
+                { type: 'admin', typeText: 'Admin', icon: 'fas fa-user-shield' },
+                { type: 'verified', typeText: 'Verified', icon: 'fas fa-check-circle' },
+                { type: 'pending', typeText: 'Pending', icon: 'fas fa-clock' },
+                { type: 'rejected', typeText: 'Rejected', icon: 'fas fa-times-circle' },
+                { type: 'banned', typeText: 'Banned', icon: 'fas fa-ban' }
+            ];
+            
+            users.forEach((user, index) => {
+                const typeIndex = index % notificationTypes.length;
+                const typeInfo = notificationTypes[typeIndex];
+                const recentDate = new Date(Date.now() - index * 3600000);
+                const recentTime = recentDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                
+                notifications.push({
+                    id: 'notif_' + (index + 1),
+                    type: typeInfo.type,
+                    typeText: typeInfo.typeText,
+                    content: `${typeInfo.typeText} user: ${user.name || user.email}`,
+                    time: recentTime,
+                    icon: typeInfo.icon
+                });
+            });
+            
+            return notifications.slice(0, 10); // Return max 10 notifications
         }
 
         function toggleNotificationModal() {
@@ -5808,68 +5832,6 @@ STI Archives Admin`;
             document.getElementById('edit-user-modal').style.display = 'none';
         }
 
-
-        // Edit user form submission
-        document.getElementById('edit-user-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const userId = document.getElementById('edit-user-id').value;
-            const userData = {
-                user_id: userId,
-                student_id: document.getElementById('edit-student-id').value,
-                name: document.getElementById('edit-user-fullname').value,
-                role: document.getElementById('edit-user-role').value,
-                section: document.getElementById('edit-user-section').value,
-                strand: document.getElementById('edit-user-section').value
-            };
-
-            fetch('/api/users/update', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userData)
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.message) {
-                    alert('User updated successfully!');
-                    closeEditUserModal();
-                    // Find the row and update it immediately
-                    const tbodyIds = ['verified-users-tbody', 'signing-up-users-tbody', 'rejected-users-tbody', 'banned-users-tbody', 'admins-tbody'];
-                    let row = null;
-                    let tbody = null;
-                    for (let tbodyId of tbodyIds) {
-                        tbody = document.getElementById(tbodyId);
-                        if (tbody) {
-                            const rows = tbody.querySelectorAll('tr');
-                            for (let r of rows) {
-                                if (r.cells[0].textContent == userId) {
-                                    row = r;
-                                    break;
-                                }
-                            }
-                            if (row) break;
-                        }
-                    }
-                    if (row) {
-                        if (tbody.id === 'admins-tbody') {
-                            row.cells[2].textContent = userData.name;
-                        } else {
-                            row.cells[2].textContent = userData.student_id;
-                            row.cells[3].textContent = userData.name;
-                            row.cells[5].textContent = formatRole(userData.role);
-                            row.cells[6].textContent = userData.section;
-                        }
-                    }
-                    loadUsers(); // Refresh the users list
-                    loadAdmins(); // Refresh admins if needed
-                } else {
-                    alert('Failed to update user: ' + (result.error || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error updating user:', error);
-                alert('Failed to update user. Please check your connection.');
-            });
-        });
 
         // Create Admin Modal Functions
         function openCreateAdminModal() {

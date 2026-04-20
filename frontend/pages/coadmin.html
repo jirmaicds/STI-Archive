@@ -4315,7 +4315,7 @@
                 isLoadingUsers = false;
                 console.log('DEBUG: Force refresh - cleared localStorage and reset isLoadingUsers');
             }
-            if (isLoadingUsers && !forceRefresh) return JSON.parse(localStorage.getItem('users')) || [];
+            if (isLoadingUsers && !forceRefresh) return JSON.parse(localStorage.getItem('users') || '[]');
             isLoadingUsers = true;
             console.log('DEBUG: Attempting to fetch users from server...');
             try {
@@ -4357,7 +4357,7 @@
             } catch (e) {
                 console.log('DEBUG: Could not load from server, error:', e.message, 'using localStorage');
             }
-            let localUsers = JSON.parse(localStorage.getItem('users')) || [];
+            let localUsers = JSON.parse(localStorage.getItem('users') || '[]');
             localStorage.setItem('users', JSON.stringify(localUsers)); // Save users
             console.log('DEBUG: Loaded users from localStorage, count:', localUsers.length);
             isLoadingUsers = false;
@@ -5666,7 +5666,7 @@
                     }
                 }, 5000); // Poll every 5 seconds
 
-                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
                 notifications = generateNotifications(users);
 
                 // Set sidebar admin info from current logged in user
@@ -5675,7 +5675,7 @@
                 // If no currentUser, try to get from users array based on role
                 if (!currentUser || !currentUser.name) {
                     // Load user from users array as fallback
-                    const users = JSON.parse(localStorage.getItem('users')) || [];
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
                     const userFromArray = users.find(u => u.verified);
                     if (userFromArray) {
                         currentUser = userFromArray;
@@ -5862,7 +5862,7 @@
             if (window.signingUpChart) {
                 window.signingUpChart.destroy();
             }
-            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
             let filteredUsers = users.filter(user => !user.verified && !user.rejected && !user.banned);
             if (filter) {
                 filteredUsers = filteredUsers.filter(user => user.role === filter);
@@ -6283,7 +6283,7 @@
             console.log('localStorage users:', localStorage.getItem('users') ? 'exists' : 'null');
             // Refresh notifications when opening modal
             if (modal.style.display === 'block') {
-                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
                 console.log('Users count for notifications:', users.length);
                 if (typeof generateNotifications === 'function') {
                     const freshNotifications = generateNotifications(users);
@@ -6982,7 +6982,7 @@
         }
         function previewUserDocs(userId) {
             // Find the user by ID
-            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
             const user = users.find(u => (u.user_id || u.id) === userId);
             if (!user) {
                 alert('User not found.');
@@ -8240,7 +8240,7 @@
             if (confirm('Are you sure you want to accept this user? This will generate login credentials for them.')) {
                 try {
                     // Get the user role from localStorage
-                    const users = JSON.parse(localStorage.getItem('users')) || [];
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
                     const user = users.find(u => u.id === userId);
                     const role = user ? user.role : 'user';
                     

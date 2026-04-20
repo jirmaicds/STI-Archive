@@ -3376,7 +3376,7 @@
                 isLoadingUsers = false;
                 console.log('DEBUG: Force refresh requested for users');
             }
-            if (isLoadingUsers) return JSON.parse(localStorage.getItem('users')) || [];
+            if (isLoadingUsers) return JSON.parse(localStorage.getItem('users') || '[]');
             isLoadingUsers = true;
             console.log('DEBUG: Attempting to fetch users from user.json...');
             try {
@@ -3412,7 +3412,7 @@
             } catch (e) {
                 console.log('DEBUG: Could not load from server, error:', e.message, 'using localStorage');
             }
-            const localUsers = JSON.parse(localStorage.getItem('users')) || [];
+            const localUsers = JSON.parse(localStorage.getItem('users') || '[]');
             console.log('DEBUG: Loaded users from localStorage, count:', localUsers.length);
             isLoadingUsers = false;
             return localUsers;
@@ -3795,7 +3795,7 @@
             // Load users first, then generate notifications
             let notifications = [];
             loadUsers().then(() => {
-                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
                 notifications = generateNotifications(users);
 
                 // Set sidebar admin info (show current logged-in subadmin's name)
@@ -4279,7 +4279,7 @@ STI Archives Admin`;
             console.log('Updating user status for userId:', userId, 'action:', action);
             
             // Get user email first
-            let users = JSON.parse(localStorage.getItem('users')) || [];
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
             const user = users.find(u => String(u.user_id || u.id) === String(userId));
             const userEmail = user ? user.email : '';
             
@@ -4359,7 +4359,7 @@ STI Archives Admin`;
         function removeUser(userId, userName) {
             if (confirm(`Are you sure you want to remove ${userName}'s information? This action cannot be undone.`)) {
                 // Remove from localStorage
-                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
                 const updatedUsers = users.filter(user => (user.user_id || user.id) !== userId);
                 localStorage.setItem('users', JSON.stringify(updatedUsers));
 
@@ -4983,7 +4983,7 @@ STI Archives Admin`;
             if (window.signingUpChart) {
                 window.signingUpChart.destroy();
             }
-            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
             let filteredUsers = users.filter(user => !user.verified && !user.rejected && !user.banned);
             if (filter) {
                 filteredUsers = filteredUsers.filter(user => user.role === filter);
@@ -5100,7 +5100,7 @@ STI Archives Admin`;
             modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
             // Refresh notifications when opening modal
             if (modal.style.display === 'block') {
-                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
                 const freshNotifications = generateNotifications(users);
                 const notificationList = document.getElementById('notification-list');
                 notificationList.innerHTML = '';

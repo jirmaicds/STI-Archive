@@ -5852,61 +5852,7 @@ STI Archives Admin`;
             document.getElementById('perm-edit-settings').checked = false;
         }
 
-        // Add User Modal Functions
-        function openAddUserModal() {
-            document.getElementById('add-user-modal').style.display = 'block';
-        }
 
-        function closeAddUserModal() {
-            document.getElementById('add-user-modal').style.display = 'none';
-        }
-
-        document.getElementById('create-admin-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const adminId = document.getElementById('create-admin-id').value;
-            const fullname = document.getElementById('create-admin-fullname').value;
-            const email = document.getElementById('create-admin-email').value;
-            const password = document.getElementById('create-admin-password').value;
-            const permissions = [];
-            if (document.getElementById('perm-remove-user').checked) permissions.push('Remove User');
-            if (document.getElementById('perm-manage-users').checked) permissions.push('Manage Users');
-            if (document.getElementById('perm-view-notifications').checked) permissions.push('View Notifications');
-            if (document.getElementById('perm-edit-settings').checked) permissions.push('Edit Settings');
-
-            // Create new admin object
-            const newAdmin = {
-                id: adminId,
-                name: fullname,
-                email: email,
-                password: password,
-                permissions: permissions.join(', '),
-                created_at: new Date().toISOString(),
-                role: 'admin'
-            };
-
-            // Get existing users and add new admin
-            const users = getUsers();
-            users.push(newAdmin);
-            saveUsers(users);
-
-            // Update the admin table
-            const tbody = document.getElementById('admins-tbody');
-            const row = `<tr>
-                <td><input type="checkbox" class="user-checkbox" data-user-id="${newAdmin.id}"></td>
-                <td>${newAdmin.id}</td>
-                <td>${newAdmin.name}</td>
-                <td>${newAdmin.permissions}</td>
-                <td>${new Date(newAdmin.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} ${new Date(newAdmin.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase()}</td>
-                <td>Active</td>
-                <td><button class="btn btn-danger btn-sm">Remove</button></td>
-            </tr>`;
-            tbody.innerHTML += row;
-
-            // Close modal and reset form
-            closeCreateAdminModal();
-            this.reset();
-            alert('New admin created successfully!');
-        });
 
 
 

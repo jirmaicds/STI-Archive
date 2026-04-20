@@ -1913,7 +1913,7 @@
         }
         .role-badge.senior_high { background-color: #007bff; }
         .role-badge.college { background-color: #28a745; }
-        .role-badge.teacher { background-color: #dc3545; }
+        .role-badge.educator { background-color: #dc3545; }
         .role-badge.admin { background-color: #6f42c1; }
         .btn-sm {
             padding: 4px 8px;
@@ -2090,7 +2090,7 @@
         .bar-bsit { background: #9E9E9E; }
         .bar-faculty { background: #607D8B; }
         .bar-students { background: #4CAF50; }
-        .bar-teachers { background: #FF9800; }
+        .bar-educators { background: #FF9800; }
         .analytics-card {
             background-color: #007bff;
             color: white;
@@ -2992,7 +2992,7 @@
                         </div>
                     </div>
                     <!-- Teacher Specification -->
-                    <div id="teacher-spec" style="display: none; margin-top: 20px;">
+                    <div id="educator-spec" style="display: none; margin-top: 20px;">
                         <h4>Department:</h4>
                         <div style="display: flex; gap: 10px;">
                             <button class="btn btn-danger" onclick="showDepartment('shs')">SHS</button>
@@ -3013,7 +3013,7 @@
                             <option value="">All Roles</option>
                             <option value="shs">SHS</option>
                             <option value="college">College</option>
-                            <option value="teacher">Teacher</option>
+                            <option value="educator">Educator</option>
                         </select>
                         <select id="grade-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
                             <option value="">All Grades</option>
@@ -3106,7 +3106,7 @@
                         </div>
                     </div>
                     <!-- Teacher Specification for Signing Up -->
-                    <div id="signing-up-teacher-spec" style="display: none; margin-top: 20px;">
+                    <div id="signing-up-educator-spec" style="display: none; margin-top: 20px;">
                         <h4>Department:</h4>
                         <div style="display: flex; gap: 10px;">
                             <button class="btn btn-danger" onclick="showDepartmentForStatus('signing-up', 'shs')">SHS</button>
@@ -3126,7 +3126,7 @@
                             <option value="">All Roles</option>
                             <option value="shs">SHS</option>
                             <option value="college">College</option>
-                            <option value="teacher">Teacher</option>
+                            <option value="educator">Educator</option>
                         </select>
                         <select id="grade-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
                             <option value="">All Grades</option>
@@ -3583,7 +3583,7 @@
                 }
             } else if (user.role === 'college') {
                 return user.Str_Degr || '-';
-            } else if (user.role === 'teacher') {
+            } else if (user.role === 'educator') {
                 return user.Str_Degr || '-';
             } else {
                 return '-';
@@ -4445,16 +4445,16 @@ STI Archives Admin`;
                         <label for="bsit">BSIT</label>
                     </div>
                 `;
-            } else if (category === 'teacher') {
+            } else if (category === 'educator') {
                 content.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <h4 style="margin: 0;">Department:</h4>
                         <span class="close-modal" onclick="closeFilterModal()" style="cursor: pointer; font-size: 18px; color: #666;">&times;</span>
                     </div>
                     <div style="display: flex; gap: 10px;">
-                        <input type="radio" id="dept-shs" name="department" value="shs" onclick="filterTable('${status}', 'teacher', null, null, null, 'shs')">
+                        <input type="radio" id="dept-shs" name="department" value="shs" onclick="filterTable('${status}', 'educator', null, null, null, 'shs')">
                         <label for="dept-shs">SHS</label>
-                        <input type="radio" id="dept-college" name="department" value="college" onclick="filterTable('${status}', 'teacher', null, null, null, 'college')">
+                        <input type="radio" id="dept-college" name="department" value="college" onclick="filterTable('${status}', 'educator', null, null, null, 'college')">
                         <label for="dept-college">College</label>
                     </div>
                     `;
@@ -4495,9 +4495,9 @@ STI Archives Admin`;
                 } else if (user.role === 'college') {
                     const program = user.section ? user.section.toLowerCase() : 'bsba';
                     tbodyId = program + '-tbody';
-                } else if (user.role === 'teacher') {
+                } else if (user.role === 'educator') {
                     const dept = user.section === 'Department SHS' ? 'shs' : 'college';
-                    tbodyId = 'teacher-' + dept + '-tbody';
+                    tbodyId = 'educator-' + dept + '-tbody';
                 }
                 if (tbodyId) {
                     const tbody = document.getElementById(tbodyId);
@@ -4596,7 +4596,7 @@ STI Archives Admin`;
             const exampleData = {
                 shs: 150,
                 college: 80,
-                teacher: 25,
+                educator: 25,
                 admin: 5
             };
             const barColors = [
@@ -4615,7 +4615,7 @@ STI Archives Admin`;
                 data: {
                     labels: labels,
                     datasets: [{
-                        data: [exampleData.shs, exampleData.college, exampleData.teacher, exampleData.admin],
+                        data: [exampleData.shs, exampleData.college, exampleData.educator, exampleData.admin],
                         backgroundColor: barColors,
                         borderColor: barColors,
                         borderWidth: 1
@@ -4939,7 +4939,7 @@ STI Archives Admin`;
             const roleCounts = {
                 senior_high: 0,
                 college: 0,
-                teacher: 0,
+                educator: 0,
                 admin: 0
             };
             users.forEach(user => {
@@ -4948,7 +4948,7 @@ STI Archives Admin`;
                 }
             });
             const labels = ['SHS', 'College', 'Teacher', 'Admin'];
-            const data = [roleCounts.senior_high, roleCounts.college, roleCounts.teacher, roleCounts.admin];
+            const data = [roleCounts.senior_high, roleCounts.college, roleCounts.educator, roleCounts.admin];
             const barColors = [
                 '#008000', // SHS Emerald Green
                 '#00008B', // College Deep Blue
@@ -5282,7 +5282,7 @@ STI Archives Admin`;
             // Hide all spec sections
             document.getElementById('shs-spec').style.display = 'none';
             document.getElementById('college-spec').style.display = 'none';
-            document.getElementById('teacher-spec').style.display = 'none';
+            document.getElementById('educator-spec').style.display = 'none';
             // Show selected spec section
             document.getElementById(type + '-spec').style.display = 'block';
         }
@@ -5291,7 +5291,7 @@ STI Archives Admin`;
             // Hide all spec sections for this status
             document.getElementById(status + '-shs-spec').style.display = 'none';
             document.getElementById(status + '-college-spec').style.display = 'none';
-            document.getElementById(status + '-teacher-spec').style.display = 'none';
+            document.getElementById(status + '-educator-spec').style.display = 'none';
             // Show selected spec section
             document.getElementById(status + '-' + type + '-spec').style.display = 'block';
         }
@@ -5383,7 +5383,7 @@ STI Archives Admin`;
                                 status === 'rejected' ? user.rejected :
                                 status === 'banned' ? user.banned : false;
             users.forEach(user => {
-                if (user.role === 'teacher' && user.section === 'Department ' + dept.toUpperCase() && statusFilter) {
+                if (user.role === 'educator' && user.section === 'Department ' + dept.toUpperCase() && statusFilter) {
                     const date = formatDate(user.verified_at || user.created_at);
                     const row = `<tr>
                         <td>${user.id}</td>
@@ -5478,7 +5478,7 @@ STI Archives Admin`;
             const tbody = document.getElementById('department-users-tbody');
             tbody.innerHTML = '';
             users.forEach(user => {
-                if (user.role === 'teacher' && user.section === 'Department ' + dept.toUpperCase()) {
+                if (user.role === 'educator' && user.section === 'Department ' + dept.toUpperCase()) {
                     const date = formatDate(user.verified_at || user.created_at);
                     const row = `<tr>
                         <td>${user.user_id || user.id}</td>
@@ -5820,7 +5820,7 @@ STI Archives Admin`;
                 let roleValue = 'senior_high';
                 if (roleText === 'SHS') roleValue = 'senior_high';
                 else if (roleText === 'College') roleValue = 'college';
-                else if (roleText === 'Teacher') roleValue = 'teacher';
+                else if (roleText === 'Educator') roleValue = 'educator';
                 else if (roleText === 'Admin') roleValue = 'admin';
                 document.getElementById('edit-user-role').value = roleValue;
                 document.getElementById('edit-user-section').value = tds[6].textContent;
@@ -6152,7 +6152,7 @@ STI Archives Admin`;
                 strandSelect.style.display = 'block';
             } else if (selectedRole === 'college') {
                 degreeSelect.style.display = 'block';
-            } else if (selectedRole === 'teacher') {
+            } else if (selectedRole === 'educator') {
                 deptSelect.style.display = 'block';
             }
 

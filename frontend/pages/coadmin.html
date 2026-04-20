@@ -4058,6 +4058,7 @@
 
     <script>
         // === GLOBAL FUNCTIONS ===
+
         // Moved outside DOMContentLoaded to ensure availability on page load
         function generateNotifications(users) {
             const removedUsers = JSON.parse(localStorage.getItem('removedUsers')) || [];
@@ -7214,38 +7215,6 @@
         }
 
 
-
-
-            // Hide inputs and show select role message
-            document.getElementById('admin-inputs-container').style.display = 'none';
-            document.getElementById('select-role-message').style.display = 'block';
-            // Clear all input fields and remove required
-            const fullname = document.getElementById('create-admin-fullname');
-            const email = document.getElementById('create-admin-email');
-            const password = document.getElementById('create-admin-password');
-            if (fullname) {
-                fullname.value = '';
-                fullname.removeAttribute('required');
-            }
-            if (email) {
-                email.value = '';
-                email.removeAttribute('required');
-            }
-            if (password) {
-                password.value = '';
-                password.removeAttribute('required');
-            }
-        },
-        
-
-        
-
-
-
-
-
-
-
         // Update role description and show/hide additional fields
         function updateRoleDescription() {
             const roleRadios = document.getElementsByName('admin-role');
@@ -7266,8 +7235,6 @@
                 modalTitle.textContent = 'Create Senior High Student';
             } else if (selectedRole === 'college') {
                 modalTitle.textContent = 'Create College Student';
-            } else if (selectedRole === 'teacher') {
-                modalTitle.textContent = 'Create Teacher';
             } else if (selectedRole === 'educator') {
                 modalTitle.textContent = 'Create Educator';
             } else if (selectedRole === 'coadmin') {
@@ -7300,7 +7267,7 @@
                 sectionSection.style.display = 'none';
                 submitBtn.textContent = 'Create Admin';
             }
-        },
+        }
 
 
 
@@ -7350,7 +7317,7 @@
                     }
                 }
             });
-        },
+        }
 
 
 
@@ -7419,7 +7386,7 @@
                     }
                 }]
             });
-        },
+        }
 
 
 
@@ -7479,15 +7446,12 @@
             }
 
             // Real-time preview updates
-            if (siteTitleInput) {
-                siteTitleInput.addEventListener('input', function() {
-                    const newTitle = this.value || 'STI Archives';
-                    siteTitlePreview.textContent = newTitle;
-                });
-            }
+            siteTitleInput.addEventListener('input', function() {
+                const newTitle = this.value || 'STI Archives';
+                siteTitlePreview.textContent = newTitle;
+            });
 
-            if (siteFaviconInput) {
-                siteFaviconInput.addEventListener('change', function() {
+            siteFaviconInput.addEventListener('change', function() {
                 const file = this.files[0];
                 if (file) {
                     const reader = new FileReader();
@@ -7498,13 +7462,11 @@
                     reader.readAsDataURL(file);
                 }
             });
-            }
 
             // Save settings on form submit
-            if (settingsForm) {
-                settingsForm.addEventListener('submit', async function(e) {
+            settingsForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                const title = (siteTitleInput && siteTitleInput.value) || 'STI Archives';
+                const title = siteTitleInput.value || 'STI Archives';
                 const faviconFile = siteFaviconInput.files[0];
 
                 let faviconData = '370044409_696741882497707_8408055328080058811_n.jpg'; // Default
@@ -7550,7 +7512,7 @@
                     alert('Failed to save settings. Please try again.');
                 }
             }
-        }
+        });
         
 
         function updateDocumentTitle(siteTitle) {
@@ -7654,24 +7616,8 @@
                 }
             }
         }
-
-        // Extract lastname from fullname
-        function extractLastname(fullname) {
-            const names = fullname.trim().split(/\s+/);
-            if (names.length < 2) {
-                return names[0].toLowerCase();
-            }
-            return names[names.length - 1].toLowerCase();
-        }
-        // Password generation utility
-        function generatePassword(length = 12) {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-            let password = '';
-            for (let i = 0; i < length; i++) {
-                password += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return password;
-        }
+    
+        
 
         // Close RAF preview modal when clicking outside
         window.addEventListener('click', function(e) {
@@ -7680,12 +7626,12 @@
                 closeRafModal();
             }
         });
-        }),
+        });
         // Close DOMContentLoaded
 
-    
+    </script>
     <!-- Retry build after rate limit failure -->
-    
+    <script>
         // === CAROUSEL MANAGEMENT FUNCTIONS ===
         
         // Load carousel items from server
@@ -7716,7 +7662,7 @@
                         carouselItemsList.innerHTML = '<p class="empty-state">Error loading carousel items</p>';
                     }
                 });
-        },
+        }
         
         // Render carousel items in the list
         function renderCarouselItems(items) {
@@ -7753,7 +7699,7 @@
                     </div>
                 </div>
             `).join('');
-        },
+        }
         
         // Load articles for PDF selection dropdown
         function loadArticlesForCarouselSelect() {
@@ -7783,7 +7729,7 @@
                 .catch(error => {
                     console.error('Error loading articles for carousel:', error);
                 });
-        },
+        }
         
         // Handle carousel form submission
         document.getElementById('carousel-form').addEventListener('submit', function(e) {
@@ -7861,7 +7807,7 @@
                     alert('Error adding carousel item');
                 });
             }
-        },
+        });
         
         // Edit carousel item - populate form with existing data
         function editCarouselItem(id) {
@@ -7911,7 +7857,7 @@
                 .catch(error => {
                     console.error('Error loading carousel item for edit:', error);
                 });
-        },
+        }
         
         // Delete carousel item
         function deleteCarouselItem(id) {
@@ -7935,7 +7881,7 @@
                 console.error('Error deleting carousel item:', error);
                 alert('Error deleting carousel item');
             });
-        },
+        }
         
         // Reset carousel form
         function resetCarouselForm() {
@@ -7966,7 +7912,7 @@
             if (carouselFormContainer) carouselFormContainer.style.display = 'none';
             // Show the add button
             if (carouselAddBtn) carouselAddBtn.style.display = 'inline-block';
-        },
+        }
         
         // Show carousel form for adding new item
         function showCarouselForm() {
@@ -7975,7 +7921,7 @@
             document.getElementById('carousel-add-btn').style.display = 'none';
             // Load articles for PDF selection
             loadArticlesForCarouselSelect();
-        },
+        }
         
         // Show carousel items list
         function showCarouselItemsList() {
@@ -7984,7 +7930,7 @@
             document.getElementById('carousel-add-btn').style.display = 'inline-block';
             // Load carousel items
             loadCarouselItems();
-        },
+        }
         
         // Handle carousel image upload
         function handleCarouselImageUpload(input) {
@@ -8031,11 +7977,13 @@
                 });
             };
             reader.readAsDataURL(file);
-        },
-    ),
-        // === END CAROUSEL MANAGEMENT ===
+        }
     
+        // === END CAROUSEL MANAGEMENT ===
+    </script>    
+    <script>
         // === REAL-TIME SYNCHRONIZATION ===
+        let ws = null;
         let isRealTimeEnabled = false; // Disabled - WebSocket server not integrated with main server
 
         // Initialize WebSocket client using native browser WebSocket API

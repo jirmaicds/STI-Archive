@@ -4234,7 +4234,7 @@
                     if (userStatus === 'approved') {
                         console.log('DEBUG: Adding verified user to table:', user.name, user.email);
                         // For verified users, replace Raf/Edu_ID with preview button
-                        const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewRaf('${user.raf_path}')">Preview</button>` : '';
+                const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewRaf('${user.raf_path}')">Preview</button>` : 'N/A';
                         const verifiedRow = `<tr>
                             <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
                             <td>${userId}</td>
@@ -5574,7 +5574,7 @@
                             loadUsers();
                             // Also regenerate notifications
                             notifications = generateNotifications(serverUsers);
-                            renderNotifications(notifications);
+                            updateNotificationBadge(notifications);
                             console.log('DEBUG: Tables reloaded with new users');
                             setTimeout(() => { isReloadingUsers = false; }, 100);
                         }
@@ -5585,6 +5585,7 @@
 
                 const users = JSON.parse(localStorage.getItem('users') || '[]');
                 notifications = generateNotifications(users);
+                updateNotificationBadge(notifications);
 
                 // Set sidebar admin info from current logged in user
                 currentUser = JSON.parse(localStorage.getItem('currentUser'));

@@ -6337,6 +6337,21 @@ STI Archives Admin`;
 
         // === LOAD USERS FUNCTION ===
         
+        // Helper function to get user status (supports new boolean columns and legacy fallback)
+        function getUserStatus(user) {
+            // Check new boolean columns first
+            if (user.new_user === true) return 'pending';
+            if (user.banned_user === true) return 'banned';
+            if (user.rejected_user === true) return 'rejected';
+            if (user.verified === true) return 'approved';
+
+            // Fallback to legacy boolean logic for backward compatibility
+            if (user.verified && !user.banned && !user.rejected) return 'approved';
+            if (user.banned) return 'banned';
+            if (user.rejected) return 'rejected';
+            return 'pending';
+        }
+
         async function loadUsers() {
             console.log('DEBUG: loadUsers called');
             
@@ -6494,14 +6509,16 @@ STI Archives Admin`;
                         </td>
                     </tr>`;
                     document.getElementById('admins-tbody').innerHTML += adminRow;
-                const userStatus = getUserStatus(user);
-                if (userStatus === 'approved') {
-                    console.log('DEBUG: Adding verified user to table:', user.name, user.email, user.personal_email);
-                    document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
-                } else if (userStatus === 'banned') {
-                    document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
-                } else if (userStatus === 'pending') {
-                    signingUpUsers.push(user);
+                } else {
+                    const userStatus = getUserStatus(user);
+                    if (userStatus === 'approved') {
+                        console.log('DEBUG: Adding verified user to table:', user.name, user.email, user.personal_email);
+                        document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
+                    } else if (userStatus === 'banned') {
+                        document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
+                    } else if (userStatus === 'pending') {
+                        signingUpUsers.push(user);
+                    }
                 }
             });
 

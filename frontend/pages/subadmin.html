@@ -4429,18 +4429,18 @@ STI Archives Admin`;
                         <span class="close-modal" onclick="closeFilterModal()" style="cursor: pointer; font-size: 18px; color: #666;">&times;</span>
                     </div>
                     <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                        <input type="radio" id="grade-11" name="grade" value="11" onclick="filterTable('${status}', 'shs', '11')">
+                        <input type="radio" id="grade-11" name="grade" value="11" onclick="filterModalTable('${status}', 'shs', '11')">
                         <label for="grade-11">Grade 11</label>
-                        <input type="radio" id="grade-12" name="grade" value="12" onclick="filterTable('${status}', 'shs', '12')">
+                        <input type="radio" id="grade-12" name="grade" value="12" onclick="filterModalTable('${status}', 'shs', '12')">
                         <label for="grade-12">Grade 12</label>
                     </div>
                     <h4 style="margin-bottom: 10px;">Strand:</h4>
                     <div style="display: flex; gap: 10px;">
-                        <input type="radio" id="abm" name="strand" value="abm" onclick="filterTable('${status}', 'shs', null, 'abm')">
+                        <input type="radio" id="abm" name="strand" value="abm" onclick="filterModalTable('${status}', 'shs', null, 'abm')">
                         <label for="abm">ABM</label>
-                        <input type="radio" id="itmawd" name="strand" value="itmawd" onclick="filterTable('${status}', 'shs', null, 'itmawd')">
+                        <input type="radio" id="itmawd" name="strand" value="itmawd" onclick="filterModalTable('${status}', 'shs', null, 'itmawd')">
                         <label for="itmawd">ITMAWD</label>
-                        <input type="radio" id="stem" name="strand" value="stem" onclick="filterTable('${status}', 'shs', null, 'stem')">
+                        <input type="radio" id="stem" name="strand" value="stem" onclick="filterModalTable('${status}', 'shs', null, 'stem')">
                         <label for="stem">STEM</label>
                     </div>
                 `;
@@ -4451,11 +4451,11 @@ STI Archives Admin`;
                         <span class="close-modal" onclick="closeFilterModal()" style="cursor: pointer; font-size: 18px; color: #666;">&times;</span>
                     </div>
                     <div style="display: flex; gap: 10px;">
-                        <input type="radio" id="bsba" name="degree" value="bsba" onclick="filterTable('${status}', 'college', null, null, 'bsba')">
+                        <input type="radio" id="bsba" name="degree" value="bsba" onclick="filterModalTable('${status}', 'college', null, null, 'bsba')">
                         <label for="bsba">BSBA</label>
-                        <input type="radio" id="bscs" name="degree" value="bscs" onclick="filterTable('${status}', 'college', null, null, 'bscs')">
+                        <input type="radio" id="bscs" name="degree" value="bscs" onclick="filterModalTable('${status}', 'college', null, null, 'bscs')">
                         <label for="bscs">BSCS</label>
-                        <input type="radio" id="bsit" name="degree" value="bsit" onclick="filterTable('${status}', 'college', null, null, 'bsit')">
+                        <input type="radio" id="bsit" name="degree" value="bsit" onclick="filterModalTable('${status}', 'college', null, null, 'bsit')">
                         <label for="bsit">BSIT</label>
                     </div>
                 `;
@@ -4466,94 +4466,47 @@ STI Archives Admin`;
                         <span class="close-modal" onclick="closeFilterModal()" style="cursor: pointer; font-size: 18px; color: #666;">&times;</span>
                     </div>
                     <div style="display: flex; gap: 10px;">
-                        <input type="radio" id="dept-shs" name="department" value="shs" onclick="filterTable('${status}', 'educator', null, null, null, 'shs')">
+                        <input type="radio" id="dept-shs" name="department" value="shs" onclick="filterModalTable('${status}', 'educator', null, null, null, 'shs')">
                         <label for="dept-shs">SHS</label>
-                        <input type="radio" id="dept-college" name="department" value="college" onclick="filterTable('${status}', 'educator', null, null, null, 'college')">
+                        <input type="radio" id="dept-college" name="department" value="college" onclick="filterModalTable('${status}', 'educator', null, null, null, 'college')">
                         <label for="dept-college">College</label>
-                    </div>
-                    `;
+                     </div>
+                     `;
                 }
-                const emailToUse = user.personal_email || user.email;
-                const rowWithEmail = `<tr>
-                    <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
-                    <td>${user.id}</td>
-                    <td>${user.name}</td>
-                    <td>${emailToUse}</td>
-                    <td>${user.role}</td>
-                    <td>${user.grade || '-'}</td>
-                    <td>${getSectionDisplay(user)}</td>
-                    <td>${date}</td>
-                    <td>STATUS</td>
-                    <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
-                    <td>${actions}</td>
-                </tr>`;
-                const rowWithoutEmail = `<tr>
-                    <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
-                    <td>${user.id}</td>
-                    <td>${user.name}</td>
-                    <td>${emailToUse}</td>
-                    <td>${user.role}</td>
-                    <td>${user.grade || '-'}</td>
-                    <td>${getSectionDisplay(user)}</td>
-                    <td>${date}</td>
-                    <td>Pending</td>
-                    <td><button type="button" class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
-                    <td>${actions}</td>
-                </tr>`;
-                // categorized
-                let tbodyId = '';
-                if (user.role === 'senior_high') {
-                    const grade = user.section === 'Grade 11' ? 'gr11' : 'gr12';
-                    const strand = user.strand ? user.strand.toLowerCase().replace(' ', '') : 'abm';
-                    tbodyId = grade + '-' + strand + '-tbody';
-                } else if (user.role === 'college') {
-                    const program = user.section ? user.section.toLowerCase() : 'bsba';
-                    tbodyId = program + '-tbody';
-                } else if (user.role === 'educator') {
-                    const dept = user.section === 'Department SHS' ? 'shs' : 'college';
-                    tbodyId = 'educator-' + dept + '-tbody';
-                }
-                if (tbodyId) {
-                    const tbody = document.getElementById(tbodyId);
-                    if (tbody) {
-                        tbody.innerHTML += rowWithEmail.replace('STATUS', 'Pending');
-                    }
-                }
-                // status - filter admin roles to admins table, not signing up
-                if (user.role && user.role.toLowerCase() === 'subadmin') {
-                    const roleDisplay = user.role && user.role.toLowerCase() === 'coadmin' ? 'Full Access' : user.role && user.role.toLowerCase() === 'subadmin' ? 'Content Moderator' : 'Admin';
-                    const adminRow = `<tr>
-                        <td><input type="checkbox" class="user-checkbox" data-user-id="${user.user_id || user.id}"></td>
-                        <td>${user.id}</td>
-                        <td>${user.name}</td>
-                        <td>${user.email}</td>
-                        <td>${roleDisplay}</td>
-                        <td>${user.created_at}</td>
-                        <td><button class="btn btn-danger btn-sm">Remove</button></td>
-                    </tr>`;
-                    document.getElementById('admins-tbody').innerHTML += adminRow;
-                const userStatus = getUserStatus(user);
-                if (userStatus === 'approved') {
-                    document.getElementById('verified-users-tbody').innerHTML += rowWithEmail.replace('STATUS', 'Verified');
-                } else if (userStatus === 'rejected') {
-                    document.getElementById('rejected-users-tbody').innerHTML += rowWithEmail.replace('STATUS', 'Rejected');
-                } else if (userStatus === 'banned') {
-                    document.getElementById('banned-users-tbody').innerHTML += rowWithEmail.replace('STATUS', 'Banned');
-                } else if (userStatus === 'pending') {
-                    // Duplicate prevention: check if user ID already added
-                    const userId = user.user_id || user.id;
-                    const actions = `<button type="button" class="btn btn-warning btn-sm" onclick="openRejectModal('${user.user_id || user.id}')">Reject</button> <button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>`;
-                    if (!addedSigningUpUsers.has(userId)) {
-                        addedSigningUpUsers.add(userId);
-                        document.getElementById('signing-up-users-tbody').innerHTML += rowWithoutEmail;
-                    }
-                }
-            };
 
-            // Paginate tables
-            paginateTable('admins-tbody', 10);
-            paginateTable('verified-users-tbody', 10);
-            paginateTable('signing-up-users-tbody', 10);
+                modal.style.display = 'block';
+            }
+
+        function closeFilterModal() {
+            document.getElementById('filter-modal').style.display = 'none';
+        }
+
+        function filterModalTable(status, category, grade, strand, degree, department) {
+            // Apply filters to the appropriate table
+            const tbodyId = category === 'shs' ? `gr${grade}-${strand}-tbody` :
+                           category === 'college' ? `${degree}-tbody` :
+                           category === 'educator' ? `educator-${department}-tbody` : null;
+
+            if (tbodyId) {
+                const tbody = document.getElementById(tbodyId);
+                if (tbody) {
+                    // Show only rows that match the filter criteria
+                    const rows = tbody.querySelectorAll('tr');
+                    rows.forEach(row => {
+                        const shouldShow = category === 'shs' ?
+                            row.cells[5].textContent.trim() === `Grade ${grade}` &&
+                            row.cells[6].textContent.toLowerCase().includes(strand.toLowerCase()) :
+                            category === 'college' ?
+                            row.cells[6].textContent.toLowerCase().includes(degree.toLowerCase()) :
+                            category === 'educator' ?
+                            row.cells[6].textContent.toLowerCase().includes(department.toLowerCase()) :
+                            true;
+
+                        row.style.display = shouldShow ? '' : 'none';
+                    });
+                }
+            }
+        }
 
             // Reapply current filters after reload
             for (const section in currentFilters) {
@@ -4565,6 +4518,8 @@ STI Archives Admin`;
                 if (f.search) {
                     const searchInput = document.querySelector(`#${section}-section input[onkeyup*="filterTable"]`);
                     if (searchInput) searchInput.value = f.search;
+                }
+                if (f.filterType) {
                     document.getElementById(`search-filter-${section}`).value = f.filterType;
                     filterTable(f.search, section, f.filterType);
                 }

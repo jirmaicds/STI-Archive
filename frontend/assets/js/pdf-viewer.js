@@ -287,7 +287,6 @@ class PDFViewer {
 
 // Function to display article PDF in a modal
 function displayArticlePDF(pdfPath, title) {
-    console.log('displayArticlePDF called with:', pdfPath, title);
     
     // Check if dark mode is active
     const isDarkMode = document.body.classList.contains('dark-mode') || 
@@ -361,37 +360,23 @@ function displayArticlePDF(pdfPath, title) {
         const fileViewer = document.querySelector('.file-viewer');
         if (fileViewer) {
             fileViewer.appendChild(modal);
-            console.log('PDF modal appended to .file-viewer');
         } else {
             // Fallback to body if file-viewer not found
             document.body.appendChild(modal);
-            console.log('PDF modal appended to body (file-viewer not found)');
         }
-        
+
         // Close on background click
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 closePDFModal();
             }
         });
-        
-        // Listen for sidebar toggle to adjust modal position
-        const toggleBtn = document.getElementById('toggle-btn');
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', function() {
-                if (modal.style.display === 'block') {
-                    const newPos = getModalPosition();
-                    modal.style.left = newPos.left + 'px';
-                    modal.style.width = 'calc(100% - ' + newPos.left + 'px)';
-                }
-            });
-        }
     } else {
-        // Update existing modal position
-        modal.style.top = pos.top + 'px';
-        modal.style.left = pos.left + 'px';
-        modal.style.width = 'calc(100% - ' + pos.left + 'px)';
-        modal.style.height = 'calc(100% - ' + pos.top + 'px)';
+        // Ensure existing modal is positioned correctly
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
     }
     
     // Show modal

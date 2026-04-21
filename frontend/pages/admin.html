@@ -4540,7 +4540,7 @@
         function generateNotifications(users) {
             const removedUsers = JSON.parse(localStorage.getItem('removedUsers')) || [];
             const filteredUsers = users.filter(u => !removedUsers.includes(u.user_id || u.id));
-            const signingUpUsers = filteredUsers.filter(u => !u.verified && !u.rejected && !u.banned);
+            const signingUpUsers = filteredUsers.filter(u => u.state === 'pending');
             const verifiedUsers = filteredUsers.filter(u => u.verified);
             const notifications = [];
 
@@ -6407,14 +6407,14 @@ STI Archives Admin`;
                 const date = formatDate(user.verified_at || user.created_at);
                 let actions = '';
                 const userId = user.user_id || user.id;
-                if (user.verified) {
+                if (user.state === 'approved') {
                     actions = `
                         <div style="display: flex; flex-direction: column; gap: 4px;">
                             <button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button>
                             <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
                         </div>
                     `;
-                } else if (user.banned) {
+                } else if (user.state === 'banned') {
                         actions = `
                             <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.id}', 'accept')">Accept</button>
                             <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${user.user_id || user.id}', 'reject')">Reject</button>
@@ -6529,12 +6529,12 @@ STI Archives Admin`;
                         </td>
                     </tr>`;
                     document.getElementById('admins-tbody').innerHTML += adminRow;
-                } else if (user.isActive || user.verified === true) {
+                } else if (user.state === 'approved') {
                     console.log('DEBUG: Adding verified user to table:', user.name, user.email, user.personal_email);
                     document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
-                } else if (user.banned) {
+                } else if (user.state === 'banned') {
                     document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
-                } else if (!user.isActive && !user.verified && !user.rejected && !user.banned) {
+                } else if (user.state === 'pending') {
                     signingUpUsers.push(user);
                 }
             });
@@ -6611,7 +6611,7 @@ STI Archives Admin`;
             const filteredForCount = users.filter(u => !removedUsers.includes(u.user_id || u.id));
             const signingUpCount = filteredForCount.filter(u => {
                 const userType = u.user_type;
-                return !u.verified && userType === 'user' && !u.rejected && !u.banned;
+                return u.state === 'pending';
             }).length;
 
             console.log('DEBUG: Table row counts - Verified:', verifiedCount, 'Admin:', adminCount, 'Signing up:', signingUpCount);
@@ -6823,7 +6823,7 @@ STI Archives Admin`;
 
             const verifiedCount = getUsersCount(users);
             const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-            const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+            const signingUpCount = users.filter(u => u.state === 'pending').length;
 
             const usersCountEl = document.getElementById('users-count');
             const adminEl = document.getElementById('admin-users-count');
@@ -7510,8 +7510,8 @@ STI Archives Admin`;
             const users = await getUsers();
             const tbody = document.getElementById(status + '-strand-users-tbody');
             tbody.innerHTML = '';
-            const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
-                                status === 'banned' ? user.banned : false;
+            const statusFilter = status === 'signing-up' ? user.state === 'pending' :
+                                status === 'banned' ? user.state === 'banned' : false;
             users.forEach(user => {
                 if (user.role === 'senior_high' && user.grade === 'Grade ' + grade && user.strand === strand && statusFilter) {
                     const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
@@ -7542,8 +7542,8 @@ STI Archives Admin`;
             const users = await getUsers();
             const tbody = document.getElementById(status + '-degree-users-tbody');
             tbody.innerHTML = '';
-            const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
-                                status === 'banned' ? user.banned : false;
+            const statusFilter = status === 'signing-up' ? user.state === 'pending' :
+                                status === 'banned' ? user.state === 'banned' : false;
             users.forEach(user => {
                 if (user.role === 'college' && user.section === degree.toUpperCase() && statusFilter) {
                     const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
@@ -7571,8 +7571,8 @@ STI Archives Admin`;
             const users = await getUsers();
             const tbody = document.getElementById(status + '-department-users-tbody');
             tbody.innerHTML = '';
-            const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
-                                status === 'banned' ? user.banned : false;
+            const statusFilter = status === 'signing-up' ? user.state === 'pending' :
+                                status === 'banned' ? user.state === 'banned' : false;
             users.forEach(user => {
                 if (user.role === 'educator' && user.section === 'Department ' + dept.toUpperCase() && statusFilter) {
                     const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);

@@ -118,6 +118,7 @@ async function handleRegister(req, res) {
            user_type: 'user',
       verified: false,
       isactive: false,
+      state: 'pending',  // New state column
       grade: grade || null,
       section_degree: section_degree || section || null,
       registration_assessment_form: null,
@@ -710,7 +711,7 @@ async function handleApproveUser(req, res) {
       if (action === 'approve') {
         await supabase
           .from('users')
-          .update({ verified: true, role: 'user', isactive: true })
+          .update({ verified: true, role: 'user', isactive: true, state: 'approved' })
           .eq('id', user.id);
 
         await emailService.sendApprovalNotification(user.email, user.fullname);
@@ -720,7 +721,7 @@ async function handleApproveUser(req, res) {
       } else if (action === 'reject') {
         await supabase
           .from('users')
-          .update({ verified: false, role: 'rejected', isactive: false })
+          .update({ verified: false, role: 'rejected', isactive: false, state: 'rejected' })
           .eq('id', user.id);
 
         await emailService.sendRejectionNotification(user.email, user.fullname, reason);
@@ -730,7 +731,7 @@ async function handleApproveUser(req, res) {
       } else if (action === 'ban') {
         await supabase
           .from('users')
-          .update({ verified: false, role: 'banned', isactive: false })
+          .update({ verified: false, role: 'banned', isactive: false, state: 'banned' })
           .eq('id', user.id);
         
         res.statusCode = 200;

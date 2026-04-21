@@ -86,30 +86,21 @@ async function handleGetUsers(req, res) {
         }));
         return;
       }
-      const defaultSelectFields = 'id, email, fullname, role, user_type, verified, created_at, updated_at';
-      const noMetaSelectFields = 'id, email, fullname, role, user_type, verified';
+      const defaultSelectFields = 'id, email, fullname, role, user_type, verified, state, created_at, updated_at';
+      const noMetaSelectFields = 'id, email, fullname, role, user_type, verified, state';
       let query = supabase
         .from('users')
         .select(defaultSelectFields);
 
-      // Apply filters (banned/rejected may not exist in some schemas)
+      // Apply filters using state column
       if (status === 'pending') {
-        query = query.eq('verified', false).or('role.eq.pending,user_type.is.null');
+        query = query.eq('state', 'pending');
       } else if (status === 'approved') {
-        query = query.eq('verified', true).neq('role', 'pending');
+        query = query.eq('state', 'approved');
       } else if (status === 'banned') {
-        try {
-          query = query.eq('banned', true);
-        } catch (err) {
-          // Column may not exist; produce no rows for banned if unsupported
-          query = query.eq('id', '');
-        }
+        query = query.eq('state', 'banned');
       } else if (status === 'rejected') {
-        try {
-          query = query.eq('rejected', true);
-        } catch (err) {
-          query = query.eq('id', '');
-        }
+        query = query.eq('state', 'rejected');
       }
 
       if (role) {
@@ -474,9 +465,7 @@ async function handleGetUserCounts(req, res) {
 
       const userTypeUsers = allUsers.filter(u => u.user_type === 'user').length;
       const adminUsers = allUsers.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-      const newSignups = allUsers.filter(u =>
-        !u.verified && !['admin', 'coadmin', 'subadmin'].includes(u.role) && !(u.rejected || false) && !(u.banned || false)
-      ).length;
+      const newSignups = allUsers.filter(u => u.state === 'pending').length;
       const bannedUsers = allUsers.filter(u => u.banned || false).length;
 
       const result = {

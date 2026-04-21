@@ -305,7 +305,7 @@ function displayArticlePDF(pdfPath, title) {
             width: 100%;
             height: 100%;
             background: ${isDarkMode ? 'rgba(0, 0, 0, 0.95)' : 'rgba(0, 0, 0, 0.9)'};
-            z-index: 100;
+            z-index: 10001;
             overflow: hidden;
         `;
 

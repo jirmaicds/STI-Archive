@@ -9009,7 +9009,20 @@ STI Archives Admin`;
             }
         });
         });
-        
+
+        // Start real-time count updates
+        function startRealTimeUpdates() {
+            // Update counts immediately
+            updateUserCounts();
+
+            // Set up polling every 30 seconds
+            setInterval(updateUserCounts, 30000);
+        }
+
+        // Start real-time updates when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            startRealTimeUpdates();
+        });
 
     </script>
     <!-- Retry build after rate limit failure -->
@@ -10084,19 +10097,6 @@ STI Archives Admin`;
             paginateTable(tbodyId, 10);
         }
 
-        // Start real-time count updates
-        function startRealTimeUpdates() {
-            // Update counts immediately
-            updateUserCounts();
-
-            // Set up polling every 30 seconds
-            setInterval(updateUserCounts, 30000);
-        }
-
-        // Start real-time updates when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            startRealTimeUpdates();
-        });
 
     </script>
 </body>

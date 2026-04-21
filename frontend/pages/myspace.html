@@ -222,12 +222,19 @@
     /* PDF Viewer Styles - now handled by JS inside file-viewer */
 
     #pdf-viewer-modal > div {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
       width: 100%;
       height: 100%;
-      padding: 0;
-      margin: 0;
-      left: 0;
-      right: 0;
+      box-sizing: border-box;
+      overflow: auto;
+    }
+    #pdf-viewer-modal {
+      top: 50px !important;
+      height: calc(100vh - 50px) !important;
+      z-index: 10000 !important;
     }
 
     #pdf-viewer-modal #pdf-viewer-container {
@@ -3797,13 +3804,15 @@ color: #ffd700;
                 const script = document.createElement('script');
                 script.src = '/frontend/assets/js/pdf-viewer-myspace.js?v=' + Date.now();
                script.onload = function() {
-                   console.log('PDF viewer script loaded');
-                   if (typeof displayArticlePDF === 'function') {
-                       displayArticlePDF(pdfSource, study.title);
-                   } else {
-                       console.error('displayArticlePDF not available');
-                   }
-               };
+                    console.log('PDF viewer script loaded');
+                    // Define container for the script
+                    window.container = document.querySelector('#pdf-viewer-modal > div');
+                    if (typeof displayArticlePDF === 'function') {
+                        displayArticlePDF(pdfSource, study.title);
+                    } else {
+                        console.error('displayArticlePDF not available');
+                    }
+                };
                script.onerror = function() {
                    console.error('Failed to load PDF viewer script');
                    alert('Failed to load PDF viewer');

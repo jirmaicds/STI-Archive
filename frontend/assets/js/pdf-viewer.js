@@ -385,15 +385,19 @@ function displayArticlePDF(pdfPath, title) {
             </div>
         `;
         
-        // Append to file-viewer instead of body
+        // Append to body and position over file-viewer
+        document.body.appendChild(modal);
+        console.log('PDF modal appended to body');
+
+        // Position modal over file-viewer
         const fileViewer = document.querySelector('.file-viewer');
         if (fileViewer) {
-            fileViewer.appendChild(modal);
-            console.log('PDF modal appended to .file-viewer');
-        } else {
-            // Fallback to body if file-viewer not found
-            document.body.appendChild(modal);
-            console.log('PDF modal appended to body (file-viewer not found)');
+            const rect = fileViewer.getBoundingClientRect();
+            modal.style.position = 'fixed';
+            modal.style.top = rect.top + 'px';
+            modal.style.left = rect.left + 'px';
+            modal.style.width = rect.width + 'px';
+            modal.style.height = rect.height + 'px';
         }
         
         // Close on background click
@@ -619,6 +623,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     const canvas = document.createElement('canvas');
                     canvas.style.display = 'block';
                     canvas.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+                    canvas.style.background = isDarkMode ? '#2d2d2d' : 'white';
                     canvas.height = viewport.height;
                     canvas.width = viewport.width;
                     canvas.dataset.pageNum = i;

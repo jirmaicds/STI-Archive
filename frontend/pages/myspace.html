@@ -6037,41 +6037,28 @@ color: #ffd700;
             }
         });
     });
-        // Function to position PDF modal accounting for sidebars
+        // Function to position PDF modal over the file-viewer
         function positionPDFModal() {
             const modal = document.getElementById('pdf-viewer-modal');
             if (!modal) return;
-            
-            const adminSidebar = document.querySelector('.sidebar[style*="left: 0"]') || 
-                               document.querySelector('.sidebar:not([style*="left: -"])') ||
-                               document.querySelector('.sidebar');
-            const togglePanel = document.querySelector('.toggle-panel');
+
+            const fileViewer = document.querySelector('.file-viewer');
             const header = document.querySelector('.main-navbar');
-            
-            let leftOffset = 0;
-            let topOffset = 0;
-            
-            // Check for admin sidebar (left side)
-            if (adminSidebar && (adminSidebar.style.left === '0px' || 
-                               adminSidebar.style.left === '' || 
-                               !adminSidebar.style.left.includes('-'))) {
-                leftOffset = 200; // Admin sidebar width
+
+            if (fileViewer) {
+                const rect = fileViewer.getBoundingClientRect();
+                modal.style.top = rect.top + 'px';
+                modal.style.left = rect.left + 'px';
+                modal.style.width = rect.width + 'px';
+                modal.style.height = rect.height + 'px';
+            } else {
+                // Fallback to header height
+                const topOffset = header ? header.offsetHeight || 50 : 50;
+                modal.style.top = topOffset + 'px';
+                modal.style.left = '50%';
+                modal.style.width = '50%';
+                modal.style.height = 'calc(100vh - ' + topOffset + 'px)';
             }
-            
-            // Add toggle panel width if visible
-            if (togglePanel && togglePanel.style.display !== 'none' && togglePanel.style.display !== '') {
-                leftOffset += 30; // Toggle panel width
-            }
-            
-            // Header height
-            if (header) {
-                topOffset = header.offsetHeight || 50;
-            }
-            
-            modal.style.top = topOffset + 'px';
-            modal.style.left = leftOffset + 'px';
-            modal.style.width = 'calc(100vw - ' + leftOffset + 'px)';
-            modal.style.height = 'calc(100vh - ' + topOffset + 'px)';
         }
         
         // Position modal when shown

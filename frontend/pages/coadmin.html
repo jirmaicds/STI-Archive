@@ -4166,7 +4166,7 @@
                     `;
                 }
                 let emailToUse = user.personal_email || user.email;
-                const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewRaf('${user.raf_path}')">Preview</button>` : '';
+                const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewRaf('${user.raf_path}')">Preview</button>` : `${user.raf_path || ''} ${user.educator_id || ''}`.trim() || '-';
                 const rowWithEmail = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
                     <td>${userId}</td>
@@ -4178,6 +4178,17 @@
                     <td>${date}</td>
                     <td>${rafEduIdCell}</td>
                     <td>${actions}</td>
+                </tr>`;
+                const rowWithoutActions = `<tr>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
+                    <td>${userId}</td>
+                    <td>${getUserName(user)}</td>
+                    <td>${emailToUse}</td>
+                    <td>${formatRole(user.role)}</td>
+                    <td>${user.grade || '-'}</td>
+                    <td>${getSectionDisplay(user)}</td>
+                    <td>${date}</td>
+                    <td>${rafEduIdCell}</td>
                 </tr>`;
 
                 // Check admin role first (case-insensitive)
@@ -4231,8 +4242,8 @@
                             <td>${rafEduIdCell}</td>
                         </tr>`;
                         document.getElementById('verified-users-tbody').innerHTML += verifiedRow;
-                    } else if (userStatus === 'banned') {
-                        document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
+                    } else if (userStatus === 'banned' || userStatus === 'rejected') {
+                        document.getElementById('banned-users-tbody').innerHTML += rowWithoutActions;
                     } else if (userStatus === 'pending') {
                         if (DEBUG) console.log('DEBUG: Adding signing-up user to table:', user.name, user.email);
                         document.getElementById('signing-up-users-tbody').innerHTML += rowWithEmail;

@@ -817,6 +817,17 @@ window.supabaseHelpers = {
                 align-items: center;
                 gap: 6px;
             }
+            .lockout-message {
+                color: red;
+                font-size: 14px;
+                display: none;
+                margin-top: 10px;
+                text-align: center;
+                font-weight: bold;
+            }
+            .lockout-message p {
+                margin: 0;
+            }
             .error-message i {
                 color: red;
                 font-size: 16px;
@@ -1900,9 +1911,10 @@ window.supabaseHelpers = {
                             <a href="#" id="termsLink" style="color: #0057b8;">Terms of Conditions</a> & 
                             <a href="#" id="privacyLink" style="color: #0057b8;">Privacy Policy</a></label>
                     </div>
-                    <button type="submit">Login</button>
+                    <button type="submit" id="login-submit-btn">Login</button>
                     <div id="login-message" style="font-size: 14px; margin-top: 10px; text-align: center; display: none;"></div>
-                    
+                    <div id="login-lockout-message" class="lockout-message" style="display: none;"></div>
+
                     <div class="form-footer">
                         <p style="font-size: 14px; text-align: center; margin: 15px 0 0 0;">Don't have an Account? <a href="#" id="switchToSignup" style="color: #0057b8; text-decoration: none;">Sign Up</a></p>
                     </div>
@@ -2283,6 +2295,11 @@ window.supabaseHelpers = {
             }
         });
         document.addEventListener('DOMContentLoaded', function () {
+            // Check for login lockout on page load
+            if (isLoginLocked()) {
+                showLockoutMessage();
+                startLockoutTimer();
+            }
             const loginTab = document.getElementById('loginTab');
             const signupTab = document.getElementById('signupTab');
             const loginForm = document.getElementById('loginForm');
@@ -2436,9 +2453,78 @@ window.supabaseHelpers = {
             // Fallback to localStorage
             return JSON.parse(localStorage.getItem('users')) || [];
         }
+        // Rate limiting variables
+        let loginFailedAttempts = parseInt(localStorage.getItem('loginFailedAttempts')) || 0;
+        let loginLockoutUntil = parseInt(localStorage.getItem('loginLockoutUntil')) || 0;
+        let lockoutTimer;
+
+        // Rate limiting functions
+        function isLoginLocked() {
+            return Date.now() < loginLockoutUntil;
+        }
+
+        function handleFailedLogin() {
+            loginFailedAttempts++;
+            localStorage.setItem('loginFailedAttempts', loginFailedAttempts);
+            if (loginFailedAttempts >= 3) {
+                // Exponential backoff: 1min, 2min, 4min, etc.
+                const lockoutMinutes = Math.pow(2, loginFailedAttempts - 3);
+                loginLockoutUntil = Date.now() + (lockoutMinutes * 60 * 1000);
+                localStorage.setItem('loginLockoutUntil', loginLockoutUntil);
+                startLockoutTimer();
+            }
+        }
+
+        function startLockoutTimer() {
+            if (lockoutTimer) clearInterval(lockoutTimer);
+            updateLockoutCountdown();
+            lockoutTimer = setInterval(() => {
+                if (!isLoginLocked()) {
+                    clearInterval(lockoutTimer);
+                    hideLockoutMessage();
+                    return;
+                }
+                updateLockoutCountdown();
+            }, 1000);
+        }
+
+        function updateLockoutCountdown() {
+            const remaining = Math.max(0, loginLockoutUntil - Date.now());
+            const minutes = Math.floor(remaining / 60000);
+            const seconds = Math.floor((remaining % 60000) / 1000);
+            const countdownEl = document.getElementById('lockout-countdown');
+            if (countdownEl) {
+                countdownEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        function showLockoutMessage() {
+            const msg = document.getElementById('login-lockout-message');
+            if (msg) {
+                msg.innerHTML = '<p>Too many failed login attempts. Please try again in <span id="lockout-countdown">00:00</span>.</p>';
+                msg.style.display = 'block';
+            }
+            updateLockoutCountdown();
+            const btn = document.getElementById('login-submit-btn');
+            if (btn) btn.disabled = true;
+        }
+
+        function hideLockoutMessage() {
+            const msg = document.getElementById('login-lockout-message');
+            if (msg) {
+                msg.style.display = 'none';
+            }
+            const btn = document.getElementById('login-submit-btn');
+            if (btn) btn.disabled = false;
+        }
+
         const loginForm = document.getElementById('loginForm');
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            if (isLoginLocked()) {
+                showLockoutMessage();
+                return;
+            }
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value;
             const rememberMe = document.getElementById('rememberMe').checked;
@@ -2519,16 +2605,20 @@ window.supabaseHelpers = {
                         // Store JWT token
                         localStorage.setItem('sti_auth_token', data.token);
                         localStorage.setItem('currentUser', JSON.stringify(data.user));
-                        
+
                         if (rememberMe) {
                             localStorage.setItem('rememberMe', email);
                         } else {
                             localStorage.removeItem('rememberMe');
                         }
-                        
+
+                        // Reset failed attempts on success
+                        loginFailedAttempts = 0;
+                        localStorage.setItem('loginFailedAttempts', loginFailedAttempts);
+
                         // Show success modal
                         showSuccessLoginMessage();
-                        
+
                         // Redirect based on user role
                         setTimeout(() => {
                             const userRole = (data.user.role || '').toLowerCase();
@@ -2547,6 +2637,7 @@ window.supabaseHelpers = {
                         // API returned error - show the actual error message
                         messageDiv.innerHTML = '<span style="color: #dc3545;"><i class="fas fa-exclamation-circle"></i> ' + (data.error || 'Invalid credentials') + '</span>';
                         messageDiv.style.display = 'block';
+                        handleFailedLogin();
                         return;
                     }
                 } catch (fetchError) {
@@ -2591,6 +2682,9 @@ window.supabaseHelpers = {
                     } else {
                         localStorage.removeItem('rememberMe');
                     }
+                    // Reset failed attempts on success
+                    loginFailedAttempts = 0;
+                    localStorage.setItem('loginFailedAttempts', loginFailedAttempts);
                     // Check role for redirect
                     if (user.role === 'admin') {
                         showSuccessLoginMessage();
@@ -2617,6 +2711,7 @@ window.supabaseHelpers = {
                     messageDiv.textContent = 'Please double-check your credentials and try again.';
                     messageDiv.style.color = 'red';
                     messageDiv.style.display = 'block';
+                    handleFailedLogin();
                 }
             } else {
                 messageDiv.innerHTML = 'No account found. Please sign up first to create an account.';

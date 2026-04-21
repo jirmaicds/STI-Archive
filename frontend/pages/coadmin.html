@@ -4062,6 +4062,56 @@
         let isLoadingUsers = false;
         let users = [];
 
+        function generateNotifications(users) {
+            const removedUsers = JSON.parse(localStorage.getItem('removedUsers')) || [];
+            const filteredUsers = users.filter(u => !removedUsers.includes(u.user_id || u.id));
+            const signingUpUsers = filteredUsers.filter(u => !u.verified && !u.rejected && !u.banned);
+            const verifiedUsers = filteredUsers.filter(u => u.verified);
+            const notifications = [];
+
+            // Add notifications for signing up users
+            signingUpUsers.forEach(user => {
+                const id = `signup-${user.id}`;
+                notifications.push({
+                    id: id,
+                    type: 'new-user',
+                    typeText: 'New User Access Request',
+                    content: `${user.name} signed up!`,
+                    time: user.created_at ? new Date(user.created_at).toLocaleString() : 'Just now',
+                    timestamp: user.created_at ? new Date(user.created_at).getTime() : Date.now(),
+                    priority: 1 // Signing up first
+                });
+            });
+
+            // Add notifications for verified users (recent)
+            verifiedUsers.slice(-5).forEach(user => {
+                const id = `verified-${user.id}`;
+                notifications.push({
+                    id: id,
+                    type: 'new-user',
+                    typeText: 'New User Access Request',
+                    content: `${user.name} signed up!`,
+                    time: user.verified_at ? new Date(user.verified_at).toLocaleString() : 'Recently',
+                    timestamp: user.verified_at ? new Date(user.verified_at).getTime() : Date.now() - 1000,
+                    priority: 2 // Verified second
+                });
+            });
+
+            // Filter out deleted notifications
+            const deletedNotifications = JSON.parse(localStorage.getItem('deletedNotifications')) || [];
+            let filteredNotifications = notifications.filter(notif => !deletedNotifications.includes(notif.id));
+
+            // Sort by priority (signing up first), then by timestamp (newest first)
+            filteredNotifications.sort((a, b) => {
+                if (a.priority !== b.priority) {
+                    return a.priority - b.priority; // Lower priority first
+                }
+                return b.timestamp - a.timestamp; // Newest first
+            });
+
+            return filteredNotifications;
+        }
+
         // Update dashboard counts
         function updateDashboardCounts() {
             if (!Array.isArray(users)) users = [];

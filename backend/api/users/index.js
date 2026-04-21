@@ -443,10 +443,29 @@ async function handleGetUserCounts(req, res) {
         return;
       }
       
-      // Get all users for counting
-      const { data: allUsers, error: allError } = await supabase
+      // Get all users for counting (select only columns that exist)
+      let selectFields = 'id, role, user_type, verified';
+      let { data: allUsers, error: allError } = await supabase
         .from('users')
-        .select('id, role, user_type, verified, banned, rejected');
+        .select(selectFields);
+
+      // Try to add banned/rejected columns if they exist
+      if (!allError) {
+        try {
+          const testQuery = await supabase
+            .from('users')
+            .select('banned, rejected')
+            .limit(1);
+          if (!testQuery.error) {
+            selectFields += ', banned, rejected';
+            ({ data: allUsers, error: allError } = await supabase
+              .from('users')
+              .select(selectFields));
+          }
+        } catch (e) {
+          // Columns don't exist, continue with basic select
+        }
+      }
 
       if (allError) throw allError;
       
@@ -456,11 +475,9 @@ async function handleGetUserCounts(req, res) {
       const userTypeUsers = allUsers.filter(u => u.user_type === 'user').length;
       const adminUsers = allUsers.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
       const newSignups = allUsers.filter(u =>
-        !u.verified && !['admin', 'coadmin', 'subadmin'].includes(u.role) && !u.rejected && !u.banned
+        !u.verified && !['admin', 'coadmin', 'subadmin'].includes(u.role) && !(u.rejected || false) && !(u.banned || false)
       ).length;
-      const usersCount = userTypeUsers;
-
-      const bannedUsers = allUsers.filter(u => u.banned).length;
+      const bannedUsers = allUsers.filter(u => u.banned || false).length;
 
       const result = {
         success: true,

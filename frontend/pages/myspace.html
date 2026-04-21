@@ -2468,6 +2468,9 @@ color: #ffd700;
           <h2>Select an Article</h2>
         </div>
 
+        <!-- Document Preview Container -->
+        <div id="docPreview" style="display: none;"></div>
+
         <div id="pdf-viewer-modal" style="display: none; position: fixed;">
             <div style="
                 position: absolute;
@@ -5866,18 +5869,23 @@ color: #ffd700;
         } else {
             pdfBtn.classList.remove('active');
             wordBtn.classList.add('active');
-            // Show editor, hide file-viewer and homeEditor
-            console.log('Showing editor on mobile for word');
-            const editor = document.getElementById('editor');
+            // Show homeEditor, hide file-viewer and editor
+            console.log('Showing homeEditor on mobile for word');
             const homeEditor = document.getElementById('homeEditor');
+            const editor = document.getElementById('editor');
             const fileViewer = document.querySelector('.file-viewer');
-            if (editor) {
-                editor.style.display = 'flex';
-                editor.classList.add('fullscreen');
-            }
             if (homeEditor) {
-                homeEditor.classList.remove('visible');
-                homeEditor.style.display = 'none';
+                homeEditor.classList.add('visible');
+                homeEditor.style.display = 'flex';
+                // On mobile, make homeEditor full width
+                homeEditor.style.width = '100%';
+                homeEditor.style.left = '0';
+                homeEditor.style.position = 'relative';
+                homeEditor.style.right = 'auto';
+            }
+            if (editor) {
+                editor.style.display = 'none';
+                editor.classList.remove('fullscreen');
             }
             if (fileViewer) {
                 fileViewer.style.display = 'none';

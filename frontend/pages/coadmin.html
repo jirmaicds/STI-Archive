@@ -5556,47 +5556,27 @@
        
 
         // Update dashboard counts
-        function updateDashboardCounts(users = null) {
-            if (users === null) {
-                try {
-                    users = JSON.parse(localStorage.getItem('users') || '[]');
-                } catch (e) {
-                    users = [];
-                }
-            }
+        function updateDashboardCounts() {
             if (!Array.isArray(users)) users = [];
-            // Helper function for coadmin status detection
-            function getUserStatus(user) {
-                if (user.new_user === true) return 'pending';
-                if (user.banned_user === true) return 'banned';
-                if (user.rejected_user === true) return 'rejected';
-                if (user.verified === true) return 'approved';
-                // Fallback
-                if (user.verified && !user.banned && !user.rejected) return 'approved';
-                if (user.banned) return 'banned';
-                if (user.rejected) return 'rejected';
-                return 'pending';
-            }
-
-            const usersCount = users.filter(u => getUserStatus(u) === 'approved' && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-            const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-            const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
-
-            // Calculate research and capstone counts
             const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
             const researchCount = allArticles.filter(a => a.category === 'research').length;
             const capstoneCount = allArticles.filter(a => a.category === 'capstone').length;
             const totalUploads = researchCount + capstoneCount;
 
-            const verifiedEl = document.getElementById('verified-users-count');
-            const adminsEl = document.getElementById('admin-users-count');
-            const signupEl = document.getElementById('signing-up-users-count');
             const revenueEl = document.getElementById('revenue-count');
+            if (revenueEl) revenueEl.textContent = totalUploads;
+
+            const usersCount = users.filter(u => getUserStatus(u) === 'approved').length;
+            const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+            const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
+
+            const verifiedEl = document.getElementById('verified-users-count');
+            const adminEl = document.getElementById('admin-users-count');
+            const signingUpEl = document.getElementById('signing-up-users-count');
 
             if (verifiedEl) verifiedEl.textContent = usersCount;
-            if (adminsEl) adminsEl.textContent = adminCount;
-            if (signupEl) signupEl.textContent = signingUpCount;
-            if (revenueEl) revenueEl.textContent = totalUploads;
+            if (adminEl) adminEl.textContent = adminCount;
+            if (signingUpEl) signingUpEl.textContent = signingUpCount;
         }
 
         // === STUB FUNCTIONS (to prevent errors) ===

@@ -5848,12 +5848,17 @@ color: #ffd700;
         if (type === 'pdf') {
             pdfBtn.classList.add('active');
             wordBtn.classList.remove('active');
-            // Show file-viewer, hide homeEditor
+            // Show file-viewer, hide homeEditor and editor
             const homeEditor = document.getElementById('homeEditor');
+            const editor = document.getElementById('editor');
             const fileViewer = document.querySelector('.file-viewer');
             if (homeEditor) {
                 homeEditor.classList.remove('visible');
                 homeEditor.style.display = 'none';
+            }
+            if (editor) {
+                editor.style.display = 'none';
+                editor.classList.remove('fullscreen');
             }
             if (fileViewer) {
                 fileViewer.style.display = 'flex';
@@ -5861,18 +5866,18 @@ color: #ffd700;
         } else {
             pdfBtn.classList.remove('active');
             wordBtn.classList.add('active');
-            // Show homeEditor, hide file-viewer
-            console.log('Showing homeEditor on mobile for word');
+            // Show editor, hide file-viewer and homeEditor
+            console.log('Showing editor on mobile for word');
+            const editor = document.getElementById('editor');
             const homeEditor = document.getElementById('homeEditor');
             const fileViewer = document.querySelector('.file-viewer');
+            if (editor) {
+                editor.style.display = 'flex';
+                editor.classList.add('fullscreen');
+            }
             if (homeEditor) {
-                homeEditor.classList.add('visible');
-                homeEditor.style.display = 'flex';
-                // On mobile, make homeEditor full width
-                homeEditor.style.width = '100%';
-                homeEditor.style.left = '0';
-                homeEditor.style.position = 'relative';
-                homeEditor.style.right = 'auto';
+                homeEditor.classList.remove('visible');
+                homeEditor.style.display = 'none';
             }
             if (fileViewer) {
                 fileViewer.style.display = 'none';

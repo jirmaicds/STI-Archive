@@ -3665,16 +3665,12 @@
                         
                     </div>
 
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-admins-main" onclick="toggleSelectAll('admins')">
-                        <button class="btn btn-danger" onclick="bulkAction('admins', 'remove')">Remove</button>
-                    </div>
+
 
                     <div style="overflow-x: auto;">
                     <table>
                         <thead>
                              <tr>
-                                 <th><input type="checkbox" id="select-all-admins" onclick="toggleSelectAll('admins')"></th>
                                  <th>ID</th>
                                  <th>Full Name</th>
                                  <th>Email</th>
@@ -3732,7 +3728,7 @@
                     </div>
                     <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
                         <input type="checkbox" id="select-all-verified-main" onclick="toggleSelectAll('verified')">
-                        <button class="btn btn-danger" onclick="bulkAction('verified', 'ban')">Ban</button>
+                        <button class="btn btn-warning" onclick="bulkAction('verified', 'reject')">Reject</button>
                         <button class="btn btn-danger" onclick="bulkAction('verified', 'remove')">Remove</button>
                     </div>
                     
@@ -3838,6 +3834,7 @@
                     </div>
                     <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
                             <input type="checkbox" id="select-all-banned-main" onclick="toggleSelectAll('banned')">
+                            <button class="btn btn-success" onclick="bulkAction('banned', 'unban')">Unban</button>
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="banned-users-table">
@@ -4122,15 +4119,7 @@
             if (revenueEl) revenueEl.textContent = totalUploads;
 
             const usersCount = users.filter(u => getUserStatus(u) === 'approved' && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-            const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
-            let adminCount;
-            if (currentUserRole === 'admin') {
-                adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-            } else if (currentUserRole === 'coadmin') {
-                adminCount = users.filter(u => ['coadmin', 'subadmin'].includes(u.role)).length;
-            } else {
-                adminCount = 0;
-            }
+            const adminCount = users.filter(u => u.role === 'admin').length;
             const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
 
             const verifiedEl = document.getElementById('verified-users-count');
@@ -4210,15 +4199,7 @@
                     let badgeClass = roleLower === 'coadmin' ? 'badge-coadmin' : roleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
                     let permissions = user.permissions || (roleLower === 'admin' ? 'Full Access - All Features' : roleLower === 'coadmin' ? 'Limited Access - User & File Management' : 'User Approver - Accept/Reject Registrations');
                     const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
-                    const canEditAdmins = currentUserRole === 'admin';
-                    const actionsCell = canEditAdmins ? `<td>
-                        <div style="display: flex; flex-direction: column; gap: 4px;">
-                            <button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button>
-                            <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}')">Remove</button>
-                        </div>
-                    </td>` : '<td></td>';
                         const adminRow = `<tr>
-                            <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
                             <td>${userId}</td>
                             <td>${getUserName(user)}</td>
                             <td>${user.email || 'N/A'}</td>
@@ -4234,7 +4215,7 @@
                     if (userStatus === 'approved') {
                         console.log('DEBUG: Adding verified user to table:', user.name, user.email);
                         // For verified users, replace Raf/Edu_ID with preview button
-                const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewRaf('${user.raf_path}')">Preview</button>` : 'N/A';
+                const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewRaf('${user.raf_path}')">Preview</button>` : `${user.raf_path || ''} ${user.educator_id || ''}`.trim() || '-';
                         const verifiedRow = `<tr>
                             <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
                             <td>${userId}</td>
@@ -6281,7 +6262,7 @@
                 const badge = document.querySelector('.notification-badge');
                 if (badge) {
                     badge.textContent = unreadCount;
-                    badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+                    badge.style.display = 'flex'; // Always visible
                 }
 
                 // Show/hide mark all read button based on unread count
@@ -6305,7 +6286,7 @@
             const badge = document.querySelector('.notification-badge');
             if (badge) {
                 badge.textContent = unreadCount;
-                badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+                badge.style.display = 'flex'; // Always visible
             }
 
             // Show/hide mark all read button based on unread count
@@ -7129,15 +7110,7 @@
             const activeBtn = document.querySelector(`.nav-btn[data-section="${section}"]`);
             if (activeBtn) activeBtn.classList.add('active');
 
-            // Handle admins section permissions
-            if (section === 'admins') {
-                const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
-                const canEditAdmins = currentUserRole === 'admin';
-                const actionsHeader = document.getElementById('admins-actions-header');
-                const bulkRemoveBtn = document.querySelector('#admins-section .bulk-actions .btn-danger');
-                if (actionsHeader) actionsHeader.style.display = canEditAdmins ? '' : 'none';
-                if (bulkRemoveBtn) bulkRemoveBtn.style.display = canEditAdmins ? '' : 'none';
-            }
+
 
             // Load data for specific sections
             if (section === 'admins') {
@@ -7676,6 +7649,8 @@
                 selectedUsers.forEach(user => {
                     if (action === 'remove') {
                         removeUser(user.id, user.name);
+                    } else if (action === 'unban') {
+                        updateUserStatus(user.id, 'accept'); // Unban by accepting
                     } else {
                         updateUserStatus(user.id, action);
                     }

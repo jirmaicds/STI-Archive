@@ -3612,8 +3612,8 @@
             }
             if (!Array.isArray(users)) users = [];
 
-            const verifiedCount = users.filter(u => getUserStatus(u) === 'approved').length;
-            const adminCount = users.filter(u => u.role === 'subadmin' || u.role === 'admin').length;
+            const verifiedCount = users.filter(u => getUserStatus(u) === 'approved' && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+            const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
             const verifiedEl = document.getElementById('verified-users-count');
             const adminsEl = document.getElementById('admin-users-count');

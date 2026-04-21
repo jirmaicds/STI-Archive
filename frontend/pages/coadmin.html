@@ -5578,16 +5578,25 @@
                 return 'pending';
             }
 
-            const usersCount = users.filter(u => getUserStatus(u) === 'approved').length;
+            const usersCount = users.filter(u => getUserStatus(u) === 'approved' && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
+
+            // Calculate research and capstone counts
+            const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+            const researchCount = allArticles.filter(a => a.category === 'research').length;
+            const capstoneCount = allArticles.filter(a => a.category === 'capstone').length;
+            const totalUploads = researchCount + capstoneCount;
 
             const verifiedEl = document.getElementById('verified-users-count');
             const adminsEl = document.getElementById('admin-users-count');
             const signupEl = document.getElementById('signing-up-users-count');
+            const revenueEl = document.getElementById('revenue-count');
+
             if (verifiedEl) verifiedEl.textContent = usersCount;
             if (adminsEl) adminsEl.textContent = adminCount;
             if (signupEl) signupEl.textContent = signingUpCount;
+            if (revenueEl) revenueEl.textContent = totalUploads;
         }
 
         // === STUB FUNCTIONS (to prevent errors) ===

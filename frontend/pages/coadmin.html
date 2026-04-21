@@ -4123,8 +4123,16 @@
             const revenueEl = document.getElementById('revenue-count');
             if (revenueEl) revenueEl.textContent = totalUploads;
 
-            const usersCount = users.filter(u => getUserStatus(u) === 'approved').length;
-            const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+            const usersCount = users.filter(u => getUserStatus(u) === 'approved' && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+            const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
+            let adminCount;
+            if (currentUserRole === 'admin') {
+                adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+            } else if (currentUserRole === 'coadmin') {
+                adminCount = users.filter(u => ['coadmin', 'subadmin'].includes(u.role)).length;
+            } else {
+                adminCount = 0;
+            }
             const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
 
             const verifiedEl = document.getElementById('verified-users-count');
@@ -4188,7 +4196,8 @@
                 // For coadmin, only show coadmin and subadmin, not full admin
                 const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
                 const shouldShowAdmin = currentUserRole === 'admin' || (currentUserRole === 'coadmin' && (roleLower === 'coadmin' || roleLower === 'subadmin'));
-                if (isAdminRole && shouldShowAdmin) {
+                if (isAdminRole) {
+                    if (shouldShowAdmin) {
                     console.log('DEBUG: Adding admin user to table:', user.fullname, user.email, 'role:', roleLower);
                     // Determine role display
                     let roleDisplay;
@@ -4209,17 +4218,18 @@
                             <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}')">Remove</button>
                         </div>
                     </td>` : '<td></td>';
-                    const adminRow = `<tr>
-                        <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
-                        <td>${userId}</td>
-                        <td>${getUserName(user)}</td>
-                        <td>${user.email || 'N/A'}</td>
-                        <td><span class="badge ${badgeClass}">${roleDisplay}</span></td>
-                        <td>${permissions}</td>
-                        <td>${formatDate(user.created_at)}</td>
-                        ${actionsCell}
-                    </tr>`;
-                    document.getElementById('admins-tbody').innerHTML += adminRow;
+                        const adminRow = `<tr>
+                            <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
+                            <td>${userId}</td>
+                            <td>${getUserName(user)}</td>
+                            <td>${user.email || 'N/A'}</td>
+                            <td><span class="badge ${badgeClass}">${roleDisplay}</span></td>
+                            <td>${permissions}</td>
+                            <td>${formatDate(user.created_at)}</td>
+                            ${actionsCell}
+                        </tr>`;
+                        document.getElementById('admins-tbody').innerHTML += adminRow;
+                    }
                 } else {
                     // Status categorization for regular users
                     const userStatus = getUserStatus(user);

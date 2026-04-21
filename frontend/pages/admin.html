@@ -14,6 +14,9 @@
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // Debug flag for console logs
+        const DEBUG = false;
+
         // Initialize Supabase client
         const SUPABASE_URL = 'https://eopbqatvianrjkdbypvk.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJxYXR2aWFucmprZGJ5cHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzA4OTIsImV4cCI6MjA4OTEwNjg5Mn0.k9_xTbjwRdwAQJ9UgGGsosjLWywzxHuYOq-JbGeII8g';
@@ -54,7 +57,7 @@
                 alert('Error: User ID is missing or invalid. Please refresh the page and try again.');
                 return;
             }
-            console.log('Updating user status for userId:', userId, 'action:', action);
+            if (DEBUG) console.log('Updating user status for userId:', userId, 'action:', action);
             
             // Get user email first
             let users = JSON.parse(localStorage.getItem('users')) || [];
@@ -90,7 +93,7 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        console.log('Rejection email sent:', data);
+                        if (DEBUG) console.log('Rejection email sent:', data);
                     })
                     .catch(error => {
                         console.error('Error sending rejection email:', error);
@@ -116,14 +119,14 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Backend API response:', data);
+                    if (DEBUG) console.log('Backend API response:', data);
                 })
                 .catch(error => {
                     console.error('Error calling backend API:', error);
                 });
             }
             
-            console.log('Updated localStorage for user:', userId);
+            if (DEBUG) console.log('Updated localStorage for user:', userId);
             // Find the row
             let currentRow = null;
             const allTbodys = document.querySelectorAll('#users tbody');
@@ -139,10 +142,10 @@
                 if (currentRow) break;
             }
             if (currentRow) {
-                console.log('Found currentRow');
+                if (DEBUG) console.log('Found currentRow');
                 // Clone the row
                 const clonedRow = currentRow.cloneNode(true);
-                console.log('Cloned row');
+                if (DEBUG) console.log('Cloned row');
                 // Update the actions in clonedRow
                 const actionsTd = clonedRow.querySelector('td:last-child');
                 let newActions = '';
@@ -154,7 +157,7 @@
                     newActions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button><button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button><button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button><button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${user.name}')">Remove</button></div>`;
                 }
                 actionsTd.innerHTML = newActions;
-                console.log('Updated actions');
+                if (DEBUG) console.log('Updated actions');
                 // Update the date in clonedRow
                 const dateTd = clonedRow.cells[7];
                 dateTd.textContent = formatDate(new Date().toISOString());
@@ -174,7 +177,7 @@
                 } else if (action === 'reject') {
                     // Just remove the row, don't move to rejected table
                     currentRow.remove();
-                    console.log('Removed rejected user from current table');
+                    if (DEBUG) console.log('Removed rejected user from current table');
                     return;
                 } else if (action === 'ban') {
                     targetTbodyId = 'banned-users-tbody';
@@ -183,27 +186,27 @@
                 const targetTbody = document.getElementById(targetTbodyId);
                 if (targetTbody) {
                     targetTbody.appendChild(clonedRow);
-                    console.log('Appended to target tbody:', targetTbodyId);
+                    if (DEBUG) console.log('Appended to target tbody:', targetTbodyId);
                 }
                 // Remove from current
                 currentRow.remove();
-                console.log('Removed from current');
+                if (DEBUG) console.log('Removed from current');
             }
             // Try to update server
-            console.log('updateUserStatus - userId:', userId, 'action:', action);
+            if (DEBUG) console.log('updateUserStatus - userId:', userId, 'action:', action);
             fetch('/api/users/status', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ user_id: userId, action: action })
             })
             .then(response => {
-                console.log('Response status:', response.status);
+                if (DEBUG) console.log('Response status:', response.status);
                 return response.json();
             })
             .then(result => {
-                console.log('Server result:', result);
+                if (DEBUG) console.log('Server result:', result);
                 if (result.message) {
-                    console.log('Server updated successfully');
+                    if (DEBUG) console.log('Server updated successfully');
                 } else {
                     console.error('Failed to update server:', result.error || 'Unknown error');
                 }
@@ -213,7 +216,7 @@
             });
             // Always reload users
             loadUsers().then(function() {
-                console.log('Users reloaded');
+                if (DEBUG) console.log('Users reloaded');
                 if (action === 'accept' && user) {
                     var email = user.personal_email || user.email;
                     var subject = 'Account Verified';
@@ -233,7 +236,7 @@
                         return response.json();
                     }).then(function(result) {
                         if (result.message) {
-                            console.log('Verification email sent successfully');
+                            if (DEBUG) console.log('Verification email sent successfully');
                         } else {
                             console.error('Failed to send verification email:', result.error);
                         }
@@ -242,7 +245,7 @@
                     });
                 }
             }).catch(function() {
-                console.log('Load users failed, reloading page');
+                if (DEBUG) console.log('Load users failed, reloading page');
                 // Fallback if async fails
                 location.reload();
             });
@@ -4609,34 +4612,34 @@
                 // Clear localStorage and force reload from server
                 localStorage.removeItem('users');
                 isLoadingUsers = false;
-                console.log('DEBUG: Force refresh - cleared localStorage and reset isLoadingUsers');
+                if (DEBUG) console.log('DEBUG: Force refresh - cleared localStorage and reset isLoadingUsers');
             }
             if (isLoadingUsers && !forceRefresh) return JSON.parse(localStorage.getItem('users')) || [];
             isLoadingUsers = true;
-            console.log('DEBUG: Attempting to fetch users from server...');
+            if (DEBUG) console.log('DEBUG: Attempting to fetch users from server...');
             try {
                 // Get auth token from localStorage (optional for admin)
                 const token = localStorage.getItem('sti_auth_token');
-                console.log('DEBUG: Auth token:', token ? 'present' : 'missing');
+                if (DEBUG) console.log('DEBUG: Auth token:', token ? 'present' : 'missing');
                 
                 // Add cache-busting query parameter
-                const response = await fetch('/api/users?_=' + Date.now(), {
+                const response = await fetch('/api/users?limit=10&offset=0&_=' + Date.now(), {
                     headers: token ? {
                         'Authorization': `Bearer ${token}`
                     } : {}
                 });
-                console.log('DEBUG: Fetch response status:', response.status);
+                if (DEBUG) console.log('DEBUG: Fetch response status:', response.status);
                 if (response.ok) {
-                    console.log('DEBUG: Server responded successfully, parsing JSON...');
+                    if (DEBUG) console.log('DEBUG: Server responded successfully, parsing JSON...');
                     const usersData = await response.json();
-                    console.log('DEBUG: Raw API response:', usersData);
+                    if (DEBUG) console.log('DEBUG: Raw API response:', usersData);
                     // Handle {success: true, users: []} format from API
                     const users = usersData.success ? usersData.users : usersData;
-                    console.log('DEBUG: Extracted users array:', users);
+                    if (DEBUG) console.log('DEBUG: Extracted users array:', users);
                     // Handle both array and {users: []} response formats
                     const userData = Array.isArray(users) ? users : (users.users || []);
-                    console.log('DEBUG: Final userData array, count:', userData.length);
-                    console.log('DEBUG: First user sample:', userData[0]);
+                    if (DEBUG) console.log('DEBUG: Final userData array, count:', userData.length);
+                    if (DEBUG) console.log('DEBUG: First user sample:', userData[0]);
                     // Add backward compatibility: map fullname to name
                     userData.forEach(user => {
                         if (user.fullname && !user.name) {
@@ -4648,14 +4651,14 @@
                     isLoadingUsers = false;
                     return userData;
                 } else {
-                    console.log('DEBUG: Server returned error:', response.status, 'falling back to localStorage');
+                    if (DEBUG) console.log('DEBUG: Server returned error:', response.status, 'falling back to localStorage');
                 }
             } catch (e) {
-                console.log('DEBUG: Could not load from server, error:', e.message, 'using localStorage');
+                if (DEBUG) console.log('DEBUG: Could not load from server, error:', e.message, 'using localStorage');
             }
             let localUsers = JSON.parse(localStorage.getItem('users')) || [];
             localStorage.setItem('users', JSON.stringify(localUsers)); // Save users
-            console.log('DEBUG: Loaded users from localStorage, count:', localUsers.length);
+            if (DEBUG) console.log('DEBUG: Loaded users from localStorage, count:', localUsers.length);
             isLoadingUsers = false;
             return localUsers;
         }
@@ -4663,7 +4666,7 @@
 
         
         async function refreshUsers() {
-            console.log('DEBUG: Auto refreshing users from server...');
+            if (DEBUG) console.log('DEBUG: Auto refreshing users from server...');
             try {
                 await getUsers(true);
                 await loadUsers();
@@ -4687,7 +4690,7 @@
             localStorage.setItem('adminArticles', JSON.stringify(articles));
         }
         function loadArticlesFromServer() {
-            return fetch('/api/articles')
+            return fetch('/api/articles?limit=10&offset=0')
                 .then(response => {
                     if (!response.ok) throw new Error('Server error');
                     return response.json();
@@ -4707,7 +4710,7 @@
                     }
                 })
                 .catch(error => {
-                    console.log('✗ Error fetching articles (server may be down):', error.message);
+                    if (DEBUG) console.log('✗ Error fetching articles (server may be down):', error.message);
                 });
         }
         
@@ -4866,7 +4869,7 @@
             pdfUrl = decodeURIComponent(pdfUrl);
             title = decodeURIComponent(title);
             
-            console.log('Opening PDF:', pdfUrl, 'Title:', title);
+            if (DEBUG) console.log('Opening PDF:', pdfUrl, 'Title:', title);
             
             if (typeof displayArticlePDF === 'function') {
                 displayArticlePDF(pdfUrl, title);
@@ -5093,9 +5096,9 @@
             pageNumbers.style.gap = '5px';
             pageNumbers.style.visibility = 'visible';
             
-            console.log('Creating buttons for totalPages:', totalPages);
+            if (DEBUG) console.log('Creating buttons for totalPages:', totalPages);
             for (let i = 1; i <= totalPages; i++) {
-                console.log('Creating page button:', i);
+                if (DEBUG) console.log('Creating page button:', i);
                 try {
                     const pageBtn = document.createElement('button');
                     pageBtn.className = 'page-number' + (i === page ? ' active' : '');
@@ -5330,7 +5333,7 @@
                 // Escape special characters for onclick handler
                 const safePdfPath = (articleData.pdfPath || articleData.pdf_path || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 const safeTitle = (articleData.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                console.log('Creating View button for article:', articleData.id, 'Title:', safeTitle);
+                if (DEBUG) console.log('Creating View button for article:', articleData.id, 'Title:', safeTitle);
                 const hasPdf = articleData.pdfPath || articleData.pdf_path || articleData.pdfId;
                 const pdfUrl = hasPdf ? (articleData.pdfPath || articleData.pdf_path ? safePdfPath : '/api/pdf/' + articleData.pdfId) : '';
                 template.innerHTML = `
@@ -5557,7 +5560,7 @@
                     });
                     
                     // Upload to Couchbase via API
-                    console.log('Uploading PDF to:', window.location.origin + '/api/pdf/upload');
+                    if (DEBUG) console.log('Uploading PDF to:', window.location.origin + '/api/pdf/upload');
                     const uploadResponse = await fetch('/api/pdf/upload', {
                         method: 'POST',
                         headers: {
@@ -5569,11 +5572,11 @@
                         })
                     });
                     
-                    console.log('PDF upload response status:', uploadResponse.status);
-                    console.log('PDF upload response statusText:', uploadResponse.statusText);
+                    if (DEBUG) console.log('PDF upload response status:', uploadResponse.status);
+                    if (DEBUG) console.log('PDF upload response statusText:', uploadResponse.statusText);
                     
                     const responseText = await uploadResponse.text();
-                    console.log('PDF upload response text:', responseText);
+                    if (DEBUG) console.log('PDF upload response text:', responseText);
                     
                     if (!uploadResponse.ok || !responseText) {
                         throw new Error('Failed to upload PDF: ' + uploadResponse.status + ' ' + uploadResponse.statusText + ' - ' + responseText);
@@ -5709,11 +5712,11 @@
             // Listen for user data changes from other admin tabs
             window.addEventListener('storage', function(e) {
                 if (e.key === 'users' && !isReloadingUsers) {
-                    console.log('DEBUG: Users changed in another tab, reloading...');
+                    if (DEBUG) console.log('DEBUG: Users changed in another tab, reloading...');
                     isReloadingUsers = true;
                     loadUsers().then(() => {
                         // DON'T switch to users section - just reload data
-                        console.log('DEBUG: User tables refreshed (section unchanged)');
+                        if (DEBUG) console.log('DEBUG: User tables refreshed (section unchanged)');
                         isReloadingUsers = false;
                     });
                 }
@@ -5737,14 +5740,14 @@
             const darkModeToggle = document.querySelector('.dark-mode-toggle');
             const darkModeIcon = darkModeToggle ? darkModeToggle.querySelector('i') : null;
             const savedDarkMode = localStorage.getItem('darkMode');
-            console.log('Admin page loaded, darkMode from localStorage:', savedDarkMode);
+            if (DEBUG) console.log('Admin page loaded, darkMode from localStorage:', savedDarkMode);
             if (savedDarkMode === 'on') {
                 document.body.classList.add('dark-mode');
-                console.log('Applied dark-mode class to body');
+                if (DEBUG) console.log('Applied dark-mode class to body');
                 if (darkModeIcon) {
                     darkModeIcon.className = 'fas fa-sun';
                     darkModeIcon.style.color = '#FFD700';
-                    console.log('Updated icon to sun');
+                    if (DEBUG) console.log('Updated icon to sun');
                 }
             }
 
@@ -5908,7 +5911,7 @@
             let notifications = [];
             isReloadingUsers = true;
             loadUsers().then(() => {
-                console.log('DEBUG: Initial loadUsers completed');
+                if (DEBUG) console.log('DEBUG: Initial loadUsers completed');
                 isReloadingUsers = false;
                 // Start polling for new users every 5 seconds
                 setInterval(async () => {
@@ -5916,7 +5919,7 @@
                         const response = await fetch('/api/users');
                         if (response.ok) {
                             const serverUsers = await response.json();
-                            console.log('DEBUG: Polled users from server, count:', serverUsers.length);
+                            if (DEBUG) console.log('DEBUG: Polled users from server, count:', serverUsers.length);
                             // Update localStorage with server users
                             localStorage.setItem('users', JSON.stringify(serverUsers));
                             // Reload the user tables to show new signups
@@ -5925,7 +5928,7 @@
                             // Also regenerate notifications
                             notifications = generateNotifications(serverUsers);
                             updateNotificationBadge(notifications);
-                            console.log('DEBUG: Tables reloaded with new users');
+                            if (DEBUG) console.log('DEBUG: Tables reloaded with new users');
                             setTimeout(() => { isReloadingUsers = false; }, 100);
                         }
                     } catch (error) {
@@ -5956,7 +5959,7 @@
                 const notificationList = document.getElementById('notification-list');
                 if (notificationList) {
                     notificationList.innerHTML = ''; // Clear existing
-                    console.log('DEBUG: Populating notification modal with', notifications.length, 'notifications');
+                    if (DEBUG) console.log('DEBUG: Populating notification modal with', notifications.length, 'notifications');
                     const maxNotifications = 10;
                     const limitedNotifications = notifications.slice(0, maxNotifications);
                     const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
@@ -6182,7 +6185,7 @@
         // Initialize - always default to dashboard on fresh page load
         // Clear any saved section to ensure we start fresh
         localStorage.removeItem('adminCurrentSection');
-        console.log('DEBUG: Initializing admin page - defaulting to dashboard');
+        if (DEBUG) console.log('DEBUG: Initializing admin page - defaulting to dashboard');
         showSection('dashboard');
         // Set initial header padding and main-content margin for open sidebar
         if (window.innerWidth >= 768) {
@@ -6300,7 +6303,7 @@ STI Archives Admin`;
                 .then(response => response.json())
                 .then(result => {
                     if (result.message) {
-                        console.log('User removed from server successfully');
+                        if (DEBUG) console.log('User removed from server successfully');
                     } else {
                         console.error('Failed to remove from server:', result.error);
                     }
@@ -6354,7 +6357,7 @@ STI Archives Admin`;
         }
 
         async function loadUsers() {
-            console.log('DEBUG: loadUsers called');
+            if (DEBUG) console.log('DEBUG: loadUsers called');
             
             // Save checkbox states before re-rendering
             const savedCheckboxStates = {};
@@ -6367,24 +6370,24 @@ STI Archives Admin`;
             
             try {
                 users = await getUsers();
-                console.log('DEBUG: getUsers returned:', users);
+                if (DEBUG) console.log('DEBUG: getUsers returned:', users);
             } catch (error) {
                 console.error('DEBUG: Error loading users:', error);
                 users = JSON.parse(localStorage.getItem('users')) || [];
-                console.log('DEBUG: Fallback to localStorage users:', users);
+                if (DEBUG) console.log('DEBUG: Fallback to localStorage users:', users);
             }
             if (!Array.isArray(users)) users = [];
-            console.log('DEBUG: loadUsers got users, count:', users.length);
+            if (DEBUG) console.log('DEBUG: loadUsers got users, count:', users.length);
             const removedUsers = JSON.parse(localStorage.getItem('removedUsers')) || [];
             const filteredUsers = (users || []).filter(user => !removedUsers.includes(user.id));
-            console.log('DEBUG: filteredUsers count:', filteredUsers.length);
+            if (DEBUG) console.log('DEBUG: filteredUsers count:', filteredUsers.length);
             // Set global users
             window.users = filteredUsers; // Or assign to global users
             // Clear all tbodys
             document.querySelectorAll('#users tbody').forEach(tbody => tbody.innerHTML = '');
             let signingUpUsers = [];
             filteredUsers.forEach(user => {
-                console.log('DEBUG: Processing user:', user.id, user.name, user.role, user.email, user.personal_email, user.verified, user.isActive);
+                if (DEBUG) console.log('DEBUG: Processing user:', user.id, user.name, user.role, user.email, user.personal_email, user.verified, user.isActive);
                 const date = formatDate(user.verified_at || user.created_at);
                 let actions = '';
                 const userId = user.user_id || user.id;
@@ -6467,12 +6470,12 @@ STI Archives Admin`;
                 }
                 // status - check admin role first (case-insensitive)
                 const roleLower = (user.role || '').toLowerCase();
-                console.log('DEBUG: User role check:', user.fullname, 'role:', user.role, 'roleLower:', roleLower, 'user_type:', user.user_type, 'verified:', user.verified);
+                if (DEBUG) console.log('DEBUG: User role check:', user.fullname, 'role:', user.role, 'roleLower:', roleLower, 'user_type:', user.user_type, 'verified:', user.verified);
                 const isAdminRole = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || roleLower === 'Admin' || roleLower === 'Co-Admin' || roleLower === 'Sub-Admin';
                 const isAdminByName = user.fullname && user.fullname.toLowerCase().includes('admin');
-                console.log('DEBUG: isAdminRole:', isAdminRole, 'isAdminByName:', isAdminByName);
+                if (DEBUG) console.log('DEBUG: isAdminRole:', isAdminRole, 'isAdminByName:', isAdminByName);
                 if (isAdminRole || isAdminByName) {
-                    console.log('DEBUG: Adding admin user to table:', user.fullname, user.email, 'role:', roleLower);
+                    if (DEBUG) console.log('DEBUG: Adding admin user to table:', user.fullname, user.email, 'role:', roleLower);
                     // Determine role display based on role field or specific user names
                     let roleDisplay;
                     if (user.fullname === 'admin2' || user.fullname === 'Admin2') {
@@ -6513,7 +6516,7 @@ STI Archives Admin`;
                 } else {
                     const userStatus = getUserStatus(user);
                     if (userStatus === 'approved') {
-                        console.log('DEBUG: Adding verified user to table:', user.name, user.email, user.personal_email);
+                        if (DEBUG) console.log('DEBUG: Adding verified user to table:', user.name, user.email, user.personal_email);
                         document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
                     } else if (userStatus === 'banned') {
                         document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
@@ -6524,9 +6527,9 @@ STI Archives Admin`;
             });
 
             // Add signing-up users to the table
-            console.log('DEBUG: Rendering signingUpUsers, count:', signingUpUsers.length);
+            if (DEBUG) console.log('DEBUG: Rendering signingUpUsers, count:', signingUpUsers.length);
             signingUpUsers.forEach(user => {
-                console.log('DEBUG: Rendering signing-up user:', user.name, 'role:', user.role, 'section:', user.section, 'grade:', user.grade, 'personal_email:', user.personal_email);
+                if (DEBUG) console.log('DEBUG: Rendering signing-up user:', user.name, 'role:', user.role, 'section:', user.section, 'grade:', user.grade, 'personal_email:', user.personal_email);
                 const date = formatDate(user.created_at);
                 let actions = `
                     <div style="display: flex; flex-direction: column; gap: 4px;">
@@ -6595,7 +6598,7 @@ STI Archives Admin`;
             const filteredForCount = users.filter(u => !removedUsers.includes(u.user_id || u.id));
             const signingUpCount = filteredForCount.filter(u => getUserStatus(u) === 'pending').length;
 
-            console.log('DEBUG: Table row counts - Users:', usersCount, 'Admin:', adminCount, 'Signing up:', signingUpCount);
+            if (DEBUG) console.log('DEBUG: Table row counts - Users:', usersCount, 'Admin:', adminCount, 'Signing up:', signingUpCount);
             document.getElementById('verified-users-count').textContent = usersCount;
             document.getElementById('admin-users-count').textContent = adminCount;
             document.getElementById('signing-up-users-count').textContent = signingUpCount;
@@ -6621,7 +6624,7 @@ STI Archives Admin`;
         async function loadAdmins() {
             // Admins are now handled by loadUsers function
             // This function is kept for backward compatibility but does nothing
-            console.log('loadAdmins called - admins are loaded by loadUsers');
+            if (DEBUG) console.log('loadAdmins called - admins are loaded by loadUsers');
         }
 
         async function renderUserChart() {
@@ -6683,7 +6686,7 @@ STI Archives Admin`;
 
 
         function renderSigningUpChart(period = 'day', filter = null) {
-            console.log('DEBUG: Rendering signing up chart');
+            if (DEBUG) console.log('DEBUG: Rendering signing up chart');
             const ctx = document.getElementById('signing-up-chart').getContext('2d');
             if (window.signingUpChart) {
                 window.signingUpChart.destroy();
@@ -6918,7 +6921,7 @@ STI Archives Admin`;
         // Handle sidebar link clicks with inline onclick
         function handleSidebarClick(event, section) {
             event.preventDefault();
-            console.log('DEBUG: handleSidebarClick called with:', section);
+            if (DEBUG) console.log('DEBUG: handleSidebarClick called with:', section);
             
             // Remove active class from all sidebar links
             document.querySelectorAll('.sidebar ul li').forEach(li => {
@@ -6932,7 +6935,7 @@ STI Archives Admin`;
         }
 
         function showSection(sectionId) {
-            console.log('DEBUG: showSection called with:', sectionId);
+            if (DEBUG) console.log('DEBUG: showSection called with:', sectionId);
             
             try {
                 // Check if element exists before trying to modify it
@@ -6947,13 +6950,13 @@ STI Archives Admin`;
                 document.querySelectorAll('.content-section').forEach(s => {
                     s.classList.remove('active');
                     s.style.display = 'none'; // Force hide
-                    console.log('DEBUG: Removed active from:', s.id);
+                    if (DEBUG) console.log('DEBUG: Removed active from:', s.id);
                 });
                 
                 // Add active class to target section and show it
                 targetSection.classList.add('active');
                 targetSection.style.display = 'block'; // Force show
-                console.log('DEBUG: Added active to:', sectionId);
+                if (DEBUG) console.log('DEBUG: Added active to:', sectionId);
             } catch (e) {
                 console.error('DEBUG: Error in showSection:', e);
                 alert('Error switching section: ' + e.message);
@@ -7078,16 +7081,16 @@ STI Archives Admin`;
             const modal = document.getElementById('notification-modal');
             if (!modal) return;
             modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
-            console.log('toggleNotificationModal called');
-            console.log('generateNotifications defined:', typeof generateNotifications);
-            console.log('localStorage users:', localStorage.getItem('users') ? 'exists' : 'null');
+            if (DEBUG) console.log('toggleNotificationModal called');
+            if (DEBUG) console.log('generateNotifications defined:', typeof generateNotifications);
+            if (DEBUG) console.log('localStorage users:', localStorage.getItem('users') ? 'exists' : 'null');
             // Refresh notifications when opening modal
             if (modal.style.display === 'block') {
                 const users = JSON.parse(localStorage.getItem('users')) || [];
-                console.log('Users count for notifications:', users.length);
+                if (DEBUG) console.log('Users count for notifications:', users.length);
                 if (typeof generateNotifications === 'function') {
                     const freshNotifications = generateNotifications(users);
-                    console.log('Fresh notifications count:', freshNotifications.length);
+                    if (DEBUG) console.log('Fresh notifications count:', freshNotifications.length);
                     const notificationList = document.getElementById('notification-list');
                     if (!notificationList) return;
                     notificationList.innerHTML = '';
@@ -7676,7 +7679,7 @@ STI Archives Admin`;
 
         function navigateToUploads(type) { 
             try {
-                console.log('navigateToUploads called with type:', type);
+                if (DEBUG) console.log('navigateToUploads called with type:', type);
                 // First show the upload section
                 document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
                 document.getElementById('upload').classList.add('active');
@@ -7689,7 +7692,7 @@ STI Archives Admin`;
                 // Remove active from all nav buttons and add to Admin Uploads
                 document.querySelectorAll('.upload-nav .nav-btn').forEach(btn => btn.classList.remove('active'));
                 document.getElementById('btn-admin-uploads').classList.add('active');
-                console.log('navigateToUploads completed successfully');
+                if (DEBUG) console.log('navigateToUploads completed successfully');
             } catch (e) {
                 console.error('Error in navigateToUploads:', e);
                 alert('Error navigating to uploads: ' + e.message);
@@ -7875,7 +7878,7 @@ STI Archives Admin`;
         function closeRafModal() { document.getElementById('raf-preview-modal').style.display = 'none'; }
 
         function displayArticlePDF(pdfUrl, title) {
-            console.log('displayArticlePDF called with:', pdfUrl, title);
+            if (DEBUG) console.log('displayArticlePDF called with:', pdfUrl, title);
             if (!pdfUrl || pdfUrl === '') {
                 alert('No PDF file available for preview.');
                 return;
@@ -8024,7 +8027,7 @@ STI Archives Admin`;
         }
         
         function togglePasswordVisibility() {
-            console.log('togglePasswordVisibility called');
+            if (DEBUG) console.log('togglePasswordVisibility called');
             const passwordInput = document.getElementById('create-admin-password');
             const toggle = document.getElementById('create-admin-password-toggle');
             const eyeIcon = toggle.querySelector('i');
@@ -8040,10 +8043,10 @@ STI Archives Admin`;
         // Add event listener to Create New Admin button
         document.addEventListener('DOMContentLoaded', function() {
             const createAdminBtn = document.getElementById('create-admin-btn');
-            console.log('Create New Admin button found:', createAdminBtn);
+            if (DEBUG) console.log('Create New Admin button found:', createAdminBtn);
             if (createAdminBtn) {
                 createAdminBtn.addEventListener('click', function() {
-                    console.log('Create New Admin button clicked');
+                    if (DEBUG) console.log('Create New Admin button clicked');
                     const modal = document.getElementById('create-admin-modal');
                     modal.style.display = 'flex';
                     modal.style.justifyContent = 'center';
@@ -8296,7 +8299,7 @@ STI Archives Admin`;
         // Create Admin Modal Functions
         function openCreateAdminModal() {
             document.getElementById('create-admin-modal').style.display = 'block';
-            console.log('Modal opened');
+            if (DEBUG) console.log('Modal opened');
             // Force reset - unselect ALL radio buttons by setting checked to false
             const roleRadios = document.getElementsByName('admin-role');
             for (let i = 0; i < roleRadios.length; i++) {
@@ -8328,7 +8331,7 @@ STI Archives Admin`;
             const createAdminBtn = document.getElementById('create-admin-btn');
             if (createAdminBtn) {
                 createAdminBtn.addEventListener('click', function() {
-                    console.log('Create Admin button clicked');
+                    if (DEBUG) console.log('Create Admin button clicked');
                     openCreateAdminModal();
                 });
             } else {
@@ -8477,7 +8480,7 @@ STI Archives Admin`;
         async function handleCreateAdminSubmit(e) {
             e.preventDefault();
             
-            console.log('[DEBUG ADMIN CREATE] Form submission started');
+            if (DEBUG) console.log('[DEBUG ADMIN CREATE] Form submission started');
             
             const fullname = document.getElementById('create-admin-fullname').value;
             const email = document.getElementById('create-admin-email').value;
@@ -8498,7 +8501,7 @@ STI Archives Admin`;
                 }
             }
             
-            console.log('[DEBUG ADMIN CREATE] Submitting:', { fullname, email, role: selectedRole });
+            if (DEBUG) console.log('[DEBUG ADMIN CREATE] Submitting:', { fullname, email, role: selectedRole });
             
             try {
                 const response = await fetch('/api/auth/register', {
@@ -8513,7 +8516,7 @@ STI Archives Admin`;
                     })
                 });
                 
-                console.log('[DEBUG ADMIN CREATE] Response status:', response.status);
+                if (DEBUG) console.log('[DEBUG ADMIN CREATE] Response status:', response.status);
                 
                 // Check if response is OK and has content
                 if (!response.ok) {
@@ -8536,7 +8539,7 @@ STI Archives Admin`;
                 const text = await response.text();
                 if (!text || text.trim() === '') {
                     // Empty but OK response - treat as success
-                    console.log('[DEBUG ADMIN CREATE] Empty success response, treating as success');
+                    if (DEBUG) console.log('[DEBUG ADMIN CREATE] Empty success response, treating as success');
                     alert('Admin created successfully!');
                     closeCreateAdminModal();
                     document.getElementById('create-admin-form').reset();
@@ -8550,7 +8553,7 @@ STI Archives Admin`;
                 try {
                     result = JSON.parse(text);
                 } catch (parseError) {
-                    console.log('[DEBUG ADMIN CREATE] Non-JSON response, treating as success:', text);
+                    if (DEBUG) console.log('[DEBUG ADMIN CREATE] Non-JSON response, treating as success:', text);
                     alert('Admin created successfully!');
                     closeCreateAdminModal();
                     document.getElementById('create-admin-form').reset();
@@ -8558,7 +8561,7 @@ STI Archives Admin`;
                     loadUsers();
                     return false;
                 }
-                console.log('[DEBUG ADMIN CREATE] Response:', result);
+                if (DEBUG) console.log('[DEBUG ADMIN CREATE] Response:', result);
                 
                 alert('Admin created successfully!');
                 closeCreateAdminModal();
@@ -8768,20 +8771,20 @@ STI Archives Admin`;
             async function loadSiteSettings() {
                 if (isLoadingSiteSettings) return;
                 isLoadingSiteSettings = true;
-                console.log('DEBUG: Attempting to load site settings from server...');
+                if (DEBUG) console.log('DEBUG: Attempting to load site settings from server...');
                 try {
                     const response = await fetch('/api/site-settings');
-                    console.log('DEBUG: Site settings fetch response status:', response.status);
+                    if (DEBUG) console.log('DEBUG: Site settings fetch response status:', response.status);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const responseData = await response.json();
-                    console.log('DEBUG: Loaded response:', responseData);
+                    if (DEBUG) console.log('DEBUG: Loaded response:', responseData);
                     const settings = responseData.settings || responseData;
-                    console.log('DEBUG: Extracted settings:', settings);
+                    if (DEBUG) console.log('DEBUG: Extracted settings:', settings);
                     // Check if favicon is a blob URL and reset to default if so
                     if (settings.siteFavicon && settings.siteFavicon.startsWith('blob:')) {
-                        console.log('DEBUG: Invalid blob URL detected, resetting to default favicon');
+                        if (DEBUG) console.log('DEBUG: Invalid blob URL detected, resetting to default favicon');
                         settings.siteFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
                     }
                     siteTitleInput.value = settings.siteTitle || 'STI Archives';
@@ -9318,11 +9321,11 @@ STI Archives Admin`;
                     body: JSON.stringify({ imageData, filename: file.name })
                 })
                 .then(response => {
-                    console.log('Upload response status:', response.status);
+                    if (DEBUG) console.log('Upload response status:', response.status);
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Upload response data:', data);
+                    if (DEBUG) console.log('Upload response data:', data);
                     if (data.success) {
                         document.getElementById('carousel-image-url').value = data.imageUrl;
                         preview.innerHTML = '<img src="' + data.imageUrl + '" style="max-width: 200px; max-height: 150px; border-radius: 4px; border: 2px solid #0057b8;">';
@@ -9348,7 +9351,7 @@ STI Archives Admin`;
         // Initialize WebSocket client using native browser WebSocket API
         function initWebSocketClient() {
             if (!isRealTimeEnabled) {
-                console.log('⚠️ Real-time synchronization is disabled');
+                if (DEBUG) console.log('⚠️ Real-time synchronization is disabled');
                 return;
             }
 
@@ -9358,19 +9361,19 @@ STI Archives Admin`;
                 ws = new WebSocket(wsUrl);
                 
                 ws.onopen = function() {
-                    console.log('✅ WebSocket connected');
+                    if (DEBUG) console.log('✅ WebSocket connected');
                     handleWebSocketConnected();
                 };
                 
                 ws.onclose = function() {
-                    console.log('⚠️ WebSocket disconnected');
+                    if (DEBUG) console.log('⚠️ WebSocket disconnected');
                     handleWebSocketDisconnected();
                     // Try to reconnect after 3 seconds
                     setTimeout(initWebSocketClient, 3000);
                 };
                 
                 ws.onerror = function(error) {
-                    console.log('⚠️ WebSocket error:', error);
+                    if (DEBUG) console.log('⚠️ WebSocket error:', error);
                 };
                 
                 ws.onmessage = function(event) {
@@ -9391,27 +9394,27 @@ STI Archives Admin`;
                                 break;
                         }
                     } catch(e) {
-                        console.log('WebSocket message parse error:', e);
+                        if (DEBUG) console.log('WebSocket message parse error:', e);
                     }
                 };
             } catch (error) {
-                console.log('⚠️ Failed to initialize WebSocket:', error.message);
+                if (DEBUG) console.log('⚠️ Failed to initialize WebSocket:', error.message);
             }
         }
 
         // WebSocket event handlers
         function handleWebSocketConnected(data) {
-            console.log('✓ WebSocket connected:', data);
+            if (DEBUG) console.log('✓ WebSocket connected:', data);
             showConnectionStatus(true);
         }
 
         function handleWebSocketDisconnected(data) {
-            console.log('✗ WebSocket disconnected:', data);
+            if (DEBUG) console.log('✗ WebSocket disconnected:', data);
             showConnectionStatus(false);
         }
 
         function handleUserStateUpdate(data) {
-            console.log('📊 User state update received:', data);
+            if (DEBUG) console.log('📊 User state update received:', data);
             // Reload users from localStorage
             loadUsers();
             // Update dashboard counts
@@ -9423,7 +9426,7 @@ STI Archives Admin`;
         }
 
         function handleUserStatusChange(data) {
-            console.log('🔄 User status change received:', data);
+            if (DEBUG) console.log('🔄 User status change received:', data);
             const { userId, action, user } = data;
             
             // Find and update the row in the current table
@@ -9440,7 +9443,7 @@ STI Archives Admin`;
         }
 
         function handleUserDeleted(data) {
-            console.log('🗑️ User deletion received:', data);
+            if (DEBUG) console.log('🗑️ User deletion received:', data);
             const { userId } = data;
             
             // Remove the row from the current table
@@ -9457,7 +9460,7 @@ STI Archives Admin`;
         }
 
         function handleUserAdded(data) {
-            console.log('➕ User addition received:', data);
+            if (DEBUG) console.log('➕ User addition received:', data);
             const { user } = data;
             
             // Reload users to ensure consistency
@@ -9471,7 +9474,7 @@ STI Archives Admin`;
         }
 
         function handleUserModified(data) {
-            console.log('✏️ User modification received:', data);
+            if (DEBUG) console.log('✏️ User modification received:', data);
             const { userId, updates } = data;
             
             // Find and update the row in the current table
@@ -9485,7 +9488,7 @@ STI Archives Admin`;
         }
 
         function handleBulkAction(data) {
-            console.log('📦 Bulk action received:', data);
+            if (DEBUG) console.log('📦 Bulk action received:', data);
             const { action, userIds } = data;
             
             // Reload users to ensure consistency
@@ -9499,7 +9502,7 @@ STI Archives Admin`;
         }
 
         function handleNotification(data) {
-            console.log('🔔 Notification received:', data);
+            if (DEBUG) console.log('🔔 Notification received:', data);
             const { notification } = data;
             
             // Add to notifications list
@@ -9850,7 +9853,7 @@ STI Archives Admin`;
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    console.log('Article updated in server');
+                    if (DEBUG) console.log('Article updated in server');
                 } else {
                     console.error('Failed to update article in server:', data.error);
                 }
@@ -9885,7 +9888,7 @@ STI Archives Admin`;
         if (typeof loadStrandUsers === 'function') window.loadStrandUsers = loadStrandUsers;
         if (typeof loadDegreeUsers === 'function') window.loadDegreeUsers = loadDegreeUsers;
         if (typeof loadDepartmentUsers === 'function') window.loadDepartmentUsers = loadDepartmentUsers;
-        console.log('Global functions bound to window');
+        if (DEBUG) console.log('Global functions bound to window');
         
         // Handle upload card click
         var uploadCard = document.getElementById('upload-card');

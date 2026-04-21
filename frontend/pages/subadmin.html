@@ -14,6 +14,9 @@
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // Debug flag for console logs
+        const DEBUG = false;
+
         // Initialize Supabase client
         const SUPABASE_URL = 'https://eopbqatvianrjkdbypvk.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJxYXR2aWFucmprZGJ5cHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzA4OTIsImV4cCI6MjA4OTEwNjg5Mn0.k9_xTbjwRdwAQJ9UgGGsosjLWywzxHuYOq-JbGeII8g';
@@ -3374,16 +3377,16 @@
             if (forceRefresh) {
                 localStorage.removeItem('users');
                 isLoadingUsers = false;
-                console.log('DEBUG: Force refresh requested for users');
+                if (DEBUG) console.log('DEBUG: Force refresh requested for users');
             }
             if (isLoadingUsers) return JSON.parse(localStorage.getItem('users') || '[]');
             isLoadingUsers = true;
-            console.log('DEBUG: Attempting to fetch users from user.json...');
+            if (DEBUG) console.log('DEBUG: Attempting to fetch users from user.json...');
             try {
-                const response = await fetch('/api/users');
-                console.log('DEBUG: Fetch response status:', response.status);
+                const response = await fetch('/api/users?limit=10&offset=0');
+                if (DEBUG) console.log('DEBUG: Fetch response status:', response.status);
                 if (response.ok) {
-                    console.log('DEBUG: Server responded successfully, parsing JSON...');
+                    if (DEBUG) console.log('DEBUG: Server responded successfully, parsing JSON...');
                     const data = await response.json();
                     // Map user.json fields to the format expected by loadUsers()
                     const users = (data.users || []).map(user => ({
@@ -3407,13 +3410,13 @@
                     isLoadingUsers = false;
                     return users;
                 } else {
-                    console.log('DEBUG: Server returned error:', response.status, 'falling back to localStorage');
+                    if (DEBUG) console.log('DEBUG: Server returned error:', response.status, 'falling back to localStorage');
                 }
             } catch (e) {
-                console.log('DEBUG: Could not load from server, error:', e.message, 'using localStorage');
+                if (DEBUG) console.log('DEBUG: Could not load from server, error:', e.message, 'using localStorage');
             }
             const localUsers = JSON.parse(localStorage.getItem('users') || '[]');
-            console.log('DEBUG: Loaded users from localStorage, count:', localUsers.length);
+            if (DEBUG) console.log('DEBUG: Loaded users from localStorage, count:', localUsers.length);
             isLoadingUsers = false;
             return localUsers;
         }
@@ -3430,7 +3433,7 @@
                     return data.users || [];
                 }
             } catch (e) {
-                console.log('DEBUG: Could not load users from user.json:', e.message);
+                if (DEBUG) console.log('DEBUG: Could not load users from user.json:', e.message);
             }
             return [];
         }
@@ -3444,7 +3447,7 @@
 
         async function loadUsers() {
             try {
-                const response = await fetch('/api/users');
+                const response = await fetch('/api/users?limit=10&offset=0');
                 const data = await response.json();
                 if (Array.isArray(data)) {
                     users = data;
@@ -3679,10 +3682,10 @@
             // Listen for user data changes from other admin tabs
             window.addEventListener('storage', function(e) {
                 if (e.key === 'users') {
-                    console.log('DEBUG: Users changed in another tab, reloading...');
+                    if (DEBUG) console.log('DEBUG: Users changed in another tab, reloading...');
                     loadUsers().then(() => {
                         // Just refresh the user data silently - don't switch sections
-                        console.log('DEBUG: User data refreshed after sync');
+                        if (DEBUG) console.log('DEBUG: User data refreshed after sync');
                     });
                 }
             });
@@ -3852,7 +3855,7 @@
                 const notificationList = document.getElementById('notification-list');
                 if (notificationList) {
                     notificationList.innerHTML = ''; // Clear existing
-                    console.log('DEBUG: Populating notification modal with', notifications.length, 'notifications');
+                    if (DEBUG) console.log('DEBUG: Populating notification modal with', notifications.length, 'notifications');
                     const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
                     notifications.forEach(notif => {
                         const notifDiv = document.createElement('div');
@@ -3995,7 +3998,7 @@
                     notificationList.appendChild(placeholder);
                 }
                 const placeholder = document.querySelector('.notification-placeholder');
-                console.log('DEBUG: Notification placeholder element:', placeholder);
+                if (DEBUG) console.log('DEBUG: Notification placeholder element:', placeholder);
                 if (placeholder) {
                     placeholder.style.display = notifications.length > 0 ? 'none' : 'block';
                 } else {
@@ -4008,7 +4011,7 @@
                     placeholderDiv.style.display = 'block';
                 }
                 const badge = document.querySelector('.notification-badge');
-                console.log('DEBUG: Notification badge element:', badge);
+                if (DEBUG) console.log('DEBUG: Notification badge element:', badge);
                 if (badge) {
                     badge.textContent = notifications.length;
                     badge.style.display = notifications.length > 0 ? 'flex' : 'none';
@@ -4104,12 +4107,12 @@
             document.getElementById('sidebar-overlay').addEventListener('click', closeSidebarOnOverlayClick);
 
             // Add event listeners to sidebar links for section switching
-            console.log('DEBUG: Adding event listeners to sidebar links');
+            if (DEBUG) console.log('DEBUG: Adding event listeners to sidebar links');
             document.querySelectorAll('.sidebar ul li a').forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     const section = this.getAttribute('data-section');
-                    console.log('DEBUG: Sidebar link clicked, switching to section:', section);
+                    if (DEBUG) console.log('DEBUG: Sidebar link clicked, switching to section:', section);
                     showSection(section);
                 });
             });
@@ -4300,7 +4303,7 @@ STI Archives Admin`;
                 alert('Error: User ID is missing. Please refresh the page and try again.');
                 return;
             }
-            console.log('Updating user status for userId:', userId, 'action:', action);
+            if (DEBUG) console.log('Updating user status for userId:', userId, 'action:', action);
             
             // Get user email first
             let users = JSON.parse(localStorage.getItem('users') || '[]');
@@ -4330,7 +4333,7 @@ STI Archives Admin`;
                     })
                     .then(response => response.json())
                     .then(data => {
-                        console.log('Rejection email sent:', data);
+                        if (DEBUG) console.log('Rejection email sent:', data);
                     })
                     .catch(error => {
                         console.error('Error sending rejection email:', error);
@@ -4363,7 +4366,7 @@ STI Archives Admin`;
                     })
                     .then(response => response.json())
                     .then(data => {
-                        console.log('Backend API response:', data);
+                        if (DEBUG) console.log('Backend API response:', data);
                     })
                     .catch(error => {
                         console.error('Error calling backend API:', error);
@@ -4373,9 +4376,9 @@ STI Archives Admin`;
             
             // Always reload users
             loadUsers().then(() => {
-                console.log('Users reloaded');
+                if (DEBUG) console.log('Users reloaded');
             }).catch(() => {
-                console.log('Load users failed, reloading page');
+                if (DEBUG) console.log('Load users failed, reloading page');
                 // Fallback if async fails
                 location.reload();
             });
@@ -4402,7 +4405,7 @@ STI Archives Admin`;
                 .then(response => response.json())
                 .then(result => {
                     if (result.message) {
-                        console.log('User removed from server successfully');
+                        if (DEBUG) console.log('User removed from server successfully');
                     } else {
                         console.error('Failed to remove from server:', result.error);
                     }
@@ -4950,7 +4953,7 @@ STI Archives Admin`;
         }
         
         function renderSigningUpChart(period = 'day', filter = null) {
-            console.log('DEBUG: Rendering signing up chart');
+            if (DEBUG) console.log('DEBUG: Rendering signing up chart');
             const ctx = document.getElementById('signing-up-chart').getContext('2d');
             if (window.signingUpChart) {
                 window.signingUpChart.destroy();
@@ -5519,7 +5522,7 @@ STI Archives Admin`;
             localStorage.setItem('users', JSON.stringify(users));
         }
         async function refreshUsers() {
-            console.log('DEBUG: Auto refreshing users data from server...');
+            if (DEBUG) console.log('DEBUG: Auto refreshing users data from server...');
             try {
                 const users = await getUsers(true);
                 saveUsers(users);
@@ -5834,12 +5837,12 @@ STI Archives Admin`;
 
 
         function renderGaugeChart(canvasId, label, averageDuration, gaugeColor) {
-            console.log('renderGaugeChart called with', canvasId, label, averageDuration, gaugeColor);
-            console.log('Chart.js loaded:', typeof Chart);
+            if (DEBUG) console.log('renderGaugeChart called with', canvasId, label, averageDuration, gaugeColor);
+            if (DEBUG) console.log('Chart.js loaded:', typeof Chart);
             const canvas = document.getElementById(canvasId);
-            console.log('Canvas found:', canvas);
+            if (DEBUG) console.log('Canvas found:', canvas);
             if (!canvas) {
-                console.log('Canvas not found, returning');
+                if (DEBUG) console.log('Canvas not found, returning');
                 return;
             }
 
@@ -5856,12 +5859,12 @@ STI Archives Admin`;
 
             const maxDuration = 5; // Max hours for gauge
             const percentage = (averageDuration / maxDuration) * 100;
-            console.log('Calculated percentage:', percentage);
+            if (DEBUG) console.log('Calculated percentage:', percentage);
 
             const isDarkMode = document.body.classList.contains('dark-mode');
             const textColor = isDarkMode ? '#ffffff' : '#000000';
             const emptyColor = isDarkMode ? '#444' : '#e0e0e0';
-            console.log('Colors:', gaugeColor, emptyColor);
+            if (DEBUG) console.log('Colors:', gaugeColor, emptyColor);
 
             try {
                 window[canvasId + 'Chart'] = new Chart(ctx, {
@@ -5907,7 +5910,7 @@ STI Archives Admin`;
                         }
                     }]
                 });
-                console.log('Gauge chart created successfully for', canvasId);
+                if (DEBUG) console.log('Gauge chart created successfully for', canvasId);
             } catch (error) {
                 console.error('Error creating gauge chart:', error);
             }
@@ -5934,18 +5937,18 @@ STI Archives Admin`;
             async function loadSiteSettings() {
                 if (isLoadingSiteSettings) return;
                 isLoadingSiteSettings = true;
-                console.log('DEBUG: Attempting to load site settings from server...');
+                if (DEBUG) console.log('DEBUG: Attempting to load site settings from server...');
                 try {
                     const response = await fetch('/api/site-settings');
-                    console.log('DEBUG: Site settings fetch response status:', response.status);
+                    if (DEBUG) console.log('DEBUG: Site settings fetch response status:', response.status);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const settings = await response.json();
-                    console.log('DEBUG: Loaded settings:', settings);
+                    if (DEBUG) console.log('DEBUG: Loaded settings:', settings);
                     // Check if favicon is a blob URL and reset to default if so
                     if (settings.siteFavicon && settings.siteFavicon.startsWith('blob:')) {
-                        console.log('DEBUG: Invalid blob URL detected, resetting to default favicon');
+                        if (DEBUG) console.log('DEBUG: Invalid blob URL detected, resetting to default favicon');
                         settings.siteFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
                     }
                     siteTitleInput.value = settings.siteTitle;
@@ -6209,7 +6212,7 @@ STI Archives Admin`;
         if (typeof removeUser === 'function') window.removeUser = removeUser;
         if (typeof rejectUser === 'function') window.rejectUser = rejectUser;
         if (typeof previewRaf === 'function') window.previewRaf = previewRaf;
-        console.log('Global functions bound to window');
+        if (DEBUG) console.log('Global functions bound to window');
 
 
     </script>

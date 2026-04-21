@@ -2426,7 +2426,7 @@ window.supabaseHelpers = {
         });
         async function getUsers() {
             try {
-                const response = await fetch('/api/users');
+                const response = await fetch('/api/users?limit=10&offset=0');
                 if (response.ok) {
                     return await response.json();
                 }

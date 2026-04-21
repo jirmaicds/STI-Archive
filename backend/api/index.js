@@ -320,23 +320,26 @@ async function handleUsers(req, res) {
     const status = url.searchParams.get('status');
     const role = url.searchParams.get('role');
     const search = url.searchParams.get('search');
+    const limit = url.searchParams.get('limit') || 50;
+    const offset = url.searchParams.get('offset') || 0;
 
     if (isSupabaseConfigured()) {
       const supabase = getSupabase();
       const baseSelect = 'id, email, fullname, role, verified, created_at';
-      let query = supabase.from('users').select(`${baseSelect}`);
+      let query = supabase.from('users').select(`${baseSelect}`, { count: 'exact' });
       if (status === 'pending') query = query.eq('verified', false).eq('role', 'pending');
       else if (status === 'approved') query = query.eq('verified', true).neq('role', 'pending');
       if (role) query = query.eq('role', role);
       if (search) query = query.or(`fullname.ilike.%${search}%,email.ilike.%${search}%`);
       query = query.order('created_at', { ascending: false });
-      const { data, error } = await query;
+      query = query.range(parseInt(offset), parseInt(offset) + parseInt(limit) - 1);
+      const { data, error, count } = await query;
       if (error) throw error;
       res.statusCode = 200;
-      res.end(JSON.stringify({ success: true, users: data || [] }));
+      res.end(JSON.stringify({ success: true, users: data || [], total: count || 0, limit: parseInt(limit), offset: parseInt(offset) }));
     } else {
       res.statusCode = 200;
-      res.end(JSON.stringify({ success: true, users: [] }));
+      res.end(JSON.stringify({ success: true, users: [], total: 0, limit: parseInt(limit), offset: parseInt(offset) }));
     }
   } catch (error) {
     res.statusCode = 500;
@@ -888,18 +891,20 @@ async function handleActivity(req, res) {
     const url = new URL(req.url, `http://${req.headers.host}`);
     const userId = url.searchParams.get('user_id');
     const limit = url.searchParams.get('limit') || 50;
+    const offset = url.searchParams.get('offset') || 0;
 
     if (isSupabaseConfigured()) {
       const supabase = getSupabase();
-      let query = supabase.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(parseInt(limit));
+      let query = supabase.from('activity_logs').select('*', { count: 'exact' }).order('created_at', { ascending: false }).limit(parseInt(limit));
       if (userId) query = query.eq('user_id', userId);
-      const { data, error } = await query;
+      query = query.range(parseInt(offset), parseInt(offset) + parseInt(limit) - 1);
+      const { data, error, count } = await query;
       if (error) throw error;
       res.statusCode = 200;
-      res.end(JSON.stringify({ success: true, logs: data || [] }));
+      res.end(JSON.stringify({ success: true, logs: data || [], total: count || 0, limit: parseInt(limit), offset: parseInt(offset) }));
     } else {
       res.statusCode = 200;
-      res.end(JSON.stringify({ success: true, logs: [] }));
+      res.end(JSON.stringify({ success: true, logs: [], total: 0, limit: parseInt(limit), offset: parseInt(offset) }));
     }
   } catch (error) {
     res.statusCode = 500;
@@ -981,16 +986,17 @@ async function handleAdminUserUploads(req, res) {
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
     const limit = url.searchParams.get('limit') || 50;
+    const offset = url.searchParams.get('offset') || 0;
 
     if (isSupabaseConfigured()) {
       const supabase = getSupabase();
-      const { data, error } = await supabase.from('user_uploads').select('*').order('created_at', { ascending: false }).limit(parseInt(limit));
+      const { data, error, count } = await supabase.from('user_uploads').select('*', { count: 'exact' }).order('created_at', { ascending: false }).range(parseInt(offset), parseInt(offset) + parseInt(limit) - 1);
       if (error) throw error;
       res.statusCode = 200;
-      res.end(JSON.stringify({ success: true, uploads: data || [] }));
+      res.end(JSON.stringify({ success: true, uploads: data || [], total: count || 0, limit: parseInt(limit), offset: parseInt(offset) }));
     } else {
       res.statusCode = 200;
-      res.end(JSON.stringify({ success: true, uploads: [] }));
+      res.end(JSON.stringify({ success: true, uploads: [], total: 0, limit: parseInt(limit), offset: parseInt(offset) }));
     }
   } catch (error) {
     res.statusCode = 500;

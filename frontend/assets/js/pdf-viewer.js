@@ -293,34 +293,6 @@ function displayArticlePDF(pdfPath, title) {
     const isDarkMode = document.body.classList.contains('dark-mode') || 
                        document.documentElement.classList.contains('dark-mode');
     
-    // Calculate sidebar and header offsets
-    function getModalPosition() {
-        const sidebar = document.getElementById('sidebar');
-        const header = document.querySelector('.header');
-
-        let leftOffset = 0;
-        let topOffset = 0;
-
-        // Check if sidebar exists and is collapsed
-        if (sidebar) {
-            if (sidebar.classList.contains('collapsed')) {
-                leftOffset = 0;
-            } else {
-                leftOffset = 200; // Sidebar width
-            }
-        }
-
-        // Check if header exists
-        if (header) {
-            topOffset = 80; // Header height approx
-        }
-
-        return { left: leftOffset, top: topOffset };
-    }
-    
-    // Get current position
-    const pos = getModalPosition();
-    
     // Create modal if not exists
     let modal = document.getElementById('pdf-viewer-modal');
     if (!modal) {
@@ -329,20 +301,20 @@ function displayArticlePDF(pdfPath, title) {
         modal.style.cssText = `
             display: none;
             position: absolute;
-            top: ${pos.top}px;
-            left: ${pos.left}px;
-            width: calc(100% - ${pos.left}px);
-            height: calc(100% - ${pos.top}px);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: ${isDarkMode ? 'rgba(0, 0, 0, 0.95)' : 'rgba(0, 0, 0, 0.9)'};
             z-index: 100;
-            overflow: auto;
+            overflow: hidden;
         `;
-        
+
         const containerBg = isDarkMode ? '#1a1a1a' : '#f5f5f5';
         const headerBg = isDarkMode ? '#ffd700' : '#0057b8';
         const headerText = isDarkMode ? '#1a1a1a' : '#ffffff';
         const innerBg = isDarkMode ? '#2d2d2d' : '#ffffff';
-        
+
         modal.innerHTML = `
             <div style="
                 position: absolute;
@@ -384,20 +356,16 @@ function displayArticlePDF(pdfPath, title) {
                 "></div>
             </div>
         `;
-        
-        // Append to body and position over file-viewer
-        document.body.appendChild(modal);
-        console.log('PDF modal appended to body');
 
-        // Position modal over file-viewer
+        // Append to file-viewer
         const fileViewer = document.querySelector('.file-viewer');
         if (fileViewer) {
-            const rect = fileViewer.getBoundingClientRect();
-            modal.style.position = 'fixed';
-            modal.style.top = rect.top + 'px';
-            modal.style.left = rect.left + 'px';
-            modal.style.width = rect.width + 'px';
-            modal.style.height = rect.height + 'px';
+            fileViewer.appendChild(modal);
+            console.log('PDF modal appended to .file-viewer');
+        } else {
+            // Fallback to body if file-viewer not found
+            document.body.appendChild(modal);
+            console.log('PDF modal appended to body (file-viewer not found)');
         }
         
         // Close on background click

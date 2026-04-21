@@ -3791,7 +3791,7 @@
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="signing-up-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Signed Up</th><th>Status</th><th>Raf/Edu_ID</th></tr></thead>
+                                                    <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Signed Up</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="signing-up-users-tbody"></tbody>
                         </table>
                     </div>
@@ -3838,12 +3838,10 @@
                     </div>
                     <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
                             <input type="checkbox" id="select-all-banned-main" onclick="toggleSelectAll('banned')">
-                            <button class="btn btn-success" onclick="bulkAction('banned', 'accept')">Accept</button>
-                            <button class="btn btn-danger" onclick="bulkAction('banned', 'remove')">Remove</button>
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="banned-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Banned</th><th>Status</th><th>Raf/Edu_ID</th></tr></thead>
+                                                    <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Banned</th><th>Raf/Edu_ID</th></tr></thead>
                             <tbody id="banned-users-tbody"></tbody>
                         </table>
                     </div>
@@ -4076,7 +4074,7 @@
                     id: id,
                     type: 'new-user',
                     typeText: 'New User Access Request',
-                    content: `${user.name} signed up!`,
+                    content: `${getUserName(user)} signed up!`,
                     time: user.created_at ? new Date(user.created_at).toLocaleString() : 'Just now',
                     timestamp: user.created_at ? new Date(user.created_at).getTime() : Date.now(),
                     priority: 1 // Signing up first
@@ -4089,8 +4087,8 @@
                 notifications.push({
                     id: id,
                     type: 'new-user',
-                    typeText: 'New User Access Request',
-                    content: `${user.name} signed up!`,
+                    typeText: 'New User Verified',
+                    content: `${getUserName(user)} was verified!`,
                     time: user.verified_at ? new Date(user.verified_at).toLocaleString() : 'Recently',
                     timestamp: user.verified_at ? new Date(user.verified_at).getTime() : Date.now() - 1000,
                     priority: 2 // Verified second
@@ -4176,6 +4174,7 @@
                     `;
                 }
                 let emailToUse = user.personal_email || user.email;
+                const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewRaf('${user.raf_path}')">Preview</button>` : '';
                 const rowWithEmail = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
                     <td>${userId}</td>
@@ -4185,7 +4184,8 @@
                     <td>${user.grade || '-'}</td>
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
-                    <td>${user.raf_path || ''} ${user.educator_id || ''}</td>
+                    <td>${rafEduIdCell}</td>
+                    <td>${actions}</td>
                 </tr>`;
 
                 // Check admin role first (case-insensitive)
@@ -4847,6 +4847,7 @@
         function formatRole(role) {
             if (role === 'senior_high') return 'SHS';
             if (role === 'college') return 'College';
+            if (role === 'educator') return 'Educator';
             if (role === 'admin') return 'Admin';
             if (role === 'coadmin') return 'CO-Admin';
             if (role === 'subadmin') return 'SUB-Admin';
@@ -7103,13 +7104,17 @@
             // Hide all user subsections first
             document.querySelectorAll('.user-subsection').forEach(sub => sub.style.display = 'none');
 
-            // For coadmin, hide admins section if not selected
-            if (currentUser && currentUser.role === 'coadmin' && section !== 'admins') {
-                const adminsSection = document.getElementById('admins-section');
-                if (adminsSection) adminsSection.style.display = 'none';
-            } else {
-                const adminsSection = document.getElementById('admins-section');
-                if (adminsSection) adminsSection.style.display = 'block';
+            // Handle admins section visibility based on user role and selected section
+            const adminsSection = document.getElementById('admins-section');
+            if (adminsSection) {
+                const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
+                if (currentUserRole === 'coadmin' && section !== 'admins') {
+                    adminsSection.style.display = 'none';
+                } else if (section === 'admins') {
+                    adminsSection.style.display = 'block';
+                } else {
+                    adminsSection.style.display = 'none'; // Hide for non-admin sections
+                }
             }
 
             // Ensure the selected section is visible

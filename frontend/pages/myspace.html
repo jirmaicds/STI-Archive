@@ -3837,9 +3837,9 @@ color: #ffd700;
                
                setupPdfViewerUI();
                
-               // First load the PDF viewer script
-               const script = document.createElement('script');
-               script.src = '/frontend/assets/js/pdf-viewer.js?v=' + Date.now();
+                // First load the PDF viewer script
+                const script = document.createElement('script');
+                script.src = '/frontend/assets/js/pdf-viewer-myspace.js?v=' + Date.now();
                script.onload = function() {
                    console.log('PDF viewer script loaded');
                    if (typeof displayArticlePDF === 'function') {

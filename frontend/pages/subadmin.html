@@ -3602,16 +3602,23 @@
             return 'pending';
         }
 
-        function updateDashboardCounts() {
+        function updateDashboardCounts(users = null) {
+            if (users === null) {
+                try {
+                    users = JSON.parse(localStorage.getItem('users') || '[]');
+                } catch (e) {
+                    users = [];
+                }
+            }
             if (!Array.isArray(users)) users = [];
 
-            const verifiedCount = users.filter(u => getUserStatus(u) === 'approved' && u.role !== 'subadmin' && u.role !== 'admin').length;
+            const verifiedCount = users.filter(u => getUserStatus(u) === 'approved').length;
             const adminCount = users.filter(u => u.role === 'subadmin' || u.role === 'admin').length;
             const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
-            const totalEl = document.getElementById('standard-users-count');
-            const adminsEl = document.getElementById('admins-count');
+            const verifiedEl = document.getElementById('verified-users-count');
+            const adminsEl = document.getElementById('admin-users-count');
             const signupEl = document.getElementById('signing-up-users-count');
-            if (totalEl) totalEl.textContent = verifiedCount;
+            if (verifiedEl) verifiedEl.textContent = verifiedCount;
             if (adminsEl) adminsEl.textContent = adminCount;
             if (signupEl) signupEl.textContent = signingUpCount;
         }
@@ -4526,19 +4533,8 @@ STI Archives Admin`;
             }
 
 
-            // Update dashboard counts
-            if (!Array.isArray(users)) {
-                users = [];
-            }
-            let totalUsers = users.filter(u => u.verified && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-            let admins = users.filter(u => u.role === 'subadmin').length;
-            let signingUp = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
-            const totalCountEl = document.getElementById('standard-users-count');
-            const adminsCountEl = document.getElementById('admins-count');
-            const signupCountEl = document.getElementById('signing-up-users-count');
-            if (totalCountEl) totalCountEl.textContent = totalUsers;
-            if (adminsCountEl) adminsCountEl.textContent = admins;
-            if (signupCountEl) signupCountEl.textContent = signingUp;
+            // Update dashboard counts using the new logic
+            updateDashboardCounts(users);
 
 
 

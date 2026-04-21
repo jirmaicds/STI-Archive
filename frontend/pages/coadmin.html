@@ -5556,7 +5556,14 @@
        
 
         // Update dashboard counts
-        function updateDashboardCounts() {
+        function updateDashboardCounts(users = null) {
+            if (users === null) {
+                try {
+                    users = JSON.parse(localStorage.getItem('users') || '[]');
+                } catch (e) {
+                    users = [];
+                }
+            }
             if (!Array.isArray(users)) users = [];
             // Helper function for coadmin status detection
             function getUserStatus(user) {
@@ -5571,15 +5578,13 @@
                 return 'pending';
             }
 
-            const usersCount = users.filter(u => getUserStatus(u) === 'approved' && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+            const usersCount = users.filter(u => getUserStatus(u) === 'approved').length;
             const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
 
-            const totalEl = document.getElementById('total-users-count');
             const verifiedEl = document.getElementById('verified-users-count');
-            const adminsEl = document.getElementById('admins-count');
+            const adminsEl = document.getElementById('admin-users-count');
             const signupEl = document.getElementById('signing-up-users-count');
-            if (totalEl) totalEl.textContent = usersCount;
             if (verifiedEl) verifiedEl.textContent = usersCount;
             if (adminsEl) adminsEl.textContent = adminCount;
             if (signupEl) signupEl.textContent = signingUpCount;

@@ -2904,7 +2904,7 @@
         <div id="dashboard" class="content-section active">
             <div class="dashboard">
                 <div class="card" data-section="verified">
-                    <h3>Total Users</h3>
+                    <h3>Users</h3>
                     <p id="verified-users-count">0</p>
                 </div>
                 <div class="card user-card" data-section="signing-up">
@@ -3589,11 +3589,25 @@
                 return '-';
             }
         }
+        // Helper function for subadmin status detection
+        function getUserStatus(user) {
+            if (user.new_user === true) return 'pending';
+            if (user.banned_user === true) return 'banned';
+            if (user.rejected_user === true) return 'rejected';
+            if (user.verified === true) return 'approved';
+            // Fallback
+            if (user.verified && !user.banned && !user.rejected) return 'approved';
+            if (user.banned) return 'banned';
+            if (user.rejected) return 'rejected';
+            return 'pending';
+        }
+
         function updateDashboardCounts() {
             if (!Array.isArray(users)) users = [];
-            const verifiedCount = users.filter(u => u.verified && u.role !== 'subadmin' && u.role !== 'admin').length;
+
+            const verifiedCount = users.filter(u => getUserStatus(u) === 'approved' && u.role !== 'subadmin' && u.role !== 'admin').length;
             const adminCount = users.filter(u => u.role === 'subadmin' || u.role === 'admin').length;
-            const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
+            const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
             const totalEl = document.getElementById('standard-users-count');
             const adminsEl = document.getElementById('admins-count');
             const signupEl = document.getElementById('signing-up-users-count');
@@ -4518,13 +4532,14 @@ STI Archives Admin`;
                         <td><button class="btn btn-danger btn-sm">Remove</button></td>
                     </tr>`;
                     document.getElementById('admins-tbody').innerHTML += adminRow;
-                } else if (user.verified) {
+                const userStatus = getUserStatus(user);
+                if (userStatus === 'approved') {
                     document.getElementById('verified-users-tbody').innerHTML += rowWithEmail.replace('STATUS', 'Verified');
-                } else if (user.rejected) {
+                } else if (userStatus === 'rejected') {
                     document.getElementById('rejected-users-tbody').innerHTML += rowWithEmail.replace('STATUS', 'Rejected');
-                } else if (user.banned) {
+                } else if (userStatus === 'banned') {
                     document.getElementById('banned-users-tbody').innerHTML += rowWithEmail.replace('STATUS', 'Banned');
-                } else {
+                } else if (userStatus === 'pending') {
                     // Duplicate prevention: check if user ID already added
                     const userId = user.user_id || user.id;
                     const actions = `<button type="button" class="btn btn-warning btn-sm" onclick="openRejectModal('${user.user_id || user.id}')">Reject</button> <button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>`;
@@ -4984,7 +4999,7 @@ STI Archives Admin`;
                 window.signingUpChart.destroy();
             }
             const users = JSON.parse(localStorage.getItem('users') || '[]');
-            let filteredUsers = users.filter(user => !user.verified && !user.rejected && !user.banned);
+            let filteredUsers = users.filter(user => getUserStatus(user) === 'pending');
             if (filter) {
                 filteredUsers = filteredUsers.filter(user => user.role === filter);
             }
@@ -5325,8 +5340,8 @@ STI Archives Admin`;
             const users = await getUsers();
             const tbody = document.getElementById(status + '-strand-users-tbody');
             tbody.innerHTML = '';
-            const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
-                                status === 'rejected' ? user.rejected :
+            const statusFilter = status === 'signing-up' ? getUserStatus(user) === 'pending' :
+                                status === 'rejected' ? getUserStatus(user) === 'rejected' :
                                 status === 'banned' ? user.banned : false;
             users.forEach(user => {
                 if (user.role === 'senior_high' && user.section === 'Grade ' + grade && user.strand === strand && statusFilter) {
@@ -5353,8 +5368,8 @@ STI Archives Admin`;
             const users = await getUsers();
             const tbody = document.getElementById(status + '-degree-users-tbody');
             tbody.innerHTML = '';
-            const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
-                                status === 'rejected' ? user.rejected :
+            const statusFilter = status === 'signing-up' ? getUserStatus(user) === 'pending' :
+                                status === 'rejected' ? getUserStatus(user) === 'rejected' :
                                 status === 'banned' ? user.banned : false;
             users.forEach(user => {
                 if (user.role === 'college' && user.section === degree.toUpperCase() && statusFilter) {
@@ -5379,8 +5394,8 @@ STI Archives Admin`;
             const users = await getUsers();
             const tbody = document.getElementById(status + '-department-users-tbody');
             tbody.innerHTML = '';
-            const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
-                                status === 'rejected' ? user.rejected :
+            const statusFilter = status === 'signing-up' ? getUserStatus(user) === 'pending' :
+                                status === 'rejected' ? getUserStatus(user) === 'rejected' :
                                 status === 'banned' ? user.banned : false;
             users.forEach(user => {
                 if (user.role === 'educator' && user.section === 'Department ' + dept.toUpperCase() && statusFilter) {

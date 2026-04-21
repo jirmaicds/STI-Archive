@@ -3641,7 +3641,7 @@
         <div id="dashboard" class="content-section active">
             <div class="dashboard">
                 <div class="card user-card" data-section="verified">
-                    <h3>Total Users</h3>
+                    <h3>Users</h3>
                     <p id="verified-users-count">0</p>
                 </div>
                 <div class="card user-card" data-section="admins">
@@ -6494,12 +6494,13 @@ STI Archives Admin`;
                         </td>
                     </tr>`;
                     document.getElementById('admins-tbody').innerHTML += adminRow;
-                } else if (user.isActive || user.verified === true) {
+                const userStatus = getUserStatus(user);
+                if (userStatus === 'approved') {
                     console.log('DEBUG: Adding verified user to table:', user.name, user.email, user.personal_email);
                     document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
-                } else if (user.banned) {
+                } else if (userStatus === 'banned') {
                     document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
-                } else if (!user.isActive && !user.verified && !user.rejected && !user.banned) {
+                } else if (userStatus === 'pending') {
                     signingUpUsers.push(user);
                 }
             });
@@ -6566,18 +6567,18 @@ STI Archives Admin`;
 
             // Count rows in verified users table (tbody)
             const verifiedTbody = document.getElementById('verified-users-tbody');
-            const verifiedCount = verifiedTbody ? verifiedTbody.querySelectorAll('tr').length : 0;
+            const usersCount = verifiedTbody ? verifiedTbody.querySelectorAll('tr').length : 0;
 
             // Count rows in admin users table (tbody)
             const adminTbody = document.getElementById('admins-tbody');
             const adminCount = adminTbody ? adminTbody.querySelectorAll('tr').length : 0;
 
-            // Count signing up users: users where new_user is true
+            // Count signing up users: use same logic as signingUpUsers array
             const filteredForCount = users.filter(u => !removedUsers.includes(u.user_id || u.id));
-            const signingUpCount = filteredForCount.filter(u => u.new_user === true).length;
+            const signingUpCount = filteredForCount.filter(u => getUserStatus(u) === 'pending').length;
 
-            console.log('DEBUG: Table row counts - Verified:', verifiedCount, 'Admin:', adminCount, 'Signing up:', signingUpCount);
-            document.getElementById('verified-users-count').textContent = verifiedCount;
+            console.log('DEBUG: Table row counts - Users:', usersCount, 'Admin:', adminCount, 'Signing up:', signingUpCount);
+            document.getElementById('verified-users-count').textContent = usersCount;
             document.getElementById('admin-users-count').textContent = adminCount;
             document.getElementById('signing-up-users-count').textContent = signingUpCount;
             
@@ -6783,15 +6784,15 @@ STI Archives Admin`;
             const revenueEl = document.getElementById('revenue-count');
             if (revenueEl) revenueEl.textContent = totalUploads;
 
-            const verifiedCount = users.filter(u => u.verified && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+            const usersCount = users.filter(u => getUserStatus(u) === 'approved').length;
             const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-            const signingUpCount = users.filter(u => u.new_user === true).length;
+            const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
 
             const verifiedEl = document.getElementById('verified-users-count');
             const adminEl = document.getElementById('admin-users-count');
             const signingUpEl = document.getElementById('signing-up-users-count');
 
-            if (verifiedEl) verifiedEl.textContent = verifiedCount;
+            if (verifiedEl) verifiedEl.textContent = usersCount;
             if (adminEl) adminEl.textContent = adminCount;
             if (signingUpEl) signingUpEl.textContent = signingUpCount;
         }

@@ -3368,7 +3368,7 @@
         <div id="dashboard" class="content-section active">
             <div class="dashboard">
                 <div class="card user-card" data-section="verified">
-                    <h3>Total Users</h3>
+                    <h3>Users</h3>
                     <p id="verified-users-count">0</p>
                 </div>
                 <div class="card user-card" data-section="admins">
@@ -5558,16 +5558,29 @@
         // Update dashboard counts
         function updateDashboardCounts() {
             if (!Array.isArray(users)) users = [];
-            const verifiedCount = users.filter(u => u.verified && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+            // Helper function for coadmin status detection
+            function getUserStatus(user) {
+                if (user.new_user === true) return 'pending';
+                if (user.banned_user === true) return 'banned';
+                if (user.rejected_user === true) return 'rejected';
+                if (user.verified === true) return 'approved';
+                // Fallback
+                if (user.verified && !user.banned && !user.rejected) return 'approved';
+                if (user.banned) return 'banned';
+                if (user.rejected) return 'rejected';
+                return 'pending';
+            }
+
+            const usersCount = users.filter(u => getUserStatus(u) === 'approved' && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-            const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
+            const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
 
             const totalEl = document.getElementById('total-users-count');
             const verifiedEl = document.getElementById('verified-users-count');
             const adminsEl = document.getElementById('admins-count');
             const signupEl = document.getElementById('signing-up-users-count');
-            if (totalEl) totalEl.textContent = verifiedCount;
-            if (verifiedEl) verifiedEl.textContent = verifiedCount;
+            if (totalEl) totalEl.textContent = usersCount;
+            if (verifiedEl) verifiedEl.textContent = usersCount;
             if (adminsEl) adminsEl.textContent = adminCount;
             if (signupEl) signupEl.textContent = signingUpCount;
         }

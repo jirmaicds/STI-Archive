@@ -4434,7 +4434,11 @@
                                 <input type="text" class="edit-title" value="${upload.title.replace(/"/g, '&quot;')}" style="width: 100%;">
                             </div>
                             <div style="margin-bottom: 10px;">
-                                <label><strong>Abstract:</strong></label>
+                                <label><strong>Author:</strong></label>
+                                <input type="text" class="edit-author" value="${upload.author || ''}" style="width: 100%;">
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Abstract/Summary:</strong></label>
                                 <textarea class="edit-abstract" style="width: 100%; min-height: 80px;">${upload.abstract || ''}</textarea>
                             </div>
                             <div style="margin-bottom: 10px;">
@@ -4609,6 +4613,7 @@
             const uploadedArticle = userUploadedDiv.querySelector('.uploaded-article');
 
             const title = uploadedArticle.querySelector('.edit-title').value;
+            const author = uploadedArticle.querySelector('.edit-author').value;
             const abstract = uploadedArticle.querySelector('.edit-abstract').value;
             const category = uploadedArticle.querySelector('.edit-category').value;
             const topic = uploadedArticle.querySelector('.edit-topic').value;

@@ -7963,7 +7963,7 @@ STI Archives Admin`;
         });
 
         // Add event listeners for nav buttons
-        document.querySelectorAll('.nav-btn').forEach(btn => {
+        document.querySelectorAll('.users-nav .nav-btn').forEach(btn => {
             const section = btn.getAttribute('data-section');
             if (section) {
                 btn.addEventListener('click', () => showUserSection(section));

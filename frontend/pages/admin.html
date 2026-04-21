@@ -5180,7 +5180,7 @@
                     return;
                 }
                 addedSigningUpUsers.add(userId);
-                const date = formatDate(user.verified_at || user.created_at);
+                const date = formatDate(user.created_at);
                 let actions = `
                     <div style="display: flex; flex-direction: column; gap: 4px;">
                         <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.id}', 'accept')">Accept</button>
@@ -6508,7 +6508,7 @@ STI Archives Admin`;
             console.log('DEBUG: Rendering signingUpUsers, count:', signingUpUsers.length);
             signingUpUsers.forEach(user => {
                 console.log('DEBUG: Rendering signing-up user:', user.name, 'role:', user.role, 'section:', user.section, 'grade:', user.grade, 'personal_email:', user.personal_email);
-                const date = formatDate(user.verified_at || user.created_at);
+                const date = formatDate(user.created_at);
                 let actions = `
                     <div style="display: flex; flex-direction: column; gap: 4px;">
                         <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.id}', 'accept')">Accept</button>
@@ -7476,7 +7476,7 @@ STI Archives Admin`;
                                 status === 'banned' ? user.banned : false;
             users.forEach(user => {
                 if (user.role === 'senior_high' && user.grade === 'Grade ' + grade && user.strand === strand && statusFilter) {
-                    const date = formatDate(user.verified_at || user.created_at);
+                    const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
                     const dateHeader = status === 'signing-up' ? 'Date Signed Up' : 'Date Banned';
                 let emailToUse = user.personal_email || user.email;
                     const row = `<tr>
@@ -7508,7 +7508,7 @@ STI Archives Admin`;
                                 status === 'banned' ? user.banned : false;
             users.forEach(user => {
                 if (user.role === 'college' && user.section === degree.toUpperCase() && statusFilter) {
-                    const date = formatDate(user.verified_at || user.created_at);
+                    const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
                 let emailToUse = user.personal_email || user.email;
                     const row = `<tr>
                         <td>${user.user_id || user.id}</td>
@@ -7537,7 +7537,7 @@ STI Archives Admin`;
                                 status === 'banned' ? user.banned : false;
             users.forEach(user => {
                 if (user.role === 'educator' && user.section === 'Department ' + dept.toUpperCase() && statusFilter) {
-                    const date = formatDate(user.verified_at || user.created_at);
+                    const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
                 let emailToUse = user.personal_email || user.email;
                     const row = `<tr>
                         <td>${user.user_id || user.id}</td>
@@ -7585,7 +7585,7 @@ STI Archives Admin`;
             tbody.innerHTML = '';
             users.forEach(user => {
                 if (user.role === 'senior_high' && user.grade === 'Grade ' + grade && user.strand === strand) {
-                    const date = formatDate(user.verified_at || user.created_at);
+                    const date = formatDate(user.verified ? user.verified_at : user.created_at);
                     const row = `<tr>
                         <td>${user.user_id || user.id}</td>
                         <td>${user.name}</td>
@@ -7614,7 +7614,7 @@ STI Archives Admin`;
             tbody.innerHTML = '';
             users.forEach(user => {
                 if (user.role === 'college' && user.section === degree.toUpperCase()) {
-                    const date = formatDate(user.verified_at || user.created_at);
+                    const date = formatDate(user.verified ? user.verified_at : user.created_at);
                     const row = `<tr>
                         <td>${user.user_id || user.id}</td>
                         <td>${user.name}</td>
@@ -7638,7 +7638,7 @@ STI Archives Admin`;
             tbody.innerHTML = '';
             users.forEach(user => {
                 if (user.role === 'educator' && user.section === 'Department ' + dept.toUpperCase()) {
-                    const date = formatDate(user.verified_at || user.created_at);
+                    const date = formatDate(user.verified ? user.verified_at : user.created_at);
                     const row = `<tr>
                         <td>${user.user_id || user.id}</td>
                         <td>${user.name}</td>

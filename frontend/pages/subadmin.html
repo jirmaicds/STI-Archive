@@ -5330,7 +5330,7 @@ STI Archives Admin`;
                                 status === 'banned' ? user.banned : false;
             users.forEach(user => {
                 if (user.role === 'senior_high' && user.section === 'Grade ' + grade && user.strand === strand && statusFilter) {
-                    const date = formatDate(user.verified_at || user.created_at);
+                    const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
                     const dateHeader = status === 'signing-up' ? 'Date Signed Up' : status === 'rejected' ? 'Date Rejected' : 'Date Banned';
                     const row = `<tr>
                         <td>${user.id}</td>
@@ -5358,7 +5358,7 @@ STI Archives Admin`;
                                 status === 'banned' ? user.banned : false;
             users.forEach(user => {
                 if (user.role === 'college' && user.section === degree.toUpperCase() && statusFilter) {
-                    const date = formatDate(user.verified_at || user.created_at);
+                    const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
                     const row = `<tr>
                         <td>${user.id}</td>
                         <td>${user.name}</td>
@@ -5384,7 +5384,7 @@ STI Archives Admin`;
                                 status === 'banned' ? user.banned : false;
             users.forEach(user => {
                 if (user.role === 'educator' && user.section === 'Department ' + dept.toUpperCase() && statusFilter) {
-                    const date = formatDate(user.verified_at || user.created_at);
+                    const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
                     const row = `<tr>
                         <td>${user.id}</td>
                         <td>${user.name}</td>

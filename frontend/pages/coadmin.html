@@ -4063,6 +4063,7 @@
         let users = [];
 
         function generateNotifications(users) {
+            if (!Array.isArray(users)) users = [];
             const removedUsers = JSON.parse(localStorage.getItem('removedUsers')) || [];
             const filteredUsers = users.filter(u => !removedUsers.includes(u.user_id || u.id));
             const signingUpUsers = filteredUsers.filter(u => !u.verified && !u.rejected && !u.banned);
@@ -5751,6 +5752,7 @@
                 window.signingUpChart.destroy();
             }
             const users = JSON.parse(localStorage.getItem('users') || '[]');
+            if (!Array.isArray(users)) return; // Skip if not array
             let filteredUsers = users.filter(user => !user.verified && !user.rejected && !user.banned);
             if (filter) {
                 filteredUsers = filteredUsers.filter(user => user.role === filter);

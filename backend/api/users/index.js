@@ -115,17 +115,6 @@ async function handleGetUsers(req, res) {
       if (role) {
         query = query.eq('user_type', role);
       }
-      } else if (status === 'rejected') {
-        try {
-          query = query.eq('rejected', true);
-        } catch (err) {
-          query = query.eq('id', '');
-        }
-      }
-      
-      if (role) {
-        query = query.eq('role', role);
-      }
       
       if (search) {
         query = query.or(`fullname.ilike.%${search}%,email.ilike.%${search}%`);
@@ -464,21 +453,22 @@ async function handleGetUserCounts(req, res) {
       // Calculate counts based on user_type
       console.log('DEBUG API: All users for counting:', allUsers.map(u => ({ id: u.id, user_type: u.user_type, role: u.role, verified: u.verified })));
 
-      const totalUsers = allUsers.filter(u => u.user_type === 'user').length;
-      const adminUsers = allUsers.filter(u => u.user_type === 'admin').length;
+      const userTypeUsers = allUsers.filter(u => u.user_type === 'user').length;
+      const adminUsers = allUsers.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
       const newSignups = allUsers.filter(u =>
-        u.user_type === 'user' && !u.verified && !u.rejected && !u.banned
+        !u.verified && !['admin', 'coadmin', 'subadmin'].includes(u.role) && !u.rejected && !u.banned
       ).length;
+      const usersCount = userTypeUsers;
 
       const bannedUsers = allUsers.filter(u => u.banned).length;
 
       const result = {
         success: true,
         counts: {
-          totalUsers,
           adminUsers,
           newSignups,
-          bannedUsers
+          bannedUsers,
+          usersCount
         }
       };
 

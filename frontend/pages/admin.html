@@ -3641,8 +3641,8 @@
         <div id="dashboard" class="content-section active">
             <div class="dashboard">
                 <div class="card user-card" data-section="verified">
-                    <h3>Total Users</h3>
-                    <p id="verified-users-count">0</p>
+                    <h3>Users</h3>
+                    <p id="users-count">0</p>
                 </div>
                 <div class="card user-card" data-section="admins">
                     <h3>Admin Users</h3>
@@ -3660,8 +3660,8 @@
             <div class="graphs-section">
                 <div class="graph-container">
                     <div class="graph-item" id="usr-grph">
-                                               <h4>Total Users</h4>
-                                               <div class="chart-container" id="usr-chart">
+                                                <h4>Users</h4>
+                                                <div class="chart-container" id="usr-chart">
                                <canvas id="user-chart"></canvas>
                     </div>
                     <div class="pagination" id="verified-pagination" style="text-align: right; margin-top: 10px;"></div>
@@ -6337,9 +6337,45 @@ STI Archives Admin`;
 
         // === LOAD USERS FUNCTION ===
         
+        // Function to get users count
+        function getUsersCount(users) {
+            if (!Array.isArray(users)) return 0;
+            return users.filter(u => u.user_type === 'user').length;
+        }
+
+        // Function to fetch and update user counts in real-time
+        async function updateUserCounts() {
+            try {
+                const token = localStorage.getItem('sti_auth_token');
+                const response = await fetch('/api/users/count', {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.counts) {
+                        const verifiedEl = document.getElementById('verified-users-count');
+                        const adminEl = document.getElementById('admin-users-count');
+                        const signingUpEl = document.getElementById('signing-up-users-count');
+
+                        const usersCountEl = document.getElementById('users-count');
+                        if (usersCountEl) usersCountEl.textContent = data.counts.usersCount;
+                        if (adminEl) adminEl.textContent = data.counts.adminUsers;
+                        if (signingUpEl) signingUpEl.textContent = data.counts.newSignups;
+
+                        console.log('Real-time counts updated:', data.counts);
+                    }
+                } else {
+                    console.warn('Failed to fetch user counts:', response.status);
+                }
+            } catch (error) {
+                console.error('Error updating user counts:', error);
+            }
+        }
+
         async function loadUsers() {
             console.log('DEBUG: loadUsers called');
-            
+
             // Save checkbox states before re-rendering
             const savedCheckboxStates = {};
             document.querySelectorAll('.user-checkbox').forEach(cb => {
@@ -6786,17 +6822,20 @@ STI Archives Admin`;
             const revenueEl = document.getElementById('revenue-count');
             if (revenueEl) revenueEl.textContent = totalUploads;
 
-            const verifiedCount = users.filter(u => u.verified && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+            const verifiedCount = getUsersCount(users);
             const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
             const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
 
-            const verifiedEl = document.getElementById('verified-users-count');
+            const usersCountEl = document.getElementById('users-count');
             const adminEl = document.getElementById('admin-users-count');
             const signingUpEl = document.getElementById('signing-up-users-count');
 
-            if (verifiedEl) verifiedEl.textContent = verifiedCount;
+            if (usersCountEl) usersCountEl.textContent = verifiedCount;
             if (adminEl) adminEl.textContent = adminCount;
             if (signingUpEl) signingUpEl.textContent = signingUpCount;
+
+            // Also update using the API endpoint for consistency
+            updateUserCounts();
         }
 
         // === STUB FUNCTIONS (to prevent errors) ===
@@ -10044,7 +10083,21 @@ STI Archives Admin`;
             paginationDiv.dataset.currentPage = page;
             paginateTable(tbodyId, 10);
         }
-    
+
+        // Start real-time count updates
+        function startRealTimeUpdates() {
+            // Update counts immediately
+            updateUserCounts();
+
+            // Set up polling every 30 seconds
+            setInterval(updateUserCounts, 30000);
+        }
+
+        // Start real-time updates when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            startRealTimeUpdates();
+        });
+
     </script>
 </body>
 </html>

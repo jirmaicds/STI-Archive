@@ -3673,16 +3673,15 @@
                     <div style="overflow-x: auto;">
                     <table>
                         <thead>
-                            <tr>
-                                <th><input type="checkbox" id="select-all-admins" onclick="toggleSelectAll('admins')"></th>
-                                <th>ID</th>
-                                <th>Full Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Permissions</th>
-                                <th>Created At</th>
-                                <th id="admins-actions-header" style="display: none;">Actions</th>
-                            </tr>
+                             <tr>
+                                 <th><input type="checkbox" id="select-all-admins" onclick="toggleSelectAll('admins')"></th>
+                                 <th>ID</th>
+                                 <th>Full Name</th>
+                                 <th>Email</th>
+                                 <th>Role</th>
+                                 <th>Permissions</th>
+                                 <th>Created At</th>
+                             </tr>
                         </thead>
                         <tbody id="admins-tbody">
                         </tbody>
@@ -3739,7 +3738,7 @@
                     
                     <div style="overflow-x: auto;">
                         <table id="verified-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Verified</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
+                                                    <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Verified</th><th>Raf/Edu_ID</th></tr></thead>
                             <tbody id="verified-users-tbody">
                             </tbody>
                         </table>
@@ -3792,7 +3791,7 @@
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="signing-up-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Signed Up</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
+                                                    <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Signed Up</th><th>Status</th><th>Raf/Edu_ID</th></tr></thead>
                             <tbody id="signing-up-users-tbody"></tbody>
                         </table>
                     </div>
@@ -3844,7 +3843,7 @@
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="banned-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Banned</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
+                                                    <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Banned</th><th>Status</th><th>Raf/Edu_ID</th></tr></thead>
                             <tbody id="banned-users-tbody"></tbody>
                         </table>
                     </div>
@@ -4187,7 +4186,6 @@
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
                     <td>${user.raf_path || ''} ${user.educator_id || ''}</td>
-                    <td>${actions}</td>
                 </tr>`;
 
                 // Check admin role first (case-insensitive)
@@ -4227,7 +4225,6 @@
                             <td><span class="badge ${badgeClass}">${roleDisplay}</span></td>
                             <td>${permissions}</td>
                             <td>${formatDate(user.created_at)}</td>
-                            ${actionsCell}
                         </tr>`;
                         document.getElementById('admins-tbody').innerHTML += adminRow;
                     }
@@ -4236,7 +4233,20 @@
                     const userStatus = getUserStatus(user);
                     if (userStatus === 'approved') {
                         console.log('DEBUG: Adding verified user to table:', user.name, user.email);
-                        document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
+                        // For verified users, replace Raf/Edu_ID with preview button
+                        const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewRaf('${user.raf_path}')">Preview</button>` : '';
+                        const verifiedRow = `<tr>
+                            <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
+                            <td>${userId}</td>
+                            <td>${getUserName(user)}</td>
+                            <td>${emailToUse}</td>
+                            <td>${formatRole(user.role)}</td>
+                            <td>${user.grade || '-'}</td>
+                            <td>${getSectionDisplay(user)}</td>
+                            <td>${date}</td>
+                            <td>${rafEduIdCell}</td>
+                        </tr>`;
+                        document.getElementById('verified-users-tbody').innerHTML += verifiedRow;
                     } else if (userStatus === 'banned') {
                         document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
                     } else if (userStatus === 'pending') {
@@ -5547,6 +5557,8 @@
             loadUsers().then(() => {
                 console.log('DEBUG: Initial loadUsers completed');
                 isReloadingUsers = false;
+                // Ensure proper section visibility on load
+                showUserSection('verified');
                 // Start polling for new users every 5 seconds
                 setInterval(async () => {
                     try {

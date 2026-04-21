@@ -34,10 +34,10 @@
 
     .toggle-panel {
       position: fixed;
-      top: 50px;
+      top: calc(50vh - 150px);
       left: calc(50% - 15px);
       width: 30px;
-      height: calc(100vh - 100px);
+      height: 300px;
       background: transparent;
       display: flex;
       flex-direction: column;
@@ -5493,6 +5493,7 @@ color: #ffd700;
         // PDF Editor functions
         async function openPdfEditor() {
             document.getElementById('pdfEditorModal').style.display = 'block';
+            positionPdfEditorModal();
             const modalContent = document.querySelector('#pdfEditorModal .modal-content');
             modalContent.style.position = 'absolute';
             modalContent.style.top = '50%';
@@ -6050,6 +6051,43 @@ color: #ffd700;
                 modal.style.height = 'calc(100vh - ' + topOffset + 'px)';
             }
         }
+
+        // Function to position PDF Editor modal over the file-viewer
+        function positionPdfEditorModal() {
+            const modal = document.getElementById('pdfEditorModal');
+            if (!modal) return;
+
+            const fileViewer = document.querySelector('.file-viewer');
+            const header = document.querySelector('.main-navbar');
+
+            if (fileViewer && fileViewer.offsetWidth > 0 && fileViewer.offsetHeight > 0) {
+                const rect = fileViewer.getBoundingClientRect();
+                modal.style.top = rect.top + 'px';
+                modal.style.left = rect.left + 'px';
+                modal.style.width = rect.width + 'px';
+                modal.style.height = rect.height + 'px';
+                // Adjust modal-content to fit
+                const modalContent = modal.querySelector('.modal-content');
+                if (modalContent) {
+                    modalContent.style.width = '100%';
+                    modalContent.style.height = '100%';
+                    modalContent.style.maxWidth = 'none';
+                }
+            } else {
+                // Fallback to fullscreen
+                const topOffset = header ? header.offsetHeight || 50 : 50;
+                modal.style.top = topOffset + 'px';
+                modal.style.left = '0';
+                modal.style.width = '100%';
+                modal.style.height = 'calc(100vh - ' + topOffset + 'px)';
+                const modalContent = modal.querySelector('.modal-content');
+                if (modalContent) {
+                    modalContent.style.width = '90%';
+                    modalContent.style.height = '80%';
+                    modalContent.style.maxWidth = '1200px';
+                }
+            }
+        }
         
         // Position modal when shown
         const originalShowModal = window.showModal || function() {};
@@ -6060,6 +6098,12 @@ color: #ffd700;
         
         // Also position on window resize
         window.addEventListener('resize', positionPDFModal);
+        window.addEventListener('resize', positionPdfEditorModal);
         
         // Initial positioning
         document.addEventListener('DOMContentLoaded', positionPDFModal);
+        document.addEventListener('DOMContentLoaded', positionPdfEditorModal);
+    </script>
+</div>
+</body>
+</html>

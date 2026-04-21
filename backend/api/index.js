@@ -472,13 +472,13 @@ async function handleUsersCount(req, res) {
       // Get total users (verified or active, excluding admin roles)
       const { data: allUsers, error: allError } = await supabase
         .from('users')
-        .select('id, role, verified, isActive, banned, rejected');
+        .select('id, role, verified, isactive, banned, rejected');
       
       if (allError) throw allError;
       
       // Calculate counts
       const totalUsers = allUsers.filter(u => 
-        (u.isActive || u.verified) && 
+        (u.isactive || u.verified) && 
         !['admin', 'coadmin', 'subadmin'].includes(u.role)
       ).length;
       
@@ -487,7 +487,7 @@ async function handleUsersCount(req, res) {
       ).length;
       
       const newSignups = allUsers.filter(u => 
-        !u.isActive && !u.verified && !u.rejected && !u.banned && 
+        !u.isactive && !u.verified && !u.rejected && !u.banned && 
         !['admin', 'coadmin', 'subadmin'].includes(u.role)
       ).length;
       
@@ -1109,7 +1109,7 @@ module.exports = async function handler(req, res) {
             fullname: newFullname,
             role: newRole,
             verified: true,
-            isActive: true
+            isactive: true
           });
           res.statusCode = 200;
           res.end(JSON.stringify({ success: true, message: 'User created', fullname: newFullname, password: newPassword, role: newRole }));

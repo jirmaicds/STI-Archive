@@ -124,7 +124,7 @@ async function handleUpdateUser(req, res, userId) {
       strand, 
       permissions, 
       access_level,
-      isActive,
+      isactive,
       banned,
       rejected,
       verified
@@ -161,7 +161,7 @@ async function handleUpdateUser(req, res, userId) {
     if (strand !== undefined) updateData.strand = strand;
     if (permissions !== undefined) updateData.permissions = permissions;
     if (access_level !== undefined) updateData.access_level = access_level;
-    if (isActive !== undefined) updateData.isActive = isActive;
+    if (isactive !== undefined) updateData.isactive = isactive;
     if (banned !== undefined) updateData.banned = banned;
     if (rejected !== undefined) updateData.rejected = rejected;
     if (verified !== undefined) updateData.verified = verified;
@@ -183,7 +183,7 @@ async function handleUpdateUser(req, res, userId) {
         .from('users')
         .update(updateData)
         .eq('id', userId)
-        .select('id, email, fullname, role, verified, created_at, updated_at, section, strand, permissions, access_level, isActive, banned, rejected')
+        .select('id, email, fullname, role, verified, created_at, updated_at, section, strand, permissions, access_level, isactive, banned, rejected')
         .single();
       
       if (error) {

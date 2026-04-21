@@ -217,7 +217,7 @@ async function handleCreateUser(req, res) {
       strand: strand || '',
       permissions: permissions || '',
       access_level: access_level || '',
-      isActive: true,
+      isactive: true,
       banned: false,
       rejected: false,
       created_at: new Date().toISOString(),

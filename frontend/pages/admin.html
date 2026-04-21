@@ -6354,11 +6354,10 @@ STI Archives Admin`;
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success && data.counts) {
-                        const verifiedEl = document.getElementById('verified-users-count');
+                        const usersCountEl = document.getElementById('users-count');
                         const adminEl = document.getElementById('admin-users-count');
                         const signingUpEl = document.getElementById('signing-up-users-count');
 
-                        const usersCountEl = document.getElementById('users-count');
                         if (usersCountEl) usersCountEl.textContent = data.counts.usersCount;
                         if (adminEl) adminEl.textContent = data.counts.adminUsers;
                         if (signingUpEl) signingUpEl.textContent = data.counts.newSignups;
@@ -6616,7 +6615,7 @@ STI Archives Admin`;
             }).length;
 
             console.log('DEBUG: Table row counts - Verified:', verifiedCount, 'Admin:', adminCount, 'Signing up:', signingUpCount);
-            document.getElementById('verified-users-count').textContent = verifiedCount;
+            document.getElementById('users-count').textContent = verifiedCount;
             document.getElementById('admin-users-count').textContent = adminCount;
             document.getElementById('signing-up-users-count').textContent = signingUpCount;
             

@@ -6611,7 +6611,7 @@ STI Archives Admin`;
             const filteredForCount = users.filter(u => !removedUsers.includes(u.user_id || u.id));
             const signingUpCount = filteredForCount.filter(u => {
                 const userType = u.user_type;
-                return !u.verified && userType === 'user';
+                return !u.verified && userType === 'user' && !u.rejected && !u.banned;
             }).length;
 
             console.log('DEBUG: Table row counts - Verified:', verifiedCount, 'Admin:', adminCount, 'Signing up:', signingUpCount);
@@ -6823,7 +6823,7 @@ STI Archives Admin`;
 
             const verifiedCount = getUsersCount(users);
             const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-            const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
+            const signingUpCount = users.filter(u => !u.verified && !u.rejected && !u.banned && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
 
             const usersCountEl = document.getElementById('users-count');
             const adminEl = document.getElementById('admin-users-count');

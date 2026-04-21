@@ -1,4 +1,4 @@
-<!-- admin.html updated -->
+<!-- coadmin.html updated -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -3683,7 +3683,7 @@
                                 <th>Role</th>
                                 <th>Permissions</th>
                                 <th>Created At</th>
-                                <th>Actions</th>
+                                <th id="admins-actions-header" style="display: none;">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="admins-tbody">
@@ -4127,8 +4127,109 @@
         }
 
         let isLoadingUsers = false;
-        async         function loadUsers() {
-            return getUsers(false);
+        async function loadUsers() {
+            console.log('DEBUG: loadUsers called');
+            users = await getUsers(false);
+            console.log('DEBUG: getUsers returned:', users);
+            if (!Array.isArray(users)) users = [];
+            console.log('DEBUG: loadUsers got users, count:', users.length);
+
+            // Set global users
+            window.users = users;
+
+            // Clear all tbodys
+            document.querySelectorAll('#users tbody').forEach(tbody => tbody.innerHTML = '');
+
+            // Process users
+            users.forEach(user => {
+                console.log('DEBUG: Processing user:', user.id, user.name, user.role, user.email, user.personal_email, user.verified);
+                const date = formatDate(user.verified_at || user.created_at);
+                let actions = '';
+                const userId = user.user_id || user.id;
+                if (user.verified) {
+                    actions = `<button class="btn btn-danger btn-sm" onclick="removeUser('${userId}')">Remove</button>`;
+                } else if (user.banned) {
+                    actions = `<button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>`;
+                } else {
+                    actions = `
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
+                            <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
+                        </div>
+                    `;
+                }
+                let emailToUse = user.personal_email || user.email;
+                const rowWithEmail = `<tr>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
+                    <td>${userId}</td>
+                    <td>${getUserName(user)}</td>
+                    <td>${emailToUse}</td>
+                    <td>${formatRole(user.role)}</td>
+                    <td>${user.grade || '-'}</td>
+                    <td>${getSectionDisplay(user)}</td>
+                    <td>${date}</td>
+                    <td>${user.raf_path || ''} ${user.educator_id || ''}</td>
+                    <td>${actions}</td>
+                </tr>`;
+
+                // Check admin role first (case-insensitive)
+                const roleLower = (user.role || '').toLowerCase();
+                console.log('DEBUG: User role check:', user.fullname, 'role:', user.role, 'roleLower:', roleLower);
+                const isAdminRole = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin';
+                // For coadmin, only show coadmin and subadmin, not full admin
+                const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
+                const shouldShowAdmin = currentUserRole === 'admin' || (currentUserRole === 'coadmin' && (roleLower === 'coadmin' || roleLower === 'subadmin'));
+                if (isAdminRole && shouldShowAdmin) {
+                    console.log('DEBUG: Adding admin user to table:', user.fullname, user.email, 'role:', roleLower);
+                    // Determine role display
+                    let roleDisplay;
+                    if (user.fullname === 'admin2' || user.fullname === 'Admin2') {
+                        roleDisplay = 'Co-Admin';
+                    } else if (user.fullname === 'admin3' || user.fullname === 'Admin3') {
+                        roleDisplay = 'Sub-Admin';
+                    } else {
+                        roleDisplay = (roleLower === 'coadmin' ? 'Co-Admin' : roleLower === 'subadmin' ? 'Sub-Admin' : 'Admin');
+                    }
+                    let badgeClass = roleLower === 'coadmin' ? 'badge-coadmin' : roleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
+                    let permissions = user.permissions || (roleLower === 'admin' ? 'Full Access - All Features' : roleLower === 'coadmin' ? 'Limited Access - User & File Management' : 'User Approver - Accept/Reject Registrations');
+                    const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
+                    const canEditAdmins = currentUserRole === 'admin';
+                    const actionsCell = canEditAdmins ? `<td>
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}')">Remove</button>
+                        </div>
+                    </td>` : '<td></td>';
+                    const adminRow = `<tr>
+                        <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
+                        <td>${userId}</td>
+                        <td>${getUserName(user)}</td>
+                        <td>${user.email || 'N/A'}</td>
+                        <td><span class="badge ${badgeClass}">${roleDisplay}</span></td>
+                        <td>${permissions}</td>
+                        <td>${formatDate(user.created_at)}</td>
+                        ${actionsCell}
+                    </tr>`;
+                    document.getElementById('admins-tbody').innerHTML += adminRow;
+                } else {
+                    // Status categorization for regular users
+                    const userStatus = getUserStatus(user);
+                    if (userStatus === 'approved') {
+                        console.log('DEBUG: Adding verified user to table:', user.name, user.email);
+                        document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
+                    } else if (userStatus === 'banned') {
+                        document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
+                    } else if (userStatus === 'pending') {
+                        console.log('DEBUG: Adding signing-up user to table:', user.name, user.email);
+                        document.getElementById('signing-up-users-tbody').innerHTML += rowWithEmail;
+                    }
+                }
+            });
+
+            // Update counts
+            updateDashboardCounts();
+
+            return users;
         }
         async function getUsers(forceRefresh = false) {
             if (forceRefresh) {
@@ -4692,64 +4793,21 @@
                 }
             });
 
-            // Sort signing-up users by created_at descending (newest first)
-            signingUpUsers.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-            // Duplicate prevention: use a Set to track already added user IDs
-            const addedSigningUpUsers = new Set();
+        }
 
-            // Append sorted signing-up users
-            signingUpUsers.forEach(user => {
-                const userId = user.user_id || user.id;
-                // Skip if this user ID has already been added
-                if (addedSigningUpUsers.has(userId)) {
-                    return;
-                }
-                addedSigningUpUsers.add(userId);
-                const date = formatDate(user.created_at);
-                let actions = `
-                    <div style="display: flex; flex-direction: column; gap: 4px;">
-                        <button class="btn btn-success btn-sm" onclick="updateUserStatus('${user.id}', 'accept')">Accept</button>
-                        <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${user.id}', 'ban')">Ban</button>
-                    </div>
-                `;
-                let emailToUse = user.personal_email || user.email;
-                const row = `<tr>
-                    <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}"></td>
-                    <td>${user.id}</td>
-                    <td>${user.name}</td>
-                    <td>${emailToUse}</td>
-                    <td>${user.role}</td>
-                    <td>${user.grade || '-'}</td>
-                    <td>${getSectionDisplay(user)}</td>
-                    <td>${date}</td>
-                    <td>${getStatus(user)}</td>
-                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
-                    <td>${actions}</td>
-                </tr>`;
-                document.getElementById('signing-up-users-tbody').innerHTML += row;
-            });
+        function getUserStatus(user) {
+            // Check new boolean columns first
+            if (user.new_user === true) return 'pending';
+            if (user.banned_user === true) return 'banned';
+            if (user.rejected_user === true) return 'rejected';
+            if (user.verified === true) return 'approved';
 
-            // Append verified users
-            const verifiedUsers = users.filter(u => u.verified && !['admin', 'coadmin', 'subadmin'].includes(u.role));
-            verifiedUsers.forEach(user => {
-                const date = formatDate(user.verified_at);
-                let actions = `<button class="btn btn-danger btn-sm" onclick="removeUser('${user.id}')">Remove</button>`;
-                let emailToUse = user.personal_email || user.email;
-                const row = `<tr>
-                    <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}"></td>
-                    <td>${user.id}</td>
-                    <td>${user.name}</td>
-                    <td>${emailToUse}</td>
-                    <td>${user.role}</td>
-                    <td>${user.grade || '-'}</td>
-                    <td>${getSectionDisplay(user)}</td>
-                    <td>${date}</td>
-                    <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
-                    <td>${actions}</td>
-                </tr>`;
-                document.getElementById('verified-users-tbody').innerHTML += row;
-            });
+            // Fallback to legacy boolean logic for backward compatibility
+            if (user.verified && !user.banned && !user.rejected) return 'approved';
+            if (user.banned) return 'banned';
+            if (user.rejected) return 'rejected';
+            return 'pending';
         }
 
         function formatRole(role) {
@@ -7049,6 +7107,16 @@
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             const activeBtn = document.querySelector(`.nav-btn[data-section="${section}"]`);
             if (activeBtn) activeBtn.classList.add('active');
+
+            // Handle admins section permissions
+            if (section === 'admins') {
+                const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
+                const canEditAdmins = currentUserRole === 'admin';
+                const actionsHeader = document.getElementById('admins-actions-header');
+                const bulkRemoveBtn = document.querySelector('#admins-section .bulk-actions .btn-danger');
+                if (actionsHeader) actionsHeader.style.display = canEditAdmins ? '' : 'none';
+                if (bulkRemoveBtn) bulkRemoveBtn.style.display = canEditAdmins ? '' : 'none';
+            }
 
             // Load data for specific sections
             if (section === 'admins') {

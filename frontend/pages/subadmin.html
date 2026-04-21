@@ -4530,8 +4530,11 @@ STI Archives Admin`;
                     if (searchInput) searchInput.value = f.search;
                 }
                 if (f.filterType) {
-                    document.getElementById(`search-filter-${section}`).value = f.filterType;
-                    filterTable(f.search, section, f.filterType);
+                    const filterElement = document.getElementById(`search-filter-${section}`);
+                    if (filterElement) {
+                        filterElement.value = f.filterType;
+                        filterTable(f.search, section, f.filterType);
+                    }
                 }
             }
 

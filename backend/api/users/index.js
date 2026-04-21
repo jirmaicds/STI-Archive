@@ -86,21 +86,21 @@ async function handleGetUsers(req, res) {
         }));
         return;
       }
-      const defaultSelectFields = 'id, email, fullname, role, user_type, verified, state, created_at, updated_at';
-      const noMetaSelectFields = 'id, email, fullname, role, user_type, verified, state';
+      const defaultSelectFields = 'id, email, fullname, role, user_type, verified, new_user, rejected_user, banned_user, created_at, updated_at';
+      const noMetaSelectFields = 'id, email, fullname, role, user_type, verified, new_user, rejected_user, banned_user';
       let query = supabase
         .from('users')
         .select(defaultSelectFields);
 
-      // Apply filters using state column
+      // Apply filters using boolean status columns
       if (status === 'pending') {
-        query = query.eq('state', 'pending');
+        query = query.eq('new_user', true);
       } else if (status === 'approved') {
-        query = query.eq('state', 'approved');
+        query = query.eq('verified', true).eq('new_user', false).eq('rejected_user', false).eq('banned_user', false);
       } else if (status === 'banned') {
-        query = query.eq('state', 'banned');
+        query = query.eq('banned_user', true);
       } else if (status === 'rejected') {
-        query = query.eq('state', 'rejected');
+        query = query.eq('rejected_user', true);
       }
 
       if (role) {
@@ -465,7 +465,7 @@ async function handleGetUserCounts(req, res) {
 
       const userTypeUsers = allUsers.filter(u => u.user_type === 'user').length;
       const adminUsers = allUsers.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-      const newSignups = allUsers.filter(u => u.state === 'pending').length;
+      const newSignups = allUsers.filter(u => u.new_user === true).length;
       const bannedUsers = allUsers.filter(u => u.banned || false).length;
 
       const result = {

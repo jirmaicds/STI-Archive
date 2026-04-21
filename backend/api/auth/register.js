@@ -110,15 +110,19 @@ async function handleRegister(req, res) {
 
     // Create user object (let SERIAL auto-assign integer id)
     const userRole = role || 'pending';
+    const isAdminRole = userRole === 'admin' || userRole === 'coadmin' || userRole === 'subadmin';
+
     const newUser = {
       email: email.toLowerCase(),
       password: hashedPassword,
       fullname: fullname,
       role: userRole,
            user_type: 'user',
-      verified: false,
-      isactive: false,
-      state: 'pending',  // New state column
+      verified: isAdminRole,  // Admin roles are verified immediately
+      isactive: isAdminRole,  // Admin roles are active immediately
+      new_user: !isAdminRole,  // Regular users are new users initially
+      rejected_user: false,   // No one starts as rejected
+      banned_user: false,     // No one starts as banned
       grade: grade || null,
       section_degree: section_degree || section || null,
       registration_assessment_form: null,
@@ -711,7 +715,7 @@ async function handleApproveUser(req, res) {
       if (action === 'approve') {
         await supabase
           .from('users')
-          .update({ verified: true, role: 'user', isactive: true, state: 'approved' })
+          .update({ verified: true, role: 'user', isactive: true, new_user: false, rejected_user: false, banned_user: false })
           .eq('id', user.id);
 
         await emailService.sendApprovalNotification(user.email, user.fullname);
@@ -721,7 +725,7 @@ async function handleApproveUser(req, res) {
       } else if (action === 'reject') {
         await supabase
           .from('users')
-          .update({ verified: false, role: 'rejected', isactive: false, state: 'rejected' })
+          .update({ verified: false, role: 'rejected', isactive: false, new_user: false, rejected_user: true, banned_user: false })
           .eq('id', user.id);
 
         await emailService.sendRejectionNotification(user.email, user.fullname, reason);
@@ -731,7 +735,7 @@ async function handleApproveUser(req, res) {
       } else if (action === 'ban') {
         await supabase
           .from('users')
-          .update({ verified: false, role: 'banned', isactive: false, state: 'banned' })
+          .update({ verified: false, role: 'banned', isactive: false, new_user: false, rejected_user: false, banned_user: true })
           .eq('id', user.id);
         
         res.statusCode = 200;

@@ -19,8 +19,6 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJxYXR2aWFucmprZGJ5cHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzA4OTIsImV4cCI6MjA4OTEwNjg5Mn0.k9_xTbjwRdwAQJ9UgGGsosjLWywzxHuYOq-JbGeII8g';
         // Supabase script creates global supabase object, just initialize it
         window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        let currentUser = null;
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
@@ -4060,73 +4058,34 @@
         // === GLOBAL FUNCTIONS ===
 
         // Moved outside DOMContentLoaded to ensure availability on page load
-        function generateNotifications(users) {
-            const removedUsers = JSON.parse(localStorage.getItem('removedUsers')) || [];
-            const filteredUsers = users.filter(u => !removedUsers.includes(u.user_id || u.id));
-            const signingUpUsers = filteredUsers.filter(u => !u.verified && !u.rejected && !u.banned);
-            const verifiedUsers = filteredUsers.filter(u => u.verified);
-            const notifications = [];
-
-            // Add notifications for signing up users
-            signingUpUsers.forEach(user => {
-                const id = `signup-${user.id}`;
-                notifications.push({
-                    id: id,
-                    type: 'new-user',
-                    typeText: 'New User Access Request',
-                    content: `${user.name} signed up!`,
-                    time: user.created_at ? new Date(user.created_at).toLocaleString() : 'Just now',
-                    timestamp: user.created_at ? new Date(user.created_at).getTime() : Date.now(),
-                    priority: 1
-                });
-            });
-
-            // Add notifications for verified users (recent)
-            verifiedUsers.slice(-5).forEach(user => {
-                const id = `verified-${user.id}`;
-                notifications.push({
-                    id: id,
-                    type: 'new-user',
-                    typeText: 'New User Access Request',
-                    content: `${user.name} signed up!`,
-                    time: user.verified_at ? new Date(user.verified_at).toLocaleString() : 'Recently',
-                    timestamp: user.verified_at ? new Date(user.verified_at).getTime() : Date.now() - 1000,
-                    priority: 2
-                });
-            });
-
-            // Filter out deleted notifications
-            const deletedNotifications = JSON.parse(localStorage.getItem('deletedNotifications')) || [];
-            let filteredNotifications = notifications.filter(notif => !deletedNotifications.includes(notif.id));
-
-            // Sort by priority (signing up first), then by timestamp (newest first)
-            filteredNotifications.sort((a, b) => {
-                if (a.priority !== b.priority) {
-                    return a.priority - b.priority;
-                }
-                return b.timestamp - a.timestamp;
-            });
-            
-            return filteredNotifications;
-        }
-
-        // === PDF MODAL FUNCTIONS ===
-        // For admin users - just close the modal and stay in current location
-        function closePdfEditorModal() {
-            const modal = document.getElementById('pdfEditorModal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-            // Admin users stay in their current location
-        }
-
-        // === UTILS ===
-        // Helper function to get user name with backward compatibility
-        function getUserName(user) {
-            return user.fullname || user.name || 'Unknown';
-        }
-
+        let currentUser = null;
         let isLoadingUsers = false;
+        let users = [];
+
+        // Update dashboard counts
+        function updateDashboardCounts() {
+            if (!Array.isArray(users)) users = [];
+            const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+            const researchCount = allArticles.filter(a => a.category === 'research').length;
+            const capstoneCount = allArticles.filter(a => a.category === 'capstone').length;
+            const totalUploads = researchCount + capstoneCount;
+
+            const revenueEl = document.getElementById('revenue-count');
+            if (revenueEl) revenueEl.textContent = totalUploads;
+
+            const usersCount = users.filter(u => getUserStatus(u) === 'approved').length;
+            const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+            const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
+
+            const verifiedEl = document.getElementById('verified-users-count');
+            const adminEl = document.getElementById('admin-users-count');
+            const signingUpEl = document.getElementById('signing-up-users-count');
+
+            if (verifiedEl) verifiedEl.textContent = usersCount;
+            if (adminEl) adminEl.textContent = adminCount;
+            if (signingUpEl) signingUpEl.textContent = signingUpCount;
+        }
+
         async function loadUsers() {
             console.log('DEBUG: loadUsers called');
             users = await getUsers(false);
@@ -5613,29 +5572,7 @@
 
        
 
-        // Update dashboard counts
-        function updateDashboardCounts() {
-            if (!Array.isArray(users)) users = [];
-            const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
-            const researchCount = allArticles.filter(a => a.category === 'research').length;
-            const capstoneCount = allArticles.filter(a => a.category === 'capstone').length;
-            const totalUploads = researchCount + capstoneCount;
 
-            const revenueEl = document.getElementById('revenue-count');
-            if (revenueEl) revenueEl.textContent = totalUploads;
-
-            const usersCount = users.filter(u => getUserStatus(u) === 'approved').length;
-            const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-            const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
-
-            const verifiedEl = document.getElementById('verified-users-count');
-            const adminEl = document.getElementById('admin-users-count');
-            const signingUpEl = document.getElementById('signing-up-users-count');
-
-            if (verifiedEl) verifiedEl.textContent = usersCount;
-            if (adminEl) adminEl.textContent = adminCount;
-            if (signingUpEl) signingUpEl.textContent = signingUpCount;
-        }
 
         // === STUB FUNCTIONS (to prevent errors) ===
         function toggleSidebar() {

@@ -324,7 +324,7 @@ async function handleUpdateUser(req, res) {
   }
 
   try {
-    const { user_id, student_id, name, email, role, admin_role, permissions } = req.body;
+    const { user_id, student_id, name, email, role, admin_role, permissions, verified, new_user, rejected_user, banned_user } = req.body;
 
     if (!user_id && !student_id) {
       res.statusCode = 400;
@@ -344,6 +344,10 @@ async function handleUpdateUser(req, res) {
       if (role) updateData.user_type = role; // Map role to user_type
       if (admin_role) updateData.user_type = admin_role; // Alternative field
       if (permissions) updateData.permissions = permissions;
+      if (verified !== undefined) updateData.verified = verified;
+      if (new_user !== undefined) updateData.new_user = new_user;
+      if (rejected_user !== undefined) updateData.rejected_user = rejected_user;
+      if (banned_user !== undefined) updateData.banned_user = banned_user;
 
       console.log('Updating user:', userId, 'with data:', updateData);
 
@@ -434,51 +438,82 @@ async function handleGetUserCounts(req, res) {
   }
 
   try {
-    if (isSupabaseConfigured()) {
-      const supabase = getServiceSupabase();
-      
-      if (!supabase) {
-        // Fallback: return mock counts if service client is not available
-        res.statusCode = 200;
-        res.end(JSON.stringify({
-          success: true,
-          counts: {
-            adminUsers: 0,
-            newSignups: 5,
-            bannedUsers: 0,
-            usersCount: 10,
-            verifiedUsers: 5
-          },
-          message: 'Supabase service client not configured. Using mock counts. Set SUPABASE_SERVICE_ROLE_KEY in Vercel environment variables.'
-        }));
-        return;
+    if (!isSupabaseConfigured()) {
+      // Fallback: return mock counts if service client is not available
+      res.statusCode = 200;
+      res.end(JSON.stringify({
+        success: true,
+        counts: {
+          adminUsers: 0,
+          newSignups: 5,
+          bannedUsers: 0,
+          usersCount: 10,
+          verifiedUsers: 5
+        },
+        message: 'Supabase not configured. Using mock counts. Set SUPABASE_SERVICE_ROLE_KEY in Vercel environment variables.'
+      }));
+      return;
+    }
+
+    const supabase = getServiceSupabase();
+
+    if (!supabase) {
+      // Fallback: return mock counts if service client is not available
+      res.statusCode = 200;
+      res.end(JSON.stringify({
+        success: true,
+        counts: {
+          adminUsers: 0,
+          newSignups: 5,
+          bannedUsers: 0,
+          usersCount: 10,
+          verifiedUsers: 5
+        },
+        message: 'Supabase service client not configured. Using mock counts. Set SUPABASE_SERVICE_ROLE_KEY in Vercel environment variables.'
+      }));
+      return;
+    }
+
+    // Get all users for counting (include banned_user, rejected_user as they exist)
+    const selectFields = 'id, email, fullname, role, user_type, verified, banned_user, rejected_user';
+    const hasBannedColumn = true;
+    const { data: allUsers, error: allError } = await supabase
+      .from('users')
+      .select(selectFields);
+
+    if (allError) throw allError;
+
+    // Calculate counts based on user_type
+    console.log('DEBUG API: All users for counting:', allUsers.map(u => ({ id: u.id, user_type: u.user_type, role: u.role, verified: u.verified })));
+
+    const userTypeUsers = allUsers.filter(u => u.user_type === 'user').length;
+    const adminUsers = allUsers.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+    const newSignups = allUsers.filter(u => u.new_user === true).length;
+    const bannedUsers = hasBannedColumn ? allUsers.filter(u => u.banned_user || false).length : 0;
+    const verifiedUsers = allUsers.filter(u => u.verified === true).length;
+
+    const result = {
+      success: true,
+      counts: {
+        adminUsers,
+        newSignups,
+        bannedUsers,
+        usersCount: userTypeUsers,
+        verifiedUsers
       }
+    };
+
+    console.log('DEBUG API: Calculated counts:', result.counts);
+
+    res.statusCode = 200;
+    res.end(JSON.stringify(result));
       
-      // Get all users for counting (select only columns that exist)
-      let selectFields = 'id, role, user_type, verified';
-      let hasBannedColumn = false;
-      let { data: allUsers, error: allError } = await supabase
+      // Get all users for counting (include banned_user, rejected_user as they exist)
+      const selectFields = 'id, email, fullname, role, user_type, verified, banned_user, rejected_user';
+      const hasBannedColumn = true;
+      const { data: allUsers, error: allError } = await supabase
         .from('users')
         .select(selectFields);
-
-      // Try to add banned/rejected columns if they exist
-      if (!allError) {
-        try {
-          const testQuery = await supabase
-            .from('users')
-            .select('banned, rejected')
-            .limit(1);
-          if (!testQuery.error) {
-            selectFields += ', banned, rejected';
-            hasBannedColumn = true;
-            ({ data: allUsers, error: allError } = await supabase
-              .from('users')
-              .select(selectFields));
-          }
-        } catch (e) {
-          // Columns don't exist, continue with basic select
-        }
-      }
 
       if (allError) throw allError;
       
@@ -488,7 +523,7 @@ async function handleGetUserCounts(req, res) {
       const userTypeUsers = allUsers.filter(u => u.user_type === 'user').length;
       const adminUsers = allUsers.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
       const newSignups = allUsers.filter(u => u.new_user === true).length;
-      const bannedUsers = hasBannedColumn ? allUsers.filter(u => u.banned || false).length : 0;
+      const bannedUsers = hasBannedColumn ? allUsers.filter(u => u.banned_user || false).length : 0;
       const verifiedUsers = allUsers.filter(u => u.verified === true).length;
 
       const result = {
@@ -506,19 +541,6 @@ async function handleGetUserCounts(req, res) {
 
       res.statusCode = 200;
       res.end(JSON.stringify(result));
-    } else {
-      res.statusCode = 200;
-      res.end(JSON.stringify({
-        success: true,
-        counts: {
-          totalUsers: 0,
-          adminUsers: 0,
-          newSignups: 0,
-          bannedUsers: 0
-        },
-        message: 'Supabase not configured'
-      }));
-    }
   } catch (error) {
     console.error('Error getting user counts:', error);
     res.statusCode = 500;

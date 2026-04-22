@@ -3234,10 +3234,16 @@
                     </div>
                     <div class="table-container">
                         <table id="banned-users-table">
-                            <thead><tr><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Banned</th><th>Raf/Edu_ID</th></tr></thead>
+                            <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Banned</th><th>Raf/Edu_ID</th></tr></thead>
                             <tbody id="banned-users-tbody"></tbody>
                         </table>
                         <div id="banned-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
+                    </div>
+                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                        <input type="checkbox" id="select-all-banned-main" onclick="toggleSelectAll('banned')">
+                        <button class="btn btn-success" onclick="bulkAction('banned', 'accept')">Accept</button>
+                        <button class="btn btn-danger" onclick="bulkAction('banned', 'remove')">Remove</button>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -4713,6 +4719,7 @@ STI Archives Admin`;
                 const date = formatDate(user.banned_at || user.created_at);
                 const rafEduId = user.raf_path || user.educator_id || '';
                 const row = `<tr>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}"></td>
                     <td>${user.name}</td>
                     <td>${user.email}</td>
                     <td>${user.role}</td>

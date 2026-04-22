@@ -910,11 +910,11 @@
         }
         .notification-item {
             display: flex;
+            flex-direction: column;
             align-items: flex-start;
             padding: 12px 20px;
             border-bottom: 1px solid #f0f0f0;
             transition: background-color 0.2s;
-            gap: 10px;
         }
         .notification-checkbox {
             margin-top: 2px;
@@ -934,7 +934,7 @@
             font-weight: bold;
             font-size: 12px;
             text-transform: uppercase;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             order: -1;
         }
         .notification-type.new-user {
@@ -949,13 +949,12 @@
         .notification-content {
             font-size: 14px;
             color: #333;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             flex: 1;
         }
         .notification-time {
             font-size: 12px;
             color: #666;
-            margin-top: auto;
         }
         .notification-footer {
             padding: 12px 20px;
@@ -3416,14 +3415,14 @@
                         email: user.email,
                         personal_email: user.email,
                         role: user.role,
-                        isActive: user.isActive,
-                        // Admin roles are verified, regular users are verified if active
-                        verified: user.role === 'admin' || user.role === 'coadmin' || user.role === 'subadmin' || user.isActive,
-                        rejected: false,
-                        banned: !user.isActive,
+                        isActive: user.verified,
+                        verified: user.verified,
+                        rejected: user.rejected_user,
+                        banned: user.banned_user,
+                        new_user: user.new_user,
                         created_at: user.created_at,
                         updated_at: user.updated_at,
-                        type: user.type
+                        type: user.user_type
                     }));
                     // Store pagination info
                     if (data.total !== undefined) {
@@ -4432,17 +4431,9 @@ STI Archives Admin`;
             });
         }
         function removeUser(userId, userName) {
-            if (confirm(`Are you sure you want to remove ${userName}'s information? This action cannot be undone.`)) {
-                // Remove from localStorage
-                const users = JSON.parse(localStorage.getItem('users') || '[]');
-                const updatedUsers = users.filter(user => (user.user_id || user.id) !== userId);
-                localStorage.setItem('users', JSON.stringify(updatedUsers));
-
-                // Remove the row from the table immediately
-                const row = event.target.closest('tr');
-                if (row) {
-                    row.remove();
-                }
+            if (confirm(`Are you sure you want to remove ${userName}?`)) {
+                // Implement remove logic
+                console.log('Removing user:', userId);
 
                 // Also try server-side removal
                 fetch('/api/users/remove', {
@@ -4463,6 +4454,20 @@ STI Archives Admin`;
                 });
 
                 alert('User removed successfully!');
+            }
+        }
+
+        function acceptUser(userId, userName) {
+            if (confirm(`Are you sure you want to accept ${userName}?`)) {
+                // Implement accept logic
+                console.log('Accepting user:', userId);
+            }
+        }
+
+        function banUser(userId, userName) {
+            if (confirm(`Are you sure you want to ban ${userName}?`)) {
+                // Implement ban logic
+                console.log('Banning user:', userId);
             }
         }
         function closeSendUpdateModal() {
@@ -4612,6 +4617,56 @@ STI Archives Admin`;
                 </tr>`;
                 tbody.innerHTML += row;
             });
+        }
+
+        async function populateVerifiedUsers() {
+            const users = await getUsers();
+            const tbody = document.getElementById('verified-users-tbody');
+            tbody.innerHTML = '';
+            users.filter(u => getUserStatus(u) === 'approved').forEach(user => {
+                const date = formatDate(user.verified_at || user.created_at);
+                const rafEduId = user.raf_path || user.educator_id || '';
+                const row = `<tr>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}"></td>
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role}</td>
+                    <td>${user.grade || '-'}</td>
+                    <td>${getSectionDisplay(user)}</td>
+                    <td>${date}</td>
+                    <td>${rafEduId}</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name}')">Remove</button></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+            paginateTable('verified-users-tbody', 10);
+        }
+
+        async function populateSigningUpUsers() {
+            const users = await getUsers();
+            const tbody = document.getElementById('signing-up-users-tbody');
+            tbody.innerHTML = '';
+            users.filter(u => getUserStatus(u) === 'pending').forEach(user => {
+                const date = formatDate(user.created_at);
+                const status = getUserStatus(user);
+                const rafEduId = user.raf_path || user.educator_id || '';
+                const row = `<tr>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}"></td>
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role}</td>
+                    <td>${user.grade || '-'}</td>
+                    <td>${getSectionDisplay(user)}</td>
+                    <td>${date}</td>
+                    <td>${status}</td>
+                    <td><button type="button" class="btn btn-info btn-sm" onclick="previewRaf('${rafEduId}')">Preview</button></td>
+                    <td><button class="btn btn-success btn-sm" onclick="acceptUser('${user.user_id || user.id}', '${user.name}')">Accept</button> <button class="btn btn-danger btn-sm" onclick="banUser('${user.user_id || user.id}', '${user.name}')">Ban</button> <button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name}')">Remove</button></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+            paginateTable('signing-up-users-tbody', 10);
         }
 
         async function renderUserChart() {
@@ -5623,6 +5678,10 @@ STI Archives Admin`;
             // Load data for specific sections
             if (section === 'admins') {
                 loadAdmins();
+            } else if (section === 'verified') {
+                populateVerifiedUsers();
+            } else if (section === 'signing-up') {
+                populateSigningUpUsers();
             }
         }
 

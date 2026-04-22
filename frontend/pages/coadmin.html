@@ -3747,7 +3747,7 @@
                     
                     <div style="overflow-x: auto;">
                         <table id="verified-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Verified</th><th>Raf/Edu_ID</th></tr></thead>
+                                                    <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Verified</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="verified-users-tbody">
                             </tbody>
                         </table>
@@ -3851,7 +3851,7 @@
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="banned-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Banned</th><th>Raf/Edu_ID</th></tr></thead>
+                                                    <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Banned</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="banned-users-tbody"></tbody>
                         </table>
                         <div id="banned-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
@@ -4189,7 +4189,7 @@
                 const userId = user.user_id || user.id;
                 if (user.verified) {
                     actions = `<button class="btn btn-danger btn-sm" onclick="removeUser('${userId}')">Remove</button>`;
-                } else if (user.banned) {
+                } else if (user.banned_user) {
                     actions = `<button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>`;
                 } else {
                     actions = `
@@ -4262,22 +4262,9 @@
                     const userStatus = getUserStatus(user);
                     if (userStatus === 'approved') {
                         if (DEBUG) console.log('DEBUG: Adding verified user to table:', user.name, user.email);
-                        // For verified users, replace Raf/Edu_ID with preview button
-                const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewRaf('${user.raf_path}')">Preview</button>` : `${user.raf_path || ''} ${user.educator_id || ''}`.trim() || '-';
-                        const verifiedRow = `<tr>
-                            <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
-                            <td>${userId}</td>
-                            <td>${getUserName(user)}</td>
-                            <td>${emailToUse}</td>
-                            <td>${formatRole(user.role)}</td>
-                            <td>${user.grade || '-'}</td>
-                            <td>${getSectionDisplay(user)}</td>
-                            <td>${date}</td>
-                            <td>${rafEduIdCell}</td>
-                        </tr>`;
-                        document.getElementById('verified-users-tbody').innerHTML += verifiedRow;
+                        document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
                     } else if (userStatus === 'banned' || userStatus === 'rejected') {
-                        document.getElementById('banned-users-tbody').innerHTML += rowWithoutActions;
+                        document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
                     } else if (userStatus === 'pending') {
                         if (DEBUG) console.log('DEBUG: Adding signing-up user to table:', user.name, user.email);
                         document.getElementById('signing-up-users-tbody').innerHTML += rowWithEmail;
@@ -4287,6 +4274,11 @@
 
             // Update counts
             updateDashboardCounts();
+
+            // Apply pagination
+            paginateTable('verified-users-tbody', 10);
+            paginateTable('signing-up-users-tbody', 10);
+            paginateTable('banned-users-tbody', 10);
 
             return users;
         }

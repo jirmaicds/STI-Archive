@@ -2807,6 +2807,18 @@
             padding: 15px;
             background-color: #f8f9fa;
             border-radius: 5px;
+            flex-wrap: wrap;
+        }
+        .pagination-controls button.disabled,
+        .pagination-controls .disabled,
+        .pagination-controls button:disabled {
+            opacity: 0.5 !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+        }
+        .pagination-info {
+            font-weight: 500;
+            white-space: nowrap;
         }
         .page-btn {
             background-color: #007bff;
@@ -3485,81 +3497,79 @@
             }
         }
 
-        function paginateTable(tbodyId, itemsPerPage) {
+        function paginateTable(tbodyId, rowsPerPage) {
             const tbody = document.getElementById(tbodyId);
             if (!tbody) return;
-            const rows = Array.from(tbody.querySelectorAll('tr'));
-            const totalPages = Math.ceil(rows.length / itemsPerPage);
-            let currentPage = 1;
 
-            function showPage(page) {
-                rows.forEach((row, index) => {
-                    row.style.display = (index >= (page - 1) * itemsPerPage && index < page * itemsPerPage) ? '' : 'none';
-                });
-            }
+            const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+            const totalPages = Math.ceil(rows.length / rowsPerPage);
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            if (!paginationDiv) return;
 
-            // Add pagination controls if not exists
-            let paginationDiv = tbody.parentElement.querySelector('.pagination');
-            if (!paginationDiv) {
-                paginationDiv = document.createElement('div');
-                paginationDiv.className = 'pagination';
-                tbody.parentElement.appendChild(paginationDiv);
-            }
-            paginationDiv.innerHTML = '';
+            let currentPage = parseInt(paginationDiv.dataset.currentPage) || 1;
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+            paginationDiv.dataset.currentPage = currentPage;
 
-            if (totalPages > 1) {
-                const prevBtn = document.createElement('button');
-                prevBtn.className = 'page-btn';
-                prevBtn.textContent = 'Previous';
-                prevBtn.disabled = currentPage === 1;
-                prevBtn.onclick = () => {
-                    if (currentPage > 1) {
-                        currentPage--;
-                        showPage(currentPage);
-                        updateButtons();
-                    }
-                };
-                paginationDiv.appendChild(prevBtn);
+            // Show only current page rows among visible
+            rows.forEach((row, index) => {
+                const page = Math.floor(index / rowsPerPage) + 1;
+                row.style.display = page === currentPage ? '' : 'none';
+            });
 
-                for (let i = 1; i <= totalPages; i++) {
-                    const pageBtn = document.createElement('button');
-                    pageBtn.className = 'page-number';
-                    pageBtn.textContent = i;
-                    if (i === currentPage) pageBtn.classList.add('active');
-                    pageBtn.onclick = () => {
-                        currentPage = i;
-                        showPage(currentPage);
-                        updateButtons();
-                    };
-                    paginationDiv.appendChild(pageBtn);
+            // Generate pagination buttons (always visible)
+            let buttons = '';
+
+            // Previous button
+            const prevDisabled = currentPage <= 1 || totalPages <= 1;
+            const prevClass = prevDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const prevOnClick = prevDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage - 1})"`;
+            const prevDisabledAttr = prevDisabled ? ' disabled' : '';
+            buttons += `<button class="${prevClass}"${prevDisabledAttr} ${prevOnClick}>Previous</button>`;
+
+            // Page number buttons (always show at least page 1)
+            if (totalPages > 0) {
+                const maxPagesToShow = Math.min(totalPages, 5); // Show max 5 page numbers
+                let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+                // Adjust start page if we're near the end
+                if (endPage - startPage + 1 < maxPagesToShow) {
+                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
                 }
 
-                const nextBtn = document.createElement('button');
-                nextBtn.className = 'page-btn';
-                nextBtn.textContent = 'Next';
-                nextBtn.disabled = currentPage === totalPages;
-                nextBtn.onclick = () => {
-                    if (currentPage < totalPages) {
-                        currentPage++;
-                        showPage(currentPage);
-                        updateButtons();
-                    }
-                };
-                paginationDiv.appendChild(nextBtn);
+                for (let i = startPage; i <= endPage; i++) {
+                    const isActive = i === currentPage;
+                    const pageDisabled = totalPages <= 1;
+                    const pageClass = isActive ?
+                        (pageDisabled ? 'btn btn-primary btn-sm active disabled' : 'btn btn-primary btn-sm active') :
+                        (pageDisabled ? 'btn btn-outline-secondary btn-sm disabled' : 'btn btn-outline-secondary btn-sm');
+                    const pageOnClick = pageDisabled ? '' : `onclick="changePage('${tbodyId}', ${i})"`;
+                    const pageDisabledAttr = pageDisabled ? ' disabled' : '';
+                    buttons += `<button class="${pageClass}"${pageDisabledAttr} ${pageOnClick}>${i}</button>`;
+                }
+            } else {
+                // No records, show disabled page 1
+                buttons += `<button class="btn btn-outline-secondary btn-sm disabled" disabled>1</button>`;
             }
 
-            function updateButtons() {
-                const pageNumbers = paginationDiv.querySelectorAll('.page-number');
-                pageNumbers.forEach((btn, index) => {
-                    btn.classList.toggle('active', index + 1 === currentPage);
-                });
-                const prevBtn = paginationDiv.querySelector('.page-btn:first-child');
-                const nextBtn = paginationDiv.querySelector('.page-btn:last-child');
-                if (prevBtn) prevBtn.disabled = currentPage === 1;
-                if (nextBtn) nextBtn.disabled = currentPage === totalPages;
-            }
+            // Next button
+            const nextDisabled = currentPage >= totalPages || totalPages <= 1;
+            const nextClass = nextDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const nextOnClick = nextDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage + 1})"`;
+            const nextDisabledAttr = nextDisabled ? ' disabled' : '';
+            buttons += `<button class="${nextClass}"${nextDisabledAttr} ${nextOnClick}>Next</button>`;
 
-            showPage(currentPage);
+            // Add page info
+            const startRecord = (currentPage - 1) * rowsPerPage + 1;
+            const endRecord = Math.min(currentPage * rowsPerPage, rows.length);
+            const infoText = totalPages > 0 ?
+                `Showing ${startRecord}-${endRecord} of ${rows.length} records` :
+                'No records to display';
+
+            buttons += `<span class="pagination-info" style="margin-left: 15px; font-size: 12px; color: #666;">${infoText}</span>`;
+
+            paginationDiv.innerHTML = buttons;
         }
 
         function getActivityLogs() {

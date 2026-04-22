@@ -1346,10 +1346,12 @@
             border-radius: 5px;
             flex-wrap: wrap;
         }
-        .pagination-controls .disabled {
-            opacity: 0.5;
+        .pagination-controls button.disabled,
+        .pagination-controls .disabled,
+        .pagination-controls button:disabled {
+            opacity: 0.5 !important;
             cursor: not-allowed !important;
-            pointer-events: none;
+            pointer-events: none !important;
         }
         .pagination-info {
             font-weight: 500;
@@ -10091,7 +10093,8 @@ STI Archives Admin`;
             const prevDisabled = currentPage <= 1 || totalPages <= 1;
             const prevClass = prevDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
             const prevOnClick = prevDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage - 1})"`;
-            buttons += `<button class="${prevClass}" ${prevOnClick}>Previous</button>`;
+            const prevDisabledAttr = prevDisabled ? ' disabled' : '';
+            buttons += `<button class="${prevClass}"${prevDisabledAttr} ${prevOnClick}>Previous</button>`;
 
             // Page number buttons (always show page 1 when there are records)
             if (totalPages > 0) {
@@ -10111,18 +10114,20 @@ STI Archives Admin`;
                         (pageDisabled ? 'btn btn-primary btn-sm active disabled' : 'btn btn-primary btn-sm active') :
                         (pageDisabled ? 'btn btn-outline-secondary btn-sm disabled' : 'btn btn-outline-secondary btn-sm');
                     const pageOnClick = pageDisabled ? '' : `onclick="changePage('${tbodyId}', ${i})"`;
-                    buttons += `<button class="${pageClass}" ${pageOnClick}>${i}</button>`;
+                    const pageDisabledAttr = pageDisabled ? ' disabled' : '';
+                    buttons += `<button class="${pageClass}"${pageDisabledAttr} ${pageOnClick}>${i}</button>`;
                 }
             } else {
                 // No records, show disabled page 1
-                buttons += `<button class="btn btn-outline-secondary btn-sm disabled">1</button>`;
+                buttons += `<button class="btn btn-outline-secondary btn-sm disabled" disabled>1</button>`;
             }
 
             // Next button
             const nextDisabled = currentPage >= totalPages || totalPages <= 1;
             const nextClass = nextDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
             const nextOnClick = nextDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage + 1})"`;
-            buttons += `<button class="${nextClass}" ${nextOnClick}>Next</button>`;
+            const nextDisabledAttr = nextDisabled ? ' disabled' : '';
+            buttons += `<button class="${nextClass}"${nextDisabledAttr} ${nextOnClick}>Next</button>`;
 
             // Add page info
             const startRecord = (currentPage - 1) * rowsPerPage + 1;

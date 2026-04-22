@@ -1048,6 +1048,18 @@
             padding: 15px;
             background-color: #f8f9fa;
             border-radius: 5px;
+            flex-wrap: wrap;
+        }
+        .pagination-controls button.disabled,
+        .pagination-controls .disabled,
+        .pagination-controls button:disabled {
+            opacity: 0.5 !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+        }
+        .pagination-info {
+            font-weight: 500;
+            white-space: nowrap;
         }
         .page-number {
             padding: 8px 12px;
@@ -8798,19 +8810,58 @@
                 row.style.display = page === currentPage ? '' : 'none';
             });
 
-            // Generate pagination buttons
+            // Generate pagination buttons (always visible)
             let buttons = '';
-            if (totalPages > 1) {
-                if (currentPage > 1) buttons += `<button onclick="changePage('${tbodyId}', ${currentPage - 1})">Previous</button>`;
-                for (let i = 1; i <= totalPages; i++) {
-                    if (i === currentPage) {
-                        buttons += `<button class="active" onclick="changePage('${tbodyId}', ${i})">${i}</button>`;
-                    } else {
-                        buttons += `<button onclick="changePage('${tbodyId}', ${i})">${i}</button>`;
-                    }
+
+            // Previous button
+            const prevDisabled = currentPage <= 1 || totalPages <= 1;
+            const prevClass = prevDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const prevOnClick = prevDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage - 1})"`;
+            const prevDisabledAttr = prevDisabled ? ' disabled' : '';
+            buttons += `<button class="${prevClass}"${prevDisabledAttr} ${prevOnClick}>Previous</button>`;
+
+            // Page number buttons (always show at least page 1)
+            if (totalPages > 0) {
+                const maxPagesToShow = Math.min(totalPages, 5); // Show max 5 page numbers
+                let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+                // Adjust start page if we're near the end
+                if (endPage - startPage + 1 < maxPagesToShow) {
+                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
                 }
-                if (currentPage < totalPages) buttons += `<button onclick="changePage('${tbodyId}', ${currentPage + 1})">Next</button>`;
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const isActive = i === currentPage;
+                    const pageDisabled = totalPages <= 1;
+                    const pageClass = isActive ?
+                        (pageDisabled ? 'btn btn-primary btn-sm active disabled' : 'btn btn-primary btn-sm active') :
+                        (pageDisabled ? 'btn btn-outline-secondary btn-sm disabled' : 'btn btn-outline-secondary btn-sm');
+                    const pageOnClick = pageDisabled ? '' : `onclick="changePage('${tbodyId}', ${i})"`;
+                    const pageDisabledAttr = pageDisabled ? ' disabled' : '';
+                    buttons += `<button class="${pageClass}"${pageDisabledAttr} ${pageOnClick}>${i}</button>`;
+                }
+            } else {
+                // No records, show disabled page 1
+                buttons += `<button class="btn btn-outline-secondary btn-sm disabled" disabled>1</button>`;
             }
+
+            // Next button
+            const nextDisabled = currentPage >= totalPages || totalPages <= 1;
+            const nextClass = nextDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const nextOnClick = nextDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage + 1})"`;
+            const nextDisabledAttr = nextDisabled ? ' disabled' : '';
+            buttons += `<button class="${nextClass}"${nextDisabledAttr} ${nextOnClick}>Next</button>`;
+
+            // Add page info
+            const startRecord = (currentPage - 1) * rowsPerPage + 1;
+            const endRecord = Math.min(currentPage * rowsPerPage, rows.length);
+            const infoText = totalPages > 0 ?
+                `Showing ${startRecord}-${endRecord} of ${rows.length} records` :
+                'No records to display';
+
+            buttons += `<span class="pagination-info" style="margin-left: 15px; font-size: 12px; color: #666;">${infoText}</span>`;
+
             paginationDiv.innerHTML = buttons;
         }
 

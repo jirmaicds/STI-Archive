@@ -4668,13 +4668,9 @@ STI Archives Admin`;
 
         async function populateVerifiedUsers() {
             const users = await getUsers();
-            console.log('DEBUG: All users:', users);
-            console.log('DEBUG: Verified users before filter:', users.filter(u => getUserStatus(u) === 'approved'));
-            console.log('DEBUG: Users with type user:', users.filter(u => u.type === 'user'));
             const tbody = document.getElementById('verified-users-tbody');
             tbody.innerHTML = '';
-            const filteredUsers = users.filter(u => getUserStatus(u) === 'approved' && (u.type === 'user' || !u.type) && !['admin', 'coadmin', 'subadmin'].includes(u.type ? u.type.toLowerCase() : ''));
-            console.log('DEBUG: Filtered verified users:', filteredUsers);
+            const filteredUsers = users.filter(u => getUserStatus(u) === 'approved' && u.type === 'user');
             filteredUsers.forEach(user => {
                 const date = formatDate(user.verified_at || user.created_at);
                 const rafEduId = user.raf_path || user.educator_id || '';

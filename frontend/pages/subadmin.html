@@ -3472,7 +3472,7 @@
 
         async function loadUsers() {
             try {
-                const response = await fetch('/api/users?limit=10&offset=0');
+                const response = await fetch('/api/users?limit=100&offset=0');
                 const data = await response.json();
                 if (Array.isArray(data)) {
                     users = data;
@@ -3643,7 +3643,7 @@
                         const verifiedEl = document.getElementById('verified-users-count');
                         const signingUpEl = document.getElementById('signing-up-users-count');
 
-                        if (verifiedEl) verifiedEl.textContent = countData.counts.verifiedUsers || 0;
+                        if (verifiedEl) verifiedEl.textContent = countData.counts.usersCount || 0;
                         if (signingUpEl) signingUpEl.textContent = countData.counts.newSignups || 0;
                     }
                 }
@@ -3651,13 +3651,13 @@
                 console.warn('Failed to fetch total user counts, falling back to local data:', error);
                 // Fallback to local calculation
                 if (!Array.isArray(users)) users = [];
-                const verifiedCount = users.filter(u => getUserStatus(u) === 'approved').length;
+                const usersCount = users.filter(u => u.user_type === 'user').length;
                 const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
 
                 const verifiedEl = document.getElementById('verified-users-count');
                 const signingUpEl = document.getElementById('signing-up-users-count');
 
-                if (verifiedEl) verifiedEl.textContent = verifiedCount;
+                if (verifiedEl) verifiedEl.textContent = usersCount;
                 if (signingUpEl) signingUpEl.textContent = signingUpCount;
             }
         }

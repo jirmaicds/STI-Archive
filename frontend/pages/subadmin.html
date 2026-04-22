@@ -3075,7 +3075,7 @@
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="verified-users-table">
-                            <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>Id</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Verified</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
+                            <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Verified</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="verified-users-tbody">
                         </tbody>
                         </table>
@@ -3181,7 +3181,7 @@
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="signing-up-users-table">
-                            <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>Id</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Signed Up</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
+                            <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Signed Up</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="signing-up-users-tbody"></tbody>
                         </table>
                         <div id="signing-up-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
@@ -3629,51 +3629,17 @@
         }
 
         // Update dashboard counts
-        async function updateDashboardCounts() {
-            // Get total counts without pagination limits
-            try {
-                const token = localStorage.getItem('sti_auth_token');
-                const response = await fetch('/api/users/count?_=' + Date.now(), {
-                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-                });
+        function updateDashboardCounts() {
+            // Use local calculation since users are already loaded
+            if (!Array.isArray(users)) users = [];
+            const verifiedCount = users.filter(u => getUserStatus(u) === 'approved').length;
+            const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
 
-                if (response.ok) {
-                    const countData = await response.json();
-                    if (countData.success && countData.counts) {
-                        const verifiedEl = document.getElementById('verified-users-count');
-                        const adminEl = document.getElementById('admin-users-count');
-                        const signingUpEl = document.getElementById('signing-up-users-count');
+            const verifiedEl = document.getElementById('verified-users-count');
+            const signingUpEl = document.getElementById('signing-up-users-count');
 
-                        if (verifiedEl) verifiedEl.textContent = countData.counts.usersCount || 0;
-                        if (adminEl) adminEl.textContent = countData.counts.adminUsers || 0;
-                        if (signingUpEl) signingUpEl.textContent = countData.counts.newSignups || 0;
-                    }
-                }
-            } catch (error) {
-                console.warn('Failed to fetch total user counts, falling back to local data:', error);
-                // Fallback to local calculation
-                if (!Array.isArray(users)) users = [];
-                const usersCount = users.filter(u => getUserStatus(u) === 'approved').length;
-                const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-                const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
-
-                const verifiedEl = document.getElementById('verified-users-count');
-                const adminEl = document.getElementById('admin-users-count');
-                const signingUpEl = document.getElementById('signing-up-users-count');
-
-                if (verifiedEl) verifiedEl.textContent = usersCount;
-                if (adminEl) adminEl.textContent = adminCount;
-                if (signingUpEl) signingUpEl.textContent = signingUpCount;
-            }
-
-            // Update article counts (these come from localStorage, no API limit needed)
-            const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
-            const researchCount = allArticles.filter(a => a.category === 'research').length;
-            const capstoneCount = allArticles.filter(a => a.category === 'capstone').length;
-            const totalUploads = researchCount + capstoneCount;
-
-            const revenueEl = document.getElementById('revenue-count');
-            if (revenueEl) revenueEl.textContent = totalUploads;
+            if (verifiedEl) verifiedEl.textContent = verifiedCount;
+            if (signingUpEl) signingUpEl.textContent = signingUpCount;
         }
         function formatDate(dateString) {
             if (!dateString || dateString === 'N/A') return 'N/A';
@@ -4628,7 +4594,6 @@ STI Archives Admin`;
                 const rafEduId = user.raf_path || user.educator_id || '';
                 const row = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}"></td>
-                    <td>${user.id}</td>
                     <td>${user.name}</td>
                     <td>${user.email}</td>
                     <td>${user.role}</td>
@@ -4653,7 +4618,6 @@ STI Archives Admin`;
                 const rafEduId = user.raf_path || user.educator_id || '';
                 const row = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}"></td>
-                    <td>${user.id}</td>
                     <td>${user.name}</td>
                     <td>${user.email}</td>
                     <td>${user.role}</td>

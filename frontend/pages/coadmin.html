@@ -3747,7 +3747,7 @@
                     
                     <div style="overflow-x: auto;">
                         <table id="verified-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Verified</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
+                                                    <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Verified</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="verified-users-tbody">
                             </tbody>
                         </table>
@@ -3800,7 +3800,7 @@
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="signing-up-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Signed Up</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
+                                                    <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Signed Up</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="signing-up-users-tbody"></tbody>
                         </table>
                         <div id="signing-up-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
@@ -3851,7 +3851,7 @@
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="banned-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Banned</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
+                                                    <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Banned</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="banned-users-tbody"></tbody>
                         </table>
                         <div id="banned-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
@@ -4203,7 +4203,6 @@
                 const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewRaf('${user.raf_path}')">Preview</button>` : `${user.raf_path || ''} ${user.educator_id || ''}`.trim() || '-';
                 const rowWithEmail = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
-                    <td>${userId}</td>
                     <td>${getUserName(user)}</td>
                     <td>${emailToUse}</td>
                     <td>${formatRole(user.role)}</td>
@@ -4215,7 +4214,6 @@
                 </tr>`;
                 const rowWithoutActions = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
-                    <td>${userId}</td>
                     <td>${getUserName(user)}</td>
                     <td>${emailToUse}</td>
                     <td>${formatRole(user.role)}</td>

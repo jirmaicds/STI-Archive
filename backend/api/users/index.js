@@ -475,6 +475,7 @@ async function handleGetUserCounts(req, res) {
       const adminUsers = allUsers.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
       const newSignups = allUsers.filter(u => u.new_user === true).length;
       const bannedUsers = hasBannedColumn ? allUsers.filter(u => u.banned || false).length : 0;
+      const verifiedUsers = allUsers.filter(u => u.verified === true).length;
 
       const result = {
         success: true,
@@ -482,7 +483,8 @@ async function handleGetUserCounts(req, res) {
           adminUsers,
           newSignups,
           bannedUsers,
-          usersCount: userTypeUsers
+          usersCount: userTypeUsers,
+          verifiedUsers
         }
       };
 

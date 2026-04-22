@@ -2925,7 +2925,7 @@
     <div class="main-content" id="main-content">
         <div id="dashboard" class="content-section active">
             <div class="dashboard">
-                <div class="card" data-section="verified">
+                <div class="card user-card" data-section="verified">
                     <h3>Users</h3>
                     <p id="verified-users-count">0</p>
                 </div>
@@ -3629,17 +3629,37 @@
         }
 
         // Update dashboard counts
-        function updateDashboardCounts() {
-            // Use local calculation since users are already loaded
-            if (!Array.isArray(users)) users = [];
-            const verifiedCount = users.filter(u => getUserStatus(u) === 'approved').length;
-            const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
+        async function updateDashboardCounts() {
+            // Get total counts without pagination limits
+            try {
+                const token = localStorage.getItem('sti_auth_token');
+                const response = await fetch('/api/users/count?_=' + Date.now(), {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
 
-            const verifiedEl = document.getElementById('verified-users-count');
-            const signingUpEl = document.getElementById('signing-up-users-count');
+                if (response.ok) {
+                    const countData = await response.json();
+                    if (countData.success && countData.counts) {
+                        const verifiedEl = document.getElementById('verified-users-count');
+                        const signingUpEl = document.getElementById('signing-up-users-count');
 
-            if (verifiedEl) verifiedEl.textContent = verifiedCount;
-            if (signingUpEl) signingUpEl.textContent = signingUpCount;
+                        if (verifiedEl) verifiedEl.textContent = countData.counts.verifiedUsers || 0;
+                        if (signingUpEl) signingUpEl.textContent = countData.counts.newSignups || 0;
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to fetch total user counts, falling back to local data:', error);
+                // Fallback to local calculation
+                if (!Array.isArray(users)) users = [];
+                const verifiedCount = users.filter(u => getUserStatus(u) === 'approved').length;
+                const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
+
+                const verifiedEl = document.getElementById('verified-users-count');
+                const signingUpEl = document.getElementById('signing-up-users-count');
+
+                if (verifiedEl) verifiedEl.textContent = verifiedCount;
+                if (signingUpEl) signingUpEl.textContent = signingUpCount;
+            }
         }
         function formatDate(dateString) {
             if (!dateString || dateString === 'N/A') return 'N/A';

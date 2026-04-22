@@ -6405,9 +6405,9 @@ STI Archives Admin`;
             // Map fields for display
             filteredUsers.forEach(user => {
                 if (user.role === 'senior_high') {
-                    user.strand = user.section_degree || user.strand;
+                    user.strand = user.Sec_Degr || user.strand;
                 } else if (user.role === 'college') {
-                    user.section = user.section_degree || user.section;
+                    user.section = user.Sec_Degr || user.section;
                 }
             });
             // Clear all tbodys

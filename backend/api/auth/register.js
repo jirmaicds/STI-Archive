@@ -131,7 +131,7 @@ async function handleRegister(req, res) {
       rejected_user: false,   // No one starts as rejected
       banned_user: false,     // No one starts as banned
       grade: grade || null,
-      section_degree: section_degree || section || null,
+      Sec_Degr: section_degree || section || null,
       registration_assessment_form: null,
       educator_id: null,
       activation_token: activationToken,

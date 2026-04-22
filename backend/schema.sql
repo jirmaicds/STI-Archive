@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
   CONSTRAINT role_check CHECK (role IN ('shs', 'college', 'teacher', 'admin', 'coadmin', 'subadmin', 'pending')),
    program VARCHAR(100),
    grade VARCHAR(50),
-   section_degree VARCHAR(100),
+    Sec_Degr VARCHAR(100),
    registration_assessment_form TEXT,
    educator_id VARCHAR(100),
    verified BOOLEAN DEFAULT FALSE,

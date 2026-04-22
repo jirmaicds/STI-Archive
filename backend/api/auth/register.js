@@ -11,6 +11,13 @@ const path = require('path');
 const { getServiceSupabase } = require(path.resolve(__dirname, '../../services/supabase.js'));
 const emailService = require(path.resolve(__dirname, '../services/EmailService.js'));
 
+// Helper to get current time in Philippine timezone as ISO string
+function getPhilippineISOString(date = new Date()) {
+  const philippineOffset = 8 * 60 * 60 * 1000; // 8 hours in milliseconds
+  const philippineTime = new Date(date.getTime() + philippineOffset);
+  return philippineTime.toISOString();
+}
+
 // Helper to set CORS headers
 function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -128,7 +135,7 @@ async function handleRegister(req, res) {
       registration_assessment_form: null,
       educator_id: null,
       activation_token: activationToken,
-      created_at: new Date().toISOString()
+      created_at: getPhilippineISOString()
     };
     console.log('Creating user with verified:', newUser.verified);
 
@@ -425,10 +432,10 @@ async function handleForgotPassword(req, res) {
       // Update user with reset token
       const { error } = await supabase
         .from('users')
-        .update({ 
-          reset_token: resetToken, 
+        .update({
+          reset_token: resetToken,
           reset_code: resetCode,
-          reset_expires: new Date(Date.now() + 3600000).toISOString() // 1 hour
+          reset_expires: getPhilippineISOString(new Date(Date.now() + 3600000)) // 1 hour
         })
         .eq('email', email.toLowerCase());
 

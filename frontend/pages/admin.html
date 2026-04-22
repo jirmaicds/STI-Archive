@@ -10080,7 +10080,7 @@ STI Archives Admin`;
             const tbody = document.getElementById(tbodyId);
             if (!tbody) return;
 
-            const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
             const totalPages = Math.ceil(rows.length / rowsPerPage);
             const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
             if (!paginationDiv) return;
@@ -10090,7 +10090,7 @@ STI Archives Admin`;
             if (currentPage < 1) currentPage = 1;
             paginationDiv.dataset.currentPage = currentPage;
 
-            // Show only current page rows among visible
+            // Show only current page rows
             rows.forEach((row, index) => {
                 const page = Math.floor(index / rowsPerPage) + 1;
                 row.style.display = page === currentPage ? '' : 'none';

@@ -3424,6 +3424,9 @@ window.supabaseHelpers = {
                         sessionStorage.setItem('pendingVerificationUserId', data.user.id);
                         console.log('DEBUG: Showing waiting verification for pending user userId:', data.user.id);
 
+                        // Clear signup form data from sessionStorage
+                        sessionStorage.removeItem('signupFormData');
+
                         // Show waiting for verification message
                         showWaitingForVerification(data.user.id);
                        
@@ -3448,6 +3451,9 @@ window.supabaseHelpers = {
                     // Store user_id for verification polling
                     sessionStorage.setItem('pendingVerificationUserId', data.user.id);
                     console.log('DEBUG: Showing waiting verification for userId:', data.user.id);
+
+                    // Clear signup form data from sessionStorage
+                    sessionStorage.removeItem('signupFormData');
 
                     // Show waiting for verification message
                     showWaitingForVerification(data.user.id);
@@ -4406,6 +4412,12 @@ window.supabaseHelpers = {
             // Hide login and signup tabs
             document.getElementById('loginTab').style.display = 'none';
             document.getElementById('signupTab').style.display = 'none';
+
+            // Remove the "back to signup" link to prevent redundant registration attempts
+            const backToSignupLink = document.querySelector('#waitingVerification a[onclick="backToSignup()"]');
+            if (backToSignupLink) {
+                backToSignupLink.style.display = 'none';
+            }
 
             // Start polling for verification status
             startVerificationPolling(userId);

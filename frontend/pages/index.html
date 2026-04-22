@@ -4247,6 +4247,10 @@ window.supabaseHelpers = {
                             if (typeof updateSectionOptions === 'function') {
                                 updateSectionOptions();
                             }
+                            // Trigger role validation to show RAF group for senior_high and college
+                            if (typeof validateRole === 'function') {
+                                validateRole();
+                            }
                         }
                     }
                     if (formData.terms) {

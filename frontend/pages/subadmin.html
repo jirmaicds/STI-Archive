@@ -2799,6 +2799,15 @@
         .pagination button::-moz-focus-inner {
             border: 0;
         }
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
         .page-btn {
             background-color: #007bff;
             color: white;
@@ -3060,10 +3069,8 @@
                             <tbody id="verified-users-tbody">
                         </tbody>
                         </table>
+                        <div id="verified-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
                     </div>
-                    <div class="pagination" id="signing-up-pagination" style="text-align: right; margin-top: 10px;"></div>
-                </div>
-                    <div class="pagination" id="verified-pagination" style="text-align: right; margin-top: 10px;"></div>
                 </div>
                 <!-- Signing Up Users Section -->
                 <div id="signing-up-section" class="user-subsection" style="--border-color: #ffc107; --header-color: #ffc107;">
@@ -3167,6 +3174,7 @@
                             <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>Id</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Signed Up</th><th>Status</th><th>RAF Preview</th><th>Actions</th></tr></thead>
                             <tbody id="signing-up-users-tbody"></tbody>
                         </table>
+                        <div id="signing-up-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
                     </div>
                     <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
                         <input type="checkbox" id="select-all-signing-up-main" onclick="toggleSelectAll('signing-up')">

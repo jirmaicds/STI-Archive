@@ -474,23 +474,23 @@ async function handleGetUserCounts(req, res) {
       return;
     }
 
-    // Get all users for counting (include banned_user, rejected_user as they exist)
-    const selectFields = 'id, email, fullname, role, user_type, verified, banned_user, rejected_user';
-    const hasBannedColumn = true;
-    const { data: allUsers, error: allError } = await supabase
-      .from('users')
-      .select(selectFields);
+      // Get all users for counting (include banned_user, rejected_user as they exist)
+      const selectFields = 'id, email, fullname, role, user_type, verified, banned_user, rejected_user';
+      const hasBannedColumn = true;
+      const { data: allUsers, error: allError } = await supabase
+        .from('users')
+        .select(selectFields);
 
-    if (allError) throw allError;
+      if (allError) throw allError;
 
-    // Calculate counts based on user_type
-    console.log('DEBUG API: All users for counting:', allUsers.map(u => ({ id: u.id, user_type: u.user_type, role: u.role, verified: u.verified })));
+      // Calculate counts based on user_type
+      console.log('DEBUG API: All users for counting:', allUsers.map(u => ({ id: u.id, user_type: u.user_type, role: u.role, verified: u.verified })));
 
-    const userTypeUsers = allUsers.filter(u => u.user_type === 'user').length;
-    const adminUsers = allUsers.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-    const newSignups = allUsers.filter(u => u.new_user === true).length;
-    const bannedUsers = hasBannedColumn ? allUsers.filter(u => u.banned_user || false).length : 0;
-    const verifiedUsers = allUsers.filter(u => u.verified === true).length;
+      const userTypeUsers = allUsers.filter(u => u.user_type === 'user').length;
+      const adminUsers = allUsers.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+      const newSignups = allUsers.filter(u => u.new_user === true).length;
+      const bannedUsers = hasBannedColumn ? allUsers.filter(u => u.banned_user || false).length : 0;
+      const verifiedUsers = allUsers.filter(u => u.verified === true).length;
 
     const result = {
       success: true,

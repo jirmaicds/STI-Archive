@@ -5796,8 +5796,13 @@
             if (window.signingUpChart) {
                 window.signingUpChart.destroy();
             }
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            if (!Array.isArray(users)) return; // Skip if not array
+            let users;
+            try {
+                users = JSON.parse(localStorage.getItem('users') || '[]');
+            } catch (e) {
+                users = [];
+            }
+            if (!Array.isArray(users)) users = [];
             let filteredUsers = users.filter(user => !user.verified && !user.rejected && !user.banned);
             if (filter) {
                 filteredUsers = filteredUsers.filter(user => user.role === filter);

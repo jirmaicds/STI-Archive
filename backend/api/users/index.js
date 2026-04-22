@@ -73,6 +73,8 @@ async function handleGetUsers(req, res) {
       const status = url.searchParams.get('status'); // pending, approved, rejected, banned
       const role = url.searchParams.get('role');
       const search = url.searchParams.get('search');
+      const limit = parseInt(url.searchParams.get('limit')) || 50;
+      const offset = parseInt(url.searchParams.get('offset')) || 0;
 
       if (isSupabaseConfigured()) {
       const supabase = getServiceSupabase();
@@ -90,7 +92,7 @@ async function handleGetUsers(req, res) {
       const noMetaSelectFields = 'id, email, fullname, role, user_type, verified, new_user, rejected_user, banned_user';
       let query = supabase
         .from('users')
-        .select(defaultSelectFields);
+        .select(defaultSelectFields, { count: 'exact' });
 
       // Apply filters using boolean status columns
       if (status === 'pending') {
@@ -110,17 +112,18 @@ async function handleGetUsers(req, res) {
       if (search) {
         query = query.or(`fullname.ilike.%${search}%,email.ilike.%${search}%`);
       }
-      
+
       query = query.order('created_at', { ascending: false });
-      
-      let data, error;
-      ({ data, error } = await query);
+      query = query.range(offset, offset + limit - 1);
+
+      let data, error, count;
+      ({ data, error, count } = await query);
       
       if (error && error.code === '42703') {
         // Missing column in schema: retry with reduced projection
         console.warn('Supabase users query 42703; retrying with less fields', error.message);
-        query = supabase.from('users').select(noMetaSelectFields).order('created_at', { ascending: false });
-        ({ data, error } = await query);
+        query = supabase.from('users').select(noMetaSelectFields, { count: 'exact' }).order('created_at', { ascending: false }).range(offset, offset + limit - 1);
+        ({ data, error, count } = await query);
       }
       
       if (error) throw error;
@@ -142,16 +145,19 @@ async function handleGetUsers(req, res) {
       });
 
       res.statusCode = 200;
-      res.end(JSON.stringify({ success: true, users }));
-    } else {
-      // Fallback: return mock data
-      res.statusCode = 200;
-      res.end(JSON.stringify({ 
-        success: true, 
-        users: [],
-        message: 'Supabase not configured - using fallback mode'
-      }));
-    }
+      res.end(JSON.stringify({ success: true, users, total: count || 0, limit, offset }));
+      } else {
+        // Fallback: return mock data
+        res.statusCode = 200;
+        res.end(JSON.stringify({
+          success: true,
+          users: [],
+          total: 0,
+          limit,
+          offset,
+          message: 'Supabase not configured - using fallback mode'
+        }));
+      }
   } catch (error) {
     console.error('Error getting users:', {
       message: error.message,
@@ -474,7 +480,7 @@ async function handleGetUserCounts(req, res) {
           adminUsers,
           newSignups,
           bannedUsers,
-          usersCount
+          usersCount: userTypeUsers
         }
       };
 

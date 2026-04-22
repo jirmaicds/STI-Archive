@@ -3373,7 +3373,7 @@
 
         // === UTILS ===
         let isLoadingUsers = false;
-        async function getUsers(forceRefresh = false) {
+        async function getUsers(forceRefresh = false, page = 1, limit = 50) {
             if (forceRefresh) {
                 localStorage.removeItem('users');
                 isLoadingUsers = false;
@@ -3383,7 +3383,8 @@
             isLoadingUsers = true;
             if (DEBUG) console.log('DEBUG: Attempting to fetch users from user.json...');
             try {
-                const response = await fetch('/api/users?limit=10&offset=0');
+                const offset = (page - 1) * limit;
+                const response = await fetch(`/api/users?limit=${limit}&offset=${offset}&_=${Date.now()}`);
                 if (DEBUG) console.log('DEBUG: Fetch response status:', response.status);
                 if (response.ok) {
                     if (DEBUG) console.log('DEBUG: Server responded successfully, parsing JSON...');
@@ -3405,6 +3406,12 @@
                         updated_at: user.updated_at,
                         type: user.type
                     }));
+                    // Store pagination info
+                    if (data.total !== undefined) {
+                        users._total = data.total;
+                        users._limit = data.limit || limit;
+                        users._offset = data.offset || offset;
+                    }
                     // Save to localStorage for fallback
                     localStorage.setItem('users', JSON.stringify(users));
                     isLoadingUsers = false;
@@ -3606,8 +3613,44 @@
         }
 
         // Update dashboard counts
-        function updateDashboardCounts() {
-            if (!Array.isArray(users)) users = [];
+        async function updateDashboardCounts() {
+            // Get total counts without pagination limits
+            try {
+                const token = localStorage.getItem('sti_auth_token');
+                const response = await fetch('/api/users/count?_=' + Date.now(), {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+
+                if (response.ok) {
+                    const countData = await response.json();
+                    if (countData.success && countData.counts) {
+                        const verifiedEl = document.getElementById('verified-users-count');
+                        const adminEl = document.getElementById('admin-users-count');
+                        const signingUpEl = document.getElementById('signing-up-users-count');
+
+                        if (verifiedEl) verifiedEl.textContent = countData.counts.usersCount || 0;
+                        if (adminEl) adminEl.textContent = countData.counts.adminUsers || 0;
+                        if (signingUpEl) signingUpEl.textContent = countData.counts.newSignups || 0;
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to fetch total user counts, falling back to local data:', error);
+                // Fallback to local calculation
+                if (!Array.isArray(users)) users = [];
+                const usersCount = users.filter(u => getUserStatus(u) === 'approved').length;
+                const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+                const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
+
+                const verifiedEl = document.getElementById('verified-users-count');
+                const adminEl = document.getElementById('admin-users-count');
+                const signingUpEl = document.getElementById('signing-up-users-count');
+
+                if (verifiedEl) verifiedEl.textContent = usersCount;
+                if (adminEl) adminEl.textContent = adminCount;
+                if (signingUpEl) signingUpEl.textContent = signingUpCount;
+            }
+
+            // Update article counts (these come from localStorage, no API limit needed)
             const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
             const researchCount = allArticles.filter(a => a.category === 'research').length;
             const capstoneCount = allArticles.filter(a => a.category === 'capstone').length;
@@ -3615,18 +3658,6 @@
 
             const revenueEl = document.getElementById('revenue-count');
             if (revenueEl) revenueEl.textContent = totalUploads;
-
-            const usersCount = users.filter(u => getUserStatus(u) === 'approved').length;
-            const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-            const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
-
-            const verifiedEl = document.getElementById('verified-users-count');
-            const adminEl = document.getElementById('admin-users-count');
-            const signingUpEl = document.getElementById('signing-up-users-count');
-
-            if (verifiedEl) verifiedEl.textContent = usersCount;
-            if (adminEl) adminEl.textContent = adminCount;
-            if (signingUpEl) signingUpEl.textContent = signingUpCount;
         }
         function formatDate(dateString) {
             if (!dateString || dateString === 'N/A') return 'N/A';

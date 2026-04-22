@@ -4022,6 +4022,7 @@
                             <tbody id="verified-users-tbody">
                             </tbody>
                         </table>
+                        <div id="verified-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
                     </div>
                 </div>
                 <!-- Signing Up Users Section -->
@@ -4074,6 +4075,7 @@
                                                     <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Signed Up</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="signing-up-users-tbody"></tbody>
                         </table>
+                        <div id="signing-up-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
                     </div>
                 </div>
                 <!-- Banned Users Section -->
@@ -4126,8 +4128,7 @@
                                                     <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Banned</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="banned-users-tbody"></tbody>
                         </table>
-                    </div>
-                    <div class="pagination" id="banned-pagination" style="text-align: right; margin-top: 10px;"></div>
+                        <div id="banned-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
 
                 </div>
 
@@ -4607,7 +4608,7 @@
         }
 
         let isLoadingUsers = false;
-        async function getUsers(forceRefresh = false) {
+        async function getUsers(forceRefresh = false, page = 1, limit = 50) {
             if (forceRefresh) {
                 // Clear localStorage and force reload from server
                 localStorage.removeItem('users');
@@ -4621,9 +4622,10 @@
                 // Get auth token from localStorage (optional for admin)
                 const token = localStorage.getItem('sti_auth_token');
                 if (DEBUG) console.log('DEBUG: Auth token:', token ? 'present' : 'missing');
-                
+
+                const offset = (page - 1) * limit;
                 // Add cache-busting query parameter
-                const response = await fetch('/api/users?limit=10&offset=0&_=' + Date.now(), {
+                const response = await fetch(`/api/users?limit=${limit}&offset=${offset}&_=${Date.now()}`, {
                     headers: token ? {
                         'Authorization': `Bearer ${token}`
                     } : {}
@@ -4646,6 +4648,12 @@
                             user.name = user.fullname;
                         }
                     });
+                    // Store pagination info
+                    if (usersData.total !== undefined) {
+                        userData._total = usersData.total;
+                        userData._limit = usersData.limit || limit;
+                        userData._offset = usersData.offset || offset;
+                    }
                     // Save to localStorage for offline use
                     localStorage.setItem('users', JSON.stringify(userData));
                     isLoadingUsers = false;
@@ -4690,7 +4698,7 @@
             localStorage.setItem('adminArticles', JSON.stringify(articles));
         }
         function loadArticlesFromServer() {
-            return fetch('/api/articles?limit=10&offset=0')
+            return fetch('/api/articles')
                 .then(response => {
                     if (!response.ok) throw new Error('Server error');
                     return response.json();
@@ -6795,8 +6803,44 @@ STI Archives Admin`;
        
 
         // Update dashboard counts
-        function updateDashboardCounts() {
-            if (!Array.isArray(users)) users = [];
+        async function updateDashboardCounts() {
+            // Get total counts without pagination limits
+            try {
+                const token = localStorage.getItem('sti_auth_token');
+                const response = await fetch('/api/users/count?_=' + Date.now(), {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+
+                if (response.ok) {
+                    const countData = await response.json();
+                    if (countData.success && countData.counts) {
+                        const verifiedEl = document.getElementById('verified-users-count');
+                        const adminEl = document.getElementById('admin-users-count');
+                        const signingUpEl = document.getElementById('signing-up-users-count');
+
+                        if (verifiedEl) verifiedEl.textContent = countData.counts.usersCount || 0;
+                        if (adminEl) adminEl.textContent = countData.counts.adminUsers || 0;
+                        if (signingUpEl) signingUpEl.textContent = countData.counts.newSignups || 0;
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to fetch total user counts, falling back to local data:', error);
+                // Fallback to local calculation
+                if (!Array.isArray(users)) users = [];
+                const usersCount = users.filter(u => getUserStatus(u) === 'approved').length;
+                const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+                const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
+
+                const verifiedEl = document.getElementById('verified-users-count');
+                const adminEl = document.getElementById('admin-users-count');
+                const signingUpEl = document.getElementById('signing-up-users-count');
+
+                if (verifiedEl) verifiedEl.textContent = usersCount;
+                if (adminEl) adminEl.textContent = adminCount;
+                if (signingUpEl) signingUpEl.textContent = signingUpCount;
+            }
+
+            // Update article counts (these come from localStorage, no API limit needed)
             const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
             const researchCount = allArticles.filter(a => a.category === 'research').length;
             const capstoneCount = allArticles.filter(a => a.category === 'capstone').length;
@@ -6804,18 +6848,6 @@ STI Archives Admin`;
 
             const revenueEl = document.getElementById('revenue-count');
             if (revenueEl) revenueEl.textContent = totalUploads;
-
-            const usersCount = users.filter(u => getUserStatus(u) === 'approved').length;
-            const adminCount = users.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-            const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
-
-            const verifiedEl = document.getElementById('verified-users-count');
-            const adminEl = document.getElementById('admin-users-count');
-            const signingUpEl = document.getElementById('signing-up-users-count');
-
-            if (verifiedEl) verifiedEl.textContent = usersCount;
-            if (adminEl) adminEl.textContent = adminCount;
-            if (signingUpEl) signingUpEl.textContent = signingUpCount;
         }
 
         // === STUB FUNCTIONS (to prevent errors) ===
@@ -10045,15 +10077,15 @@ STI Archives Admin`;
             // Generate pagination buttons
             let buttons = '';
             if (totalPages > 1) {
-                if (currentPage > 1) buttons += `<button onclick="changePage('${tbodyId}', ${currentPage - 1})">Previous</button>`;
+                if (currentPage > 1) buttons += `<button class="btn btn-secondary btn-sm" onclick="changePage('${tbodyId}', ${currentPage - 1})">Previous</button>`;
                 for (let i = 1; i <= totalPages; i++) {
                     if (i === currentPage) {
-                        buttons += `<button class="active" onclick="changePage('${tbodyId}', ${i})">${i}</button>`;
+                        buttons += `<button class="btn btn-primary btn-sm active" onclick="changePage('${tbodyId}', ${i})">${i}</button>`;
                     } else {
-                        buttons += `<button onclick="changePage('${tbodyId}', ${i})">${i}</button>`;
+                        buttons += `<button class="btn btn-outline-secondary btn-sm" onclick="changePage('${tbodyId}', ${i})">${i}</button>`;
                     }
                 }
-                if (currentPage < totalPages) buttons += `<button onclick="changePage('${tbodyId}', ${currentPage + 1})">Next</button>`;
+                if (currentPage < totalPages) buttons += `<button class="btn btn-secondary btn-sm" onclick="changePage('${tbodyId}', ${currentPage + 1})">Next</button>`;
             }
             paginationDiv.innerHTML = buttons;
         }

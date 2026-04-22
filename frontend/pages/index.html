@@ -3291,8 +3291,21 @@ window.supabaseHelpers = {
                    console.log('DEBUG: Validation failed, not proceeding');
                    return;
                }
-             const grade = roleSelect.value === 'senior_high' ? document.getElementById('signup-grade').value : '';
+              const grade = roleSelect.value === 'senior_high' ? document.getElementById('signup-grade').value : '';
             const section = document.getElementById('signup-section').value;
+
+            // Validate required fields
+            if (role === 'senior_high') {
+                if (!grade || !section) {
+                    alert('Please select both grade and section for Senior High.');
+                    return;
+                }
+            } else if (role === 'college') {
+                if (!section) {
+                    alert('Please select degree for College.');
+                    return;
+                }
+            }
 
             // Create newUser object
             const newUser = {

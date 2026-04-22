@@ -6402,6 +6402,14 @@ STI Archives Admin`;
             if (DEBUG) console.log('DEBUG: filteredUsers count:', filteredUsers.length);
             // Set global users
             window.users = filteredUsers; // Or assign to global users
+            // Map fields for display
+            filteredUsers.forEach(user => {
+                if (user.role === 'senior_high') {
+                    user.strand = user.section_degree || user.strand;
+                } else if (user.role === 'college') {
+                    user.section = user.section_degree || user.section;
+                }
+            });
             // Clear all tbodys
             document.querySelectorAll('#users tbody').forEach(tbody => tbody.innerHTML = '');
             let signingUpUsers = [];

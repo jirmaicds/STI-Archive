@@ -4670,7 +4670,7 @@ STI Archives Admin`;
             const users = await getUsers();
             const tbody = document.getElementById('verified-users-tbody');
             tbody.innerHTML = '';
-            users.filter(u => getUserStatus(u) === 'approved' && u.user_type === 'user').forEach(user => {
+            users.filter(u => getUserStatus(u) === 'approved' && u.type === 'user').forEach(user => {
                 const date = formatDate(user.verified_at || user.created_at);
                 const rafEduId = user.raf_path || user.educator_id || '';
                 const row = `<tr>

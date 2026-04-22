@@ -81,16 +81,16 @@ async function handleGetUsers(req, res) {
       if (!supabase) {
         // Fallback: return mock data if service client is not available
         const mockUsers = [
-          { id: 1, fullname: 'John Doe', email: 'john@example.com', role: 'user', user_type: 'user', verified: true, new_user: false, rejected_user: false, banned_user: false, created_at: '2023-01-01T00:00:00Z' },
-          { id: 2, fullname: 'Jane Smith', email: 'jane@example.com', role: 'user', user_type: 'user', verified: false, new_user: true, rejected_user: false, banned_user: false, created_at: '2023-01-02T00:00:00Z' },
-          { id: 3, fullname: 'Bob Johnson', email: 'bob@example.com', role: 'user', user_type: 'user', verified: true, new_user: false, rejected_user: false, banned_user: false, created_at: '2023-01-03T00:00:00Z' },
-          { id: 4, fullname: 'Alice Brown', email: 'alice@example.com', role: 'user', user_type: 'user', verified: false, new_user: true, rejected_user: false, banned_user: false, created_at: '2023-01-04T00:00:00Z' },
-          { id: 5, fullname: 'Charlie Wilson', email: 'charlie@example.com', role: 'user', user_type: 'user', verified: true, new_user: false, rejected_user: false, banned_user: false, created_at: '2023-01-05T00:00:00Z' },
-          { id: 6, fullname: 'Diana Davis', email: 'diana@example.com', role: 'user', user_type: 'user', verified: false, new_user: true, rejected_user: false, banned_user: false, created_at: '2023-01-06T00:00:00Z' },
-          { id: 7, fullname: 'Eve Miller', email: 'eve@example.com', role: 'user', user_type: 'user', verified: true, new_user: false, rejected_user: false, banned_user: false, created_at: '2023-01-07T00:00:00Z' },
-          { id: 8, fullname: 'Frank Garcia', email: 'frank@example.com', role: 'user', user_type: 'user', verified: false, new_user: true, rejected_user: false, banned_user: false, created_at: '2023-01-08T00:00:00Z' },
-          { id: 9, fullname: 'Grace Lee', email: 'grace@example.com', role: 'user', user_type: 'user', verified: true, new_user: false, rejected_user: false, banned_user: false, created_at: '2023-01-09T00:00:00Z' },
-          { id: 10, fullname: 'Henry Taylor', email: 'henry@example.com', role: 'user', user_type: 'user', verified: false, new_user: true, rejected_user: false, banned_user: false, created_at: '2023-01-10T00:00:00Z' }
+          { id: 1, fullname: 'John Doe', email: 'john@example.com', role: 'user', user_type: 'user', verified: true, new_user: false, rejected: false, banned: false, created_at: '2023-01-01T00:00:00Z' },
+          { id: 2, fullname: 'Jane Smith', email: 'jane@example.com', role: 'user', user_type: 'user', verified: false, new_user: true, rejected: false, banned: false, created_at: '2023-01-02T00:00:00Z' },
+          { id: 3, fullname: 'Bob Johnson', email: 'bob@example.com', role: 'user', user_type: 'user', verified: true, new_user: false, rejected: false, banned: false, created_at: '2023-01-03T00:00:00Z' },
+          { id: 4, fullname: 'Alice Brown', email: 'alice@example.com', role: 'user', user_type: 'user', verified: false, new_user: true, rejected: false, banned: false, created_at: '2023-01-04T00:00:00Z' },
+          { id: 5, fullname: 'Charlie Wilson', email: 'charlie@example.com', role: 'user', user_type: 'user', verified: true, new_user: false, rejected: false, banned: false, created_at: '2023-01-05T00:00:00Z' },
+          { id: 6, fullname: 'Diana Davis', email: 'diana@example.com', role: 'user', user_type: 'user', verified: false, new_user: true, rejected: false, banned: false, created_at: '2023-01-06T00:00:00Z' },
+          { id: 7, fullname: 'Eve Miller', email: 'eve@example.com', role: 'user', user_type: 'user', verified: true, new_user: false, rejected: false, banned: false, created_at: '2023-01-07T00:00:00Z' },
+          { id: 8, fullname: 'Frank Garcia', email: 'frank@example.com', role: 'user', user_type: 'user', verified: false, new_user: true, rejected: false, banned: false, created_at: '2023-01-08T00:00:00Z' },
+          { id: 9, fullname: 'Grace Lee', email: 'grace@example.com', role: 'user', user_type: 'user', verified: true, new_user: false, rejected: false, banned: false, created_at: '2023-01-09T00:00:00Z' },
+          { id: 10, fullname: 'Henry Taylor', email: 'henry@example.com', role: 'user', user_type: 'user', verified: false, new_user: true, rejected: false, banned: false, created_at: '2023-01-10T00:00:00Z' }
         ];
         res.statusCode = 200;
         res.end(JSON.stringify({
@@ -101,8 +101,8 @@ async function handleGetUsers(req, res) {
         }));
         return;
       }
-      const defaultSelectFields = 'id, email, fullname, role, user_type, verified, new_user, rejected_user, banned_user, created_at, updated_at';
-      const noMetaSelectFields = 'id, email, fullname, role, user_type, verified, new_user, rejected_user, banned_user';
+      const defaultSelectFields = 'id, email, fullname, role, user_type, verified, new_user, rejected, banned, created_at, updated_at';
+      const noMetaSelectFields = 'id, email, fullname, role, user_type, verified, new_user, rejected, banned';
       let query = supabase
         .from('users')
         .select(defaultSelectFields, { count: 'exact' });
@@ -111,9 +111,9 @@ async function handleGetUsers(req, res) {
       if (status === 'pending') {
         query = query.eq('new_user', true);
       } else if (status === 'approved') {
-        query = query.eq('verified', true).eq('new_user', false).eq('rejected_user', false).eq('banned_user', false);
+        query = query.eq('verified', true).eq('new_user', false).eq('rejected', false).eq('banned', false);
       } else if (status === 'banned') {
-        query = query.eq('banned_user', true);
+        query = query.eq('banned', true);
       } else if (status === 'rejected') {
         query = query.eq('rejected_user', true);
       }
@@ -324,7 +324,7 @@ async function handleUpdateUser(req, res) {
   }
 
   try {
-    const { user_id, student_id, name, email, role, admin_role, permissions, verified, new_user, rejected_user, banned_user } = req.body;
+    const { user_id, student_id, name, email, role, admin_role, permissions, verified, new_user, rejected, banned } = req.body;
 
     if (!user_id && !student_id) {
       res.statusCode = 400;
@@ -346,8 +346,8 @@ async function handleUpdateUser(req, res) {
       if (permissions) updateData.permissions = permissions;
       if (verified !== undefined) updateData.verified = verified;
       if (new_user !== undefined) updateData.new_user = new_user;
-      if (rejected_user !== undefined) updateData.rejected_user = rejected_user;
-      if (banned_user !== undefined) updateData.banned_user = banned_user;
+      if (rejected !== undefined) updateData.rejected = rejected;
+      if (banned !== undefined) updateData.banned = banned;
 
       console.log('Updating user:', userId, 'with data:', updateData);
 

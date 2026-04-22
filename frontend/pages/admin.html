@@ -6364,7 +6364,7 @@ STI Archives Admin`;
         function getUserStatus(user) {
             // Check new boolean columns first
             if (user.new_user === true) return 'pending';
-            if (user.banned_user === true) return 'banned';
+            if (user.banned === true) return 'banned';
             if (user.rejected_user === true) return 'rejected';
             if (user.verified === true) return 'approved';
 

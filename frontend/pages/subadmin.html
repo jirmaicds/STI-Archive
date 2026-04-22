@@ -2968,6 +2968,9 @@
                     <button class="nav-btn" data-section="signing-up">
                         <i class="fas fa-clock" style="margin-right: 8px;"></i>Signups
                     </button>
+                    <button class="nav-btn" data-section="banned">
+                        <i class="fas fa-ban" style="margin-right: 8px;"></i>Banned
+                    </button>
                 </div>
                 
                 <!-- Verified Users Section -->
@@ -3069,13 +3072,11 @@
                         
                     </div>
                     <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-verified-main" onclick="toggleSelectAll('verified')">
-                        <button class="btn btn-danger" onclick="bulkAction('verified', 'ban')">Ban</button>
-                        <button class="btn btn-danger" onclick="bulkAction('verified', 'remove')">Remove</button>
+
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="verified-users-table">
-                            <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Verified</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
+                            <thead><tr><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Verified</th><th>Raf/Edu_ID</th></tr></thead>
                             <tbody id="verified-users-tbody">
                         </tbody>
                         </table>
@@ -3177,11 +3178,11 @@
                             <option value="email">Email</option>
                         </select>
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'signing-up', document.getElementById('search-filter-signing-up').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                        <button class="btn" onclick="openAddUserModal()">Add New User</button>
+
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="signing-up-users-table">
-                            <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Signed Up</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
+                            <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Signed Up</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
                             <tbody id="signing-up-users-tbody"></tbody>
                         </table>
                         <div id="signing-up-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
@@ -3190,12 +3191,58 @@
                         <input type="checkbox" id="select-all-signing-up-main" onclick="toggleSelectAll('signing-up')">
                         <button class="btn btn-success" onclick="bulkAction('signing-up', 'accept')">Accept</button>
                         <button class="btn btn-danger" onclick="bulkAction('signing-up', 'ban')">Ban</button>
-                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'remove')">Remove</button>
+                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'reject')">Reject</button>
+                    </div>
+                </div>
+
+                <!-- Banned Users Section -->
+                <div id="banned-section" class="user-subsection" style="--border-color: #dc3545; --header-color: #dc3545;">
+                    <h4 style="color: var(--header-color); margin-bottom: 15px;"><i class="fas fa-ban" style="margin-right: 10px;"></i>Banned Users</h4>
+                    <div class="filters-section" style="margin-bottom: 15px;">
+                        <select id="role-filter-banned" onchange="updateFilters('banned')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="">All Roles</option>
+                            <option value="student">Student</option>
+                            <option value="educator">Educator</option>
+                        </select>
+                        <select id="grade-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Grades</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                        <select id="strand-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Strands</option>
+                            <option value="abm">ABM</option>
+                            <option value="itmawd">ITMAWD</option>
+                            <option value="stem">STEM</option>
+                        </select>
+                        <select id="degree-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Degrees</option>
+                            <option value="bsba">BSBA</option>
+                            <option value="bscs">BSCS</option>
+                            <option value="bsit">BSIT</option>
+                        </select>
+                        <select id="dept-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Departments</option>
+                            <option value="shs">SHS</option>
+                            <option value="college">College</option>
+                        </select>
+                        <select id="search-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="name">Search by Name</option>
+                            <option value="email">Search by Email</option>
+                        </select>
+                        <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'banned', document.getElementById('search-filter-banned').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    </div>
+                    <div class="table-container">
+                        <table id="banned-users-table">
+                            <thead><tr><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Banned</th><th>Raf/Edu_ID</th></tr></thead>
+                            <tbody id="banned-users-tbody"></tbody>
+                        </table>
+                        <div id="banned-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div id="notifications" class="content-section">
             <div class="notifications-section">
                 <h3>All Notifications</h3>
@@ -3467,7 +3514,8 @@
         let currentFilters = {
             admins: { role: '', search: '', filterType: 'unified' },
             verified: { role: '', search: '', filterType: 'unified' },
-            'signing-up': { role: '', search: '', filterType: 'unified' }
+            'signing-up': { role: '', search: '', filterType: 'unified' },
+            banned: { role: '', search: '', filterType: 'unified' }
         };
 
         async function loadUsers() {
@@ -4456,6 +4504,13 @@ STI Archives Admin`;
                 console.log('Banning user:', userId);
             }
         }
+
+        function rejectUser(userId, userName) {
+            if (confirm(`Are you sure you want to reject ${userName}?`)) {
+                // Implement reject logic
+                console.log('Rejecting user:', userId);
+            }
+        }
         function closeSendUpdateModal() {
             document.getElementById('send-update-modal').style.display = 'none';
         }
@@ -4609,19 +4664,17 @@ STI Archives Admin`;
             const users = await getUsers();
             const tbody = document.getElementById('verified-users-tbody');
             tbody.innerHTML = '';
-            users.filter(u => getUserStatus(u) === 'approved').forEach(user => {
+            users.filter(u => getUserStatus(u) === 'approved' && !['admin', 'coadmin', 'subadmin'].includes(u.role)).forEach(user => {
                 const date = formatDate(user.verified_at || user.created_at);
                 const rafEduId = user.raf_path || user.educator_id || '';
                 const row = `<tr>
-                    <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}"></td>
                     <td>${user.name}</td>
                     <td>${user.email}</td>
                     <td>${user.role}</td>
                     <td>${user.grade || '-'}</td>
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
-                    <td>${rafEduId}</td>
-                    <td><button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name}')">Remove</button></td>
+                    <td><button type="button" class="btn btn-info btn-sm" onclick="previewRaf('${rafEduId}')">Preview</button></td>
                 </tr>`;
                 tbody.innerHTML += row;
             });
@@ -4644,13 +4697,33 @@ STI Archives Admin`;
                     <td>${user.grade || '-'}</td>
                     <td>${getSectionDisplay(user)}</td>
                     <td>${date}</td>
-                    <td>${status}</td>
                     <td><button type="button" class="btn btn-info btn-sm" onclick="previewRaf('${rafEduId}')">Preview</button></td>
-                    <td><button class="btn btn-success btn-sm" onclick="acceptUser('${user.user_id || user.id}', '${user.name}')">Accept</button> <button class="btn btn-danger btn-sm" onclick="banUser('${user.user_id || user.id}', '${user.name}')">Ban</button> <button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}', '${user.name}')">Remove</button></td>
+                    <td><button class="btn btn-success btn-sm" onclick="acceptUser('${user.user_id || user.id}', '${user.name}')">Accept</button> <button class="btn btn-danger btn-sm" onclick="banUser('${user.user_id || user.id}', '${user.name}')">Ban</button> <button class="btn btn-warning btn-sm" onclick="rejectUser('${user.user_id || user.id}', '${user.name}')">Reject</button></td>
                 </tr>`;
                 tbody.innerHTML += row;
             });
             paginateTable('signing-up-users-tbody', 10);
+        }
+
+        async function populateBannedUsers() {
+            const users = await getUsers();
+            const tbody = document.getElementById('banned-users-tbody');
+            tbody.innerHTML = '';
+            users.filter(u => getUserStatus(u) === 'banned').forEach(user => {
+                const date = formatDate(user.banned_at || user.created_at);
+                const rafEduId = user.raf_path || user.educator_id || '';
+                const row = `<tr>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role}</td>
+                    <td>${user.grade || '-'}</td>
+                    <td>${getSectionDisplay(user)}</td>
+                    <td>${date}</td>
+                    <td><button type="button" class="btn btn-info btn-sm" onclick="previewRaf('${rafEduId}')">Preview</button></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+            paginateTable('banned-users-tbody', 10);
         }
 
         async function renderUserChart() {
@@ -5666,6 +5739,8 @@ STI Archives Admin`;
                 populateVerifiedUsers();
             } else if (section === 'signing-up') {
                 populateSigningUpUsers();
+            } else if (section === 'banned') {
+                populateBannedUsers();
             }
         }
 

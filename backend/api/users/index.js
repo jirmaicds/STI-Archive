@@ -446,11 +446,10 @@ async function handleGetUserCounts(req, res) {
         counts: {
           adminUsers: 0,
           newSignups: 5,
-          bannedUsers: 0,
           usersCount: 10,
           verifiedUsers: 5
         },
-        message: 'Supabase not configured. Using mock counts. Set SUPABASE_SERVICE_ROLE_KEY in Vercel environment variables.'
+        message: 'Supabase not configured'
       }));
       return;
     }
@@ -460,17 +459,16 @@ async function handleGetUserCounts(req, res) {
     if (!supabase) {
       // Fallback: return mock counts if service client is not available
       res.statusCode = 200;
-      res.end(JSON.stringify({
-        success: true,
-        counts: {
-          adminUsers: 0,
-          newSignups: 5,
-          bannedUsers: 0,
-          usersCount: 10,
-          verifiedUsers: 5
-        },
-        message: 'Supabase service client not configured. Using mock counts. Set SUPABASE_SERVICE_ROLE_KEY in Vercel environment variables.'
-      }));
+        res.end(JSON.stringify({
+          success: true,
+          counts: {
+            adminUsers: 0,
+            newSignups: 5,
+            usersCount: 10,
+            verifiedUsers: 5
+          },
+          message: 'Supabase service client not configured. Using mock counts. Set SUPABASE_SERVICE_ROLE_KEY in Vercel environment variables.'
+        }));
       return;
     }
 
@@ -523,7 +521,6 @@ async function handleGetUserCounts(req, res) {
       const userTypeUsers = allUsers.filter(u => u.user_type === 'user').length;
       const adminUsers = allUsers.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
       const newSignups = allUsers.filter(u => u.new_user === true).length;
-      const bannedUsers = hasBannedColumn ? allUsers.filter(u => u.banned_user || false).length : 0;
       const verifiedUsers = allUsers.filter(u => u.verified === true).length;
 
       const result = {
@@ -531,7 +528,6 @@ async function handleGetUserCounts(req, res) {
         counts: {
           adminUsers,
           newSignups,
-          bannedUsers,
           usersCount: userTypeUsers,
           verifiedUsers
         }

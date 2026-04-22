@@ -5125,7 +5125,8 @@ STI Archives Admin`;
             if (window.signingUpChart) {
                 window.signingUpChart.destroy();
             }
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            if (!Array.isArray(users)) users = [];
             let filteredUsers = users.filter(user => getUserStatus(user) === 'pending');
             if (filter) {
                 filteredUsers = filteredUsers.filter(user => user.role === filter);

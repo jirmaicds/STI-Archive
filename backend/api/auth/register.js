@@ -130,8 +130,10 @@ async function handleRegister(req, res) {
       new_user: !isAdminRole,  // Regular users are new users initially
       rejected_user: false,   // No one starts as rejected
       banned_user: false,     // No one starts as banned
-      grade: grade || null,
-      Sec_Degr: section_degree || section || null,
+       grade: grade || null,
+       Sec_Degr: section_degree || section || null,
+       strand: section_degree || section || null,
+       section: section_degree || section || null,
       registration_assessment_form: null,
       educator_id: null,
       activation_token: activationToken,

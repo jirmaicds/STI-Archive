@@ -3358,21 +3358,21 @@ window.supabaseHelpers = {
            }
            localStorage.setItem('users', JSON.stringify(users));
 
-            // Create JSON data for server with file as base64
-             const signupData = {
-                 fullname,
-                 email,
-                 password: document.getElementById('signup-password').value,
-                 role,
-                 user_id: userId
-             };
+             // Create JSON data for server with file as base64
+              const signupData = {
+                  fullname,
+                  email,
+                  password: document.getElementById('signup-password').value,
+                  role,
+                  user_id: userId
+              };
 
-             if (role === 'senior_high') {
-                 signupData.section = section;
-                 signupData.grade = grade;
-             } else if (role === 'college') {
-                 signupData.section_degree = section;
-             }
+              // Only send grade and section_degree for student roles
+              if (role === 'senior_high' || role === 'college') {
+                  signupData.grade = grade || null;
+                  signupData.section_degree = section || null;
+                  signupData.section = section || null;
+              }
 
              // Add file if present
              if (requiredFile) {

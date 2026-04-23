@@ -338,16 +338,22 @@ async function handleUpdateUser(req, res) {
       const supabase = getServiceSupabase();
 
       // Prepare update data
-      const updateData = {};
-      if (name) updateData.fullname = name;
-      if (email) updateData.email = email.toLowerCase();
-      if (role) updateData.user_type = role; // Map role to user_type
-      if (admin_role) updateData.user_type = admin_role; // Alternative field
-      if (permissions) updateData.permissions = permissions;
-      if (verified !== undefined) updateData.verified = verified;
-      if (new_user !== undefined) updateData.new_user = new_user;
-      if (rejected !== undefined) updateData.rejected = rejected;
-      if (banned !== undefined) updateData.banned = banned;
+       const updateData = {};
+       if (name) updateData.fullname = name;
+       if (email) updateData.email = email.toLowerCase();
+       if (role) updateData.user_type = role; // Map role to user_type
+       if (admin_role) updateData.user_type = admin_role; // Alternative field
+       if (permissions) updateData.permissions = permissions;
+       if (verified !== undefined) updateData.verified = verified;
+       if (new_user !== undefined) updateData.new_user = new_user;
+       if (rejected !== undefined) updateData.rejected = rejected;
+       if (banned !== undefined) updateData.banned = banned;
+       // Add grade and Sec_Degr fields for updates
+       if (req.body.grade !== undefined) updateData.grade = req.body.grade;
+       if (req.body.Sec_Degr !== undefined) updateData.Sec_Degr = req.body.Sec_Degr;
+       if (req.body.section_degree !== undefined) updateData.Sec_Degr = req.body.section_degree;
+       if (req.body.section !== undefined) updateData.section = req.body.section;
+       if (req.body.strand !== undefined) updateData.strand = req.body.strand;
 
       console.log('Updating user:', userId, 'with data:', updateData);
 

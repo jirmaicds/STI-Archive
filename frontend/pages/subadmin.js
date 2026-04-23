@@ -606,4 +606,8 @@
             const diffHours = diffMs / (1000 * 60 * 60);
             return diffHours < 1 ? 'Just Now' : 'Pending';
         }
+        let timeChartType = 'line';
         function toggleTimeChartType() {
+            timeChartType = timeChartType === 'line' ? 'bar' : 'line';
+            document.getElementById('toggle-time-chart').innerText = timeChartType === 'line' ? 'Bar' : 'Line';
+        }

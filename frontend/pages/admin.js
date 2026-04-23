@@ -1426,9 +1426,8 @@ const baseTopics = [
 { value: 'environment', text: 'Environment' },
 { value: 'food', text: 'Food' },
 { value: 'technology', text: 'Technology' }
-];
-+    <!-- Retry build after rate limit failure -->
- 
+ ];
+
 let topicOptions = '<option value="">Select Topic</option>';
 baseTopics.forEach(t => {
 topicOptions += `<option value="${t.value}">${t.text}</option>`;

@@ -1217,3 +1217,8 @@
         }
         let dashboardUploadsChartType = 'doughnut';
         function toggleDashboardUploadsChartType() {
+            dashboardUploadsChartType = dashboardUploadsChartType === 'pie' ? 'doughnut' : 'pie';
+            document.getElementById('toggle-dashboard-uploads-chart').innerText = dashboardUploadsChartType === 'pie' ? 'Doughnut' : 'Pie';
+            renderDashboardUploadsChart();
+            renderGaugeChart('avg-chart', 'Average Session Duration', 5.0, '#007bff');
+        }

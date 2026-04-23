@@ -1472,9 +1472,7 @@ strandSelect.innerHTML = `
  
 // Flag to prevent storage event from switching sections
 let isReloadingUsers = false;
-+</body>
-+</html>
-         
+          
 // === INIT ===
 document.addEventListener('DOMContentLoaded', async function() {
 // Listen for user data changes from other admin tabs
@@ -4796,9 +4794,7 @@ closeRafModal();
 });
 
 
-</script>
-<!-- Retry build after rate limit failure -->
-<script>
+
 // === CAROUSEL MANAGEMENT FUNCTIONS ===
 
 // Load carousel items from server
@@ -5146,10 +5142,7 @@ preview.innerHTML = '<p style="color: red;">Error uploading image: ' + error.mes
 reader.readAsDataURL(file);
 }
 
-// === END CAROUSEL MANAGEMENT ===
-</script>
-<script>
-// === REAL-TIME SYNCHRONIZATION ===
+
 let ws = null;
 let isRealTimeEnabled = false; // Disabled - WebSocket server not integrated with main server
 
@@ -5554,9 +5547,6 @@ if (ws) {
 ws.close();
 }
 });
-</script>
-<script src="/frontend/assets/js/pdf-viewer.js"></script>
-<script>
 // Handle PDF upload for article
 function handleArticlePDFUpload(input, articleId) {
 const file = input.files[0];
@@ -5667,8 +5657,7 @@ console.error('Failed to update article in server:', data.error);
 console.error('Error updating article in server:', error);
 });
 }
-</script>
-<script>
+
 // === GLOBAL FUNCTION BINDINGS ===
 // Explicitly bind functions to window to make them globally accessible for onclick handlers
 // This ensures functions work even when served through PHP

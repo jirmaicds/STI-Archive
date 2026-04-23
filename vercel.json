@@ -20,6 +20,10 @@
     {
       "src": "frontend/assets/**",
       "use": "@vercel/static"
+    },
+    {
+      "src": "frontend/pages/*.js",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -46,6 +50,10 @@
     {
       "src": "/(.*).html",
       "dest": "/frontend/pages/$1.html"
+    },
+    {
+      "src": "/(.*).js",
+      "dest": "/frontend/pages/$1.js"
     },
     {
       "src": "/",

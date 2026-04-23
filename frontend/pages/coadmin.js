@@ -1222,3 +1222,179 @@
             renderDashboardUploadsChart();
             renderGaugeChart('avg-chart', 'Average Session Duration', 5.0, '#007bff');
         }
+
+        function paginateTable(tbodyId, rowsPerPage) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+
+            const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+            const totalPages = Math.ceil(rows.length / rowsPerPage);
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            if (!paginationDiv) return;
+
+            let currentPage = parseInt(paginationDiv.dataset.currentPage) || 1;
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+            paginationDiv.dataset.currentPage = currentPage;
+
+            // Show only current page rows among visible
+            rows.forEach((row, index) => {
+                const page = Math.floor(index / rowsPerPage) + 1;
+                row.style.display = page === currentPage ? '' : 'none';
+            });
+
+            // Generate pagination buttons (always visible)
+            let buttons = '';
+
+            // Previous button
+            const prevDisabled = currentPage <= 1 || totalPages <= 1;
+            const prevClass = prevDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const prevOnClick = prevDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage - 1})"`;
+            const prevDisabledAttr = prevDisabled ? ' disabled' : '';
+            buttons += `<button class="${prevClass}"${prevDisabledAttr} ${prevOnClick}>Previous</button>`;
+
+            // Page number buttons (always show at least page 1)
+            if (totalPages > 0) {
+                const maxPagesToShow = Math.min(totalPages, 5); // Show max 5 page numbers
+                let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+                // Adjust start page if we're near the end
+                if (endPage - startPage + 1 < maxPagesToShow) {
+                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const isActive = i === currentPage;
+                    const pageDisabled = totalPages <= 1;
+                    const pageClass = isActive ?
+                        (pageDisabled ? 'btn btn-primary btn-sm active disabled' : 'btn btn-primary btn-sm active') :
+                        (pageDisabled ? 'btn btn-outline-secondary btn-sm disabled' : 'btn btn-outline-secondary btn-sm');
+                    const pageOnClick = pageDisabled ? '' : `onclick="changePage('${tbodyId}', ${i})"`;
+                    const pageDisabledAttr = pageDisabled ? ' disabled' : '';
+                    buttons += `<button class="${pageClass}"${pageDisabledAttr} ${pageOnClick}>${i}</button>`;
+                }
+            } else {
+                // No records, show disabled page 1
+                buttons += `<button class="btn btn-outline-secondary btn-sm disabled" disabled>1</button>`;
+            }
+
+            // Next button
+            const nextDisabled = currentPage >= totalPages || totalPages <= 1;
+            const nextClass = nextDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const nextOnClick = nextDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage + 1})"`;
+            const nextDisabledAttr = nextDisabled ? ' disabled' : '';
+            buttons += `<button class="${nextClass}"${nextDisabledAttr} ${nextOnClick}>Next</button>`;
+
+            // Add page info
+            const startRecord = (currentPage - 1) * rowsPerPage + 1;
+            const endRecord = Math.min(currentPage * rowsPerPage, rows.length);
+            const infoText = totalPages > 0 ?
+                `Showing ${startRecord}-${endRecord} of ${rows.length} records` :
+                'No records to display';
+
+            buttons += `<span class="pagination-info" style="margin-left: 15px; font-size: 12px; color: #666;">${infoText}</span>`;
+
+            paginationDiv.innerHTML = buttons;
+        }
+
+        function changePage(tbodyId, page) {
+            // Prevent clicks on disabled buttons
+            const button = event.target;
+            if (button.disabled || button.classList.contains('disabled')) {
+                return;
+            }
+
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            paginationDiv.dataset.currentPage = page;
+            paginateTable(tbodyId, 10);
+        }
+
+        // Navigation setup for coadmin
+        function setupNavigation() {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    // Hide all sections
+                    contentSections.forEach(section => section.classList.remove('active'));
+
+                    // Show selected section
+                    const sectionId = this.getAttribute('data-section');
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
+                });
+            });
+
+            // Set default active section (dashboard)
+            const dashboardBtn = document.querySelector('.nav-btn[data-section="dashboard"]');
+            if (dashboardBtn) {
+                dashboardBtn.click();
+            }
+        }
+
+        // === INIT ===
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Dark mode - Apply saved preference on page load
+            const darkModeToggle = document.querySelector('.dark-mode-toggle');
+            const darkModeIcon = darkModeToggle ? darkModeToggle.querySelector('i') : null;
+            const savedDarkMode = localStorage.getItem('darkMode');
+            if (savedDarkMode === 'on') {
+                document.body.classList.add('dark-mode');
+                if (darkModeIcon) {
+                    darkModeIcon.className = 'fas fa-sun';
+                    darkModeIcon.style.color = '#FFD700';
+                }
+            }
+
+            // Load users and initialize dashboard
+            await loadUsers();
+            await updateDashboardCounts();
+
+            // Set up navigation
+            setupNavigation();
+
+            // Set up sidebar toggle
+            const toggleBtn = document.getElementById('toggle-btn');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const header = document.querySelector('.header');
+
+            if (toggleBtn && sidebar && mainContent && header) {
+                toggleBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    mainContent.classList.toggle('sidebar-collapsed');
+                    header.classList.toggle('sidebar-collapsed');
+                });
+            }
+
+            // Set up dark mode toggle
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('click', function() {
+                    document.body.classList.toggle('dark-mode');
+                    const isDark = document.body.classList.contains('dark-mode');
+                    localStorage.setItem('darkMode', isDark ? 'on' : 'off');
+                    if (darkModeIcon) {
+                        darkModeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+                        darkModeIcon.style.color = isDark ? '#FFD700' : '#777';
+                    }
+                });
+            }
+
+            // Show welcome modal briefly
+            const welcomeModal = document.getElementById('welcome-modal');
+            if (welcomeModal) {
+                welcomeModal.classList.add('show');
+                setTimeout(() => {
+                    welcomeModal.classList.remove('show');
+                }, 3000);
+            }
+        });

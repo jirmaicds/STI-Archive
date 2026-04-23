@@ -503,6 +503,18 @@
             paginationDiv.innerHTML = buttons;
         }
 
+        function changePage(tbodyId, page) {
+            // Prevent clicks on disabled buttons
+            const button = event.target;
+            if (button.disabled || button.classList.contains('disabled')) {
+                return;
+            }
+
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            paginationDiv.dataset.currentPage = page;
+            paginateTable(tbodyId, 10);
+        }
+
         function getActivityLogs() {
             return JSON.parse(localStorage.getItem('activityLogs')) || [];
         }
@@ -610,4 +622,93 @@
         function toggleTimeChartType() {
             timeChartType = timeChartType === 'line' ? 'bar' : 'line';
             document.getElementById('toggle-time-chart').innerText = timeChartType === 'line' ? 'Bar' : 'Line';
+        }
+
+        // === INIT ===
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Dark mode - Apply saved preference on page load
+            const darkModeToggle = document.querySelector('.dark-mode-toggle');
+            const darkModeIcon = darkModeToggle ? darkModeToggle.querySelector('i') : null;
+            const savedDarkMode = localStorage.getItem('darkMode');
+            if (savedDarkMode === 'on') {
+                document.body.classList.add('dark-mode');
+                if (darkModeIcon) {
+                    darkModeIcon.className = 'fas fa-sun';
+                    darkModeIcon.style.color = '#FFD700';
+                }
+            }
+
+            // Load users and initialize dashboard
+            await loadUsers();
+            await updateDashboardCounts();
+
+            // Set up navigation
+            setupNavigation();
+
+            // Set up sidebar toggle
+            const toggleBtn = document.getElementById('toggle-btn');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const header = document.querySelector('.header');
+
+            if (toggleBtn && sidebar && mainContent && header) {
+                toggleBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    mainContent.classList.toggle('sidebar-collapsed');
+                    header.classList.toggle('sidebar-collapsed');
+                });
+            }
+
+            // Set up dark mode toggle
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('click', function() {
+                    document.body.classList.toggle('dark-mode');
+                    const isDark = document.body.classList.contains('dark-mode');
+                    localStorage.setItem('darkMode', isDark ? 'on' : 'off');
+                    if (darkModeIcon) {
+                        darkModeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+                        darkModeIcon.style.color = isDark ? '#FFD700' : '#777';
+                    }
+                });
+            }
+
+            // Show welcome modal briefly
+            const welcomeModal = document.getElementById('welcome-modal');
+            if (welcomeModal) {
+                welcomeModal.classList.add('show');
+                setTimeout(() => {
+                    welcomeModal.classList.remove('show');
+                }, 3000);
+            }
+        });
+
+        // Navigation setup for subadmin
+        function setupNavigation() {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    // Hide all sections
+                    contentSections.forEach(section => section.classList.remove('active'));
+
+                    // Show selected section
+                    const sectionId = this.getAttribute('data-section');
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                    }
+                });
+            });
+
+            // Set default active section (dashboard)
+            const dashboardBtn = document.querySelector('.nav-btn[data-section="dashboard"]');
+            if (dashboardBtn) {
+                dashboardBtn.click();
+            }
         }

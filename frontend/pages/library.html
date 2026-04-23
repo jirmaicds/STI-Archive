@@ -575,6 +575,9 @@
       background: #181f2a;
       color: #e2e8f0;
     }
+    .dark-mode #mainSearchContainer {
+      background: #232f41;
+    }
     .dark-mode .article {
       background: #232f41;
       color: #e2e8f0;
@@ -755,7 +758,7 @@
     }
     
     /* Position modal near filter icon on larger screens */
-    @media (min-width: 1141px) {
+    @media (min-width: 875px) {
       .topics-modal-content {
         position: absolute;
         top: 120px;
@@ -780,7 +783,7 @@
       display: none;
     }
     
-    @media (min-width: 1141px) {
+    @media (min-width: 875px) {
       .topics-modal-navbar {
         display: none;
         position: absolute;
@@ -806,7 +809,7 @@
     }
     
     /* Main content modal for small screens */
-    @media (max-width: 1140px) {
+    @media (max-width: 874px) {
       .topics-modal-navbar {
         display: none !important;
       }
@@ -952,8 +955,8 @@
       display: flex;
     }
     
-    /* Below 1140px: show main content filter icon, hide navbar filter icon */
-    @media (max-width: 1140px) {
+    /* Below 874px: show main content filter icon, hide navbar filter icon */
+    @media (max-width: 874px) {
       .filter-icon-btn {
         display: none;
       }
@@ -970,8 +973,8 @@
       }
     }
     
-    /* Above 1140px: show navbar filter icon, hide main content filter icon */
-    @media (min-width: 1141px) {
+    /* Above 874px: show navbar filter icon, hide main content filter icon */
+    @media (min-width: 875px) {
       .filter-icon-btn {
         display: flex;
       }
@@ -1042,7 +1045,7 @@
     .menu-btn {
       display: none;
     }
-    @media (max-width: 1140px) {
+    @media (max-width: 874px) {
       .menu-btn {
         display: block;
       }
@@ -1050,7 +1053,7 @@
         display: none !important;
       }
     }
-    @media (min-width: 1141px) {
+    @media (min-width: 875px) {
       .nav-icons-center {
         display: flex !important;
       }
@@ -1853,8 +1856,8 @@
         }
      }
 
-      /* Mobile and tablet screens - below 1140px */
-      @media (max-width: 1140px) {
+      /* Mobile and tablet screens - below 874px */
+      @media (max-width: 874px) {
         .search-toggle {
           display: block;
         }
@@ -1864,7 +1867,7 @@
         }
         /* Show main content search on mobile and tablet */
         #mainSearchContainer {
-          display: block;
+          display: flex;
           position: fixed;
           top: 60px;
           left: 0;
@@ -1872,10 +1875,13 @@
           height: 50px;
           background: #fff;
           z-index: 1001;
-          display: flex;
           align-items: center;
-          justify-content: center;
+          justify-content: flex-start;
+          padding: 0 10px;
           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #mainArticleSearch {
+          width: 80% !important;
         }
 
         #mainSearchContainer .search-bar {
@@ -1894,8 +1900,8 @@
         }
       }
 
-      /* Desktop screens above 1140px */
-      @media (min-width: 1141px) {
+      /* Desktop screens above 874px */
+      @media (min-width: 875px) {
         /* Hide main content search on desktop */
         #mainSearchContainer {
           display: none;
@@ -1940,8 +1946,8 @@
        }
      }
 
-     /* Show sidebarlft dropdowns between 1061px and 1140px */
-     @media (min-width: 1061px) and (max-width: 1140px) {
+     /* Show sidebarlft dropdowns between 1061px and 874px */
+     @media (min-width: 1061px) and (max-width: 874px) {
        .sidebarlft .dropdown {
          display: block;
        }
@@ -2211,12 +2217,12 @@
     </div>
   </nav>
   <div id="mnb" style="background-color: rgb(255, 255, 255); width:auto; height: 50px; border:1px solid #d3d3d3; display: flex; align-items: center; justify-content: center; padding: 0 10px;">
-    <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
     <div class="search-filter-bar" style="flex: 1; margin: 0 10px; justify-content: space-between;">
       <button class="filter-icon-btn filter-icon-btn-main" id="filterIconBtnMain" onclick="toggleTopicsModal()" title="Filter by topic">
         <i class="fas fa-filter"></i>
       </button>
       <div class="search-container in-main" id="mainSearchContainer" style="flex: 1; max-width: 100%;">
+        <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
         <input type="text" id="mainArticleSearch" placeholder="Search works, authors, or topics... " class="search-input" style="width: 100%; position: relative; top: 7px;">
         <i class="fas fa-times clear-icon" id="mainClearIcon" style="display: none;"></i>
         <div class="search-suggestions" id="mainSearchSuggestions"></div>

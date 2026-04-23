@@ -3647,8 +3647,13 @@
             return 'Teacher';
         }
         function getSectionDisplay(user) {
-            return user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
-        }
+            if (user.role === 'senior_high') {
+                const grade = user.grade_level || user.Grade_level;
+                const section = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course;
+                if (section && grade) {
+                    return `${grade} - ${section}`;
+                } else if (section) {
+                    return section;
                 } else if (grade) {
                     return grade;
                 } else {
@@ -3659,7 +3664,7 @@
             } else if (user.role === 'educator') {
                 return user.Str_Degr || '-';
             } else {
-                return '-';
+                return user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
             }
         }
         // Helper function for subadmin status detection

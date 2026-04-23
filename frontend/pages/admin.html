@@ -5216,7 +5216,7 @@
                     <td>${user.name}</td>
                     <td>${emailToUse}</td>
                     <td>${user.role}</td>
-                    <td>${getSectionDisplay(user)}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
                     <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
@@ -5237,15 +5237,7 @@
             return role; // Default to the original role if not matched
         }
         function getSectionDisplay(user) {
-            if (user.role === 'senior_high') {
-                return user.strand || '-';
-            } else if (user.role === 'college') {
-                return user.section || '-';
-            } else if (user.role === 'educator') {
-                return user.section || '-';
-            } else {
-                return '-';
-            }
+            return user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
         }
         function getStrandDegree(user) {
             if (user.role === 'senior_high') {
@@ -6402,13 +6394,15 @@ STI Archives Admin`;
             if (DEBUG) console.log('DEBUG: filteredUsers count:', filteredUsers.length);
             // Set global users
             window.users = filteredUsers; // Or assign to global users
-            // Map fields for display
+            // Map fields for display - handle all field variations
             filteredUsers.forEach(user => {
-                if (user.role === 'senior_high') {
-                    user.strand = user.Sec_Degr || user.strand;
-                } else if (user.role === 'college') {
-                    user.section = user.Sec_Degr || user.section;
-                }
+                // Handle grade field variations
+                user.grade = user.grade || user.Grade || user.year_level || '-';
+                
+                // Sec_Degr contains:
+                // - For SHS: strand values (ABM, ITMAWD, STEM)
+                // - For College: degree values (BSBA, BSCS, BSIT)
+                user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
             });
             // Clear all tbodys
             document.querySelectorAll('#users tbody').forEach(tbody => tbody.innerHTML = '');
@@ -6448,7 +6442,7 @@ STI Archives Admin`;
                     <td>${emailToUse}</td>
                     <td>${formatRole(user.role)}</td>
                     <td>${user.grade || '-'}</td>
-                    <td>${getSectionDisplay(user)}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
                     <td>${date}</td>
                     <td>
                         <div style="display: flex; align-items: center; gap: 5px;">
@@ -6465,7 +6459,7 @@ STI Archives Admin`;
                     <td>${emailToUse}</td>
                     <td>${user.role}</td>
                     <td>${user.grade || '-'}</td>
-                    <td>${getSectionDisplay(user)}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
                     <td>
@@ -6573,7 +6567,7 @@ STI Archives Admin`;
                     <td>${emailToUse}</td>
                     <td>${formatRole(user.role)}</td>
                     <td>${user.grade || '-'}</td>
-                    <td>${getSectionDisplay(user)}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
                     <td>${date}</td>
                     <td>${getStatus(user)}</td>
                     <td>
@@ -7557,7 +7551,7 @@ STI Archives Admin`;
                         <td>${user.name}</td>
                         <td>${emailToUse}</td>
                         <td>${user.role}</td>
-                        <td>${getSectionDisplay(user)}</td>
+                        <td>${user.Sec_Degr || '-'}</td>
                         <td>${date}</td>
                         <td>${getStatus(user)}</td>
                         <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
@@ -7664,7 +7658,7 @@ STI Archives Admin`;
                         <td>${user.name}</td>
                         <td>${user.email}</td>
                         <td>${user.role}</td>
-                        <td>${getSectionDisplay(user)}</td>
+                        <td>${user.Sec_Degr || '-'}</td>
                         <td>${date}</td>
                         <td>${getStatus(user)}</td>
                         <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
@@ -7693,7 +7687,7 @@ STI Archives Admin`;
                         <td>${user.name}</td>
                         <td>${user.email}</td>
                         <td>${user.role}</td>
-                        <td>${getSectionDisplay(user)}</td>
+                        <td>${user.Sec_Degr || '-'}</td>
                         <td>${date}</td>
                         <td>${getStatus(user)}</td>
                         <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>

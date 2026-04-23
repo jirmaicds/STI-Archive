@@ -3475,7 +3475,14 @@
                         new_user: user.new_user,
                         created_at: user.created_at,
                         updated_at: user.updated_at,
-                        type: user.user_type
+                        type: user.user_type,
+                        grade: user.grade,
+                        Sec_Degr: user.Sec_Degr,
+                        sec_degr: user.sec_degr,
+                        strand: user.strand,
+                        section: user.section,
+                        course: user.course,
+                        department: user.department
                     }));
                     // Store pagination info
                     if (data.total !== undefined) {
@@ -3640,22 +3647,8 @@
             return 'Teacher';
         }
         function getSectionDisplay(user) {
-            if (user.role === 'senior_high') {
-                // Handle both old and new data formats
-                const grade = user.grade || user.section;
-                const strand = user.strand;
-
-                if (grade && strand) {
-                    // If grade contains "Grade" and strand is different, show both
-                    if (grade.includes('Grade') && strand.toLowerCase() !== grade.toLowerCase()) {
-                        return `${grade}<br><small>${strand.toUpperCase()}</small>`;
-                    } else if (grade.includes('Grade')) {
-                        // Grade is in section, check if strand exists separately
-                        return `${grade}<br><small>${strand.toUpperCase()}</small>`;
-                    } else {
-                        // Section contains strand value (like "abm"), use grade field
-                        return `${grade}<br><small>${strand.toUpperCase()}</small>`;
-                    }
+            return user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
+        }
                 } else if (grade) {
                     return grade;
                 } else {
@@ -4681,7 +4674,7 @@ STI Archives Admin`;
                     <td>${user.email}</td>
                     <td>${user.role}</td>
                     <td>${user.grade || '-'}</td>
-                    <td>${getSectionDisplay(user)}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
                     <td>${date}</td>
                     <td><button type="button" class="btn btn-info btn-sm" onclick="previewRaf('${rafEduId}')">Preview</button></td>
                 </tr>`;
@@ -4704,7 +4697,7 @@ STI Archives Admin`;
                     <td>${user.email}</td>
                     <td>${user.role}</td>
                     <td>${user.grade || '-'}</td>
-                    <td>${getSectionDisplay(user)}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
                     <td>${date}</td>
                     <td><button type="button" class="btn btn-info btn-sm" onclick="previewRaf('${rafEduId}')">Preview</button></td>
                     <td><button class="btn btn-success btn-sm" onclick="acceptUser('${user.user_id || user.id}', '${user.name}')">Accept</button> <button class="btn btn-danger btn-sm" onclick="banUser('${user.user_id || user.id}', '${user.name}')">Ban</button> <button class="btn btn-warning btn-sm" onclick="rejectUser('${user.user_id || user.id}', '${user.name}')">Reject</button></td>
@@ -4727,7 +4720,7 @@ STI Archives Admin`;
                     <td>${user.email}</td>
                     <td>${user.role}</td>
                     <td>${user.grade || '-'}</td>
-                    <td>${getSectionDisplay(user)}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
                     <td>${date}</td>
                     <td><button type="button" class="btn btn-info btn-sm" onclick="previewRaf('${rafEduId}')">Preview</button></td>
                 </tr>`;
@@ -5489,7 +5482,7 @@ STI Archives Admin`;
                         <td>${user.email}</td>
                         <td>${user.role}</td>
                         <td>${user.grade || '-'}</td>
-                        <td>${getSectionDisplay(user)}</td>
+                        <td>${user.Sec_Degr || '-'}</td>
                         <td>${date}</td>
                         <td>Verified</td>
                         <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
@@ -5516,7 +5509,7 @@ STI Archives Admin`;
                         <td>${user.email}</td>
                         <td>${user.role}</td>
                         <td>${user.grade || '-'}</td>
-                        <td>${getSectionDisplay(user)}</td>
+                        <td>${user.Sec_Degr || '-'}</td>
                         <td>${date}</td>
                         <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
@@ -5542,7 +5535,7 @@ STI Archives Admin`;
                         <td>${user.email}</td>
                         <td>${user.role}</td>
                         <td>${user.grade || '-'}</td>
-                        <td>${getSectionDisplay(user)}</td>
+                        <td>${user.Sec_Degr || '-'}</td>
                         <td>${date}</td>
                         <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
@@ -5590,7 +5583,7 @@ STI Archives Admin`;
                         <td>${user.email}</td>
                         <td>${user.role}</td>
                         <td>${user.grade || '-'}</td>
-                        <td>${getSectionDisplay(user)}</td>
+                        <td>${user.Sec_Degr || '-'}</td>
                         <td>${date}</td>
                         <td>Signing Up</td>
                         <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
@@ -5614,7 +5607,7 @@ STI Archives Admin`;
                         <td>${user.email}</td>
                         <td>${user.role}</td>
                         <td>${user.grade || '-'}</td>
-                        <td>${getSectionDisplay(user)}</td>
+                        <td>${user.Sec_Degr || '-'}</td>
                         <td>${date}</td>
                         <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
@@ -5637,7 +5630,7 @@ STI Archives Admin`;
                         <td>${user.email}</td>
                         <td>${user.role}</td>
                         <td>${user.grade || '-'}</td>
-                        <td>${getSectionDisplay(user)}</td>
+                        <td>${user.Sec_Degr || '-'}</td>
                         <td>${date}</td>
                         <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
                         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>

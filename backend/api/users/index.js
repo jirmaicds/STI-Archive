@@ -101,8 +101,8 @@ async function handleGetUsers(req, res) {
         }));
         return;
       }
-      const defaultSelectFields = 'id, email, fullname, role, user_type, verified, new_user, rejected, banned, created_at, updated_at';
-      const noMetaSelectFields = 'id, email, fullname, role, user_type, verified, new_user, rejected, banned';
+      const defaultSelectFields = 'id, email, fullname, role, user_type, verified, new_user, rejected, banned, created_at, updated_at, grade, Sec_Degr, strand, section';
+      const noMetaSelectFields = 'id, email, fullname, role, user_type, verified, new_user, rejected, banned, grade, Sec_Degr, strand, section';
       let query = supabase
         .from('users')
         .select(defaultSelectFields, { count: 'exact' });

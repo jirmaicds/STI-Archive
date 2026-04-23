@@ -303,3 +303,917 @@
                 modal.style.display = "none";
             }
         }
+
+        // === GLOBAL FUNCTIONS ===
+
+        // Moved outside DOMContentLoaded to ensure availability on page load
+        let currentUser = null;
+        let isLoadingUsers = false;
+        let users = [];
+
+        function generateNotifications(users) {
+            if (!Array.isArray(users)) users = [];
+            const removedUsers = JSON.parse(localStorage.getItem('removedUsers')) || [];
+            const filteredUsers = users.filter(u => !removedUsers.includes(u.user_id || u.id));
+            const signingUpUsers = filteredUsers.filter(u => !u.verified && !u.rejected && !u.banned);
+            const verifiedUsers = filteredUsers.filter(u => u.verified);
+            const notifications = [];
+
+            // Add notifications for signing up users
+            signingUpUsers.forEach(user => {
+                const id = `signup-${user.id}`;
+                notifications.push({
+                    id: id,
+                    type: 'new-user',
+                    typeText: 'New User Access Request',
+                    content: `${getUserName(user)} signed up!`,
+                    time: user.created_at ? new Date(user.created_at).toLocaleString() : 'Just now',
+                    timestamp: user.created_at ? new Date(user.created_at).getTime() : Date.now(),
+                    priority: 1 // Signing up first
+                });
+            });
+
+            // Add notifications for verified users (recent)
+            verifiedUsers.slice(-5).forEach(user => {
+                const id = `verified-${user.id}`;
+                notifications.push({
+                    id: id,
+                    type: 'new-user',
+                    typeText: 'New User Verified',
+                    content: `${getUserName(user)} was verified!`,
+                    time: user.verified_at ? new Date(user.verified_at).toLocaleString() : 'Recently',
+                    timestamp: user.verified_at ? new Date(user.verified_at).getTime() : Date.now() - 1000,
+                    priority: 2 // Verified second
+                });
+            });
+
+            // Filter out deleted notifications
+            const deletedNotifications = JSON.parse(localStorage.getItem('deletedNotifications')) || [];
+            let filteredNotifications = notifications.filter(notif => !deletedNotifications.includes(notif.id));
+
+            // Sort by priority (signing up first), then by timestamp (newest first)
+            filteredNotifications.sort((a, b) => {
+                if (a.priority !== b.priority) {
+                    return a.priority - b.priority; // Lower priority first
+                }
+                return b.timestamp - a.timestamp; // Newest first
+            });
+
+            return filteredNotifications;
+        }
+
+        // Update dashboard counts
+        async function updateDashboardCounts() {
+            // Get total counts without pagination limits
+            try {
+                const token = localStorage.getItem('sti_auth_token');
+                const response = await fetch('/api/users/count?_=' + Date.now(), {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+
+                if (response.ok) {
+                    const countData = await response.json();
+                    if (countData.success && countData.counts) {
+                        const verifiedEl = document.getElementById('verified-users-count');
+                        const adminEl = document.getElementById('admin-users-count');
+                        const signingUpEl = document.getElementById('signing-up-users-count');
+
+                        if (verifiedEl) verifiedEl.textContent = countData.counts.usersCount || 0;
+                        if (adminEl) adminEl.textContent = countData.counts.adminUsers || 0;
+                        if (signingUpEl) signingUpEl.textContent = countData.counts.newSignups || 0;
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to fetch total user counts, falling back to local data:', error);
+                // Fallback to local calculation
+                if (!Array.isArray(users)) users = [];
+                const usersCount = users.filter(u => getUserStatus(u) === 'approved' && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+                const adminCount = users.filter(u => u.role === 'admin').length;
+                const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
+
+                const verifiedEl = document.getElementById('verified-users-count');
+                const adminEl = document.getElementById('admin-users-count');
+                const signingUpEl = document.getElementById('signing-up-users-count');
+
+                if (verifiedEl) verifiedEl.textContent = usersCount;
+                if (adminEl) adminEl.textContent = adminCount;
+                if (signingUpEl) signingUpEl.textContent = signingUpCount;
+            }
+
+            // Update article counts (these come from localStorage, no API limit needed)
+            const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+            const researchCount = allArticles.filter(a => a.category === 'research').length;
+            const capstoneCount = allArticles.filter(a => a.category === 'capstone').length;
+            const totalUploads = researchCount + capstoneCount;
+
+            const revenueEl = document.getElementById('revenue-count');
+            if (revenueEl) revenueEl.textContent = totalUploads;
+        }
+
+        async function loadUsers() {
+            if (DEBUG) console.log('DEBUG: loadUsers called');
+            users = await getUsers(false);
+            if (DEBUG) console.log('DEBUG: getUsers returned:', users);
+            if (!Array.isArray(users)) users = [];
+            if (DEBUG) console.log('DEBUG: loadUsers got users, count:', users.length);
+
+            // Map fields for display - handle all field variations
+            users.forEach(user => {
+                // Handle grade field variations
+                user.grade = user.grade || user.Grade || user.year_level || '-';
+
+                // Sec_Degr contains:
+                // - For SHS: strand values (ABM, ITMAWD, STEM)
+                // - For College: degree values (BSBA, BSCS, BSIT)
+                user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
+            });
+
+            // Set global users
+            window.users = users;
+
+            // Clear all tbodys
+            document.querySelectorAll('#users tbody').forEach(tbody => tbody.innerHTML = '');
+
+            // Process users
+            users.forEach(user => {
+                if (DEBUG) console.log('DEBUG: Processing user:', user.id, user.name, user.role, user.email, user.personal_email, user.verified);
+                const date = formatDate(user.verified_at || user.created_at);
+                let actions = '';
+                const userId = user.user_id || user.id;
+                if (user.verified) {
+                    actions = `<button class="btn btn-danger btn-sm" onclick="removeUser('${userId}')">Remove</button>`;
+                } else if (user.banned_user) {
+                    actions = `<button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>`;
+                } else {
+                    actions = `
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
+                            <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
+                        </div>
+                    `;
+                }
+                let emailToUse = user.personal_email || user.email;
+                const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewRaf('${user.raf_path}')">Preview</button>` : `${user.raf_path || ''} ${user.educator_id || ''}`.trim() || '-';
+                const rowWithEmail = `<tr>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
+                    <td>${getUserName(user)}</td>
+                    <td>${emailToUse}</td>
+                    <td>${formatRole(user.role)}</td>
+                    <td>${user.grade || user.Grade || user.year_level || '-'}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
+                    <td>${date}</td>
+                    <td>${rafEduIdCell}</td>
+                    <td>${actions}</td>
+                </tr>`;
+                const rowWithoutActions = `<tr>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
+                    <td>${getUserName(user)}</td>
+                    <td>${emailToUse}</td>
+                    <td>${formatRole(user.role)}</td>
+                    <td>${user.grade || user.Grade || user.year_level || '-'}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
+                    <td>${date}</td>
+                    <td>${rafEduIdCell}</td>
+                </tr>`;
+
+                // Check admin role first (case-insensitive)
+                const roleLower = (user.role || '').toLowerCase();
+                if (DEBUG) console.log('DEBUG: User role check:', user.fullname, 'role:', user.role, 'roleLower:', roleLower);
+                const isAdminRole = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin';
+                // For coadmin, only show coadmin and subadmin, not full admin
+                const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
+                const shouldShowAdmin = currentUserRole === 'admin' || (currentUserRole === 'coadmin' && (roleLower === 'coadmin' || roleLower === 'subadmin'));
+                if (isAdminRole) {
+                    if (shouldShowAdmin) {
+                    if (DEBUG) console.log('DEBUG: Adding admin user to table:', user.fullname, user.email, 'role:', roleLower);
+                    // Determine role display
+                    let roleDisplay;
+                    if (user.fullname === 'admin2' || user.fullname === 'Admin2') {
+                        roleDisplay = 'Co-Admin';
+                    } else if (user.fullname === 'admin3' || user.fullname === 'Admin3') {
+                        roleDisplay = 'Sub-Admin';
+                    } else {
+                        roleDisplay = (roleLower === 'coadmin' ? 'Co-Admin' : roleLower === 'subadmin' ? 'Sub-Admin' : 'Admin');
+                    }
+                    let badgeClass = roleLower === 'coadmin' ? 'badge-coadmin' : roleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
+                    let permissions = user.permissions || (roleLower === 'admin' ? 'Full Access - All Features' : roleLower === 'coadmin' ? 'Limited Access - User & File Management' : 'User Approver - Accept/Reject Registrations');
+                    const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
+                        const adminRow = `<tr>
+                            <td>${userId}</td>
+                            <td>${getUserName(user)}</td>
+                            <td>${user.email || 'N/A'}</td>
+                            <td><span class="badge ${badgeClass}">${roleDisplay}</span></td>
+                            <td>${permissions}</td>
+                            <td>${formatDate(user.created_at)}</td>
+                        </tr>`;
+                        document.getElementById('admins-tbody').innerHTML += adminRow;
+                    }
+                } else {
+                    // Status categorization for regular users
+                    const userStatus = getUserStatus(user);
+                    if (userStatus === 'approved') {
+                        if (DEBUG) console.log('DEBUG: Adding verified user to table:', user.name, user.email);
+                        document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
+                    } else if (userStatus === 'banned' || userStatus === 'rejected') {
+                        document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
+                    } else if (userStatus === 'pending') {
+                        if (DEBUG) console.log('DEBUG: Adding signing-up user to table:', user.name, user.email);
+                        document.getElementById('signing-up-users-tbody').innerHTML += rowWithEmail;
+                    }
+                }
+            });
+
+            // Update counts
+            updateDashboardCounts();
+
+            // Apply pagination
+            paginateTable('verified-users-tbody', 10);
+            paginateTable('signing-up-users-tbody', 10);
+            paginateTable('banned-users-tbody', 10);
+
+            return users;
+        }
+        async function getUsers(forceRefresh = false, page = 1, limit = 50) {
+            if (forceRefresh) {
+                // Clear localStorage and force reload from server
+                localStorage.removeItem('users');
+                isLoadingUsers = false;
+                if (DEBUG) console.log('DEBUG: Force refresh - cleared localStorage and reset isLoadingUsers');
+            }
+            if (isLoadingUsers && !forceRefresh) return JSON.parse(localStorage.getItem('users') || '[]');
+            isLoadingUsers = true;
+            if (DEBUG) console.log('DEBUG: Attempting to fetch users from server...');
+            try {
+                // Get auth token from localStorage (optional for admin)
+                const token = localStorage.getItem('sti_auth_token');
+                if (DEBUG) console.log('DEBUG: Auth token:', token ? 'present' : 'missing');
+
+                const offset = (page - 1) * limit;
+                // Add cache-busting query parameter
+                const response = await fetch(`/api/users?limit=${limit}&offset=${offset}&_=${Date.now()}`, {
+                    headers: token ? {
+                        'Authorization': `Bearer ${token}`
+                    } : {}
+                });
+                if (DEBUG) console.log('DEBUG: Fetch response status:', response.status);
+                if (response.ok) {
+                    if (DEBUG) console.log('DEBUG: Server responded successfully, parsing JSON...');
+                    const usersData = await response.json();
+                    if (DEBUG) console.log('DEBUG: Raw API response:', usersData);
+                    // Handle {success: true, users: []} format from API
+                    const users = usersData.success ? usersData.users : usersData;
+                    if (DEBUG) console.log('DEBUG: Extracted users array:', users);
+                    // Handle both array and {users: []} response formats
+                    const userData = Array.isArray(users) ? users : (users.users || []);
+                    if (DEBUG) console.log('DEBUG: Final userData array, count:', userData.length);
+                    if (DEBUG) console.log('DEBUG: First user sample:', userData[0]);
+                    // Add backward compatibility: map fullname to name
+                    userData.forEach(user => {
+                        if (user.fullname && !user.name) {
+                            user.name = user.fullname;
+                        }
+                    });
+                    // Store pagination info
+                    if (usersData.total !== undefined) {
+                        userData._total = usersData.total;
+                        userData._limit = usersData.limit || limit;
+                        userData._offset = usersData.offset || offset;
+                    }
+                    // Save to localStorage for offline use
+                    localStorage.setItem('users', JSON.stringify(userData));
+                    isLoadingUsers = false;
+                    return userData;
+                } else {
+                    if (DEBUG) console.log('DEBUG: Server returned error:', response.status, 'falling back to localStorage');
+                }
+            } catch (e) {
+                if (DEBUG) console.log('DEBUG: Could not load from server, error:', e.message, 'using localStorage');
+            }
+            let localUsers = JSON.parse(localStorage.getItem('users') || '[]');
+            localStorage.setItem('users', JSON.stringify(localUsers)); // Save users
+            if (DEBUG) console.log('DEBUG: Loaded users from localStorage, count:', localUsers.length);
+            isLoadingUsers = false;
+            return localUsers;
+        }
+        // Add this helper function
+
+
+        async function refreshUsers() {
+            if (DEBUG) console.log('DEBUG: Auto refreshing users from server...');
+            try {
+                await getUsers(true);
+                await loadUsers();
+            } catch (error) {
+                console.error('Error auto-refreshing users:', error);
+            }
+        }
+        function saveUsers(users) {
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+        function getArticles() {
+            return JSON.parse(localStorage.getItem('articles')) || [];
+        }
+        function saveArticles(articles) {
+            localStorage.setItem('articles', JSON.stringify(articles));
+        }
+        function getAdminArticles() {
+            return JSON.parse(localStorage.getItem('adminArticles')) || [];
+        }
+        function saveAdminArticles(articles) {
+            localStorage.setItem('adminArticles', JSON.stringify(articles));
+        }
+        function loadArticlesFromServer() {
+            return fetch('/api/articles?limit=10&offset=0')
+                .then(response => {
+                    if (!response.ok) throw new Error('Server error');
+                    return response.json();
+                })
+                .then(data => {
+                    // Handle both 'success' (new) and 'status' (old) response formats
+                    const isSuccess = data.status === 'success' || data.success === true;
+                    if (isSuccess) {
+                        const articles = data.articles || [];
+                        saveArticles(articles);
+                        saveAdminArticles(articles);
+                        localStorage.setItem('allArticles', JSON.stringify(articles));
+                        renderAdminArticles();
+                        updateDashboardCounts();
+                    } else {
+                        console.error('✗ Failed to load articles:', data.error || 'Unknown error');
+                    }
+                })
+                .catch(error => {
+                    if (DEBUG) console.log('✗ Error fetching articles (server may be down):', error.message);
+                });
+        }
+
+        // Load user uploads for admin
+        function loadUserUploadsForAdmin() {
+            return fetch('/api/admin/user-uploads?limit=10&offset=0')
+                .then(response => {
+                    if (!response.ok) throw new Error('Server error');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        window.userUploadsData = data.uploads;
+                        renderUserUploads(data.uploads);
+                    } else {
+                        console.error('✗ Failed to load user uploads:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('✗ Error fetching user uploads:', error);
+                });
+        }
+
+        // Render user uploads in admin
+        function renderUserUploads(uploads) {
+            const container = document.getElementById('user-uploaded-articles');
+
+            if (!uploads || uploads.length === 0) {
+                container.innerHTML = '<p class="empty-state">No articles uploaded by users yet.</p>';
+                return;
+            }
+
+            container.innerHTML = uploads.map(upload => {
+                // Test PDF URL - hardcoded for testing
+                const testPdfUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Research/2023-2024/Cejes%20et%20al.pdf';
+                const pdfUrl = testPdfUrl;
+                const hasPdf = pdfUrl && pdfUrl.length > 0;
+
+                // Create onclick handler - call the modal PDF viewer function
+                const safeTitle = upload.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const cardClick = `displayArticlePDF('${testPdfUrl}', '${safeTitle}')`;
+
+                // Get user initials for profile picture
+                const userInitials = (upload.userName || '').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'U';
+
+                // Format user metadata based on role
+                let userMeta = '';
+                const role = upload.userRole || 'unknown';
+                const program = upload.userProgram || 'N/A';
+
+                if (role === 'shs') {
+                    userMeta = `SHS Student - ${program}`;
+                } else if (role === 'college') {
+                    userMeta = `College Student - ${program}`;
+                } else if (role === 'educator') {
+                    userMeta = `Teacher - ${program}`;
+                } else {
+                    userMeta = `${role.charAt(0).toUpperCase() + role.slice(1)} - ${program}`;
+                }
+
+                return `
+                <div class="user-uploaded" data-id="${upload.id}">
+                    <div class="user-info">
+                        <div class="user-pfp">${userInitials}</div>
+                        <div class="user-details">
+                            <div class="user-fullname">${upload.userName}</div>
+                            <div class="user-meta">${userMeta}</div>
+                        </div>
+                    </div>
+                    <div class="uploaded-article" data-id="${upload.id}" ${hasPdf ? "onclick=\"handleUserUploadClick('" + upload.id + "')\" style=\"cursor: pointer;\"" : ''}>
+                        <h3>${upload.title}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : ''}</h3>
+                        <div class="summary">${upload.abstract || 'N/A'}</div>
+                        <div class="meta">
+                            <strong>Category:</strong> ${upload.category}<br>
+                            <strong>Topic:</strong> ${upload.topic ? upload.topic.charAt(0).toUpperCase() + upload.topic.slice(1) : 'Not set'}<br>
+                            <strong>Type:</strong> ${upload.type ? upload.type.charAt(0).toUpperCase() + upload.type.slice(1) : 'Not set'}<br>
+                            <strong>Level:</strong> ${upload.level}<br>
+                            <strong>Year:</strong> ${upload.year}
+                        </div>
+                        <div class="edit-fields" style="display: none;">
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Title:</strong></label>
+                                <input type="text" class="edit-title" value="${upload.title.replace(/"/g, '&quot;')}" style="width: 100%;">
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Author:</strong></label>
+                                <input type="text" class="edit-author" value="${upload.author || ''}" style="width: 100%;">
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Abstract/Summary:</strong></label>
+                                <textarea class="edit-abstract" style="width: 100%; min-height: 80px;">${upload.abstract || ''}</textarea>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Category:</strong></label>
+                                <select class="edit-category" style="width: 100%;">
+                                    <option value="research" ${upload.category === 'research' ? 'selected' : ''}>Research</option>
+                                    <option value="capstone" ${upload.category === 'capstone' ? 'selected' : ''}>Capstone</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Topic:</strong></label>
+                                <select class="edit-topic" style="width: 100%;">
+                                    <option value="">Select Topic</option>
+                                    <option value="agriculture" ${upload.topic === 'agriculture' ? 'selected' : ''}>Agriculture</option>
+                                    <option value="business" ${upload.topic === 'business' ? 'selected' : ''}>Business</option>
+                                    <option value="cosmetics" ${upload.topic === 'cosmetics' ? 'selected' : ''}>Cosmetics</option>
+                                    <option value="education" ${upload.topic === 'education' ? 'selected' : ''}>Education</option>
+                                    <option value="environment" ${upload.topic === 'environment' ? 'selected' : ''}>Environment</option>
+                                    <option value="food" ${upload.topic === 'food' ? 'selected' : ''}>Food</option>
+                                    <option value="technology" ${upload.topic === 'technology' ? 'selected' : ''}>Technology</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Type:</strong></label>
+                                <select class="edit-type" style="width: 100%;">
+                                    <option value="qualitative" ${upload.type === 'qualitative' ? 'selected' : ''}>Qualitative</option>
+                                    <option value="quantitative" ${upload.type === 'quantitative' ? 'selected' : ''}>Quantitative</option>
+                                    <option value="bsba" ${upload.type === 'bsba' ? 'selected' : ''}>BSBA</option>
+                                    <option value="bscs" ${upload.type === 'bscs' ? 'selected' : ''}>BSCS</option>
+                                    <option value="bsit" ${upload.type === 'bsit' ? 'selected' : ''}>BSIT</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Level:</strong></label>
+                                <select class="edit-level" style="width: 100%;">
+                                    <option value="shs" ${upload.level === 'shs' ? 'selected' : ''}>Senior High School</option>
+                                    <option value="college" ${upload.level === 'college' ? 'selected' : ''}>College</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Year:</strong></label>
+                                <input type="number" class="edit-year" value="${upload.year}" min="2020" max="2030" style="width: 100%;">
+                            </div>
+                        </div>
+                        <div class="source-tag">
+                            <strong>File:</strong> ${upload.filename}<br>
+                            <strong>Status:</strong> <span style="color: ${upload.status === 'approved' ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">${upload.status}</span><br>
+                            <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}
+                        </div>
+                        <div class="actions">
+                            ${upload.status === 'pending' ? `
+                                <button class="upload-btn" onclick="approveUserUpload('${upload.id}')">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                <button class="delete-btn" onclick="rejectUserUpload('${upload.id}')">
+                                    <i class="fas fa-times"></i> Reject
+                            ` : ''}
+                            <button class="edit-btn" onclick="toggleUserUploadEdit('${upload.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        // View PDF for user upload
+        function viewUserUploadPDF(pdfUrl, title) {
+            // Decode URL-encoded parameters
+            pdfUrl = decodeURIComponent(pdfUrl);
+            title = decodeURIComponent(title);
+
+            if (DEBUG) console.log('Opening PDF:', pdfUrl, 'Title:', title);
+
+            if (typeof displayArticlePDF === 'function') {
+                displayArticlePDF(pdfUrl, title);
+            } else if (typeof openPdfModal === 'function') {
+                openPdfModal(pdfUrl, title);
+            } else {
+                // Fallback: open in new window
+                window.open(pdfUrl, '_blank');
+            }
+        }
+
+        // Edit user upload topic and type
+        function editUserUploadTopic(id) {
+            const uploads = window.userUploadsData || [];
+            const upload = uploads.find(u => u.id === id);
+            if (!upload) return;
+
+            const topic = prompt('Enter topic for this article:', upload.topic || '');
+            if (topic !== null) {
+                const type = prompt('Enter type (qualitative/quantitative):', upload.type || '');
+                fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic: topic, type: type })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        alert('Topic and Type updated successfully!');
+                        loadUserUploadsForAdmin();
+                    } else {
+                        alert('Failed to update: ' + result.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating:', error);
+                    alert('Failed to update');
+                });
+            }
+        }
+
+        // Handle click on user uploaded article
+        function handleUserUploadClick(id) {
+            const uploadedArticle = document.querySelector(`.uploaded-article[data-id="${id}"]`);
+            if (uploadedArticle.classList.contains('editing')) {
+                return; // Don't open PDF when editing
+            }
+
+            const uploads = window.userUploadsData || [];
+            const upload = uploads.find(u => u.id === id);
+            if (upload && upload.pdfUrl) {
+                const testPdfUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Research/2023-2024/Cejes%20et%20al.pdf';
+                const safeTitle = upload.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                displayArticlePDF(testPdfUrl, safeTitle);
+            }
+        }
+
+        // Toggle edit mode for user uploads
+        function toggleUserUploadEdit(id) {
+            const userUploadedDiv = document.querySelector(`.user-uploaded[data-id="${id}"]`);
+            const uploadedArticle = userUploadedDiv.querySelector('.uploaded-article');
+            const editBtn = uploadedArticle.querySelector('.edit-btn');
+
+            // Get PDF info from the uploads data
+            const uploads = window.userUploadsData || [];
+            const upload = uploads.find(u => u.id === id);
+            const hasPdf = upload && upload.pdfUrl && upload.pdfUrl.length > 0;
+            const testPdfUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Research/2023-2024/Cejes%20et%20al.pdf';
+
+            if (uploadedArticle.classList.contains('editing')) {
+                // Save changes
+                saveUserUploadEdit(id);
+                uploadedArticle.classList.remove('editing');
+                editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                // Hide edit fields and show meta
+                uploadedArticle.querySelector('.edit-fields').style.display = 'none';
+                uploadedArticle.querySelector('.meta').style.display = 'block';
+                // Restore cursor
+                uploadedArticle.style.cursor = hasPdf ? 'pointer' : 'default';
+            } else {
+                // Enter edit mode
+                uploadedArticle.classList.add('editing');
+                editBtn.innerHTML = '<i class="fas fa-save"></i> Save';
+                // Show edit fields and hide meta
+                uploadedArticle.querySelector('.edit-fields').style.display = 'block';
+                uploadedArticle.querySelector('.meta').style.display = 'none';
+                // Change cursor to default during edit
+                uploadedArticle.style.cursor = 'default';
+            }
+        }
+
+        // Save user upload edits
+        function saveUserUploadEdit(id) {
+            const upload = uploads.find(u => u.id == id);
+            const hasPdf = upload && upload.pdfUrl && upload.pdfUrl.length > 0;
+            const pdfName = hasPdf ? upload.pdfUrl.split('/').pop() : '';
+
+            const userUploadedDiv = document.querySelector(`.user-uploaded[data-id="${id}"]`);
+            const uploadedArticle = userUploadedDiv.querySelector('.uploaded-article');
+
+            const title = uploadedArticle.querySelector('.edit-title').value;
+            const author = uploadedArticle.querySelector('.edit-author').value;
+            const abstract = uploadedArticle.querySelector('.edit-abstract').value;
+            const category = uploadedArticle.querySelector('.edit-category').value;
+            const topic = uploadedArticle.querySelector('.edit-topic').value;
+            const type = uploadedArticle.querySelector('.edit-type').value;
+            const level = uploadedArticle.querySelector('.edit-level').value;
+            const year = uploadedArticle.querySelector('.edit-year').value;
+
+            // Update the display
+            uploadedArticle.querySelector('h3').innerHTML = title + (hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : '');
+            uploadedArticle.querySelector('.summary').textContent = abstract || 'N/A';
+            uploadedArticle.querySelector('.meta').innerHTML = `
+                <strong>Category:</strong> ${category}<br>
+                <strong>Topic:</strong> ${topic ? topic.charAt(0).toUpperCase() + topic.slice(1) : 'Not set'}<br>
+                <strong>Type:</strong> ${type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Not set'}<br>
+                <strong>Level:</strong> ${level}<br>
+                <strong>Year:</strong> ${year}${hasPdf ? '<br><strong>PDF:</strong> ' + pdfName : ''}
+            `;
+
+            // Here you would typically send the update to the server
+            // For now, just update the display
+            alert('Changes saved successfully!');
+        }
+
+        // Approve user upload
+        async function approveUserUpload(id) {
+            try {
+                const response = await fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'approved' })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Upload approved successfully!');
+                    loadUserUploadsForAdmin();
+                } else {
+                    alert('Failed to approve: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error approving upload:', error);
+                alert('Failed to approve upload');
+            }
+        }
+
+        // Reject user upload
+        async function rejectUserUpload(id) {
+            try {
+                const response = await fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'rejected' })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Upload rejected!');
+                    loadUserUploadsForAdmin();
+                } else {
+                    alert('Failed to reject: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error rejecting upload:', error);
+                alert('Failed to reject upload');
+            }
+        }
+
+        // Delete user upload
+        async function deleteUserUpload(id) {
+            if (!confirm('Are you sure you want to delete this upload?')) return;
+
+            try {
+                const response = await fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Upload deleted successfully!');
+                    loadUserUploadsForAdmin();
+                } else {
+                    alert('Failed to delete: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error deleting upload:', error);
+                alert('Failed to delete upload');
+            }
+        }
+        let currentPage = 1;
+        const articlesPerPage = 10;
+
+        function renderAdminArticles(page = 1) {
+            // Store current scroll position
+            const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+
+            currentPage = page;
+            const adminArticles = getAdminArticles();
+            const container = document.getElementById('admin-uploaded-articles');
+            const pagination = document.getElementById('admin-pagination');
+            const pageNumbers = document.getElementById('admin-page-numbers');
+
+            // Clear existing articles
+            container.innerHTML = '';
+
+            if (adminArticles.length === 0) {
+                container.innerHTML = '<p class="empty-state">No articles uploaded by admin yet.</p>';
+                pagination.style.display = 'none';
+                return;
+            }
+
+            // Calculate pagination
+            const totalPages = Math.ceil(adminArticles.length / articlesPerPage);
+            const startIndex = (page - 1) * articlesPerPage;
+            const endIndex = startIndex + articlesPerPage;
+            const articlesToShow = adminArticles.slice(startIndex, endIndex);
+
+            // Render articles
+            articlesToShow.forEach(article => {
+                const articleElement = createArticleTemplate(article);
+                container.appendChild(articleElement);
+            });
+
+            // Render pagination
+            pageNumbers.innerHTML = '';
+            pageNumbers.style.display = 'flex';
+            pageNumbers.style.gap = '5px';
+            pageNumbers.style.visibility = 'visible';
+
+            if (DEBUG) console.log('Creating buttons for totalPages:', totalPages);
+            for (let i = 1; i <= totalPages; i++) {
+                if (DEBUG) console.log('Creating page button:', i);
+                try {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = 'page-number' + (i === page ? ' active' : '');
+                    pageBtn.textContent = i;
+                    // Clean styling
+                    pageBtn.style.display = 'inline-flex';
+                    pageBtn.style.alignItems = 'center';
+                    pageBtn.style.justifyContent = 'center';
+                    pageBtn.style.minWidth = '40px';
+                    pageBtn.style.height = '36px';
+                    pageBtn.style.padding = '0 12px';
+                    pageBtn.style.margin = '0 4px';
+                    pageBtn.style.visibility = 'visible';
+                    pageBtn.style.opacity = '1';
+                    // Blue background color
+                    pageBtn.style.backgroundColor = i === page ? '#0057b8' : '#e3f2fd';
+                    pageBtn.style.color = i === page ? '#ffffff' : '#333333';
+                    pageBtn.style.border = '1px solid #0057b8';
+                    pageBtn.style.borderRadius = '4px';
+                    pageBtn.style.cursor = 'pointer';
+                    pageBtn.style.fontSize = '14px';
+                    pageBtn.style.fontWeight = '500';
+                    pageBtn.style.transition = 'all 0.2s';
+                    pageBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        window.scrollTo(0, 0);
+                        renderAdminArticles(i);
+                    });
+                    pageNumbers.appendChild(pageBtn);
+                } catch (err) {
+                    console.error('Error creating button', i, ':', err);
+                }
+            }
+
+            pagination.style.display = 'flex';
+            pagination.style.justifyContent = 'center';
+            pagination.style.padding = '20px 0';
+            pagination.style.visibility = 'visible';
+
+            // Restore scroll position after a brief delay to ensure DOM is updated
+            setTimeout(() => {
+                window.scrollTo({
+                    top: scrollPosition,
+                    behavior: 'auto'
+                });
+            }, 0);
+        }
+
+        function confirmDelete(buttonElement) {
+            const articleElement = buttonElement.closest('.article');
+            const title = articleElement.querySelector('h3').textContent;
+            showConfirm('Delete Article', `Are you sure you want to delete "${title}"? This action cannot be undone.`, () => {
+                // Find and remove the article from adminArticles
+                const adminArticles = getAdminArticles();
+                const articleIndex = Array.from(articleElement.parentNode.children).indexOf(articleElement);
+                const pageStartIndex = (currentPage - 1) * articlesPerPage;
+                const globalIndex = pageStartIndex + articleIndex;
+                adminArticles.splice(globalIndex, 1);
+                saveAdminArticles(adminArticles);
+                // Re-render the current page or previous if last article on page
+                const newTotalPages = Math.ceil(adminArticles.length / articlesPerPage);
+                if (currentPage > newTotalPages && currentPage > 1) {
+                    renderAdminArticles(currentPage - 1);
+                } else {
+                    renderAdminArticles(currentPage);
+                }
+            });
+
+
+        }
+
+        function getUserName(user) {
+            return user.fullname || user.name || 'Unknown';
+        }
+
+        function getUserStatus(user) {
+            // Check new boolean columns first
+            if (user.new_user === true) return 'pending';
+            if (user.banned_user === true) return 'banned';
+            if (user.rejected_user === true) return 'rejected';
+            if (user.verified === true) return 'approved';
+
+            // Fallback to legacy boolean logic for backward compatibility
+            if (user.verified && !user.banned && !user.rejected) return 'approved';
+            if (user.banned) return 'banned';
+            if (user.rejected) return 'rejected';
+            return 'pending';
+        }
+
+        function formatRole(role) {
+            if (role === 'senior_high') return 'SHS';
+            if (role === 'college') return 'College';
+            if (role === 'educator') return 'Educator';
+            if (role === 'admin') return 'Admin';
+            if (role === 'coadmin') return 'CO-Admin';
+            if (role === 'subadmin') return 'SUB-Admin';
+            if (role === 'tester') return 'Tester';
+            return 'Teacher';
+        }
+        function getSectionDisplay(user) {
+            return user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
+        }
+        function getStrandDegree(user) {
+            if (user.role === 'senior_high') {
+                return user.strand || '-';
+            } else if (user.role === 'college') {
+                return user.section || '-';
+            } else if (user.role === 'educator') {
+                return user.section || '-';
+            } else {
+                return '-';
+            }
+        }
+        function formatDate(dateString) {
+            if (!dateString || dateString === 'N/A') return 'N/A';
+            const date = new Date(dateString);
+            const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
+            return date.toLocaleDateString('en-US', options);
+        }
+        function formatNotificationDate(dateString) {
+            if (!dateString || dateString === 'N/A' || dateString === 'Just now' || dateString === 'Recently') return dateString;
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString; // If not a valid date, return as is
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+        // Helper function to parse time string to timestamp for sorting
+        function parseTimeToTimestamp(timeString) {
+            if (!timeString) return Date.now();
+
+            // If it's already a number, assume it's a timestamp
+            if (typeof timeString === 'number') return timeString;
+
+            // If it's a date string that can be parsed
+            const parsedDate = new Date(timeString);
+            if (!isNaN(parsedDate.getTime())) return parsedDate.getTime();
+
+            // Parse relative time strings like "2 hours ago", "30 minutes ago"
+            const match = timeString.match(/(\d+)\s*(minute|hour|day|second)s?\s*ago/i);
+            if (match) {
+                const value = parseInt(match[1]);
+                const unit = match[2].toLowerCase();
+                const now = Date.now();
+                switch (unit) {
+                    case 'second': return now - (value * 1000);
+                    case 'minute': return now - (value * 60 * 1000);
+                    case 'hour': return now - (value * 60 * 60 * 1000);
+                    case 'day': return now - (value * 24 * 60 * 60 * 1000);
+                }
+            }
+
+            // Default to current time if parsing fails
+            return Date.now();
+        }
+        function updateProfileAvatar(imageUrl) {
+            const avatar = document.getElementById('account-profile-avatar');
+            avatar.style.backgroundImage = `url(${imageUrl})`;
+            avatar.style.backgroundSize = 'cover';
+            avatar.style.backgroundPosition = 'center';
+            avatar.textContent = '';
+            const sidebarAvatar = document.querySelector('.sidebar .admin-info .profile-avatar');
+            if (sidebarAvatar) {
+                sidebarAvatar.style.backgroundImage = `url(${imageUrl})`;
+                sidebarAvatar.style.backgroundSize = 'cover';
+                sidebarAvatar.style.backgroundPosition = 'center';
+                sidebarAvatar.textContent = '';
+            }
+        }
+        function getStatus(createdAt) {
+            if (!createdAt) return 'Pending';
+            const now = new Date();
+            const created = new Date(createdAt);
+            const diffMs = now - created;
+            const diffHours = diffMs / (1000 * 60 * 60);
+            return diffHours < 1 ? 'Just Now' : 'Pending';
+        }
+        let dashboardUploadsChartType = 'doughnut';
+        function toggleDashboardUploadsChartType() {

@@ -303,3 +303,307 @@
                 modal.style.display = "none";
             }
         }
+
+        // === PDF MODAL FUNCTIONS ===
+        // For subadmin users - just close the modal and stay in current location
+        function closePdfEditorModal() {
+            const modal = document.getElementById('pdfEditorModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+            // Admin users stay in their current location
+        }
+
+        // === UTILS ===
+        let isLoadingUsers = false;
+        async function getUsers(forceRefresh = false, page = 1, limit = 50) {
+            if (forceRefresh) {
+                localStorage.removeItem('users');
+                isLoadingUsers = false;
+                if (DEBUG) console.log('DEBUG: Force refresh requested for users');
+            }
+            if (isLoadingUsers) return JSON.parse(localStorage.getItem('users') || '[]');
+            isLoadingUsers = true;
+            if (DEBUG) console.log('DEBUG: Attempting to fetch users from user.json...');
+            try {
+                const offset = (page - 1) * limit;
+                const response = await fetch(`/api/users?limit=${limit}&offset=${offset}&_=${Date.now()}`);
+                if (DEBUG) console.log('DEBUG: Fetch response status:', response.status);
+                if (response.ok) {
+                    if (DEBUG) console.log('DEBUG: Server responded successfully, parsing JSON...');
+                    const data = await response.json();
+                    // Map user.json fields to the format expected by loadUsers()
+                    const users = (data.users || []).map(user => ({
+                        id: user.user_id,
+                        user_id: user.user_id,
+                        name: user.fullname,
+                        email: user.email,
+                        personal_email: user.email,
+                        role: user.role,
+                        isActive: user.verified,
+                        verified: user.verified,
+                        rejected: user.rejected_user,
+                        banned: user.banned,
+                        new_user: user.new_user,
+                        created_at: user.created_at,
+                        updated_at: user.updated_at,
+                        type: user.user_type,
+                        grade: user.grade,
+                        Sec_Degr: user.Sec_Degr,
+                        sec_degr: user.sec_degr,
+                        strand: user.strand,
+                        section: user.section,
+                        course: user.course,
+                        department: user.department
+                    }));
+                    // Store pagination info
+                    if (data.total !== undefined) {
+                        users._total = data.total;
+                        users._limit = data.limit || limit;
+                        users._offset = data.offset || offset;
+                    }
+                    // Save to localStorage for fallback
+                    localStorage.setItem('users', JSON.stringify(users));
+                    isLoadingUsers = false;
+                    return users;
+                } else {
+                    if (DEBUG) console.log('DEBUG: Server returned error:', response.status, 'falling back to localStorage');
+                }
+            } catch (e) {
+                if (DEBUG) console.log('DEBUG: Could not load users from user.json:', e.message);
+            }
+            const localUsers = JSON.parse(localStorage.getItem('users') || '[]');
+            if (DEBUG) console.log('DEBUG: Loaded users from localStorage, count:', localUsers.length);
+            isLoadingUsers = false;
+            return localUsers;
+        }
+        function saveUsers(users) {
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+
+        // Function to load users from user.json file
+        async function getUsersFromJson() {
+            try {
+                const response = await fetch('api/data/users.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.users || [];
+                }
+            } catch (e) {
+                if (DEBUG) console.log('DEBUG: Could not load users from user.json:', e.message);
+            }
+            return [];
+        }
+
+        // Current filter states
+        let currentFilters = {
+            admins: { role: '', search: '', filterType: 'unified' },
+            verified: { role: '', search: '', filterType: 'unified' },
+            'signing-up': { role: '', search: '', filterType: 'unified' },
+            banned: { role: '', search: '', filterType: 'unified' }
+        };
+
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/users?limit=100&offset=0');
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    users = data;
+                } else if (data.users && Array.isArray(data.users)) {
+                    users = data.users;
+                } else {
+                    users = [];
+                }
+                users = Array.isArray(users) ? users : [];
+                localStorage.setItem('users', JSON.stringify(users));
+                updateDashboardCounts();
+            } catch (error) {
+                // console.error('Error loading users:', error);
+                try {
+                    const stored = localStorage.getItem('users');
+                    users = stored ? JSON.parse(stored) : [];
+                } catch (e) {
+                    users = [];
+                }
+            }
+        }
+
+        function paginateTable(tbodyId, rowsPerPage) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+
+            const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+            const totalPages = Math.ceil(rows.length / rowsPerPage);
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            if (!paginationDiv) return;
+
+            let currentPage = parseInt(paginationDiv.dataset.currentPage) || 1;
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+            paginationDiv.dataset.currentPage = currentPage;
+
+            // Show only current page rows among visible
+            rows.forEach((row, index) => {
+                const page = Math.floor(index / rowsPerPage) + 1;
+                row.style.display = page === currentPage ? '' : 'none';
+            });
+
+            // Generate pagination buttons (always visible)
+            let buttons = '';
+
+            // Previous button
+            const prevDisabled = currentPage <= 1 || totalPages <= 1;
+            const prevClass = prevDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const prevOnClick = prevDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage - 1})"`;
+            const prevDisabledAttr = prevDisabled ? ' disabled' : '';
+            buttons += `<button class="${prevClass}"${prevDisabledAttr} ${prevOnClick}>Previous</button>`;
+
+            // Page number buttons (always show at least page 1)
+            if (totalPages > 0) {
+                const maxPagesToShow = Math.min(totalPages, 5); // Show max 5 page numbers
+                let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+                // Adjust start page if we're near the end
+                if (endPage - startPage + 1 < maxPagesToShow) {
+                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const isActive = i === currentPage;
+                    const pageDisabled = totalPages <= 1;
+                    const pageClass = isActive ?
+                        (pageDisabled ? 'btn btn-primary btn-sm active disabled' : 'btn btn-primary btn-sm active') :
+                        (pageDisabled ? 'btn btn-outline-secondary btn-sm disabled' : 'btn btn-outline-secondary btn-sm');
+                    const pageOnClick = pageDisabled ? '' : `onclick="changePage('${tbodyId}', ${i})"`;
+                    const pageDisabledAttr = pageDisabled ? ' disabled' : '';
+                    buttons += `<button class="${pageClass}"${pageDisabledAttr} ${pageOnClick}>${i}</button>`;
+                }
+            } else {
+                // No records, show disabled page 1
+                buttons += `<button class="btn btn-outline-secondary btn-sm disabled" disabled>1</button>`;
+            }
+
+            // Next button
+            const nextDisabled = currentPage >= totalPages || totalPages <= 1;
+            const nextClass = nextDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const nextOnClick = nextDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage + 1})"`;
+            const nextDisabledAttr = nextDisabled ? ' disabled' : '';
+            buttons += `<button class="${nextClass}"${nextDisabledAttr} ${nextOnClick}>Next</button>`;
+
+            // Add page info
+            const startRecord = (currentPage - 1) * rowsPerPage + 1;
+            const endRecord = Math.min(currentPage * rowsPerPage, rows.length);
+            const infoText = totalPages > 0 ?
+                `Showing ${startRecord}-${endRecord} of ${rows.length} records` :
+                'No records to display';
+
+            buttons += `<span class="pagination-info" style="margin-left: 15px; font-size: 12px; color: #666;">${infoText}</span>`;
+
+            paginationDiv.innerHTML = buttons;
+        }
+
+        function getActivityLogs() {
+            return JSON.parse(localStorage.getItem('activityLogs')) || [];
+        }
+        function saveActivityLogs(logs) {
+            localStorage.setItem('activityLogs', JSON.stringify(logs));
+        }
+        function formatRole(role) {
+            if (role === 'senior_high') return 'SHS';
+            if (role === 'college') return 'College';
+            if (role === 'admin') return 'Admin';
+            if (role === 'coadmin') return 'CO-Admin';
+            if (role === 'subadmin') return 'SUB-Admin';
+            if (role === 'tester') return 'Tester';
+            return 'Teacher';
+        }
+        function getSectionDisplay(user) {
+            if (user.role === 'senior_high') {
+                const grade = user.grade_level || user.Grade_level;
+                const section = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course;
+                if (section && grade) {
+                    return `${grade} - ${section}`;
+                } else if (section) {
+                    return section;
+                } else if (grade) {
+                    return grade;
+                } else {
+                    return '-';
+                }
+            } else if (user.role === 'college') {
+                return user.Str_Degr || '-';
+            } else if (user.role === 'educator') {
+                return user.Str_Degr || '-';
+            } else {
+                return user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
+            }
+        }
+        // Helper function for subadmin status detection
+        function getUserStatus(user) {
+            if (user.new_user === true) return 'pending';
+            if (user.banned_user === true) return 'banned';
+            if (user.rejected_user === true) return 'rejected';
+            if (user.verified === true) return 'approved';
+            // Fallback
+            if (user.verified && !user.banned && !user.rejected) return 'approved';
+            if (user.banned) return 'banned';
+            if (user.rejected) return 'rejected';
+            return 'pending';
+        }
+
+        // Update dashboard counts
+        async function updateDashboardCounts() {
+            // Get total counts without pagination limits
+            try {
+                const token = localStorage.getItem('sti_auth_token');
+                const response = await fetch('/api/users/count?_=' + Date.now(), {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+
+                if (response.ok) {
+                    const countData = await response.json();
+                    if (countData.success && countData.counts) {
+                        const verifiedEl = document.getElementById('verified-users-count');
+                        const signingUpEl = document.getElementById('signing-up-users-count');
+
+                        if (verifiedEl) verifiedEl.textContent = countData.counts.usersCount || 0;
+                        if (signingUpEl) signingUpEl.textContent = countData.counts.newSignups || 0;
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to fetch total user counts, falling back to local data:', error);
+                // Fallback to local calculation
+                if (!Array.isArray(users)) users = [];
+                const usersCount = users.filter(u => u.user_type === 'user').length;
+                const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
+
+                const verifiedEl = document.getElementById('verified-users-count');
+                const signingUpEl = document.getElementById('signing-up-users-count');
+
+                if (verifiedEl) verifiedEl.textContent = usersCount;
+                if (signingUpEl) signingUpEl.textContent = signingUpCount;
+            }
+        }
+        function formatDate(dateString) {
+            if (!dateString || dateString === 'N/A') return 'N/A';
+            const date = new Date(dateString);
+            const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
+            return date.toLocaleDateString('en-US', options);
+        }
+        function formatNotificationDate(dateString) {
+            if (!dateString || dateString === 'N/A' || dateString === 'Just now' || dateString === 'Recently') return dateString;
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString; // If not a valid date, return as is
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+        function getStatus(createdAt) {
+            if (!createdAt) return 'Pending';
+            const now = new Date();
+            const created = new Date(createdAt);
+            const diffMs = now - created;
+            const diffHours = diffMs / (1000 * 60 * 60);
+            return diffHours < 1 ? 'Just Now' : 'Pending';
+        }
+        function toggleTimeChartType() {

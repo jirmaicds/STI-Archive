@@ -25,6 +25,10 @@
             return password;
         }
 
+        function getUserName(user) {
+            return user.fullname || user.name || 'Unknown';
+        }
+
         function updateUserStatus(userId, action, reason = "") {
             // Handle case where userId might be undefined
             if (typeof userId === "undefined" || userId === null || userId === "") {

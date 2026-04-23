@@ -1,0 +1,16134 @@
+
+        // Debug flag for console logs
+        const DEBUG = false;
+
+        // Initialize Supabase client
+        const SUPABASE_URL = 'https://eopbqatvianrjkdbypvk.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJxYXR2aWFucmprZGJ5cHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzA4OTIsImV4cCI6MjA4OTEwNjg5Mn0.k9_xTbjwRdwAQJ9UgGGsosjLWywzxHuYOq-JbGeII8g';
+        // Supabase script creates global supabase object, just initialize it
+        window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <style>
+        /* ... [All your existing CSS remains unchanged] ... */
+        /* View PDF button styles */
+        .view-pdf-btn {
+            background-color: #0057b8;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .view-pdf-btn:hover {
+            background-color: #003f8a;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+            overflow: auto;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            transition: margin-left 0.3s;
+        }
+        .sidebar {
+            width: 200px;
+            max-width: 200px;
+            height: 100%;
+            border-radius: 0px 20px 0px 0px;
+            background-color: #0f1a41;
+            color: white;
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+       
+           
+        .sidebar img {
+            max-width: 120px;
+            height: 105px;
+            margin-bottom: 20px;
+            object-fit: contain;
+        }
+        .sidebar .admin-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: auto;
+            padding-top: 20px;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .profile-menu-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .profile-menu-items a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+        .profile-menu-items a:hover {
+            background-color: #555;
+        }
+        .profile-menu-items a i {
+            width: 16px;
+            text-align: center;
+        }
+        .sidebar .admin-info .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .sidebar .admin-info .admin-name {
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .sidebar.collapsed {
+            transform: translateX(-250px);
+        }
+        .sidebar.collapsed  #user-chart {
+            padding-left:100px;
+        }
+        .sidebar ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            padding-left: 0;
+        }
+        .sidebar ul li {
+            padding: 15px 0;
+            transition: background-color 0.3s;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+        }
+        .text {
+            transition: opacity 0.3s;
+        }
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            padding-left: 20px;
+            padding-right: 20px;
+            box-sizing: border-box;
+            justify-content: flex-start;
+            cursor: pointer;
+        }
+        .sidebar ul li a i {
+            width: 24px;
+            text-align: center;
+            font-size: 18px;
+        }
+        .sidebar ul li:not(.uploads-dropdown):hover {
+            background-color: #555;
+            cursor: pointer;
+        }
+        .sidebar ul li.active {
+            background-color: #0057b8;
+        }
+        .sidebar ul li.active a {
+            color: white;
+        }
+        .terms-dropdown a {
+            text-decoration: none !important;
+            align-items: left;
+        }
+        .terms-dropdown a:hover {
+            text-decoration: none !important;
+        }
+        .terms-dropdown .submenu {
+            background-color: #fff;
+        }
+        .uploads-dropdown,
+        .notifications-dropdown,
+        .terms-dropdown {
+            position: relative;
+            background-color: transparent !important;
+        }
+        .uploads-dropdown {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+        }
+        .uploads-dropdown > a,
+        .notifications-dropdown > a,
+        .terms-dropdown > a {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding-right: 20px !important;
+        }
+        .uploads-dropdown > a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            padding-right: 20px !important;
+            justify-content: space-between;
+        }
+        .uploads-dropdown .arrow,
+        .notifications-dropdown .arrow,
+        .terms-dropdown .arrow {
+            font-size: 12px;
+            transition: transform 0.3s;
+        }
+        .terms-dropdown a {
+            color: black !important;
+            justify-content: flex-start;
+        }
+        .terms-dropdown .arrow i.fa-chevron-down {
+            font-size: 10px;
+            transform: scaleX(1);
+            color: black;
+            padding-left:5px;
+        }
+        .terms-submenu {
+            background: none;
+        }
+        .edit-mode button {
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        .edit-mode button:first-of-type {
+            background: #007bff;
+            color: white;
+        }
+        .edit-mode button:nth-of-type(2) {
+            background: #28a745;
+            color: white;
+            margin-left: 10px;
+        }
+        .edit-mode button:nth-of-type(3) {
+            background: #6c757d;
+            color: white;
+            margin-left: 10px;
+        }
+        body.dark-mode .edit-mode button:first-of-type {
+            background: #ffd700;
+            color: black;
+        }
+        body.dark-mode .edit-mode button:nth-of-type(2) {
+            background: #4caf50;
+            color: white;
+        }
+        body.dark-mode .edit-mode button:nth-of-type(3) {
+            background: #9e9e9e;
+            color: white;
+        }
+        body.dark-mode .settings-sidebar {
+            background: #2d2d2d !important;
+        }
+        body.dark-mode .settings-sidebar li {
+            background: #2d2d2d;
+            color: #e2e8f0;
+        }
+        .uploads-dropdown.open .arrow,
+        .notifications-dropdown.open .arrow,
+        .terms-dropdown.open .arrow {
+            transform: rotate(180deg);
+        }
+        .submenu {
+            list-style: none;
+            padding: 0;
+            margin: 8px 0 0 0;
+            background: #8A2BE2;
+            border-radius: 0 0 8px 8px;
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            z-index: 1100;
+            position: relative;
+        }
+        .submenu li {
+            padding: 10px 0 10px 20px !important;
+            color: white !important;
+        }
+        .submenu li a {
+            padding: 0 !important;
+            font-size: 14px;
+        }
+        .uploads-dropdown.open .submenu,
+        .notifications-dropdown.open .submenu,
+        .terms-dropdown.open .submenu {
+            max-height: 200px;
+            padding: 8px 0;
+        }
+        .submenu li:hover {
+            background-color: #555;
+        }
+        .submenu li a:hover {
+            text-decoration: none !important;
+        }
+        body.dark-mode .submenu {
+            background: #8A2BE2;
+            color: white;
+        }
+        .header {
+            background-color: white;
+            padding: 20px 20px 20px 200px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 2;
+            transition: padding-left 0.3s;
+        }
+        .main-content {
+            margin-left: 200px;
+            margin-top: 80px;
+            padding: 20px 50px 0 50px;
+            height: calc(100% - 80px);
+            background-color: #f8f9fa;
+            transition: margin-left 0.3s;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        #page-title {
+            font-size:30px;
+            font-weight: bold;
+            color: #333;
+            margin-left:20px;
+        }
+        body.dark-mode .header  #page-title{
+            background-color: #232f41;
+            color: #ffffff;
+        }
+
+
+
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        @media (max-width: 500px) {
+            .header-right {
+                gap: 10px;
+            }
+            .notification-bell {
+                padding: 6px;
+            }
+            .notification-bell i {
+                font-size: 18px;
+            }
+            .dark-mode-toggle {
+                padding: 6px;
+            }
+            .dark-mode-toggle i {
+                font-size: 18px;
+                }
+        }
+        .notification-bell {
+            position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #FFA500;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .notification-bell i {
+            font-size: 20px;
+        }
+        .notification-bell:hover {
+            background-color: #f0f0f0;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            display: none;
+        }
+        .pending-requests-btn {
+            position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #FFA500;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 5px;
+        }
+        .pending-requests-btn i {
+            font-size: 20px;
+        }
+        .pending-requests-btn:hover {
+            background-color: #f0f0f0;
+        }
+        .pending-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ffc107;
+            color: #333;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .dark-mode-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #777;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dark-mode-toggle i {
+            font-size: 20px;
+        }
+        .dark-mode-toggle:hover {
+            background-color: #f0f0f0;
+        }
+        .profile-dropdown {
+            position: relative;
+        }
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 20px;
+            transition: background-color 0.3s;
+        }
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .profile-menu {
+            display: none;
+            position: absolute;
+            top:100%;
+            right: 0;
+            background-color: white;
+            min-width: 180px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            z-index: 1001;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-profile-menu {
+            display: none;
+            position: absolute;
+            top: -60px;
+            left: 0;
+            right: 0;
+            background-color: #0f1a41;
+            z-index: 1002;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border-radius: 8px 8px 0 0;
+        }
+        .sidebar-profile-menu.open {
+            display: block;
+        }
+        .sidebar-profile-menu li {
+            padding: 10px 20px;
+            border-bottom: 1px solid #333;
+        }
+        .sidebar-profile-menu li:last-child {
+            border-bottom: none;
+        }
+        .sidebar-profile-menu li a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0;
+        }
+        .sidebar-profile-menu li a:hover {
+            color: #ffd700;
+        }
+        .profile-dropdown.open .profile-menu {
+            display: block;
+        }
+        .profile-menu li {
+            padding: 10px 15px;
+        }
+        .profile-menu a {
+            color: #333;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s;
+        }
+        .profile-menu a:hover {
+            background-color: #f0f0f0;
+        }
+        .profile-menu .logout-item {
+            border-top: 1px solid #eee;
+            color: #ff4444;
+        }
+        .profile-menu .logout-item:hover {
+            background-color: #ffebee;
+        }
+        body.dark-mode .profile-menu {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        body.dark-mode .profile-menu a {
+            color: white;
+        }
+        body.dark-mode .profile-menu a:hover {
+            background-color: #3d3d3d;
+        }
+        body.dark-mode .profile-menu .logout-item {
+            border-top-color: #444;
+            color: #ff4444;
+        }
+        body.dark-mode .profile-menu .logout-item:hover {
+            background-color: #4d2d2d;
+        }
+        body.dark-mode .sidebar-profile-menu {
+            background-color: #0f1a41;
+        }
+        body.dark-mode .sidebar-profile-menu li a:hover {
+            color: #ffd700;
+        }
+        body.dark-mode {
+            background-color: #181f2a;
+            color: #ffffff;
+        }
+        /* When sidebar collapsed, move toggle-btn and page-title left */
+        body.sidebar-collapsed .toggle-btn {
+            margin-left: 0;
+        }
+        body.sidebar-collapsed #page-title {
+            margin-left: 0;
+        }
+
+        body.dark-mode .header {
+            background-color: #232f41;
+            color: #ffffff;
+        }
+        body.dark-mode .toggle-btn {
+            color: #ffd700;
+        }
+        body.dark-mode .card {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        body.dark-mode .users-section,
+        body.dark-mode .settings-section,
+        body.dark-mode .notifications-section,
+        body.dark-mode .upload-section,
+        body.dark-mode .request-section {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        body.dark-mode table {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        body.dark-mode th {
+            background-color: #3d3d3d;
+        }
+        body.dark-mode .modal-content {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        body.dark-mode #report-content div {
+            background: #2d2d2d !important;
+            color: #ffffff !important;
+        }
+        body.dark-mode .notification-bell {
+            color: #FFA500;
+        }
+        body.dark-mode .dark-mode-toggle {
+            color: #ccc;
+        }
+        body.dark-mode .notification-bell:hover,
+        body.dark-mode .dark-mode-toggle:hover,
+        body.dark-mode .profile-btn:hover {
+            background-color: #3d3d3d;
+        }
+        body.dark-mode .users-nav {
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%) !important;
+            border-bottom-color: #667eea !important;
+        }
+        body.dark-mode .nav-btn {
+            background-color: #3d3d3d;
+            color: #ffffff;
+            border-color: #555;
+        }
+        body.dark-mode .nav-btn:hover {
+            background-color: #4d4d4d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .nav-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        body.dark-mode .upload-nav {
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%) !important;
+            border-bottom-color: #667eea !important;
+        }
+        body.dark-mode .article-template {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        body.dark-mode .article-template h3 {
+            color: #667eea;
+        }
+        body.dark-mode .article-template .meta {
+            color: #aaa;
+        }
+        body.dark-mode .article-template .summary {
+            color: #ddd;
+        }
+        body.dark-mode .article-template .non-editable {
+            background-color: #3d3d3d;
+            color: #aaa;
+        }
+        body.dark-mode .article-template input,
+        body.dark-mode .article-template textarea {
+            background-color: #3d3d3d;
+            color: #ffffff;
+            border-color: #555;
+        }
+        body.dark-mode .profile-btn span {
+            color: white;
+        }
+        body.dark-mode .graphs-section h2 {
+            color: white;
+        }
+        body.dark-mode .graph-item {
+            background: #2d2d2d;
+        }
+        body.dark-mode .graph-item h4 {
+            color: white;
+        }
+        body.dark-mode .graph label {
+            color: #ccc;
+        }
+        .toggle-btn {
+            margin-left:20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
+        }
+        .dashboard {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        @media (min-width: 1025px) {
+            .dashboard {
+                flex-wrap: nowrap;
+            }
+        }
+        /* Responsive dashboard layout */
+        @media (max-width: 500px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .card {
+                width: 100%;
+            }
+        }
+        @media (max-width: 300px) {
+            .card {
+                padding: 15px;
+            }
+        }
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 766px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            user-select: none;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .card h3 {
+            margin-bottom: 10px;
+        }
+        .card p {
+            color: #666;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .graphs-section {
+            margin-top: 15px;
+        }
+        .graphs-section h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .graph-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        body.sidebar-collapsed .graph-container {
+            justify-content: center;
+        }
+        .graph-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .graph-item h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            max-width: 600px;
+        }
+        .charts-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .chart-section {
+            flex: 1 1 45%;
+            min-width: 300px;
+            max-width: 600px;
+        }
+        
+        /*USER STATISTIC EACH CONTAINER & CHARTS*/
+        #usr-grph{
+            height:400px;
+            width: 100%;
+            max-width: 600px;
+        }
+        #usr-chart{
+
+            width: 100%;
+            max-width: 550px;
+        }
+        #sgn-grph{
+            height:400px;
+            width: 100%;
+            max-width: 600px;
+        }
+        #sgn-chart{
+            height:350px;
+            width: 100%;
+            max-width: 550px;
+        }
+        #upld-grph{
+            height:400px;
+            width: 100%;
+            max-width: 600px;
+        }
+        #upld-chart{
+            height:350px;
+            width: 100%;
+            max-width: 550px;
+        }
+        #avg-grph{
+            height:400px;
+            width: 100%;
+            max-width: 600px;
+        }
+        #avg-chart{
+            height:350px;
+            width: 100%;
+            max-width: 550px;
+        }
+        
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .users-section, .settings-section, .notifications-section, .upload-section, .request-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .notifications-section {
+            height: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 99999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+        /* RAF Preview Modal Centering */
+        #raf-preview-modal {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #raf-preview-modal .modal-content {
+            margin: 0;
+        }
+
+        /* Custom radio button styling */
+        input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            background-color: white;
+            position: relative;
+            cursor: pointer;
+            margin-right: 8px;
+            vertical-align: middle;
+            outline: none;
+        }
+        input[type="radio"]:focus {
+            outline: none;
+        }
+        input[type="radio"]:checked {
+            border-color: #007bff;
+        }
+        input[type="radio"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background-color: #007bff;
+            border-radius: 50%;
+        }
+        label {
+            vertical-align: middle;
+            cursor: pointer;
+            user-select: none;
+        }
+        /* Filter modal styling */
+        .filter-modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 15px;
+            width: auto;
+            white-space: nowrap;
+        }
+        .filter-modal.show {
+            display: block;
+        }
+        .filter-modal-content {
+            position: relative;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: black;
+        }
+        .notification-modal {
+            display: none;
+            position: fixed;
+            z-index: 2001;
+            right: 20px;
+            top: 70px;
+            width: 400px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 1px solid #ddd;
+        }
+        @media (max-width: 500px) {
+            .notification-modal {
+                width: calc(100% - 40px);
+                right: 20px;
+                left: 20px;
+                top: 70px;
+            }
+        }
+        .notification-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notification-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+        }
+        .notification-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #666;
+        }
+        .notification-list-bell {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .notification-list-section {
+            height: auto;
+        }
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            flex-wrap: wrap;
+        }
+        .pagination-controls button.disabled,
+        .pagination-controls .disabled,
+        .pagination-controls button:disabled {
+            opacity: 0.5 !important;
+            cursor: not-allowed !important;
+        }
+        .pagination-info {
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .page-number {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            min-width: 35px;
+            text-align: center;
+        }
+        .page-number:hover {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .page-number.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .notification-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 12px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+        }
+        .notification-checkbox {
+            margin-top: 2px;
+        }
+        .notification-details {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .notification-item:hover {
+            background-color: #f8f9fa;
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-type {
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            order: -1;
+        }
+        .notification-type.new-user {
+            color: #28a745;
+        }
+        .notification-type.upload {
+            color: #007bff;
+        }
+        .notification-type.suggestion {
+            color: #ffc107;
+        }
+        .notification-type.bug {
+            color: #dc3545;
+        }
+        .notification-content {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 2px;
+            flex: 1;
+        }
+        .notification-time {
+            font-size: 12px;
+            color: #666;
+        }
+        .notification-footer {
+            padding: 12px 20px;
+            text-align: center;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notification-footer .left-btns {
+            display: flex;
+            gap: 15px;
+        }
+        .view-all-btn,
+        .mark-all-read-btn {
+            background: none;
+            border: none;
+            color: #333;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .view-all-btn:hover,
+        .mark-all-read-btn:hover {
+            color: #555;
+        }
+        .view-all-btn i,
+        .mark-all-read-btn i {
+            color: #333;
+        }
+        .notification-item {
+            position: relative;
+            padding: 12px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: flex-start;
+            
+        }
+        .notification-details {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .notification-item:hover {
+            background-color: #f8f9fa;
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-actions {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        .notification-actions i {
+            color: black;
+            font-size: 14px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .notification-actions i:hover {
+            opacity: 1;
+        }
+        .notification-item.read .notification-content {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+        body.dark-mode .notification-modal {
+            background-color: #2d2d2d;
+            border-color: #444;
+        }
+        body.dark-mode .notification-header {
+            border-bottom-color: #444;
+        }
+        body.dark-mode .notification-header h3 {
+            color: #ffffff;
+        }
+        body.dark-mode .notification-close {
+            color: #ccc;
+        }
+        body.dark-mode .notification-item {
+            border-bottom-color: #444;
+        }
+        body.dark-mode .notification-item:hover {
+            background-color: #3d3d3d;
+        }
+        body.dark-mode .notification-content {
+            color: #ffffff;
+        }
+        body.dark-mode .notification-time {
+            color: #ccc;
+        }
+        body.dark-mode .notification-footer {
+            border-top-color: #444;
+        }
+        body.dark-mode .notification-actions i {
+            color: #ccc;
+        }
+        body.dark-mode .notification-actions i:hover {
+            color: #fff;
+        }
+        body.dark-mode .user-info-container {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        .notification-placeholder {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            font-size: 16px;
+        }
+        body.dark-mode .notification-placeholder {
+            color: #ccc;
+        }
+        .notification-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        body.dark-mode .notification-controls {
+            background: #2d2d2d;
+        }
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            z-index: 2002;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .confirm-modal.show {
+            display: flex;
+        }
+        .confirm-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .confirm-content h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 18px;
+        }
+        .confirm-content p {
+            margin: 0 0 25px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .confirm-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .confirm-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        .confirm-btn.cancel {
+            background-color: #6c757d;
+            color: white;
+        }
+        .confirm-btn.cancel:hover {
+            background-color: #5a6268;
+        }
+        .confirm-btn.ok {
+            background-color: #28a745;
+            color: white;
+        }
+        .confirm-btn.ok:hover {
+            background-color: #218838;
+        }
+        body.dark-mode .confirm-content {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        body.dark-mode .confirm-content h3 {
+            color: #ffffff;
+        }
+        body.dark-mode .confirm-content p {
+            color: #ccc;
+        }
+        .sidebar-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar-header img {
+            max-width: 140px;
+            height: 105px;
+            margin: 20px;
+            object-fit: contain;
+        }
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 160px;
+            }
+            .sidebar .admin-info {
+                padding-top: 10px;
+            }
+            .sidebar .admin-info .profile-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            .sidebar .admin-info .admin-name {
+                font-size: 12px;
+            }
+            .sidebar-header {
+                margin-bottom: 20px;
+                padding: 0 10px;
+            }
+            .sidebar-header img {
+                max-width: 150px;
+                height: 70px;
+                margin: 15px;
+                border-radius: 10px;
+            }
+            .sidebar ul li {
+                padding: 12px 10px;
+                font-size: 14px;
+            }
+            .sidebar ul li a i {
+                width: auto;
+                text-align: left;
+            }
+            .sidebar ul li a{
+                padding-left:0px;
+                text-align: left;
+                margin-left:0px;
+            }
+            .sidebar ul li a ul{
+                padding-left:0px ;
+                text-align: left;
+                margin-left:0px;
+            }
+            .uploads-dropdown > a, .notifications-dropdown > a {
+                padding-left: 0px !important;
+            }
+            .submenu li {
+                padding-left: 0px !important;
+            }
+            .main-content {
+                margin-left: 150px;
+                padding: 20px 15px;
+            }
+            .header {
+                position: fixed;
+                left: 160px;
+                width: calc(100% - 160px);
+                padding: 20px 20px 20px 160px;
+            }
+        }
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 120px;
+            }
+            .sidebar .admin-info {
+                padding-top: 5px;
+            }
+            .sidebar .admin-info .profile-avatar {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+            .sidebar .admin-info .admin-name {
+                font-size: 11px;
+            }
+            .sidebar-header img {
+                max-width: 100px;
+                height: 50px;
+                border-radius: 10px;
+            }
+            .sidebar ul li {
+                margin-left: 0;
+                padding-left: 0px;
+                font-size: 12px;
+                text-align: left;
+            }
+            .sidebar ul li a i {
+                width: auto;
+                text-align: left;
+            }
+            .uploads-dropdown > a, .notifications-dropdown > a, .terms-dropdown > a {
+                padding-left: 0px !important;
+            }
+            .submenu li {
+                padding-left: 0px !important;
+            }
+            .sidebar ul li a ul {
+                padding-left:0px;
+                text-align: left;
+                margin-left:0px;
+            }
+            .main-content {
+                margin-left: 120px;
+                padding: 15px 10px;
+            }
+            .header {
+                left: 115px;
+                width: calc(100% - 110px);
+            }
+            .toggle-btn {
+                font-size: 25px;
+                margin-left:2px;
+            }
+        }
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .sidebar {
+                width: 220px;
+            }
+            .sidebar-header img {
+                max-width: 140px;
+                height: 70px;
+                border-radius: 10px;
+            }
+            .main-content {
+                margin-left: 195px;
+            }
+            
+        }
+        @media (min-width: 1025px) and (max-width: 1199px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 200px;
+            }
+            .header {
+                padding-left: 200px;
+            }
+        }
+        @media (min-width: 1200px) {
+            .sidebar {
+                width: 200px;
+            }
+            .sidebar-header img {
+                max-width: 160px;
+                height: 100px;
+                border-radius: 10px;
+            }
+            .main-content {
+                margin-left: 200px;
+            }
+            .header {
+                padding: 20px 20px 20px 200px;
+            }
+            .graph-container {
+                flex-wrap: nowrap;
+            }
+            .graph-item {
+                flex: 1 1 50%;
+                max-width: 50%;
+            }
+        }
+        /* Show admin info in sidebar on all screen sizes */
+        .sidebar .admin-info {
+            display: flex;
+        }
+        .sidebar {
+            justify-content: space-between;
+        }
+        .sidebar .admin-info .profile-menu-items {
+            display: flex;
+        }
+        .sidebar .admin-info .logout-only {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .sidebar .admin-info .logout-only a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+        .sidebar .admin-info .logout-only a:hover {
+            background-color: #555;
+        }
+        .sidebar .admin-info .avatar-name-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+        .sidebar .admin-info .avatar-name-row:hover {
+            background-color: #555;
+        }
+        .sidebar .admin-info .avatar-name-row:hover .admin-name {
+            color: #ffd700;
+        }
+        .sidebar .admin-info .admin-name {
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .sidebar .admin-info .admin-name .a-prefix {
+            display: none;
+        }
+        /* Tablet responsiveness (768px - 1024px) */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .sidebar {
+                width: 180px;
+            }
+            .main-content {
+                margin-left: 180px;
+                padding: 20px 15px;
+            }
+            .header {
+                padding-left: 180px;
+            }
+            .graph-container {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto;
+                gap: 20px;
+            }
+            .graph-item {
+                width: 100%;
+            }
+            .chart-container {
+                height: 250px;
+            }
+            .dashboard {
+                gap: 15px;
+            }
+            .card {
+                min-width: 150px;
+            }
+            /* Resize specific charts for tablets */
+            #usr-grph {
+                height: 400px;
+                width: 100%;
+            }
+            #sgn-grph {
+                height: 400px;
+                width: 100%;
+            }
+            #sgst-grph {
+                height: 350px;
+                width: 100%;
+            }
+        }
+        /* Phone responsiveness (max-width: 767px) */
+        @media (max-width: 767px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 250px;
+                height: 100%;
+                transform: translateX(-100%);
+                z-index: 1001;
+                transition: transform 0.3s ease;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px 10px;
+            }
+            .header {
+                position: fixed;
+                left: 0;
+                width: 100%;
+                padding-left: 200px;
+                margin-left: 0;
+            }
+            .main-content {
+                margin-top: 70px;
+            }
+            .dashboard {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .card {
+                min-width: unset;
+                width: 100%;
+                padding: 15px;
+            }
+            .graphs-section h2 {
+                font-size: 20px;
+            }
+            .graph-container {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .graph-item {
+                width: 100%;
+                padding: 15px;
+            }
+            .chart-container {
+                height: 200px;
+                width: 100%;
+                position: relative;
+            }
+            .chart-container canvas {
+                max-width: 100%;
+                height: 100% !important;
+            }
+            /* Make charts responsive */
+            .chart-container {
+                position: relative;
+                width: 100%;
+                height: 200px;
+            }
+            .chart-container canvas {
+                width: 100% !important;
+                height: 100% !important;
+                max-width: 100%;
+                max-height: 100%;
+            }
+            table {
+                font-size: 12px;
+                min-width: 600px;
+                overflow-x: auto;
+                display: block;
+            }
+            .users-section table {
+                min-width: 600px;
+            }
+            .modal-content {
+                width: 95%;
+                max-width: none;
+                margin: 10% auto;
+                padding: 15px;
+            }
+            .citation-modal-content {
+                width: 95%;
+                padding: 15px;
+            }
+            .upload-section form {
+                grid-template-columns: 1fr !important;
+                gap: 10px;
+            }
+            .upload-section form div {
+                grid-template-columns: 1fr !important;
+            }
+            .filter-buttons {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            .filter-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            .article {
+                padding: 15px;
+            }
+            .actions {
+                flex-direction: column;
+                gap: 5px;
+                align-items: flex-start;
+            }
+            /* Overlay for sidebar */
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.5);
+                z-index: 1000;
+            }
+            .sidebar-overlay.show {
+                display: block;
+            }
+            /* Resize specific charts for phones */
+            #usr-grph {
+                height: 350px;
+                width: 100%;
+            }
+            #sgn-grph {
+                height: 350px;
+                width: 100%;
+            }
+            #sgst-grph {
+                height: 300px;
+                width: 100%;
+            }
+            .chart-container canvas {
+                width: 100% !important;
+                height: 100% !important;
+                max-width: 100%;
+                max-height: 100%;
+            }
+            /* Users navigation responsiveness */
+            .users-nav {
+                flex-direction: column;
+                gap: 5px;
+                padding: 5px;
+                align-items: stretch;
+            }
+            .nav-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 8px 10px;
+                font-size: 12px;
+                box-sizing: border-box;
+            }
+            /* Upload navigation responsiveness */
+            .upload-nav {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+            .upload-nav .nav-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            /* Resize radio buttons for phones */
+            input[type="radio"] {
+                width: 12px;
+                height: 12px;
+                margin-right: 6px;
+            }
+            input[type="radio"]:checked::after {
+                width: 6px;
+                height: 6px;
+            }
+            /* Resize labels for SHS, College, Teacher filters */
+            label[for^="verified-"], label[for^="signing-up-"], label[for^="banned-"] {
+                font-size: 12px;
+            }
+            /* Resize filter modal for phones */
+            .filter-modal {
+                width: 90%;
+                max-width: 90%;
+                white-space: normal;
+                font-size: 12px;
+            }
+            .filter-modal-content h4, .filter-modal-content h5 {
+                font-size: 14px;
+            }
+            .filter-modal-content button {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+            /* Improve table scrolling for user sections on phones */
+            .users-section {
+                overflow-x: visible;
+            }
+            .users-section table {
+                min-width: 1000px;
+                display: table;
+            }
+        }
+        /* Additional media query for screens 703px and below */
+        @media (max-width: 703px) {
+            .users-section {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .users-section .user-subsection {
+                overflow-x: visible;
+            }
+            .users-section table {
+                min-width: 600px;
+                overflow-x: visible;
+                display: block;
+            }
+        }
+        /* Specific fixes for max-width: 718px and below */
+        @media (max-width: 718px) {
+            .user-subsection {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .user-subsection table {
+                overflow-x: visible;
+                min-width: 920px;
+            }
+            .user-subsection table th {
+                position: sticky;
+                top: 0;
+                background: white;
+                z-index: 1;
+            }
+            body.dark-mode .user-subsection table th {
+                background: #3d3d3d;
+            }
+        }
+        /* Specific fixes for max-width: 500px and below */
+        @media (max-width: 500px) {
+            .sidebar {
+                width: 150px;
+            }
+            .main-content {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .users-section table {
+                min-width: 920px;
+                display: table;
+            }
+            .users-section {
+                overflow-x: visible;
+            }
+            .users-section .user-subsection {
+                overflow-x: visible;
+            }
+            .users-section table {
+                font-size: 12px;
+                min-width: 920px;
+            }
+            .user-subsection table {
+                overflow-x: visible;
+            }
+            .user-subsection {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            #admins-table {
+                overflow-x: auto;
+                min-width: 600px;
+            }
+            /* Make table headers sticky for better scrolling experience */
+            .users-section table thead th {
+                position: sticky;
+                top: 0;
+                background-color: #f2f2f2;
+                z-index: 1;
+            }
+            body.dark-mode .users-section table thead th {
+                background-color: #3d3d3d;
+            }
+            .users-nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .nav-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .dashboard {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 8px;
+                justify-content: space-between;
+            }
+            .card {
+                
+                min-width: unset;
+                padding: 12px;
+                height: auto;
+                min-height: 80px;
+                box-sizing: border-box;
+            }
+            .card h3 {
+                font-size: 15px;
+            }
+            #usr-grph {
+                height: 300px;
+                width: 100%;
+            }
+            #usr-chart {
+                height: 250px;
+                width: 100%;
+            }
+            #sgn-grph {
+                height: 300px;
+                width: 100%;
+            }
+            #sgn-chart {
+                height: 250px;
+                width: 100%;
+            }
+
+        }
+        .welcome-container {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .welcome-container h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        .welcome-container p {
+            margin: 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .welcome-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+        .welcome-modal.show {
+            display: flex;
+        }
+        .welcome-modal-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            text-align: center;
+            animation: welcomeFadeIn 0.5s ease-out;
+        }
+        @keyframes welcomeFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .uploads-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .uploads-table th,
+        .uploads-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .uploads-table th {
+            background-color: #f2f2f2;
+        }
+        .preview-cell {
+            text-align: center;
+        }
+        .preview-thumb {
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .pdf-icon {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: #ff5722;
+            color: white;
+            text-align: center;
+            line-height: 50px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        #file-preview-modal .modal-content {
+            width: 80%;
+            max-width: 800px;
+            height: 80%;
+            display: flex;
+            flex-direction: column;
+            margin: 5% auto;
+        }
+        #preview-content {
+            flex: 1;
+            overflow: auto;
+        }
+        #preview-content img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        #preview-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        body.dark-mode .uploads-table th {
+            background-color: #3d3d3d;
+            color: white;
+        }
+        body.dark-mode .uploads-table {
+            color: white;
+        }
+        body.dark-mode .uploads-table td {
+            border-bottom-color: #444;
+        }
+        .user-subsection {
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid var(--border-color);
+        }
+        body.dark-mode .user-subsection {
+            background-color: #2d2d2d;
+            border-left-color: var(--border-color);
+        }
+        .role-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: white;
+        }
+        .role-badge.senior_high { background-color: #007bff; }
+        .role-badge.college { background-color: #28a745; }
+        .role-badge.educator { background-color: #dc3545; }
+        .role-badge.admin { background-color: #6f42c1; }
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+            margin: 2px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-success:hover { background-color: #218838; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .btn-danger:hover { background-color: #c82333; }
+        .btn-warning { background-color: #007bff; color: white; }
+        .btn-warning:hover { background-color: #0056b3; }
+        .btn-info { background-color: #17a2b8; color: white; }
+        .btn-info:hover { background-color: #138496; }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-primary:hover { background-color: #0069d9; }
+        body.dark-mode .btn-success { background-color: #28a745; }
+        body.dark-mode .btn-success:hover { background-color: #218838; }
+        body.dark-mode .btn-danger { background-color: #dc3545; }
+        body.dark-mode .btn-danger:hover { background-color: #c82333; }
+        body.dark-mode .btn-warning { background-color: #007bff; color: white; }
+        body.dark-mode .btn-warning:hover { background-color: #0056b3; }
+        body.dark-mode .btn-info { background-color: #17a2b8; }
+        body.dark-mode .btn-info:hover { background-color: #138496; }
+        body.dark-mode .btn-primary { background-color: #007bff; }
+        body.dark-mode .btn-primary:hover { background-color: #0069d9; }
+        .user-subsection h3 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--header-color);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            font-style: italic;
+        }
+        body.dark-mode .empty-state {
+            color: #ccc;
+        }
+        .user-subsection table {
+            margin-top: 15px;
+        }
+        .user-subsection table th {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .user-subsection table td {
+            vertical-align: middle;
+        }
+        .suggestions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .suggestions-table th,
+        .suggestions-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .suggestions-table th {
+            background-color: #f2f2f2;
+        }
+        .suggestion-container {
+            max-width: 200px;
+            word-wrap: break-word;
+        }
+        .suggestion-container img {
+            max-width: 100px;
+            max-height: 100px;
+            margin-top: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #reply-modal .modal-content {
+            width: 80%;
+            max-width: 500px;
+        }
+        #reply-modal textarea {
+            font-family: Arial, sans-serif;
+        }
+        body.dark-mode .suggestions-table th {
+            background-color: #3d3d3d;
+            color: white;
+        }
+        body.dark-mode .suggestions-table {
+            color: white;
+        }
+        body.dark-mode .suggestions-table td {
+            border-bottom-color: #444;
+        }
+        body.dark-mode #reply-modal .modal-content {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        body.dark-mode #reply-modal textarea {
+            background-color: #3d3d3d;
+            color: #ffffff;
+            border-color: #555;
+        }
+        body.dark-mode #reply-modal h3 {
+            color: #ffffff;
+        }
+        body.dark-mode #reply-user-info {
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+        .img-preview {
+            width: 50px;
+            height: 50px;
+            background: #ff9500f5;
+            color: #fff;
+            border-radius: 4px;
+            line-height: 50px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: normal;
+            font-size: 12px;
+            display: inline-block;
+        }
+        body.dark-mode .main-content {
+            background-color: #181f2a;
+        }
+        body.dark-mode .content-text {
+            background: #1a2636 !important;
+            color: #e2e8f0 !important;
+            border-color: #374151 !important;
+        }
+        body.dark-mode .content-text h3 {
+            color: #ffd700 !important;
+        }
+        body.dark-mode .edit-mode textarea {
+            background: #1a2636 !important;
+            color: #e2e8f0 !important;
+            border-color: #374151 !important;
+        }
+        .settings-subsection,
+        .notifications-subsection {
+            display: none;
+        }
+        .settings-subsection.active,
+        .notifications-subsection.active {
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .users-section table {
+                font-size: 12px;
+                min-width: 600px;
+            }
+            .users-section {
+                overflow-x: auto;
+            }
+            .user-subsection h3 {
+                font-size: 16px;
+            }
+            .user-subsection p {
+                font-size: 14px;
+            }
+        }
+        .bar-abm { background: #FF5722; }
+        
+        .bar-itmawd { background: #4CAF50; }
+        .bar-stem { background: #2196F3; }
+        .bar-bsba { background: #FF9800; }
+        .bar-bscs { background: #F44336; }
+        .bar-bsit { background: #9E9E9E; }
+        .bar-faculty { background: #607D8B; }
+        .bar-students { background: #4CAF50; }
+        .bar-educators { background: #FF9800; }
+        .analytics-card {
+            background-color: #007bff;
+            color: white;
+        }
+        .analytics-card h3 {
+            color: white;
+        }
+        .analytics-card p {
+            color: white;
+            font-size: 24px;
+        }
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .filter-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .filter-btn:hover {
+            background-color: #0056b3;
+        }
+        .filter-btn.active {
+            background-color: #0056b3;
+        }
+        .users-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        .upload-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        .nav-btn {
+            background: white;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .nav-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        .strand-filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .strand-filter-buttons .filter-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .strand-filter-buttons .filter-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .strand-filter-buttons .filter-btn.active {
+            background-color: #0056b3;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        .dropdown-content.show {
+            display: block;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropdown.show .dropdown-content {
+            display: block;
+        }
+        .dropdown:hover button i {
+            transform: rotate(180deg);
+        }
+        .dropdown.show button i {
+            transform: rotate(180deg);
+        }
+        .dropdown button i {
+            transition: transform 0.3s;
+        }
+        .article {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px #0001;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .article:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px #0002;
+        }
+        .article h3 {
+            margin: 0 0 10px 0;
+            color: #0057b8;
+            font-size: 18px;
+        }
+        .meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .summary {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .source-tag {
+            display: inline-block;
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+        .actions {
+            
+            gap: 10px;
+            
+        }
+        .actions span {
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .actions .cite-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        .actions .cite-btn:hover {
+            background-color: #0056b3;
+        }
+        .actions .related-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .actions .related-btn:hover {
+            background-color: #1e7e34;
+        }
+        .actions .edit-btn {
+            background-color: #555555;
+            color: white;
+            padding:5px;
+            border-radius: 4px;
+            cursor:pointer;
+        }
+        .actions .edit-btn:hover {
+            background-color: #666666;
+        }
+        .actions .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border-radius: 5px;
+            padding:4px;
+            cursor: pointer;
+        }
+        .actions .delete-btn:hover {
+            background-color: #c82333;
+        }
+        body.dark-mode .article {
+            background-color: #2d2d2d;
+            color: #ffffff;
+            
+        }
+        body.dark-mode .article h3 {
+            color: #ffffff;
+        }
+        body.dark-mode .meta {
+            color: #ccc;
+        }
+        body.dark-mode .summary {
+            color: #ffffff;
+        }
+        body.dark-mode .source-tag {
+            background: #444;
+            color: #ffffff;
+        }
+        .article.editing {
+            background-color: #f0f0f0;
+        }
+        body.dark-mode .article.editing {
+            background-color: #333;
+        }
+        .citation-modal {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0,0,0,0.5);
+          z-index: 10000 !important;
+          justify-content: center;
+          align-items: center;
+        }
+        .citation-modal.show {
+          display: flex !important;
+          animation: modalFadeIn 0.3s ease-out;
+        }
+        @keyframes modalFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .citation-modal-content {
+          background-color: white;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+          position: relative;
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          animation: modalContentFadeIn 0.3s ease-out 0.1s both;
+          font-size: 14px;
+          width: 600px;
+          max-width: 90vw;
+        }
+        @keyframes modalContentFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-5px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .citation-modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 15px;
+          padding-bottom: 10px;
+          border-bottom: 1px solid #eee;
+          position: relative;
+        }
+        .citation-modal-header h2 {
+          margin: 0;
+          color: #333;
+          font-size: 1.2rem;
+          font-weight: 600;
+        }
+        .citation-close {
+          background: none;
+          border: none;
+          font-size: 18px;
+          cursor: pointer;
+          color: #666;
+          padding: 3px;
+          border-radius: 50%;
+          width: 25px;
+          height: 25px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background-color 0.3s;
+        }
+        .citation-close:hover {
+          background-color: #f0f0f0;
+          color: #333;
+        }
+        .citation-format-tabs {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 20px;
+          border-bottom: 1px solid #ddd;
+          overflow-x: auto;
+        }
+        .citation-tab {
+          background: none;
+          border: none;
+          padding: 10px 15px;
+          cursor: pointer;
+          font-size: 14px;
+          color: #666;
+          border-bottom: 2px solid transparent;
+          transition: all 0.3s;
+          white-space: nowrap;
+        }
+        .citation-tab.active {
+          color: #007bff;
+          border-bottom-color: #007bff;
+          background-color: #f8f9fa;
+        }
+        .citation-tab:hover {
+          color: #007bff;
+          background-color: #f8f9fa;
+        }
+        .citation-content {
+           font-family: 'Courier New', monospace;
+           font-size: 14px;
+           line-height: 1.6;
+           background-color: #f8f9fa;
+           padding: 20px;
+           border-radius: 8px;
+           border-left: 4px solid #007bff;
+           white-space: normal;
+           word-wrap: break-word;
+        }
+        .citation-copy-btn {
+          background-color: #007bff;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 14px;
+          margin-top: 15px;
+          transition: background-color 0.3s;
+        }
+        .citation-copy-btn:hover {
+          background-color: #0056b3;
+        }
+        .citation-copy-btn.copied {
+          background-color: #28a745;
+        }
+        body.dark-mode .citation-modal-content {
+          background-color: #2d2d2d;
+          color: #ffffff;
+        }
+        body.dark-mode .citation-modal-header {
+          border-bottom-color: #444;
+        }
+        body.dark-mode .citation-modal-header h2 {
+          color: #ffffff;
+        }
+        body.dark-mode .citation-close {
+          color: #ccc;
+        }
+        body.dark-mode .citation-close:hover {
+          background-color: #3d3d3d;
+          color: #ffffff;
+        }
+        body.dark-mode .citation-format-tabs {
+          border-bottom-color: #444;
+        }
+        body.dark-mode .citation-tab {
+          color: #ccc;
+        }
+        body.dark-mode .citation-tab.active {
+          color: #ffd700;
+          border-bottom-color: #ffd700;
+          background-color: #3d3d3d;
+        }
+        body.dark-mode .citation-tab:hover {
+          color: #ffd700;
+          background-color: #3d3d3d;
+        }
+        body.dark-mode .citation-content {
+          background-color: #3d3d3d;
+          color: #ffffff;
+        }
+        /* === ARTICLE TEMPLATE STYLES === */
+        .article-template {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-left: 4px solid #ffd700; /* Default: Research */
+            transition: border-left-color 0.3s;
+        }
+        /* === UPLOADED ARTICLE STYLES (for User Uploads section) === */
+        .uploaded-article {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-left: 4px solid #ffd700;
+            cursor: default;
+            user-select: none;
+        }
+        .uploaded-article:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .uploaded-article h3 {
+            color: #0057b8;
+            font-size: 18px;
+            margin: 0 0 10px 0;
+            cursor: pointer;
+            user-select: none;
+        }
+        .uploaded-article h3:hover {
+            text-decoration: underline;
+        }
+        .uploaded-article .meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .uploaded-article .summary {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .uploaded-article .source-tag {
+            display: none;
+        }
+        .uploaded-article .actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: flex-end;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            margin-top: 15px;
+        }
+        .uploaded-article .actions .upload-btn {
+            background: #28a745 !important;
+            color: white !important;
+            border: none !important;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .uploaded-article .actions .delete-btn {
+            background-color: #dc3545 !important;
+            color: white !important;
+            border: none !important;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .uploaded-article .actions .view-pdf-btn {
+            background-color: #0057b8 !important;
+            color: white !important;
+            border: none !important;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .uploaded-article .actions .view-pdf-btn:hover {
+            background-color: #003f8a !important;
+        }
+        .uploaded-article .actions .edit-btn {
+            background-color: #0057b8 !important;
+            color: #fff !important;
+            border: none !important;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .uploaded-article .actions .edit-btn:hover {
+            background-color: #004080 !important;
+        }
+        .uploaded-article.editing input,
+        .uploaded-article.editing textarea,
+        .uploaded-article.editing select {
+            border: 1px solid #ccc;
+            background: white;
+            padding: 5px;
+            border-radius: 4px;
+            outline: none;
+        }
+        .uploaded-article.editing .meta {
+            display: none;
+        }
+        .uploaded-article.editing .edit-fields {
+            display: block;
+        }
+        body.dark-mode .uploaded-article {
+            background-color: #2d2d2d;
+        }
+        body.dark-mode .uploaded-article h3 {
+            color: #667eea;
+        }
+        body.dark-mode .uploaded-article .meta {
+            color: #aaa;
+        }
+        body.dark-mode .uploaded-article .summary {
+            color: #ddd;
+        }
+        /* === USER UPLOADED ARTICLE STYLES === */
+        .user-uploaded {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-left: 4px solid #ffd700;
+        }
+        .user-uploaded:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .user-pfp {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .user-details {
+            flex: 1;
+        }
+        .user-fullname {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .user-meta {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+        .user-uploaded .uploaded-article {
+            margin-top: 15px;
+            margin-bottom: 0;
+            padding: 15px;
+            border-left: none;
+            box-shadow: none;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .user-uploaded .uploaded-article:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        body.dark-mode .user-uploaded {
+            background-color: #2d2d2d;
+            border-left-color: #ffd700;
+        }
+        body.dark-mode .user-uploaded .user-info {
+            border-bottom-color: #444;
+        }
+        body.dark-mode .user-uploaded .user-pfp {
+            background-color: #4CAF50;
+        }
+        body.dark-mode .user-uploaded .user-fullname {
+            color: #ffffff;
+        }
+        body.dark-mode .user-uploaded .user-meta {
+            color: #ccc;
+        }
+        body.dark-mode .user-uploaded .uploaded-article {
+            background: #3d3d3d;
+        }
+        body.dark-mode .uploaded-article.editing input,
+        body.dark-mode .uploaded-article.editing textarea,
+        body.dark-mode .uploaded-article.editing select {
+            background-color: #555;
+            color: #ffffff;
+            border-color: #777;
+        }
+        /* === ARTICLE STYLES (for Admin Uploads section) === */
+        .article {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-left: 4px solid #ffd700;
+        }
+        .article h4 {
+            color: #0057b8;
+            font-size: 18px;
+            margin: 0 0 10px 0;
+        }
+        .article p {
+            color: #555;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .article .article-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .article .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #0057b8;
+            color: white;
+        }
+        .article .btn-danger {
+            background: #dc3545;
+        }
+        body.dark-mode .article {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        body.dark-mode .article h4 {
+            color: #667eea;
+        }
+        body.dark-mode .article p {
+            color: #aaa;
+        }
+        .article-template.capstone {
+            border-left-color: #0057b8;
+        }
+        .article-template h3 {
+            color: #0057b8;
+            font-size: 18px;
+            margin: 0 0 10px 0;
+            cursor: text;
+        }
+        .article-template .meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+            cursor: text;
+        }
+        .article-template .summary {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            cursor: text;
+        }
+        .article-template .source-tag {
+          display: none;
+        }
+        .article-template .actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: flex-end;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+        }
+        .article-template .actions .edit-btn {
+            background: none !important;
+            color: gray !important;
+            border: none !important;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .article-template .actions .delete-btn {
+            background-color: #dc3545 !important;
+            color: white !important;
+            border: none !important;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .article-template .actions span {
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .article-template .actions span:first-child {
+            color: #1a0dab;
+            cursor: default;
+        }
+        .article-template .actions .save-btn {
+            background: none;
+            border: none;
+            color: #1a0dab;
+            padding: 0;
+            font-size: 14px;
+            cursor: default;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .article-template .actions .save-btn i {
+            color: #1a0dab;
+        }
+        .article-template .actions .save-btn:hover {
+            text-decoration: underline;
+        }
+        .article-template .actions .cite-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        .article-template .actions .cite-btn:hover {
+            background-color: #0056b3;
+        }
+        .article-template .actions .related-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .article-template .actions .related-btn:hover {
+            background-color: #1e7e34;
+        }
+        /* Editable fields */
+        .article-template input,
+        .article-template textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+        .article-template .category-select {
+            width: auto;
+            min-width: 150px;
+        }
+        /* Non-editable elements */
+        .article-template .non-editable {
+            background: #f8f9fa;
+            color: #666;
+            padding: 6px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .article-template .actions .save-btn {
+            background: none;
+            border: none;
+            color: #1a0dab;
+            padding: 0;
+            font-size: 14px;
+            cursor: default;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .article-template .actions .save-btn i {
+            color: #1a0dab;
+        }
+        .article-template .actions .save-btn:hover {
+            text-decoration: underline;
+        }
+        .article-template .actions .cite-btn {
+          display: none;
+        }
+        .article-template .actions .related-btn {
+          display: none;
+        }
+        .article-template .actions .edit-btn {
+            background-color: #ffc107;
+            color: black;
+        }
+        .article-template .actions .edit-btn:hover {
+            background-color: #e0a800;
+        }
+        .article-template .actions .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        .article-template .actions .delete-btn:hover {
+            background-color: #c82333;
+        }
+        .upload-subsection {
+            display: none;
+        }
+        .upload-subsection.active {
+            display: block;
+        }
+        .article-template .actions .upload-btn {
+            background-color: #0057b8;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+            margin-left: auto;
+        }
+        .article-template .actions .upload-btn:hover {
+            background-color: #003f8a;
+        }
+        .gauge-sections {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .gauge-section h5 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        body.dark-mode .gauge-section h5 {
+            color: #ffffff;
+        }
+        .gauge-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .gauge-item {
+            text-align: center;
+            flex: 0 0 auto;
+        }
+        .gauge-item h5 {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        body.dark-mode .gauge-item h5 {
+            color: #ffffff;
+        }
+        .gauge-chart-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .gauge-container {
+                gap: 15px;
+            }
+            .gauge-chart-container {
+                width: 100px;
+                height: 100px;
+            }
+            .gauge-item h5 {
+                font-size: 12px;
+            }
+        }
+        @media (max-width: 480px) {
+            .gauge-container {
+                gap: 10px;
+            }
+            .gauge-chart-container {
+                width: 80px;
+                height: 80px;
+            }
+            .gauge-item h5 {
+                font-size: 11px;
+            }
+        }
+        .uploads-sections {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .uploads-section h5 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        body.dark-mode .uploads-section h5 {
+            color: #ffffff;
+        }
+        .uploads-section .chart-container {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            margin: 0 auto;
+        }
+        .signups-sections {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .signups-section h5 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        body.dark-mode .signups-section h5 {
+            color: #ffffff;
+        }
+        /* Pagination Styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 10px;
+            visibility: visible !important;
+        }
+        .pagination#admin-pagination {
+            display: flex !important;
+            visibility: visible !important;
+        }
+        #admin-page-numbers {
+            display: flex !important;
+            gap: 5px;
+            visibility: visible !important;
+        }
+        .pagination button {
+            scroll-behavior: auto !important;
+        }
+        .pagination button:focus {
+            outline: none;
+        }
+        .pagination button {
+            position: relative;
+            z-index: 1;
+        }
+        .pagination button::-moz-focus-inner {
+            border: 0;
+        }
+        .page-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .page-btn:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+        .page-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .page-number {
+            background-color: #f8f9fa;
+            color: #007bff;
+            border: 1px solid #007bff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            margin: 0 2px;
+        }
+        .page-number:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        .page-number.active {
+            background-color: #007bff;
+            color: white;
+        }
+        body.dark-mode .page-btn {
+            background-color: #0056b3;
+        }
+        body.dark-mode .page-btn:hover:not(:disabled) {
+            background-color: #004085;
+        }
+        body.dark-mode .page-btn:disabled {
+            background-color: #6c757d;
+        }
+        body.dark-mode .page-number {
+            background-color: #2d2d2d;
+            color: #ffffff;
+            border-color: #6c757d;
+        }
+        body.dark-mode .page-number:hover {
+            background-color: #6c757d;
+            color: white;
+        }
+        body.dark-mode .page-number.active {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        #carousel-items-list {
+            display: flex !important;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        /* Carousel items list responsive */
+        @media (max-width: 768px) {
+            #carousel-items-list {
+                flex-direction: column;
+            }
+            #carousel-items-list > div {
+                width: 100%;
+            }
+        }
+
+        /* Dark mode for profile section */
+        body.dark-mode #profile {
+            background-color: #2c2c2c;
+            color: #ffffff;
+        }
+        body.dark-mode #profile h2,
+        body.dark-mode #profile h3,
+        body.dark-mode #profile label {
+            color: #ffffff;
+        }
+        body.dark-mode #profile input,
+        body.dark-mode #profile textarea,
+        body.dark-mode #profile select {
+            background-color: #3c3c3c;
+            color: #ffffff;
+            border-color: #555;
+        }
+        body.dark-mode #profile button {
+            background-color: #555;
+            color: #ffffff;
+        }
+        body.dark-mode #profile button:hover {
+            background-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- ... [All your existing HTML structure remains unchanged] ... -->
+    <div id="welcome-modal" class="welcome-modal">
+        <div class="welcome-modal-content">
+            <h1>Welcome Admin!</h1>
+            <p>Here's what's happening with your Website today</p>
+        </div>
+    </div>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="/frontend/assets/images/STI Logo.png" alt="STI Logo" >
+        </div>
+        <ul>
+            <li class="active"><a href="#" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> <span class="text">Dashboard</span></a></li>
+             <li><a href="#" data-section="users"><i class="fas fa-users"></i> <span class="text">Users</span></a></li>
+            <li><a href="#" data-section="upload"><i class="fas fa-upload"></i> <span class="text">Upload</span></a></li>
+            <li><a href="#" data-section="notifications"><i class="fas fa-bell"></i> <span class="text">Notifications</span></a></li>
+            <li><a href="#" data-section="settings"><i class="fas fa-cog"></i> <span class="text">Settings</span></a></li>
+
+
+        </ul>
+        <div class="admin-info">
+            <div class="logout-only">
+                <a href="#" onclick="handleLogoutClick()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+            <div class="avatar-name-row" data-section="profile">
+                <div class="profile-avatar">A</div>
+                <div class="admin-name"><span class="a-prefix">A </span>Admin</div>
+            </div>
+        </div>
+    </div>
+    <div class="header">
+        <div style="display: flex; align-items: center;">
+            <button class="toggle-btn" id="toggle-btn">☰</button>
+            <h1 id="page-title"></h1>
+        </div>
+        <div class="header-right">
+            <button class="notification-bell" title="Notifications" onclick="toggleNotificationModal()">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">0</span>
+            </button>
+            <button class="dark-mode-toggle" title="Toggle Dark Mode"><i class="fas fa-moon"></i></button>
+        </div>
+    </div>
+    <div class="main-content" id="main-content">
+        <div id="dashboard" class="content-section active">
+            <div class="dashboard">
+                <div class="card user-card" data-section="verified">
+                    <h3>Users</h3>
+                    <p id="verified-users-count">0</p>
+                </div>
+                <div class="card user-card" data-section="admins">
+                    <h3>Admin Users</h3>
+                    <p id="admin-users-count">0</p>
+                </div>
+                <div class="card user-card" data-section="signing-up">
+                    <h3>New Signups</h3>
+                    <p id="signing-up-users-count">0</p>
+                </div>
+                <div class="card" id="upload-card">
+                    <h3>Uploaded Research & Capstone</h3>
+                    <p id="revenue-count">0</p>
+                </div>
+            </div>
+            <div class="graphs-section">
+                <div class="graph-container">
+                    <div class="graph-item" id="usr-grph">
+                                               <h4>Total Users</h4>
+                                               <div class="chart-container" id="usr-chart">
+                               <canvas id="user-chart"></canvas>
+                    </div>
+                    <div class="pagination" id="verified-pagination" style="text-align: right; margin-top: 10px;"></div>
+                </div>
+                    <div class="graph-item" id="sgn-grph">
+                                                 <h4>New Signups</h4>
+                             <div class="chart-container" id="sgn-chart">
+                                 <canvas id="signing-up-chart"></canvas>
+                    </div>
+                    <div class="pagination" id="signing-up-pagination" style="text-align: right; margin-top: 10px;"></div>
+                </div>
+                    <div class="graph-item" id="upld-grph">
+                        <h4>Uploaded Research & Capstone</h4>
+                        <div class="chart-container" id="upld-chart">
+                            <canvas id="dashboard-uploadsChart" onclick="toggleDashboardUploadsChartType()" style="cursor: pointer;"></canvas>
+                        </div>
+                    </div>
+                    <div class="graph-item" id="avg-grph">
+                        <h4>Average Session Duration</h4>
+                        <div class="chart-container" id="avg-chart">
+                            <canvas id="session-duration-gauge"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ... [Rest of your HTML sections remain unchanged] ... -->
+        <div id="upload" class="content-section">
+            <div class="upload-section">
+                <!-- Upload Navigation Bar -->
+                <div class="upload-nav" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #007bff; padding-bottom: 15px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <button id="btn-pdf-upload" class="nav-btn active" data-section="pdf-form">
+                        <i class="fas fa-file-pdf" style="margin-right: 8px;"></i>PDF Upload
+                    </button>
+                    <button id="btn-admin-uploads" class="nav-btn" data-section="admin">
+                        <i class="fas fa-user-tie" style="margin-right: 8px;"></i>Admin Uploads
+                    </button>
+                    <button id="btn-user-uploads" class="nav-btn" data-section="users">
+                        <i class="fas fa-users" style="margin-right: 8px;"></i>User Uploads
+                    </button>
+                    <button id="btn-carousel" class="nav-btn" data-section="carousel">
+                        <i class="fas fa-images" style="margin-right: 8px;"></i>Carousel
+                    </button>
+                </div>
+                <div class="admn-U_A">
+                    <div id="upload-form-section" class="upload-subsection active">
+                        <div class="article-template editing" data-category="research">
+                            <form id="article-upload-form">
+                                <div>
+                                    <input type="text" id="article-title" class="article-title" placeholder="Title" style="border: none; background: transparent; color: #0057b8; font-size: 18px; font-weight: bold; width: 100%; outline: none;" required>
+                                </div>
+                                <div class="meta">
+                                    <input type="text" id="article-authors-year" class="article-authors" placeholder="Authors" style="border: none; background: transparent; color: #555; font-size: 14px; width: auto; outline: none;" required>
+                                </div>
+                                <div class="summary">
+                                    <textarea id="article-summary" class="article-summary" placeholder="Summary" style="border: none; background: transparent; color: #333; font-size: 14px; line-height: 1.5; width: 100%; resize: vertical; outline: none;" rows="4" required></textarea>
+                                </div>
+                                <div class="actions">
+                                </div>
+                                <div class="actions-row">
+                                    <label>Category:</label>
+                                     <select id="article-category" class="category-select" required>
+                                         <option value="research">Research</option>
+                                         <option value="capstone">Capstone</option>
+                                     </select>
+                                     <label style="margin-left: 10px;">Topic:</label>
+                                     <select id="article-topic" required>
+                                         <option value="">Select Topic</option>
+                                         <option value="agriculture">Agriculture</option>
+                                         <option value="business">Business</option>
+                                         <option value="cosmetics">Cosmetics</option>
+                                         <option value="education">Education</option>
+                                         <option value="environment">Environment</option>
+                                         <option value="food">Food</option>
+                                         <option value="technology">Technology</option>
+                                     </select>
+                                     <div class="research-options" style="display: inline;">
+                                         <label id="qualitative-quantitative-label" style="margin-left: 10px;">Type:</label>
+                                         <select id="article-qualitative-quantitative" required>
+                                             <option value="qualitative">Qualitative</option>
+                                             <option value="quantitative">Quantitative</option>
+                                         </select>
+                                         <label id="strand-degree-label" style="margin-left: 10px;">Strand:</label>
+                                         <select id="article-strand" required>
+                                             <option value="ABM">ABM</option>
+
+                                             <option value="ITMAWD">ITMAWD</option>
+                                             <option value="STEM">STEM</option>
+                                         </select>
+                                     </div>
+                                     <div class="capstone-options" style="display: none;">
+                                         <label style="margin-left: 10px;">Grade:</label>
+                                         <select id="capstone-grade" required>
+                                             <option value="grade_11">Grade 11</option>
+                                             <option value="grade_12">Grade 12</option>
+                                         </select>
+                                         <label style="margin-left: 10px;">Program:</label>
+                                         <select id="article-program" required>
+                                             <option value="BSBA">BSBA</option>
+                                             <option value="BSCS">BSCS</option>
+                                             <option value="BSIT">BSIT</option>
+                                         </select>
+                                     </div>
+                                    <label>Year:</label>
+                                    <input type="number" id="article-year" required min="2020" max="2030" style="width: 80px;">
+                                    <label>Citation:</label>
+                                    <textarea id="article-citation" rows="1" placeholder="Enter citation text" style="width: 200px; vertical-align: top;"></textarea>
+                                </div>
+                                <!-- PDF Upload Section -->
+                                <div class="pdf-upload-row" style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px; border: 1px dashed #0057b8;">
+                                    <label style="color: #0057b8; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-file-pdf"></i> Upload PDF:
+                                    </label>
+                                    <input type="file" id="article-pdf" accept=".pdf" style="margin-top: 8px; width: 100%;">
+                                    <div id="pdf-upload-status" style="margin-top: 5px; font-size: 12px; color: #666;"></div>
+                                </div>
+                                <div class="actions">
+                                    <button type="submit" class="upload-btn">Upload Article</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div id="admin-uploads-section" class="upload-subsection">
+                    <h3 style="color: #0057b8; margin: 20px 0;">Uploaded Articles by Admin</h3>
+                    <div id="admin-uploaded-articles" style="max-width: 800px;">
+                        <p class="empty-state">No articles uploaded by admin yet.</p>
+                    </div>
+                    <div id="admin-pagination" class="pagination">
+                        <span id="admin-page-numbers" style="display: flex; gap: 5px; visibility: visible;"></span>
+                    </div>
+                </div>
+                <div id="user-uploads-section" class="upload-subsection">
+                    <h3 style="color: #0057b8; margin: 20px 0;">Uploaded Articles by Users</h3>
+                    <div id="user-uploaded-articles" style="max-width: 800px;">
+                        <p class="empty-state">No articles uploaded by users yet.</p>
+                    </div>
+                </div>
+                <div id="carousel-section" class="upload-subsection">
+                    <h3 style="color: #0057b8; margin: 20px 0;">Carousel Management</h3>
+                    <p style="margin-bottom: 15px; color: #666;">Manage the carousel items displayed on the homepage.</p>
+                    
+                    <!-- Navigation and Add Button -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <button type="button" id="carousel-add-btn" onclick="showCarouselForm()" class="btn" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-plus" style="margin-right: 5px;"></i>Add new carousel item
+                        </button>
+                    </div>
+                    
+                    <!-- Add/Edit Carousel Form -->
+                    <div id="carousel-form-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #ddd; display: none;">
+                        <h4 id="carousel-form-title" style="color: #0057b8; margin-top: 0;">Add New Carousel Item</h4>
+                        <form id="carousel-form">
+                            <input type="hidden" id="carousel-item-id" value="">
+
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Image *</label>
+                                <input type="file" id="carousel-image-upload" accept="image/*" onchange="handleCarouselImageUpload(this)" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                                <div id="carousel-image-preview" style="margin-top: 10px;"></div>
+                                <small style="color: #666;">Upload an image for the carousel</small>
+                            </div>
+
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Title *</label>
+                                <input type="text" id="carousel-title" placeholder="Enter title" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;" required>
+                            </div>
+
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Author/Source</label>
+                                <input type="text" id="carousel-author" placeholder="Author Name - Year" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                            </div>
+
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Description</label>
+                                <textarea id="carousel-description" placeholder="Enter description" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;" rows="3"></textarea>
+                            </div>
+
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Link to PDF (optional)</label>
+                                <select id="carousel-pdf-select" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                                    <option value="">-- Select PDF from uploaded articles --</option>
+                                </select>
+                                <small style="color: #666;">When users click this carousel item, they will be directed to myspace.html with the selected PDF.</small>
+                            </div>
+
+                            <div style="display: flex; gap: 10px;">
+                                <button type="submit" class="btn" style="background: #0057b8; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                                    Add Item
+                                </button>
+                                <button type="button" id="carousel-cancel-btn" onclick="resetCarouselForm()" class="btn" style="background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Carousel Items List -->
+                    <div id="carousel-items-list">
+                        <p class="empty-state">No carousel items yet. Add one below.</p>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div id="users" class="content-section">
+            <div class="users-section">
+                <!-- Users Navigation Bar -->
+                <div class="users-nav" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #007bff; padding-bottom: 15px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <button class="nav-btn active" data-section="verified">
+                        <i class="fas fa-check-circle" style="margin-right: 8px;"></i>Verified
+                    </button>
+                    <button class="nav-btn" data-section="signing-up">
+                        <i class="fas fa-clock" style="margin-right: 8px;"></i>Signups
+                    </button>
+                    <button class="nav-btn" data-section="banned">
+                        <i class="fas fa-ban" style="margin-right: 8px;"></i>Banned
+                    </button>
+                    <button class="nav-btn" data-section="admins">
+                        <i class="fas fa-user-shield" style="margin-right: 8px;"></i>Admin
+                    </button>
+
+                </div>
+                <style>
+                    /* Activity Log Badge Styles */
+                    .badge {
+                        padding: 4px 8px;
+                        border-radius: 4px;
+                        font-size: 11px;
+                        font-weight: bold;
+                        text-transform: uppercase;
+                    }
+                    .badge-approved { background: #28a745; color: white; }
+                    .badge-rejected { background: #dc3545; color: white; }
+                    .badge-banned { background: #ffc107; color: black; }
+                    .badge-updated { background: #17a2b8; color: white; }
+                    .badge-created { background: #6f42c1; color: white; }
+                </style>
+                <!-- Admin Accounts Section -->
+                <div id="admins-section" class="user-subsection" style="--border-color: #6f42c1; --header-color: #6f42c1; display: none;">
+                    
+                    
+                    <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                        <select id="role-filter-admins" onchange="updateFilters('admins')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="">All Roles</option>
+                            <option value="co-admin">Co-Admin</option>
+                            <option value="sub-admin">Sub-Admin</option>
+                        </select>
+                        <select id="grade-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Grades</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                        <select id="strand-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Strands</option>
+                            <option value="abm">ABM</option>
+                            <option value="itma wd">ITMA WD</option>
+                            <option value="stem">STEM</option>
+                        </select>
+                        <select id="degree-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Degrees</option>
+                            <option value="bsba">BSBA</option>
+                            <option value="bscs">BSCS</option>
+                            <option value="bsit">BSIT</option>
+                        </select>
+                        <select id="dept-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Depts</option>
+                            <option value="shs dept">SHS Dept</option>
+                            <option value="college dept">College Dept</option>
+                        </select>
+                        <select id="search-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="unified">Unified Search</option>
+                            <option value="fullname" selected>Full Name</option>
+                            <option value="userid">User ID</option>
+                            <option value="email">Email</option>
+                        </select>
+                        <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'admins', document.getElementById('search-filter-admins').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                        
+                    </div>
+
+
+
+                    <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                             <tr>
+                                 <th>ID</th>
+                                 <th>Full Name</th>
+                                 <th>Email</th>
+                                 <th>Role</th>
+                                 <th>Permissions</th>
+                                 <th>Created At</th>
+                             </tr>
+                        </thead>
+                        <tbody id="admins-tbody">
+                        </tbody>
+                    </table>
+                    </div>
+                    <div class="pagination" id="admins-pagination" style="text-align: right; margin-top: 10px;"></div>
+
+                </div>
+                <!-- Verified Users Section -->
+                <div id="verified-section" class="user-subsection" style="--border-color: #28a745; --header-color: #28a745;">
+                    <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                        <select id="role-filter-verified" onchange="updateFilters('verified')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="">All Roles</option>
+                            <option value="shs">SHS</option>
+                            <option value="college">College</option>
+                            <option value="educator">Educator</option>
+                        </select>
+                        <select id="grade-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Grades</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                        <select id="strand-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Strands</option>
+                            <option value="abm">ABM</option>
+                            <option value="itma wd">ITMA WD</option>
+                            <option value="stem">STEM</option>
+                        </select>
+                        <select id="degree-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Degrees</option>
+                            <option value="bsba">BSBA</option>
+                            <option value="bscs">BSCS</option>
+                            <option value="bsit">BSIT</option>
+                        </select>
+                        <select id="dept-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Depts</option>
+                            <option value="shs dept">SHS Dept</option>
+                            <option value="college dept">College Dept</option>
+                        </select>
+                        <select id="search-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="unified">Unified Search</option>
+                            <option value="fullname" selected>Full Name</option>
+                            <option value="userid">User ID</option>
+                            <option value="email">Email</option>
+                        </select>
+                        <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'verified', document.getElementById('search-filter-verified').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                        
+                    </div>
+                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                        <input type="checkbox" id="select-all-verified-main" onclick="toggleSelectAll('verified')">
+                        <button class="btn btn-danger" onclick="bulkAction('verified', 'ban')">Ban</button>
+                    </div>
+                    
+                    <div style="overflow-x: auto;">
+                        <table id="verified-users-table">
+                                                    <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Verified</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
+                            <tbody id="verified-users-tbody">
+                            </tbody>
+                        </table>
+                        <div id="verified-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
+                    </div>
+                </div>
+                <!-- Signing Up Users Section -->
+                <div id="signing-up-section" class="user-subsection" style="--border-color: #ffc107; --header-color: #ffc107; display: none;">
+                    <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                        <select id="role-filter-signing-up" onchange="updateFilters('signing-up')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="">All Roles</option>
+                            <option value="shs">SHS</option>
+                            <option value="college">College</option>
+                            <option value="educator">Educator</option>
+                        </select>
+                        <select id="grade-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Grades</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                        <select id="strand-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Strands</option>
+                            <option value="abm">ABM</option>
+                            <option value="itma wd">ITMA WD</option>
+                            <option value="stem">STEM</option>
+                        </select>
+                        <select id="degree-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Degrees</option>
+                            <option value="bsba">BSBA</option>
+                            <option value="bscs">BSCS</option>
+                            <option value="bsit">BSIT</option>
+                        </select>
+                        <select id="dept-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Depts</option>
+                            <option value="shs dept">SHS Dept</option>
+                            <option value="college dept">College Dept</option>
+                        </select>
+                        <select id="search-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="unified">Unified Search</option>
+                            <option value="fullname" selected>Full Name</option>
+                            <option value="userid">User ID</option>
+                            <option value="email">Email</option>
+                        </select>
+                        <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'signing-up', document.getElementById('search-filter-signing-up').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    </div>
+                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                        <input type="checkbox" id="select-all-signing-up-main" onclick="toggleSelectAll('signing-up')">
+                        <button class="btn btn-success" onclick="bulkAction('signing-up', 'accept')">Accept</button>
+                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'ban')">Ban</button>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table id="signing-up-users-table">
+                                                    <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Signed Up</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
+                            <tbody id="signing-up-users-tbody"></tbody>
+                        </table>
+                        <div id="signing-up-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
+                </div>
+                <!-- Banned Users Section -->
+                <div id="banned-section" class="user-subsection" style="--border-color: #dc3545; --header-color: #dc3545; display: none;">
+                    
+                    <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                        <select id="role-filter-banned" onchange="updateFilters('banned')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="">All Roles</option>
+                            <option value="shs">SHS</option>
+                            <option value="college">College</option>
+                            <option value="educator">Educator</option>
+                        </select>
+                        <select id="grade-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Grades</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                        <select id="strand-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Strands</option>
+                            <option value="abm">ABM</option>
+                            <option value="itma wd">ITMA WD</option>
+                            <option value="stem">STEM</option>
+                        </select>
+                        <select id="degree-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Degrees</option>
+                            <option value="bsba">BSBA</option>
+                            <option value="bscs">BSCS</option>
+                            <option value="bsit">BSIT</option>
+                        </select>
+                        <select id="dept-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
+                            <option value="">All Depts</option>
+                            <option value="shs dept">SHS Dept</option>
+                            <option value="college dept">College Dept</option>
+                        </select>
+                        <select id="search-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            <option value="unified">Unified Search</option>
+                            <option value="fullname" selected>Full Name</option>
+                            <option value="userid">User ID</option>
+                            <option value="email">Email</option>
+                        </select>
+                        <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'banned', document.getElementById('search-filter-banned').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    </div>
+                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                            <input type="checkbox" id="select-all-banned-main" onclick="toggleSelectAll('banned')">
+                            <button class="btn btn-success" onclick="bulkAction('banned', 'unban')">Unban</button>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table id="banned-users-table">
+                                                    <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Banned</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
+                            <tbody id="banned-users-tbody"></tbody>
+                        </table>
+                        <div id="banned-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
+
+                </div>
+
+            </div>
+        </div>
+        <div id="settings" class="content-section">
+            <div class="settings-section">
+                <div style="display: flex;">
+                    <div class="settings-sidebar" style="width: 200px; padding: 20px; background-color: #f8f9fa; border-right: 1px solid #ddd;">
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 10px 0; cursor: pointer;" onclick="showSettingsSection('account')">Account</li>
+                            <li onclick="showSettingsSection('terms-conditions')" style="cursor: pointer; padding-top: 10px; padding-bottom: 10px;">Terms & Conditions</li>
+                            <li onclick="showSettingsSection('privacy-policy')" style="cursor: pointer; padding-top: 10px;">Privacy Policy</li>
+                        </ul>
+                    </div>
+                    <div class="settings-content" style="flex: 1; padding: 20px; min-height: calc(100vh - 200px);">
+
+                        <div id="account-settings" class="settings-subsection active">
+                            <h2>Account Settings</h2>
+                            <div style="text-align: center; margin-bottom: 30px;">
+                                <div id="account-profile-avatar" style="width: 100px; height: 100px; border-radius: 50%; background-color: #4CAF50; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 40px; margin: 0 auto 20px;">A</div>
+                                <label for="admin-profile-pic-upload">Upload Profile Picture:</label><br>
+                                <input type="file" id="admin-profile-pic-upload" accept="image/*"><br><br>
+                            </div>
+                            <form id="account-form">
+                                <label for="admin-fullname">Full Name:</label>
+                                <input type="text" id="admin-fullname" name="admin-fullname" value="Admin"><br><br>
+                                <label for="admin-username">Username:</label>
+                                <input type="text" id="admin-username" name="admin-username" value=""><br><br>
+                                <label for="admin-gmail">Full Name:</label>
+                                <input type="text" id="admin-gmail" name="admin-gmail" value=""><br><br>
+                                <label for="admin-password">Password:</label>
+                                <div style="position: relative;">
+                                    <input type="password" id="admin-password" name="admin-password" value="" style="padding-right: 40px;">
+                                    <i class="fas fa-eye" onclick="togglePasswordVisibility()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
+                                </div><br><br>
+                            </form>
+                        </div>
+                        <div id="terms-conditions-settings" class="settings-subsection">
+                            <div class="editable-content" id="terms-content">
+                                <div class="content-text" id="terms-text" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 20px; background: #fff; border-radius: 8px; color: #333;"></div>
+                            </div>
+                                <div class="edit-mode" style="display: none;">
+                                    <textarea id="terms-textarea" rows="20" style="width: 100%; padding: 12px; border: 1px solid #bfc9d9; border-radius: 8px; font-size: 16px; outline: none;"></textarea>
+                                    <button onclick="saveContent('terms')" style="margin-top: 10px; background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Save</button>
+                                    <button onclick="cancelEdit('terms')" style="margin-left: 10px; background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="privacy-policy-settings" class="settings-subsection">
+                            <div class="editable-content" id="privacy-content">
+                                <div class="content-text" id="privacy-text" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 20px; background: #fff; border-radius: 8px; color: #333;"></div>
+                            </div>
+                                <div class="edit-mode" style="display: none;">
+                                    <textarea id="privacy-textarea" rows="20" style="width: 100%; padding: 12px; border: 1px solid #bfc9d9; border-radius: 8px; font-size: 16px; outline: none;"></textarea>
+                                    <button onclick="saveContent('privacy')" style="margin-top: 10px; background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Save</button>
+                                    <button onclick="cancelEdit('privacy')" style="margin-left: 10px; background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="notifications" class="content-section">
+            <div class="notifications-section">
+                <h3>All Notifications</h3>
+                <div class="notification-controls">
+                    <label><input type="checkbox" id="select-all-notifications"></label>
+                    <button id="mark-selected-read" class="btn btn-info">Mark as Read</button>
+                    <button id="delete-selected" class="btn btn-danger">Delete</button>
+                </div>
+                <div id="all-notifications-list" class="notification-list-section"></div>
+                <div id="pagination-controls" class="pagination-controls" style="display: none; margin-top: 20px; text-align: center;">
+                    <div id="page-numbers" style="display: flex; gap: 5px; justify-content: center;"></div>
+                </div>
+            </div>
+        </div>
+        <div id="helpdesk" class="content-section">
+            <div class="helpdesk-section">
+                <h3>Help Desk</h3>
+                <div class="request-controls">
+                    <label><input type="checkbox" id="select-all-requests"></label>
+                    <button id="mark-selected-read" class="btn btn-info">Mark as Read</button>
+                    <button id="delete-selected" class="btn btn-danger">Delete</button>
+                </div>
+                <div id="all-requests-list" class="request-list-section">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Message</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requests-tbody">
+                            <tr>
+                                <td><img src="370044409_696741882497707_8408055328080058811_n.jpg" alt="Image" style="width:50px; height:50px;"></td>
+                                <td>Sample request message</td>
+                            </tr>
+                        </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="verified-pagination" style="text-align: right; margin-top: 10px;"></div>
+                </div>
+        </div>
+        <div id="profile" class="content-section">
+            <div class="profile-section">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="width: 150px; height: 150px; border-radius: 50%; background-color: #4CAF50; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 60px; margin: 0 auto 20px;">A</div>
+                    <h2 style="font-size: 36px;">Admin</h2>
+                    <p style="font-size: 16px; color: #666; max-width: 600px; margin: 20px auto;">As the administrator of STI Archives, I oversee the management and maintenance of the platform, ensuring a seamless experience for users. Dedicated to fostering an environment of academic excellence and innovation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Notification Modal -->
+    <div id="notification-modal" class="notification-modal">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <button class="notification-close" onclick="toggleNotificationModal()">&times;</button>
+        </div>
+        <div class="notification-list-bell" id="notification-list">
+            <div class="notification-placeholder">No new notifications.</div>
+        </div>
+        <div class="notification-footer">
+            <div class="left-btns">
+                <button class="view-all-btn" onclick="showNotificationsFromModal()">
+                    <i class="fas fa-list"></i> View All
+                </button>
+                <button class="mark-all-read-btn" onclick="showMarkAllConfirm()">
+                    <i class="fas fa-check"></i> Mark All Read
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="confirm-modal">
+        <div class="confirm-content">
+            <h3 id="confirm-title">Confirm Action</h3>
+            <p id="confirm-message">Are you sure?</p>
+            <div class="confirm-buttons">
+                <button class="confirm-btn cancel" onclick="hideConfirm()">Cancel</button>
+                <button class="confirm-btn ok" onclick="executeConfirmAction()">OK</button>
+            </div>
+        </div>
+    </div>
+    <!-- Send Update Modal -->
+    <div id="send-update-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeSendUpdateModal()">&times;</span>
+            <h3>Send Update to User</h3>
+            <form id="send-update-form">
+                <label for="update-email">To:</label>
+                <input type="email" id="update-email" readonly required>
+                <label for="update-subject">Subject:</label>
+                <input type="text" id="update-subject" required>
+                <label for="update-message">Message:</label>
+                <textarea id="update-message" rows="5" required></textarea>
+                <button type="button" class="btn" onclick="sendUpdateEmail()">Send Update</button>
+            </form>
+        </div>
+    </div>
+    <!-- Filter Modal -->
+    <div id="filter-modal" class="filter-modal">
+        <div class="filter-modal-content">
+            <div id="filter-modal-content">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+    <!-- Password Change Modal -->
+    <div id="password-change-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closePasswordChangeModal()">&times;</span>
+            <h3>Change Password</h3>
+            <p>Your password was changed 1 month ago.</p>
+            <label for="verification-code">Enter code sent to your Gmail:</label>
+            <input type="text" id="verification-code" required>
+            <button id="get-code-btn" onclick="getVerificationCode()">Get Code</button>
+            <p id="timer">60</p>
+            <button onclick="verifyCode()">Verify</button>
+        </div>
+    </div>
+    <!-- Citation Modal -->
+    <div id="citationModal" class="citation-modal">
+      <div class="citation-modal-content">
+        <div class="citation-modal-header">
+          <h2>Citation Formats</h2>
+          <button class="citation-close" onclick="closeCitationModal()">&times;</button>
+        </div>
+        <div class="citation-format-tabs">
+          <button class="citation-tab active" onclick="switchCitationTab('APA')">APA</button>
+          <button class="citation-tab" onclick="switchCitationTab('MLA')">MLA</button>
+          <button class="citation-tab" onclick="switchCitationTab('Chicago')">Chicago</button>
+          <button class="citation-tab" onclick="switchCitationTab('IEEE')">IEEE</button>
+          <button class="citation-tab" onclick="switchCitationTab('Harvard')">Harvard</button>
+        </div>
+        <div class="citation-content" id="citationContent">
+          APA citation format will appear here.
+        </div>
+        <button class="citation-copy-btn" onclick="copyCitation()">Copy Citation</button>
+      </div>
+    </div>
+    
+
+
+        // === GLOBAL FUNCTIONS ===
+
+        // Moved outside DOMContentLoaded to ensure availability on page load
+        let currentUser = null;
+        let isLoadingUsers = false;
+        let users = [];
+
+        function generateNotifications(users) {
+            if (!Array.isArray(users)) users = [];
+            const removedUsers = JSON.parse(localStorage.getItem('removedUsers')) || [];
+            const filteredUsers = users.filter(u => !removedUsers.includes(u.user_id || u.id));
+            const signingUpUsers = filteredUsers.filter(u => !u.verified && !u.rejected && !u.banned);
+            const verifiedUsers = filteredUsers.filter(u => u.verified);
+            const notifications = [];
+
+            // Add notifications for signing up users
+            signingUpUsers.forEach(user => {
+                const id = `signup-${user.id}`;
+                notifications.push({
+                    id: id,
+                    type: 'new-user',
+                    typeText: 'New User Access Request',
+                    content: `${getUserName(user)} signed up!`,
+                    time: user.created_at ? new Date(user.created_at).toLocaleString() : 'Just now',
+                    timestamp: user.created_at ? new Date(user.created_at).getTime() : Date.now(),
+                    priority: 1 // Signing up first
+                });
+            });
+
+            // Add notifications for verified users (recent)
+            verifiedUsers.slice(-5).forEach(user => {
+                const id = `verified-${user.id}`;
+                notifications.push({
+                    id: id,
+                    type: 'new-user',
+                    typeText: 'New User Verified',
+                    content: `${getUserName(user)} was verified!`,
+                    time: user.verified_at ? new Date(user.verified_at).toLocaleString() : 'Recently',
+                    timestamp: user.verified_at ? new Date(user.verified_at).getTime() : Date.now() - 1000,
+                    priority: 2 // Verified second
+                });
+            });
+
+            // Filter out deleted notifications
+            const deletedNotifications = JSON.parse(localStorage.getItem('deletedNotifications')) || [];
+            let filteredNotifications = notifications.filter(notif => !deletedNotifications.includes(notif.id));
+
+            // Sort by priority (signing up first), then by timestamp (newest first)
+            filteredNotifications.sort((a, b) => {
+                if (a.priority !== b.priority) {
+                    return a.priority - b.priority; // Lower priority first
+                }
+                return b.timestamp - a.timestamp; // Newest first
+            });
+
+            return filteredNotifications;
+        }
+
+        // Update dashboard counts
+        async function updateDashboardCounts() {
+            // Get total counts without pagination limits
+            try {
+                const token = localStorage.getItem('sti_auth_token');
+                const response = await fetch('/api/users/count?_=' + Date.now(), {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+
+                if (response.ok) {
+                    const countData = await response.json();
+                    if (countData.success && countData.counts) {
+                        const verifiedEl = document.getElementById('verified-users-count');
+                        const adminEl = document.getElementById('admin-users-count');
+                        const signingUpEl = document.getElementById('signing-up-users-count');
+
+                        if (verifiedEl) verifiedEl.textContent = countData.counts.usersCount || 0;
+                        if (adminEl) adminEl.textContent = countData.counts.adminUsers || 0;
+                        if (signingUpEl) signingUpEl.textContent = countData.counts.newSignups || 0;
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to fetch total user counts, falling back to local data:', error);
+                // Fallback to local calculation
+                if (!Array.isArray(users)) users = [];
+                const usersCount = users.filter(u => getUserStatus(u) === 'approved' && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+                const adminCount = users.filter(u => u.role === 'admin').length;
+                const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
+
+                const verifiedEl = document.getElementById('verified-users-count');
+                const adminEl = document.getElementById('admin-users-count');
+                const signingUpEl = document.getElementById('signing-up-users-count');
+
+                if (verifiedEl) verifiedEl.textContent = usersCount;
+                if (adminEl) adminEl.textContent = adminCount;
+                if (signingUpEl) signingUpEl.textContent = signingUpCount;
+            }
+
+            // Update article counts (these come from localStorage, no API limit needed)
+            const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+            const researchCount = allArticles.filter(a => a.category === 'research').length;
+            const capstoneCount = allArticles.filter(a => a.category === 'capstone').length;
+            const totalUploads = researchCount + capstoneCount;
+
+            const revenueEl = document.getElementById('revenue-count');
+            if (revenueEl) revenueEl.textContent = totalUploads;
+        }
+
+        async function loadUsers() {
+            if (DEBUG) if (DEBUG) console.log('DEBUG: loadUsers called');
+            users = await getUsers(false);
+            if (DEBUG) if (DEBUG) console.log('DEBUG: getUsers returned:', users);
+            if (!Array.isArray(users)) users = [];
+            if (DEBUG) console.log('DEBUG: loadUsers got users, count:', users.length);
+
+            // Map fields for display - handle all field variations
+            users.forEach(user => {
+                // Handle grade field variations
+                user.grade = user.grade || user.Grade || user.year_level || '-';
+                
+                // Sec_Degr contains:
+                // - For SHS: strand values (ABM, ITMAWD, STEM)
+                // - For College: degree values (BSBA, BSCS, BSIT)
+                user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
+            });
+
+            // Set global users
+            window.users = users;
+
+            // Clear all tbodys
+            document.querySelectorAll('#users tbody').forEach(tbody => tbody.innerHTML = '');
+
+            // Process users
+            users.forEach(user => {
+                if (DEBUG) console.log('DEBUG: Processing user:', user.id, user.name, user.role, user.email, user.personal_email, user.verified);
+                const date = formatDate(user.verified_at || user.created_at);
+                let actions = '';
+                const userId = user.user_id || user.id;
+                if (user.verified) {
+                    actions = `<button class="btn btn-danger btn-sm" onclick="removeUser('${userId}')">Remove</button>`;
+                } else if (user.banned_user) {
+                    actions = `<button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>`;
+                } else {
+                    actions = `
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
+                            <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
+                        </div>
+                    `;
+                }
+                let emailToUse = user.personal_email || user.email;
+                const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewRaf('${user.raf_path}')">Preview</button>` : `${user.raf_path || ''} ${user.educator_id || ''}`.trim() || '-';
+                const rowWithEmail = `<tr>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
+                    <td>${getUserName(user)}</td>
+                    <td>${emailToUse}</td>
+                    <td>${formatRole(user.role)}</td>
+                    <td>${user.grade || user.Grade || user.year_level || '-'}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
+                    <td>${date}</td>
+                    <td>${rafEduIdCell}</td>
+                    <td>${actions}</td>
+                </tr>`;
+                const rowWithoutActions = `<tr>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
+                    <td>${getUserName(user)}</td>
+                    <td>${emailToUse}</td>
+                    <td>${formatRole(user.role)}</td>
+                    <td>${user.grade || user.Grade || user.year_level || '-'}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
+                    <td>${date}</td>
+                    <td>${rafEduIdCell}</td>
+                </tr>`;
+
+                // Check admin role first (case-insensitive)
+                const roleLower = (user.role || '').toLowerCase();
+                if (DEBUG) console.log('DEBUG: User role check:', user.fullname, 'role:', user.role, 'roleLower:', roleLower);
+                const isAdminRole = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin';
+                // For coadmin, only show coadmin and subadmin, not full admin
+                const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
+                const shouldShowAdmin = currentUserRole === 'admin' || (currentUserRole === 'coadmin' && (roleLower === 'coadmin' || roleLower === 'subadmin'));
+                if (isAdminRole) {
+                    if (shouldShowAdmin) {
+                    if (DEBUG) console.log('DEBUG: Adding admin user to table:', user.fullname, user.email, 'role:', roleLower);
+                    // Determine role display
+                    let roleDisplay;
+                    if (user.fullname === 'admin2' || user.fullname === 'Admin2') {
+                        roleDisplay = 'Co-Admin';
+                    } else if (user.fullname === 'admin3' || user.fullname === 'Admin3') {
+                        roleDisplay = 'Sub-Admin';
+                    } else {
+                        roleDisplay = (roleLower === 'coadmin' ? 'Co-Admin' : roleLower === 'subadmin' ? 'Sub-Admin' : 'Admin');
+                    }
+                    let badgeClass = roleLower === 'coadmin' ? 'badge-coadmin' : roleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
+                    let permissions = user.permissions || (roleLower === 'admin' ? 'Full Access - All Features' : roleLower === 'coadmin' ? 'Limited Access - User & File Management' : 'User Approver - Accept/Reject Registrations');
+                    const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
+                        const adminRow = `<tr>
+                            <td>${userId}</td>
+                            <td>${getUserName(user)}</td>
+                            <td>${user.email || 'N/A'}</td>
+                            <td><span class="badge ${badgeClass}">${roleDisplay}</span></td>
+                            <td>${permissions}</td>
+                            <td>${formatDate(user.created_at)}</td>
+                        </tr>`;
+                        document.getElementById('admins-tbody').innerHTML += adminRow;
+                    }
+                } else {
+                    // Status categorization for regular users
+                    const userStatus = getUserStatus(user);
+                    if (userStatus === 'approved') {
+                        if (DEBUG) console.log('DEBUG: Adding verified user to table:', user.name, user.email);
+                        document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
+                    } else if (userStatus === 'banned' || userStatus === 'rejected') {
+                        document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
+                    } else if (userStatus === 'pending') {
+                        if (DEBUG) console.log('DEBUG: Adding signing-up user to table:', user.name, user.email);
+                        document.getElementById('signing-up-users-tbody').innerHTML += rowWithEmail;
+                    }
+                }
+            });
+
+            // Update counts
+            updateDashboardCounts();
+
+            // Apply pagination
+            paginateTable('verified-users-tbody', 10);
+            paginateTable('signing-up-users-tbody', 10);
+            paginateTable('banned-users-tbody', 10);
+
+            return users;
+        }
+        async function getUsers(forceRefresh = false, page = 1, limit = 50) {
+            if (forceRefresh) {
+                // Clear localStorage and force reload from server
+                localStorage.removeItem('users');
+                isLoadingUsers = false;
+                if (DEBUG) console.log('DEBUG: Force refresh - cleared localStorage and reset isLoadingUsers');
+            }
+            if (isLoadingUsers && !forceRefresh) return JSON.parse(localStorage.getItem('users') || '[]');
+            isLoadingUsers = true;
+            if (DEBUG) console.log('DEBUG: Attempting to fetch users from server...');
+            try {
+                // Get auth token from localStorage (optional for admin)
+                const token = localStorage.getItem('sti_auth_token');
+                if (DEBUG) console.log('DEBUG: Auth token:', token ? 'present' : 'missing');
+
+                const offset = (page - 1) * limit;
+                // Add cache-busting query parameter
+                const response = await fetch(`/api/users?limit=${limit}&offset=${offset}&_=${Date.now()}`, {
+                    headers: token ? {
+                        'Authorization': `Bearer ${token}`
+                    } : {}
+                });
+                if (DEBUG) console.log('DEBUG: Fetch response status:', response.status);
+                if (response.ok) {
+                    if (DEBUG) console.log('DEBUG: Server responded successfully, parsing JSON...');
+                    const usersData = await response.json();
+                    if (DEBUG) console.log('DEBUG: Raw API response:', usersData);
+                    // Handle {success: true, users: []} format from API
+                    const users = usersData.success ? usersData.users : usersData;
+                    if (DEBUG) console.log('DEBUG: Extracted users array:', users);
+                    // Handle both array and {users: []} response formats
+                    const userData = Array.isArray(users) ? users : (users.users || []);
+                    if (DEBUG) console.log('DEBUG: Final userData array, count:', userData.length);
+                    if (DEBUG) console.log('DEBUG: First user sample:', userData[0]);
+                    // Add backward compatibility: map fullname to name
+                    userData.forEach(user => {
+                        if (user.fullname && !user.name) {
+                            user.name = user.fullname;
+                        }
+                    });
+                    // Store pagination info
+                    if (usersData.total !== undefined) {
+                        userData._total = usersData.total;
+                        userData._limit = usersData.limit || limit;
+                        userData._offset = usersData.offset || offset;
+                    }
+                    // Save to localStorage for offline use
+                    localStorage.setItem('users', JSON.stringify(userData));
+                    isLoadingUsers = false;
+                    return userData;
+                } else {
+                    if (DEBUG) console.log('DEBUG: Server returned error:', response.status, 'falling back to localStorage');
+                }
+            } catch (e) {
+                if (DEBUG) console.log('DEBUG: Could not load from server, error:', e.message, 'using localStorage');
+            }
+            let localUsers = JSON.parse(localStorage.getItem('users') || '[]');
+            localStorage.setItem('users', JSON.stringify(localUsers)); // Save users
+            if (DEBUG) console.log('DEBUG: Loaded users from localStorage, count:', localUsers.length);
+            isLoadingUsers = false;
+            return localUsers;
+        }
+        // Add this helper function
+
+        
+        async function refreshUsers() {
+            if (DEBUG) console.log('DEBUG: Auto refreshing users from server...');
+            try {
+                await getUsers(true);
+                await loadUsers();
+            } catch (error) {
+                console.error('Error auto-refreshing users:', error);
+            }
+        }
+        function saveUsers(users) {
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+        function getArticles() {
+            return JSON.parse(localStorage.getItem('articles')) || [];
+        }
+        function saveArticles(articles) {
+            localStorage.setItem('articles', JSON.stringify(articles));
+        }
+        function getAdminArticles() {
+            return JSON.parse(localStorage.getItem('adminArticles')) || [];
+        }
+        function saveAdminArticles(articles) {
+            localStorage.setItem('adminArticles', JSON.stringify(articles));
+        }
+        function loadArticlesFromServer() {
+            return fetch('/api/articles?limit=10&offset=0')
+                .then(response => {
+                    if (!response.ok) throw new Error('Server error');
+                    return response.json();
+                })
+                .then(data => {
+                    // Handle both 'success' (new) and 'status' (old) response formats
+                    const isSuccess = data.status === 'success' || data.success === true;
+                    if (isSuccess) {
+                        const articles = data.articles || [];
+                        saveArticles(articles);
+                        saveAdminArticles(articles);
+                        localStorage.setItem('allArticles', JSON.stringify(articles));
+                        renderAdminArticles();
+                        updateDashboardCounts();
+                    } else {
+                        console.error('✗ Failed to load articles:', data.error || 'Unknown error');
+                    }
+                })
+                .catch(error => {
+                    if (DEBUG) console.log('✗ Error fetching articles (server may be down):', error.message);
+                });
+        }
+        
+        // Load user uploads for admin
+        function loadUserUploadsForAdmin() {
+            return fetch('/api/admin/user-uploads?limit=10&offset=0')
+                .then(response => {
+                    if (!response.ok) throw new Error('Server error');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        window.userUploadsData = data.uploads;
+                        renderUserUploads(data.uploads);
+                    } else {
+                        console.error('✗ Failed to load user uploads:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('✗ Error fetching user uploads:', error);
+                });
+        }
+
+        // Render user uploads in admin
+        function renderUserUploads(uploads) {
+            const container = document.getElementById('user-uploaded-articles');
+            
+            if (!uploads || uploads.length === 0) {
+                container.innerHTML = '<p class="empty-state">No articles uploaded by users yet.</p>';
+                return;
+            }
+            
+            container.innerHTML = uploads.map(upload => {
+                // Test PDF URL - hardcoded for testing
+                const testPdfUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Research/2023-2024/Cejes%20et%20al.pdf';
+                const pdfUrl = testPdfUrl;
+                const hasPdf = pdfUrl && pdfUrl.length > 0;
+
+                // Create onclick handler - call the modal PDF viewer function
+                const safeTitle = upload.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const cardClick = `displayArticlePDF('${testPdfUrl}', '${safeTitle}')`;
+
+                // Get user initials for profile picture
+                const userInitials = (upload.userName || '').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'U';
+
+                // Format user metadata based on role
+                let userMeta = '';
+                const role = upload.userRole || 'unknown';
+                const program = upload.userProgram || 'N/A';
+
+                if (role === 'shs') {
+                    userMeta = `SHS Student - ${program}`;
+                } else if (role === 'college') {
+                    userMeta = `College Student - ${program}`;
+                } else if (role === 'educator') {
+                    userMeta = `Teacher - ${program}`;
+                } else {
+                    userMeta = `${role.charAt(0).toUpperCase() + role.slice(1)} - ${program}`;
+                }
+
+                return `
+                <div class="user-uploaded" data-id="${upload.id}">
+                    <div class="user-info">
+                        <div class="user-pfp">${userInitials}</div>
+                        <div class="user-details">
+                            <div class="user-fullname">${upload.userName}</div>
+                            <div class="user-meta">${userMeta}</div>
+                        </div>
+                    </div>
+                    <div class="uploaded-article" data-id="${upload.id}" ${hasPdf ? "onclick=\"handleUserUploadClick('" + upload.id + "')\" style=\"cursor: pointer;\"" : ''}>
+                        <h3>${upload.title}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : ''}</h3>
+                        <div class="summary">${upload.abstract || 'N/A'}</div>
+                        <div class="meta">
+                            <strong>Category:</strong> ${upload.category}<br>
+                            <strong>Topic:</strong> ${upload.topic ? upload.topic.charAt(0).toUpperCase() + upload.topic.slice(1) : 'Not set'}<br>
+                            <strong>Type:</strong> ${upload.type ? upload.type.charAt(0).toUpperCase() + upload.type.slice(1) : 'Not set'}<br>
+                            <strong>Level:</strong> ${upload.level}<br>
+                            <strong>Year:</strong> ${upload.year}
+                        </div>
+                        <div class="edit-fields" style="display: none;">
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Title:</strong></label>
+                                <input type="text" class="edit-title" value="${upload.title.replace(/"/g, '&quot;')}" style="width: 100%;">
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Author:</strong></label>
+                                <input type="text" class="edit-author" value="${upload.author || ''}" style="width: 100%;">
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Abstract/Summary:</strong></label>
+                                <textarea class="edit-abstract" style="width: 100%; min-height: 80px;">${upload.abstract || ''}</textarea>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Category:</strong></label>
+                                <select class="edit-category" style="width: 100%;">
+                                    <option value="research" ${upload.category === 'research' ? 'selected' : ''}>Research</option>
+                                    <option value="capstone" ${upload.category === 'capstone' ? 'selected' : ''}>Capstone</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Topic:</strong></label>
+                                <select class="edit-topic" style="width: 100%;">
+                                    <option value="">Select Topic</option>
+                                    <option value="agriculture" ${upload.topic === 'agriculture' ? 'selected' : ''}>Agriculture</option>
+                                    <option value="business" ${upload.topic === 'business' ? 'selected' : ''}>Business</option>
+                                    <option value="cosmetics" ${upload.topic === 'cosmetics' ? 'selected' : ''}>Cosmetics</option>
+                                    <option value="education" ${upload.topic === 'education' ? 'selected' : ''}>Education</option>
+                                    <option value="environment" ${upload.topic === 'environment' ? 'selected' : ''}>Environment</option>
+                                    <option value="food" ${upload.topic === 'food' ? 'selected' : ''}>Food</option>
+                                    <option value="technology" ${upload.topic === 'technology' ? 'selected' : ''}>Technology</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Type:</strong></label>
+                                <select class="edit-type" style="width: 100%;">
+                                    <option value="qualitative" ${upload.type === 'qualitative' ? 'selected' : ''}>Qualitative</option>
+                                    <option value="quantitative" ${upload.type === 'quantitative' ? 'selected' : ''}>Quantitative</option>
+                                    <option value="bsba" ${upload.type === 'bsba' ? 'selected' : ''}>BSBA</option>
+                                    <option value="bscs" ${upload.type === 'bscs' ? 'selected' : ''}>BSCS</option>
+                                    <option value="bsit" ${upload.type === 'bsit' ? 'selected' : ''}>BSIT</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Level:</strong></label>
+                                <select class="edit-level" style="width: 100%;">
+                                    <option value="shs" ${upload.level === 'shs' ? 'selected' : ''}>Senior High School</option>
+                                    <option value="college" ${upload.level === 'college' ? 'selected' : ''}>College</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Year:</strong></label>
+                                <input type="number" class="edit-year" value="${upload.year}" min="2020" max="2030" style="width: 100%;">
+                            </div>
+                        </div>
+                        <div class="source-tag">
+                            <strong>File:</strong> ${upload.filename}<br>
+                            <strong>Status:</strong> <span style="color: ${upload.status === 'approved' ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">${upload.status}</span><br>
+                            <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}
+                        </div>
+                        <div class="actions">
+                            ${upload.status === 'pending' ? `
+                                <button class="upload-btn" onclick="approveUserUpload('${upload.id}')">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                <button class="delete-btn" onclick="rejectUserUpload('${upload.id}')">
+                                    <i class="fas fa-times"></i> Reject
+                            ` : ''}
+                            <button class="edit-btn" onclick="toggleUserUploadEdit('${upload.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+        
+        // View PDF for user upload
+        function viewUserUploadPDF(pdfUrl, title) {
+            // Decode URL-encoded parameters
+            pdfUrl = decodeURIComponent(pdfUrl);
+            title = decodeURIComponent(title);
+            
+            if (DEBUG) console.log('Opening PDF:', pdfUrl, 'Title:', title);
+            
+            if (typeof displayArticlePDF === 'function') {
+                displayArticlePDF(pdfUrl, title);
+            } else if (typeof openPdfModal === 'function') {
+                openPdfModal(pdfUrl, title);
+            } else {
+                // Fallback: open in new window
+                window.open(pdfUrl, '_blank');
+            }
+        }
+        
+        // Edit user upload topic and type
+        function editUserUploadTopic(id) {
+            const uploads = window.userUploadsData || [];
+            const upload = uploads.find(u => u.id === id);
+            if (!upload) return;
+            
+            const topic = prompt('Enter topic for this article:', upload.topic || '');
+            if (topic !== null) {
+                const type = prompt('Enter type (qualitative/quantitative):', upload.type || '');
+                fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic: topic, type: type })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        alert('Topic and Type updated successfully!');
+                        loadUserUploadsForAdmin();
+                    } else {
+                        alert('Failed to update: ' + result.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating:', error);
+                    alert('Failed to update');
+                });
+            }
+        }
+
+        // Handle click on user uploaded article
+        function handleUserUploadClick(id) {
+            const uploadedArticle = document.querySelector(`.uploaded-article[data-id="${id}"]`);
+            if (uploadedArticle.classList.contains('editing')) {
+                return; // Don't open PDF when editing
+            }
+
+            const uploads = window.userUploadsData || [];
+            const upload = uploads.find(u => u.id === id);
+            if (upload && upload.pdfUrl) {
+                const testPdfUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Research/2023-2024/Cejes%20et%20al.pdf';
+                const safeTitle = upload.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                displayArticlePDF(testPdfUrl, safeTitle);
+            }
+        }
+
+        // Toggle edit mode for user uploads
+        function toggleUserUploadEdit(id) {
+            const userUploadedDiv = document.querySelector(`.user-uploaded[data-id="${id}"]`);
+            const uploadedArticle = userUploadedDiv.querySelector('.uploaded-article');
+            const editBtn = uploadedArticle.querySelector('.edit-btn');
+
+            // Get PDF info from the uploads data
+            const uploads = window.userUploadsData || [];
+            const upload = uploads.find(u => u.id === id);
+            const hasPdf = upload && upload.pdfUrl && upload.pdfUrl.length > 0;
+            const testPdfUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Research/2023-2024/Cejes%20et%20al.pdf';
+
+            if (uploadedArticle.classList.contains('editing')) {
+                // Save changes
+                saveUserUploadEdit(id);
+                uploadedArticle.classList.remove('editing');
+                editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                // Hide edit fields and show meta
+                uploadedArticle.querySelector('.edit-fields').style.display = 'none';
+                uploadedArticle.querySelector('.meta').style.display = 'block';
+                // Restore cursor
+                uploadedArticle.style.cursor = hasPdf ? 'pointer' : 'default';
+            } else {
+                // Enter edit mode
+                uploadedArticle.classList.add('editing');
+                editBtn.innerHTML = '<i class="fas fa-save"></i> Save';
+                // Show edit fields and hide meta
+                uploadedArticle.querySelector('.edit-fields').style.display = 'block';
+                uploadedArticle.querySelector('.meta').style.display = 'none';
+                // Change cursor to default during edit
+                uploadedArticle.style.cursor = 'default';
+            }
+        }
+
+        // Save user upload edits
+        function saveUserUploadEdit(id) {
+            const upload = uploads.find(u => u.id == id);
+            const hasPdf = upload && upload.pdfUrl && upload.pdfUrl.length > 0;
+            const pdfName = hasPdf ? upload.pdfUrl.split('/').pop() : '';
+
+            const userUploadedDiv = document.querySelector(`.user-uploaded[data-id="${id}"]`);
+            const uploadedArticle = userUploadedDiv.querySelector('.uploaded-article');
+
+            const title = uploadedArticle.querySelector('.edit-title').value;
+            const author = uploadedArticle.querySelector('.edit-author').value;
+            const abstract = uploadedArticle.querySelector('.edit-abstract').value;
+            const category = uploadedArticle.querySelector('.edit-category').value;
+            const topic = uploadedArticle.querySelector('.edit-topic').value;
+            const type = uploadedArticle.querySelector('.edit-type').value;
+            const level = uploadedArticle.querySelector('.edit-level').value;
+            const year = uploadedArticle.querySelector('.edit-year').value;
+
+            // Update the display
+            uploadedArticle.querySelector('h3').innerHTML = title + (hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : '');
+            uploadedArticle.querySelector('.summary').textContent = abstract || 'N/A';
+            uploadedArticle.querySelector('.meta').innerHTML = `
+                <strong>Category:</strong> ${category}<br>
+                <strong>Topic:</strong> ${topic ? topic.charAt(0).toUpperCase() + topic.slice(1) : 'Not set'}<br>
+                <strong>Type:</strong> ${type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Not set'}<br>
+                <strong>Level:</strong> ${level}<br>
+                <strong>Year:</strong> ${year}${hasPdf ? '<br><strong>PDF:</strong> ' + pdfName : ''}
+            `;
+
+            // Here you would typically send the update to the server
+            // For now, just update the display
+            alert('Changes saved successfully!');
+        }
+
+        // Approve user upload
+        async function approveUserUpload(id) {
+            try {
+                const response = await fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'approved' })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Upload approved successfully!');
+                    loadUserUploadsForAdmin();
+                } else {
+                    alert('Failed to approve: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error approving upload:', error);
+                alert('Failed to approve upload');
+            }
+        }
+        
+        // Reject user upload
+        async function rejectUserUpload(id) {
+            try {
+                const response = await fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'rejected' })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Upload rejected!');
+                    loadUserUploadsForAdmin();
+                } else {
+                    alert('Failed to reject: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error rejecting upload:', error);
+                alert('Failed to reject upload');
+            }
+        }
+        
+        // Delete user upload
+        async function deleteUserUpload(id) {
+            if (!confirm('Are you sure you want to delete this upload?')) return;
+            
+            try {
+                const response = await fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Upload deleted successfully!');
+                    loadUserUploadsForAdmin();
+                } else {
+                    alert('Failed to delete: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error deleting upload:', error);
+                alert('Failed to delete upload');
+            }
+        }
+        let currentPage = 1;
+        const articlesPerPage = 10;
+
+        function renderAdminArticles(page = 1) {
+            // Store current scroll position
+            const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+
+            currentPage = page;
+            const adminArticles = getAdminArticles();
+            const container = document.getElementById('admin-uploaded-articles');
+            const pagination = document.getElementById('admin-pagination');
+            const pageNumbers = document.getElementById('admin-page-numbers');
+
+            // Clear existing articles
+            container.innerHTML = '';
+
+            if (adminArticles.length === 0) {
+                container.innerHTML = '<p class="empty-state">No articles uploaded by admin yet.</p>';
+                pagination.style.display = 'none';
+                return;
+            }
+
+            // Calculate pagination
+            const totalPages = Math.ceil(adminArticles.length / articlesPerPage);
+            const startIndex = (page - 1) * articlesPerPage;
+            const endIndex = startIndex + articlesPerPage;
+            const articlesToShow = adminArticles.slice(startIndex, endIndex);
+
+            // Render articles
+            articlesToShow.forEach(article => {
+                const articleElement = createArticleTemplate(article);
+                container.appendChild(articleElement);
+            });
+
+            // Render pagination
+            pageNumbers.innerHTML = '';
+            pageNumbers.style.display = 'flex';
+            pageNumbers.style.gap = '5px';
+            pageNumbers.style.visibility = 'visible';
+            
+            if (DEBUG) console.log('Creating buttons for totalPages:', totalPages);
+            for (let i = 1; i <= totalPages; i++) {
+                if (DEBUG) console.log('Creating page button:', i);
+                try {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = 'page-number' + (i === page ? ' active' : '');
+                    pageBtn.textContent = i;
+                    // Clean styling
+                    pageBtn.style.display = 'inline-flex';
+                    pageBtn.style.alignItems = 'center';
+                    pageBtn.style.justifyContent = 'center';
+                    pageBtn.style.minWidth = '40px';
+                    pageBtn.style.height = '36px';
+                    pageBtn.style.padding = '0 12px';
+                    pageBtn.style.margin = '0 4px';
+                    pageBtn.style.visibility = 'visible';
+                    pageBtn.style.opacity = '1';
+                    // Blue background color
+                    pageBtn.style.backgroundColor = i === page ? '#0057b8' : '#e3f2fd';
+                    pageBtn.style.color = i === page ? '#ffffff' : '#333333';
+                    pageBtn.style.border = '1px solid #0057b8';
+                    pageBtn.style.borderRadius = '4px';
+                    pageBtn.style.cursor = 'pointer';
+                    pageBtn.style.fontSize = '14px';
+                    pageBtn.style.fontWeight = '500';
+                    pageBtn.style.transition = 'all 0.2s';
+                    pageBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        window.scrollTo(0, 0);
+                        renderAdminArticles(i);
+                    });
+                    pageNumbers.appendChild(pageBtn);
+                } catch (err) {
+                    console.error('Error creating button', i, ':', err);
+                }
+            }
+
+            pagination.style.display = 'flex';
+            pagination.style.justifyContent = 'center';
+            pagination.style.padding = '20px 0';
+            pagination.style.visibility = 'visible';
+
+            // Restore scroll position after a brief delay to ensure DOM is updated
+            setTimeout(() => {
+                window.scrollTo({
+                    top: scrollPosition,
+                    behavior: 'auto'
+                });
+            }, 0);
+        }
+
+        function confirmDelete(buttonElement) {
+            const articleElement = buttonElement.closest('.article');
+            const title = articleElement.querySelector('h3').textContent;
+            showConfirm('Delete Article', `Are you sure you want to delete "${title}"? This action cannot be undone.`, () => {
+                // Find and remove the article from adminArticles
+                const adminArticles = getAdminArticles();
+                const articleIndex = Array.from(articleElement.parentNode.children).indexOf(articleElement);
+                const pageStartIndex = (currentPage - 1) * articlesPerPage;
+                const globalIndex = pageStartIndex + articleIndex;
+                adminArticles.splice(globalIndex, 1);
+                saveAdminArticles(adminArticles);
+                // Re-render the current page or previous if last article on page
+                const newTotalPages = Math.ceil(adminArticles.length / articlesPerPage);
+                if (currentPage > newTotalPages && currentPage > 1) {
+                    renderAdminArticles(currentPage - 1);
+                } else {
+                    renderAdminArticles(currentPage);
+                }
+            });
+
+
+        }
+
+        function getUserName(user) {
+            return user.fullname || user.name || 'Unknown';
+        }
+
+        function getUserStatus(user) {
+            // Check new boolean columns first
+            if (user.new_user === true) return 'pending';
+            if (user.banned_user === true) return 'banned';
+            if (user.rejected_user === true) return 'rejected';
+            if (user.verified === true) return 'approved';
+
+            // Fallback to legacy boolean logic for backward compatibility
+            if (user.verified && !user.banned && !user.rejected) return 'approved';
+            if (user.banned) return 'banned';
+            if (user.rejected) return 'rejected';
+            return 'pending';
+        }
+
+        function formatRole(role) {
+            if (role === 'senior_high') return 'SHS';
+            if (role === 'college') return 'College';
+            if (role === 'educator') return 'Educator';
+            if (role === 'admin') return 'Admin';
+            if (role === 'coadmin') return 'CO-Admin';
+            if (role === 'subadmin') return 'SUB-Admin';
+            if (role === 'tester') return 'Tester';
+            return 'Teacher';
+        }
+        function getSectionDisplay(user) {
+            return user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
+        }
+        function getStrandDegree(user) {
+            if (user.role === 'senior_high') {
+                return user.strand || '-';
+            } else if (user.role === 'college') {
+                return user.section || '-';
+            } else if (user.role === 'educator') {
+                return user.section || '-';
+            } else {
+                return '-';
+            }
+        }
+        function formatDate(dateString) {
+            if (!dateString || dateString === 'N/A') return 'N/A';
+            const date = new Date(dateString);
+            const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
+            return date.toLocaleDateString('en-US', options);
+        }
+        function formatNotificationDate(dateString) {
+            if (!dateString || dateString === 'N/A' || dateString === 'Just now' || dateString === 'Recently') return dateString;
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString; // If not a valid date, return as is
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+        // Helper function to parse time string to timestamp for sorting
+        function parseTimeToTimestamp(timeString) {
+            if (!timeString) return Date.now();
+            
+            // If it's already a number, assume it's a timestamp
+            if (typeof timeString === 'number') return timeString;
+            
+            // If it's a date string that can be parsed
+            const parsedDate = new Date(timeString);
+            if (!isNaN(parsedDate.getTime())) return parsedDate.getTime();
+            
+            // Parse relative time strings like "2 hours ago", "30 minutes ago"
+            const match = timeString.match(/(\d+)\s*(minute|hour|day|second)s?\s*ago/i);
+            if (match) {
+                const value = parseInt(match[1]);
+                const unit = match[2].toLowerCase();
+                const now = Date.now();
+                switch (unit) {
+                    case 'second': return now - (value * 1000);
+                    case 'minute': return now - (value * 60 * 1000);
+                    case 'hour': return now - (value * 60 * 60 * 1000);
+                    case 'day': return now - (value * 24 * 60 * 60 * 1000);
+                }
+            }
+            
+            // Default to current time if parsing fails
+            return Date.now();
+        }
+        function updateProfileAvatar(imageUrl) {
+            const avatar = document.getElementById('account-profile-avatar');
+            avatar.style.backgroundImage = `url(${imageUrl})`;
+            avatar.style.backgroundSize = 'cover';
+            avatar.style.backgroundPosition = 'center';
+            avatar.textContent = '';
+            const sidebarAvatar = document.querySelector('.sidebar .admin-info .profile-avatar');
+            if (sidebarAvatar) {
+                sidebarAvatar.style.backgroundImage = `url(${imageUrl})`;
+                sidebarAvatar.style.backgroundSize = 'cover';
+                sidebarAvatar.style.backgroundPosition = 'center';
+                sidebarAvatar.textContent = '';
+            }
+        }
+        function getStatus(createdAt) {
+            if (!createdAt) return 'Pending';
+            const now = new Date();
+            const created = new Date(createdAt);
+            const diffMs = now - created;
+            const diffHours = diffMs / (1000 * 60 * 60);
+            return diffHours < 1 ? 'Just Now' : 'Pending';
+        }
+        let dashboardUploadsChartType = 'doughnut';
+        function toggleDashboardUploadsChartType() {
+            dashboardUploadsChartType = dashboardUploadsChartType === 'pie' ? 'doughnut' : 'pie';
+            document.getElementById('toggle-dashboard-uploads-chart').innerText = dashboardUploadsChartType === 'pie' ? 'Doughnut' : 'Pie';
+            renderDashboardUploadsChart();
+            renderGaugeChart('avg-chart', 'Average Session Duration', 5.0, '#007bff');
+        }
+        function toggleTimeChartType() {
+            timeChartType = timeChartType === 'line' ? 'bar' : 'line';
+            document.getElementById('toggle-time-chart').innerText = timeChartType === 'line' ? 'Bar' : 'Line';
+        }
+
+        // === CREATE ARTICLE TEMPLATE (VIEW/EDIT TOGGLE) ===
+        function createArticleTemplate(articleData = {}) {
+            const wrapper = document.createElement('div');
+            wrapper.style.marginBottom = '20px';
+            const template = document.createElement('div');
+            template.className = `article ${articleData.category === 'capstone' ? 'capstone' : ''}`;
+            template.setAttribute('data-category', articleData.category);
+            const actionButtons = document.createElement('div');
+            actionButtons.style.display = 'flex';
+            actionButtons.style.justifyContent = 'flex-start';
+            actionButtons.style.gap = '10px';
+            actionButtons.style.marginTop = '10px';
+            wrapper.appendChild(template);
+            wrapper.appendChild(actionButtons);
+            function setViewMode() {
+                template.classList.remove('editing');
+                // Escape special characters for onclick handler
+                const safePdfPath = (articleData.pdfPath || articleData.pdf_path || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const safeTitle = (articleData.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                if (DEBUG) console.log('Creating View button for article:', articleData.id, 'Title:', safeTitle);
+                const hasPdf = articleData.pdfPath || articleData.pdf_path || articleData.pdfId;
+                const pdfUrl = hasPdf ? (articleData.pdfPath || articleData.pdf_path ? safePdfPath : '/api/pdf/' + articleData.pdfId) : '';
+                template.innerHTML = `
+                    <h3>${articleData.title}</h3>
+                    <div class="meta">${articleData.meta}</div>
+                    ${articleData.topic ? `<div class="meta" style="color: #0057b8;">Topic: ${articleData.topic.charAt(0).toUpperCase() + articleData.topic.slice(1)}</div>` : ''}
+                    ${(articleData.type || articleData.qualitativeQuantitative) ? `<div class="meta" style="color: #0057b8;">Type: ${(articleData.type || articleData.qualitativeQuantitative).charAt(0).toUpperCase() + (articleData.type || articleData.qualitativeQuantitative).slice(1)}</div>` : ''}
+                    <div class="summary">${articleData.summary}</div>
+                    <div class="actions">
+                        <button class="edit-btn">Edit</button>
+                        <button class="delete-btn" onclick="confirmDelete(this)">Delete</button>
+                    </div>
+                `;
+                actionButtons.innerHTML = '';
+                // Add onclick to article container to show PDF
+                if (hasPdf) {
+                    template.onclick = (e) => {
+                        if (!e.target.classList.contains('edit-btn') && !e.target.classList.contains('delete-btn')) {
+                            displayArticlePDF(pdfUrl, articleData.title);
+                        }
+                    };
+                    template.style.cursor = 'pointer';
+                }
+                // Add event listener for edit button
+                const editBtn = template.querySelector('.edit-btn');
+                editBtn.addEventListener('click', setEditMode);
+            }
+            function setEditMode() {
+                template.onclick = null;
+                template.style.cursor = 'default';
+                template.classList.add('editing');
+                template.innerHTML = `
+                    <div>
+                        <div contenteditable="true" class="article-title" style="border: none; background: transparent; color: #0057b8; font-size: 18px; font-weight: bold; width: 100%; outline: none; white-space: pre-wrap; word-wrap: break-word;">${articleData.title}</div>
+                    </div>
+                    <div class="meta">
+                        <input type="text" class="article-authors" value="${articleData.meta}" placeholder="Authors" style="border: none; background: transparent; color: #555; font-size: 14px; width: auto; outline: none;">
+                    </div>
+                    <div class="summary">
+                        <div contenteditable="true" class="article-summary" style="border: none; background: transparent; color: #333; font-size: 14px; line-height: 1.5; width: 100%; outline: none; white-space: pre-wrap; word-wrap: break-word;">${articleData.summary}</div>
+                    </div>
+                    <div class="pdf-management" style="margin: 10px 0; padding: 10px; border: 1px dashed #ccc; border-radius: 4px;">
+                        <label style="font-weight: bold; color: #0057b8;">PDF Document:</label>
+                        ${(articleData.pdfPath || articleData.pdf_path || articleData.pdfId) ? `
+                        <div class="current-pdf" style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                            <span style="flex: 1; color: #333; word-break: break-all;">${(articleData.pdfPath || articleData.pdf_path || '').split('/').pop() || 'PDF ID: ' + articleData.pdfId}</span>
+                            <button type="button" onclick="removeArticlePDF(this, '${articleData.id || articleData.title}')" style="background: #dc3545; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; font-size: 16px;">&times;</button>
+                        </div>
+                        ` : '<p style="color: #666; margin: 5px 0;">No PDF uploaded</p>'}
+                        <div class="pdf-upload" style="margin-top: 10px;">
+                            <input type="file" id="pdf-upload-${articleData.id || articleData.title}" accept=".pdf" style="display: none;" onchange="handleArticlePDFUpload(this, '${articleData.id || articleData.title}')">
+                            <button type="button" onclick="document.getElementById('pdf-upload-${articleData.id || articleData.title}').click()" style="background: #0057b8; color: white; border: none; border-radius: 4px; padding: 8px 15px; cursor: pointer;">${(articleData.pdfPath || articleData.pdf_path || articleData.pdfId) ? 'Replace PDF' : 'Upload PDF'}</button>
+                        </div>
+                    </div>
+                    <div class="actions">
+                    </div>
+                    <div class="actions-row">
+                        <label>Category:</label>
+                        <select class="category-select">
+                            <option value="research" ${articleData.category === 'research' ? 'selected' : ''}>Research</option>
+                            <option value="capstone" ${articleData.category === 'capstone' ? 'selected' : ''}>Capstone</option>
+                        </select>
+                        <label style="margin-left: 10px;">Topic:</label>
+                        <select class="topic-select">
+                            <option value="">Select Topic</option>
+                            <option value="agriculture" ${articleData.topic === 'agriculture' ? 'selected' : ''}>Agriculture</option>
+                            <option value="business" ${articleData.topic === 'business' ? 'selected' : ''}>Business</option>
+                            <option value="cosmetics" ${articleData.topic === 'cosmetics' ? 'selected' : ''}>Cosmetics</option>
+                            <option value="education" ${articleData.topic === 'education' ? 'selected' : ''}>Education</option>
+                            <option value="environment" ${articleData.topic === 'environment' ? 'selected' : ''}>Environment</option>
+                            <option value="food" ${articleData.topic === 'food' ? 'selected' : ''}>Food</option>
+                            <option value="technology" ${articleData.topic === 'technology' ? 'selected' : ''}>Technology</option>
+                        </select>
+                        <label style="margin-left: 10px;">Type:</label>
+                        <select class="type-select">
+                            <option value="">Select Type</option>
+                            <option value="qualitative" ${(articleData.type === 'qualitative' || articleData.qualitativeQuantitative === 'qualitative') ? 'selected' : ''}>Qualitative</option>
+                            <option value="quantitative" ${(articleData.type === 'quantitative' || articleData.qualitativeQuantitative === 'quantitative') ? 'selected' : ''}>Quantitative</option>
+                            <option value="bsba" ${(articleData.type === 'bsba' || articleData.qualitativeQuantitative === 'bsba') ? 'selected' : ''}>BSBA</option>
+                            <option value="bscs" ${(articleData.type === 'bscs' || articleData.qualitativeQuantitative === 'bscs') ? 'selected' : ''}>BSCS</option>
+                            <option value="bsit" ${(articleData.type === 'bsit' || articleData.qualitativeQuantitative === 'bsit') ? 'selected' : ''}>BSIT</option>
+                        </select>
+                        <div class="research-options" style="display: ${articleData.category === 'research' ? 'inline' : 'none'};">
+                            <label>Grade:</label>
+                            <select class="grade-select">
+                                <option value="Grade 11" ${articleData.program === 'Grade 11' ? 'selected' : ''}>Grade 11</option>
+                                <option value="Grade 12" ${articleData.program === 'Grade 12' ? 'selected' : ''}>Grade 12</option>
+                            </select>
+                            <label>Strand:</label>
+                            <select class="strand-select">
+                                <option value="ABM" ${articleData.strand === 'ABM' ? 'selected' : ''}>ABM</option>
+                                <option value="ITMAWD" ${articleData.strand === 'ITMAWD' ? 'selected' : ''}>ITMAWD</option>
+                                <option value="STEM" ${articleData.strand === 'STEM' ? 'selected' : ''}>STEM</option>
+                            </select>
+                        </div>
+                        <div class="capstone-options" style="display: ${articleData.category === 'capstone' ? 'inline' : 'none'};">
+                            <label>Program:</label>
+                            <select class="program-select">
+                                <option value="BSBA" ${articleData.strand === 'BSBA' ? 'selected' : ''}>BSBA</option>
+                                <option value="BSCS" ${articleData.strand === 'BSCS' ? 'selected' : ''}>BSCS</option>
+                                <option value="BSIT" ${articleData.strand === 'BSIT' ? 'selected' : ''}>BSIT</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+                // Add event listeners for category
+                const categorySelect = template.querySelector('.category-select');
+                categorySelect.addEventListener('change', function() {
+                    const researchOpts = template.querySelector('.research-options');
+                    const capstoneOpts = template.querySelector('.capstone-options');
+                    if (this.value === 'research') {
+                        researchOpts.style.display = 'inline';
+                        capstoneOpts.style.display = 'none';
+                        template.classList.remove('capstone');
+                    } else {
+                        researchOpts.style.display = 'none';
+                        capstoneOpts.style.display = 'inline';
+                        template.classList.add('capstone');
+                    }
+                });
+                // Create buttons in actionButtons
+                actionButtons.innerHTML = '';
+                const editBtn = document.createElement('button');
+                editBtn.className = 'edit-btn';
+                editBtn.style.backgroundColor = 'gray';
+                editBtn.style.color = 'white';
+                editBtn.style.border = 'none';
+                editBtn.style.padding = '5px 10px';
+                editBtn.style.borderRadius = '4px';
+                editBtn.style.cursor = 'pointer';
+                editBtn.textContent = 'Edit';
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'cancel-btn';
+                cancelBtn.style.backgroundColor = '#6c757d';
+                cancelBtn.style.color = 'white';
+                cancelBtn.style.border = 'none';
+                cancelBtn.style.padding = '5px 10px';
+                cancelBtn.style.borderRadius = '4px';
+                cancelBtn.style.cursor = 'pointer';
+                cancelBtn.textContent = 'Cancel';
+                cancelBtn.addEventListener('click', setViewMode);
+                const saveBtn = document.createElement('button');
+                saveBtn.className = 'save-btn';
+                saveBtn.style.backgroundColor = '#28a745';
+                saveBtn.style.color = 'white';
+                saveBtn.style.border = 'none';
+                saveBtn.style.padding = '5px 10px';
+                saveBtn.style.borderRadius = '4px';
+                saveBtn.style.cursor = 'pointer';
+                saveBtn.textContent = 'Save';
+                saveBtn.addEventListener('click', function() {
+                    articleData.title = template.querySelector('.article-title').textContent;
+                    articleData.authors = template.querySelector('.article-authors').value;
+                    articleData.meta = template.querySelector('.article-authors').value;
+                    articleData.summary = template.querySelector('.article-summary').textContent;
+                    articleData.category = template.querySelector('.category-select').value;
+                    articleData.topic = template.querySelector('.topic-select').value;
+                    articleData.type = template.querySelector('.type-select').value;
+                    articleData.qualitativeQuantitative = template.querySelector('.type-select').value;
+                    if (articleData.category === 'research') {
+                        articleData.program = template.querySelector('.grade-select').value;
+                        articleData.strand = template.querySelector('.strand-select').value;
+                    } else {
+                        articleData.program = '';
+                        articleData.strand = template.querySelector('.program-select').value;
+                    }
+                    
+                    // Update in localStorage
+                    const articles = getArticles();
+                    const articleIndex = articles.findIndex(a => a.id === articleData.id);
+                    if (articleIndex !== -1) {
+                        articles[articleIndex] = articleData;
+                        saveArticles(articles);
+                    }
+                    
+                    // Update admin articles
+                    const adminArticles = getAdminArticles();
+                    const adminIndex = adminArticles.findIndex(a => a.id === articleData.id);
+                    if (adminIndex !== -1) {
+                        adminArticles[adminIndex] = articleData;
+                        saveAdminArticles(adminArticles);
+                    }
+                    
+                    // Update in server
+                    if (articleData.id) {
+                        updateArticleInServer(articleData.id, articleData);
+                    }
+                    
+                    setViewMode();
+                    alert('Article updated!');
+                });
+                actionButtons.appendChild(editBtn);
+                actionButtons.appendChild(cancelBtn);
+                actionButtons.appendChild(saveBtn);
+            }
+            setViewMode(); // Start in view mode
+            return wrapper;
+        }
+
+        // === UPLOAD FORM HANDLER ===
+        document.getElementById('article-upload-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const category = document.getElementById('article-category').value;
+            const pdfInput = document.getElementById('article-pdf');
+            const pdfStatus = document.getElementById('pdf-upload-status');
+            
+            let pdfId = null;
+            let pdfFilename = null;
+            
+            // Handle PDF upload to Couchbase if file is selected
+            if (pdfInput && pdfInput.files.length > 0) {
+                const pdfFile = pdfInput.files[0];
+                pdfStatus.textContent = 'Uploading PDF to Couchbase...';
+                pdfStatus.style.color = '#0057b8';
+                
+                try {
+                    // Read file as base64
+                    const reader = new FileReader();
+                    const fileData = await new Promise((resolve, reject) => {
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(pdfFile);
+                    });
+                    
+                    // Upload to Couchbase via API
+                    if (DEBUG) console.log('Uploading PDF to:', window.location.origin + '/api/pdf/upload');
+                    const uploadResponse = await fetch('/api/pdf/upload', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            fileData: fileData,
+                            filename: pdfFile.name
+                        })
+                    });
+                    
+                    if (DEBUG) console.log('PDF upload response status:', uploadResponse.status);
+                    if (DEBUG) console.log('PDF upload response statusText:', uploadResponse.statusText);
+                    
+                    const responseText = await uploadResponse.text();
+                    if (DEBUG) console.log('PDF upload response text:', responseText);
+                    
+                    if (!uploadResponse.ok || !responseText) {
+                        throw new Error('Failed to upload PDF: ' + uploadResponse.status + ' ' + uploadResponse.statusText + ' - ' + responseText);
+                    }
+                    
+                    const uploadResult = JSON.parse(responseText);
+                    pdfId = uploadResult.fileId;
+                    pdfFilename = uploadResult.filename;
+                    pdfStatus.textContent = 'PDF uploaded successfully!';
+                    pdfStatus.style.color = 'green';
+                    
+                } catch (pdfError) {
+                    console.error('Error uploading PDF - full error:', pdfError);
+                    console.error('Error message:', pdfError.message);
+                    if (pdfError.response) {
+                        console.error('Response data:', pdfError.response.data);
+                    }
+                    pdfStatus.textContent = 'Error uploading PDF: ' + pdfError.message;
+                    pdfStatus.style.color = 'red';
+                    alert('Warning: PDF upload failed. Article will be saved without PDF.');
+                }
+            }
+            
+            const topicValue = document.getElementById('article-topic').value;
+            const levelValue = category === 'research' ? '' : document.getElementById('capstone-grade').value;
+
+            const formData = {
+                title: document.getElementById('article-title').value,
+                authors: document.getElementById('article-authors-year').value,
+                meta: document.getElementById('article-authors-year').value,
+                summary: document.getElementById('article-summary').value,
+                category: category,
+                strand: category === 'research' ? document.getElementById('article-strand').value : document.getElementById('article-program').value,
+                level: levelValue,
+                program: document.getElementById('article-program').value,
+                year: document.getElementById('article-year').value,
+                citation: document.getElementById('article-citation').value,
+                qualitativeQuantitative: category === 'research' ? document.getElementById('article-qualitative-quantitative').value : '',
+                topic: topicValue,
+                pdfId: pdfId,
+                pdfFilename: pdfFilename
+            };
+            const articles = getArticles();
+            articles.push(formData);
+            saveArticles(articles);
+
+            // Add to admin articles for pagination
+            const adminArticles = getAdminArticles();
+            adminArticles.push(formData);
+            saveAdminArticles(adminArticles);
+
+            // Refresh pagination display
+            renderAdminArticles();
+            // Reset form
+            this.reset();
+            document.getElementById('article-category').value = 'research';
+            document.getElementById('article-level').value = 'shs';
+            // Reset topic dropdown
+            document.getElementById('article-topic').innerHTML = '<option value="">Select Topic</option><option value="agriculture">Agriculture</option><option value="business">Business</option><option value="cosmetics">Cosmetics</option><option value="education">Education</option><option value="environment">Environment</option><option value="food">Food</option><option value="technology">Technology</option>';
+            // Reset visibility
+            document.querySelector('.research-options').style.display = 'inline';
+            document.querySelector('.capstone-options').style.display = 'none';
+            document.querySelector('.article-template').classList.remove('capstone');
+            document.getElementById('article-qualitative-quantitative').value = 'qualitative';
+            // Reset PDF upload status
+            if (pdfStatus) {
+                pdfStatus.textContent = '';
+            }
+        });
+
+        // Add event listener for category change in upload form
+        document.getElementById('article-category').addEventListener('change', function() {
+            const researchOpts = document.querySelector('.research-options');
+            const capstoneOpts = document.querySelector('.capstone-options');
+            const template = document.querySelector('.article-template');
+            // Update topic options based on category
+            const baseTopics = [
+                { value: 'agriculture', text: 'Agriculture' },
+                { value: 'business', text: 'Business' },
+                { value: 'cosmetics', text: 'Cosmetics' },
+                { value: 'education', text: 'Education' },
+                { value: 'environment', text: 'Environment' },
+                { value: 'food', text: 'Food' },
+                { value: 'technology', text: 'Technology' }
+            ];
+
+            let topicOptions = '<option value="">Select Topic</option>';
+            baseTopics.forEach(t => {
+                topicOptions += `<option value="${t.value}">${t.text}</option>`;
+            });
+
+            if (this.value === 'research') {
+                researchOpts.style.display = 'inline';
+                capstoneOpts.style.display = 'none';
+                template.classList.remove('capstone');
+            } else {
+                researchOpts.style.display = 'none';
+                capstoneOpts.style.display = 'inline';
+                template.classList.add('capstone');
+            }
+            document.getElementById('article-topic').innerHTML = topicOptions;
+        });
+
+        // Add event listener for level change in upload form
+        const levelSelect = document.getElementById('article-level');
+        if (levelSelect) {
+            levelSelect.addEventListener('change', function() {
+            const strandSelect = document.getElementById('article-strand');
+            const label = document.getElementById('strand-degree-label');
+            if (this.value === 'college') {
+                label.textContent = 'Degree:';
+                strandSelect.innerHTML = `
+                    <option value="BSBA">BSBA</option>
+                    <option value="BSCS">BSCS</option>
+                    <option value="BSIT">BSIT</option>
+                `;
+            } else {
+                label.textContent = 'Strand:';
+                strandSelect.innerHTML = `
+                    <option value="ABM">ABM</option>
+                    <option value="ITMAWD">ITMAWD</option>
+                    <option value="STEM">STEM</option>
+                `;
+            }
+        });
+        }
+
+
+        // Flag to prevent storage event from switching sections
+        let isReloadingUsers = false;
+        
+        // === INIT ===
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Listen for user data changes from other admin tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'users' && !isReloadingUsers) {
+                    if (DEBUG) console.log('DEBUG: Users changed in another tab, reloading...');
+                    isReloadingUsers = true;
+                    loadUsers().then(() => {
+                        // DON'T switch to users section - just reload data
+                        if (DEBUG) console.log('DEBUG: User tables refreshed (section unchanged)');
+                        isReloadingUsers = false;
+                    });
+                }
+            });
+
+            // Show welcome modal
+            const welcomeModal = document.getElementById('welcome-modal');
+            const welcomeModalContent = document.querySelector('.welcome-modal-content');
+            function closeWelcomeModal() {
+                welcomeModal.classList.remove('show');
+            }
+            welcomeModal.classList.add('show');
+            setTimeout(closeWelcomeModal, 4000); // 4 seconds
+            // Close modal when clicking outside
+            welcomeModal.addEventListener('click', function(e) {
+                if (e.target === welcomeModal) {
+                    closeWelcomeModal();
+                }
+            });
+            // Dark mode - Apply saved preference on page load
+            const darkModeToggle = document.querySelector('.dark-mode-toggle');
+            const darkModeIcon = darkModeToggle ? darkModeToggle.querySelector('i') : null;
+            const savedDarkMode = localStorage.getItem('darkMode');
+            if (DEBUG) console.log('Admin page loaded, darkMode from localStorage:', savedDarkMode);
+            if (savedDarkMode === 'on') {
+                document.body.classList.add('dark-mode');
+                if (DEBUG) console.log('Applied dark-mode class to body');
+                if (darkModeIcon) {
+                    darkModeIcon.className = 'fas fa-sun';
+                    darkModeIcon.style.color = '#FFD700';
+                    if (DEBUG) console.log('Updated icon to sun');
+                }
+            }
+
+            // Add event listener to dark mode toggle
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('click', toggleDarkMode);
+            }
+
+            // Load articles from server (await to ensure they're loaded before proceeding)
+            await loadArticlesFromServer();
+            // Load user uploads for admin
+            loadUserUploadsForAdmin();
+            // Load settings
+            const savedSettings = JSON.parse(localStorage.getItem('adminSettings')) || {};
+            const siteTitleEl = document.getElementById('site-title');
+            if (siteTitleEl) siteTitleEl.value = savedSettings.siteTitle || 'STI Archives';
+            function updateTitlePreview() {
+                const siteTitleInput = document.getElementById('site-title');
+                const siteTitlePreview = document.getElementById('site-title-preview');
+                if (siteTitlePreview) {
+                    siteTitlePreview.textContent = siteTitleInput ? siteTitleInput.value : 'STI Archives';
+                }
+            }
+            // Update title preview on load
+            updateTitlePreview();
+            // Load logo if exists
+            if (savedSettings.siteLogo) {
+                const sidebarImg = document.querySelector('.sidebar-header img');
+                if (sidebarImg) sidebarImg.src = savedSettings.siteLogo;
+            }
+            // Load account settings
+            const accountSettings = JSON.parse(localStorage.getItem('accountSettings')) || {};
+            document.getElementById('admin-fullname').value = accountSettings.fullname || 'Admin';
+            document.getElementById('admin-username').value = accountSettings.username || '';
+            document.getElementById('admin-gmail').value = accountSettings.fullname || '';
+            document.getElementById('admin-password').value = accountSettings.password || '';
+            // Update profile avatar display
+            const avatarElement = document.getElementById('account-profile-avatar');
+            if (accountSettings.profilePic) {
+                updateProfileAvatar(accountSettings.profilePic);
+            } else if (accountSettings.fullname) {
+                avatarElement.textContent = accountSettings.fullname.charAt(0).toUpperCase();
+            }
+            // Profile picture upload handler
+            const profilePicUpload = document.getElementById('admin-profile-pic-upload');
+            profilePicUpload.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imageUrl = e.target.result;
+                        updateProfileAvatar(imageUrl);
+                        const accountSettings = JSON.parse(localStorage.getItem('accountSettings')) || {};
+                        accountSettings.profilePic = imageUrl;
+                        localStorage.setItem('accountSettings', JSON.stringify(accountSettings));
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            // Load terms and privacy
+            const defaultTerms = `<h1>Terms & Conditions</h1>
+<p class="last-updated">Last Updated: February 2026</p>
+
+<h2>1. Acceptance of Terms</h2>
+<p>By accessing and using STI Archives, you accept and agree to be bound by the terms and provision of this agreement.</p>
+
+<h2>2. Use License</h2>
+<p>Permission is granted to temporarily use STI Archives for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:</p>
+<ul>
+<li>Modify or copy the materials</li>
+<li>Use the materials for any commercial purpose or public display</li>
+<li>Transfer the materials to another person or entity</li>
+<li>Attempt to reverse engineer any software contained on the website</li>
+</ul>
+
+<h2>3. User Account Responsibilities</h2>
+<p>You are responsible for maintaining the confidentiality of your account and password. You agree to accept responsibility for all activities that occur under your account or password.</p>
+
+<h2>4. Content Submission</h2>
+<p>Users may submit articles and documents to STI Archives. By submitting content, you grant us the right to use, modify, and display such content on our platform.</p>
+
+<h2>5. Disclaimer</h2>
+<p>The materials on STI Archives are provided "as is". STI Archives makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties, including without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.</p>
+
+<h2>6. Limitations</h2>
+<p>In no event shall STI Archives or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on STI Archives.</p>
+
+<h2>7. Privacy Policy</h2>
+<p>Your privacy is important to us. Please review our <a href="/privacy.html">Privacy Policy</a> which describes how we collect, use, and protect your personal information.</p>
+
+<h2>8. Governing Law</h2>
+<p>These terms and conditions are governed by and construed in accordance with the laws of the Philippines and you irrevocably submit to the exclusive jurisdiction of the courts in that State or location.</p>
+
+<h2>9. Contact Us</h2>
+<p>If you have any questions regarding these terms and conditions, you may contact us at [contact information].</p>`;
+            const defaultPrivacy = `<h1>Privacy Policy</h1>
+<p class="last-updated">Last Updated: February 2026</p>
+
+<h2>1. Introduction</h2>
+<p>STI Archives ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how your personal information is collected, used, and disclosed by STI Archives when you use our website.</p>
+
+<h2>2. Information We Collect</h2>
+<p>We may collect the following types of information:</p>
+<ul>
+<li><strong>Personal Information:</strong> Name, email address, student ID, and other information you provide when creating an account</li>
+<li><strong>Profile Information:</strong> Profile picture and other information you choose to add to your profile</li>
+<li><strong>Usage Data:</strong> Information about how you interact with our website, including pages visited and features used</li>
+<li><strong>Content:</strong> Articles, documents, and other materials you upload or save on our platform</li>
+</ul>
+
+<h2>3. How We Use Your Information</h2>
+<p>We use your information to:</p>
+<ul>
+<li>Provide and maintain our services</li>
+<li>Process your registrations and account management</li>
+<li>Improve and personalize your experience</li>
+<li>Send you important updates and notifications</li>
+<li>Respond to your comments, questions, and requests</li>
+<li>Analyze usage patterns to enhance our services</li>
+</ul>
+
+<h2>4. Data Security</h2>
+<p>We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the Internet or electronic storage is 100% secure, and we cannot guarantee absolute security.</p>
+
+<h2>5. Third-Party Services</h2>
+<p>Our website may contain links to third-party websites or services. We are not responsible for the privacy practices of these third parties. We encourage you to review the privacy policies of those third parties.</p>
+
+<h2>6. Cookies and Tracking Technologies</h2>
+<p>We use cookies and similar tracking technologies to track the activity on our website and hold certain information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.</p>
+
+<h2>7. Your Rights</h2>
+<p>You have the right to:</p>
+<ul>
+<li>Access the personal information we hold about you</li>
+<li>Request correction of inaccurate personal information</li>
+<li>Request deletion of your personal information</li>
+<li>Object to processing of your personal information</li>
+<li>Request restriction of processing your personal information</li>
+<li>Request transfer of your personal information</li>
+</ul>
+
+<h2>8. Children's Privacy</h2>
+<p>Our service is not intended for use by children under the age of 13. We do not knowingly collect personal information from children under 13. If you become aware that a child has provided us with personal information, please contact us.</p>
+
+<h2>9. Changes to This Privacy Policy</h2>
+<p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.</p>
+
+<h2>10. Contact Us</h2>
+<p>If you have any questions about this Privacy Policy, please contact us.</p>`;
+            document.getElementById('terms-text').innerHTML = localStorage.getItem('termsContent') || defaultTerms;
+            document.getElementById('privacy-text').innerHTML = localStorage.getItem('privacyContent') || defaultPrivacy;
+            // Load notifications
+            const requests = [
+                { action: 'Request: Accept approval for new user interface design', time: '2023-10-01 10:00 AM' },
+                { action: 'Request: Grant permission to upload research articles', time: '2023-10-02 02:15 PM' },
+                { action: 'Request: Accept approval and permission for site logo update', time: '2023-10-03 09:00 AM' }
+            ];
+            const suggestions = [
+                { action: 'Suggestion by admin: Implement dark mode', time: '2023-10-01 11:30 AM' },
+                { action: 'Suggestion by user: Add search filters', time: '2023-10-02 04:45 PM' }
+            ];
+            const bugs = [
+                { action: 'Bug report: Login page not loading on mobile', time: '2023-10-04 01:00 PM' },
+                { action: 'Bug report: Search function returns incorrect results', time: '2023-10-05 03:30 PM' }
+            ];
+
+            // Load users first, then generate notifications
+            let notifications = [];
+            isReloadingUsers = true;
+            loadUsers().then(() => {
+                if (DEBUG) console.log('DEBUG: Initial loadUsers completed');
+                isReloadingUsers = false;
+                // Ensure proper section visibility on load
+                showUserSection('verified');
+                // Start polling for new users every 5 seconds
+                setInterval(async () => {
+                    try {
+                        const response = await fetch('/api/users');
+                        if (response.ok) {
+                            const serverUsers = await response.json();
+                            if (DEBUG) console.log('DEBUG: Polled users from server, count:', serverUsers.length);
+                            // Update localStorage with server users
+                            localStorage.setItem('users', JSON.stringify(serverUsers));
+                            // Reload the user tables to show new signups
+                            isReloadingUsers = true;
+                            loadUsers();
+                            // Also regenerate notifications
+                            notifications = generateNotifications(serverUsers);
+                            updateNotificationBadge(notifications);
+                            if (DEBUG) console.log('DEBUG: Tables reloaded with new users');
+                            setTimeout(() => { isReloadingUsers = false; }, 100);
+                        }
+                    } catch (error) {
+                        // Silent fail - polling continues in background
+                    }
+                }, 5000); // Poll every 5 seconds
+
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                notifications = generateNotifications(users);
+                updateNotificationBadge(notifications);
+
+                // Set sidebar admin info from current logged in user
+                currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                
+                // If no currentUser, try to get from users array based on role
+                if (!currentUser || !currentUser.name) {
+                    // Load user from users array as fallback
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    const userFromArray = users.find(u => u.verified);
+                    if (userFromArray) {
+                        currentUser = userFromArray;
+                    }
+                }
+            }); // Close loadUsers promise
+
+
+        function renderDashboardUploadsChart() {
+            const ctx = document.getElementById('dashboard-uploadsChart').getContext('2d');
+            if (window.dashboardUploadsChart) {
+                window.dashboardUploadsChart.destroy();
+            }
+
+            const barColors = [
+                '#8A2BE2', // Admin Cool Purple
+                '#FFA500', // Teacher Warm Orange
+                '#008000', // SHS Emerald Green
+                '#00008B'  // College Deep Blue
+            ];
+            const labels = ['ADMIN', 'TEACHER', 'SHS', 'COLLEGE'];
+            const data = [1, 1, 1, 1]; // Demo data
+            const total = data.reduce((a, b) => a + b, 0);
+            const percentageData = data.map(d => (d / total) * 100);
+
+            window.dashboardUploadsChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: percentageData,
+                        backgroundColor: barColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+
+       
+
+
+
+        // === STUB FUNCTIONS (to prevent errors) ===
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const mainContent = document.getElementById('main-content');
+            const header = document.querySelector('.header');
+            const body = document.body;
+            // Check if mobile view
+            if (window.innerWidth <= 767) {
+                // Mobile: toggle overlay and sidebar
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('show');
+            } else {
+                // Desktop/tablet: collapse sidebar
+                sidebar.classList.toggle('collapsed');
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                const marginValue = window.innerWidth >= 1025 ? '200px' : window.innerWidth >= 769 ? '180px' : window.innerWidth >= 768 ? '160px' : '0';
+                const paddingValue = isCollapsed ? '20px' : marginValue;
+                if (isCollapsed) {
+                    mainContent.style.marginLeft = '0';
+                    header.style.paddingLeft = paddingValue;
+                    body.classList.add('sidebar-collapsed');
+                } else {
+                    mainContent.style.marginLeft = marginValue;
+                    header.style.paddingLeft = paddingValue;
+                    body.classList.remove('sidebar-collapsed');
+                }
+            }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const darkModeToggle = document.querySelector('.dark-mode-toggle');
+            const toggleBtn = darkModeToggle ? darkModeToggle.querySelector('i') : null;
+            if (document.body.classList.contains('dark-mode')) {
+                if (toggleBtn) {
+                    toggleBtn.className = 'fas fa-sun';
+                    toggleBtn.style.color = '#FFD700';
+                }
+                localStorage.setItem('darkMode', 'on');
+            } else {
+                if (toggleBtn) {
+                    toggleBtn.className = 'fas fa-moon';
+                    toggleBtn.style.color = '#777';
+                }
+                localStorage.setItem('darkMode', 'off');
+            }
+        }
+
+        async function renderUserChart() {
+            // Example data for demonstration
+            const exampleData = {
+                shs: 150,
+                college: 80,
+                educator: 25,
+                admin: 5
+            };
+            const barColors = [
+                '#008000', // SHS Emerald Green
+                '#00008B', // College Deep Blue
+                '#FFA500', // Teacher Warm Orange
+                '#8A2BE2'  // Admin Cool Purple
+            ];
+            const labels = ['SHS', 'COLLEGE', 'TEACHER', 'ADMIN'];
+            const ctx = document.getElementById('user-chart').getContext('2d');
+            if (window.userChart) {
+                window.userChart.destroy();
+            }
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const textColor = isDarkMode ? '#ffffff' : '#000000';
+            window.userChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: [exampleData.shs, exampleData.college, exampleData.educator, exampleData.admin],
+                        backgroundColor: barColors,
+                        borderColor: barColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: textColor
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: 400,
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderSigningUpChart(period = 'day', filter = null) {
+            if (DEBUG) console.log('DEBUG: Rendering signing up chart');
+            const ctx = document.getElementById('signing-up-chart').getContext('2d');
+            if (window.signingUpChart) {
+                window.signingUpChart.destroy();
+            }
+            let users;
+            try {
+                users = JSON.parse(localStorage.getItem('users') || '[]');
+            } catch (e) {
+                users = [];
+            }
+            if (!Array.isArray(users)) users = [];
+            let filteredUsers = users.filter(user => !user.verified && !user.rejected && !user.banned);
+            if (filter) {
+                filteredUsers = filteredUsers.filter(user => user.role === filter);
+            }
+            const now = new Date();
+            let labels = [];
+            let data = [];
+            if (period === 'day') {
+                // Last 7 days
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date(now);
+                    date.setDate(now.getDate() - i);
+                    const dateStr = date.toISOString().split('T')[0];
+                    labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                    const count = filteredUsers.filter(user => user.created_at && user.created_at.split('T')[0] === dateStr).length;
+                    data.push(count);
+                }
+            } else if (period === 'month') {
+                // Last 12 months
+                for (let i = 11; i >= 0; i--) {
+                    const date = new Date(now);
+                    date.setMonth(now.getMonth() - i);
+                    const monthStr = date.toISOString().slice(0, 7);
+                    labels.push(date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }));
+                    const count = filteredUsers.filter(user => user.created_at && user.created_at.slice(0, 7) === monthStr).length;
+                    data.push(count);
+                }
+            }
+            window.signingUpChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Sign-ups',
+                        data: data,
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderDashboardUploadsChart() {
+            const ctx = document.getElementById('dashboard-uploadsChart').getContext('2d');
+            if (window.dashboardUploadsChart) {
+                window.dashboardUploadsChart.destroy();
+            }
+
+            const barColors = [
+                '#8A2BE2', // Admin Cool Purple
+                '#FFA500', // Teacher Warm Orange
+                '#008000', // SHS Emerald Green
+                '#00008B'  // College Deep Blue
+            ];
+            const labels = ['ADMIN', 'TEACHER', 'SHS', 'COLLEGE'];
+            const data = [1, 1, 1, 1]; // Demo data
+            const total = data.reduce((a, b) => a + b, 0);
+            const percentageData = data.map(d => (d / total) * 100);
+
+            window.dashboardUploadsChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: percentageData,
+                        backgroundColor: barColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderGaugeChart(canvasId, label, averageDuration, gaugeColor) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+
+            // Destroy existing chart if it exists
+            if (window[canvasId + 'Chart']) {
+                window[canvasId + 'Chart'].destroy();
+            }
+
+            const maxDuration = 5; // Max hours for gauge
+            const percentage = (averageDuration / maxDuration) * 100;
+
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const textColor = isDarkMode ? '#ffffff' : '#000000';
+            const emptyColor = isDarkMode ? '#444' : '#e0e0e0';
+
+            window[canvasId + 'Chart'] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [percentage, 100 - percentage],
+                        backgroundColor: [gaugeColor, emptyColor],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '50%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false },
+                        centerText: {
+                            averageDuration: averageDuration,
+                            textColor: textColor
+                        }
+                    },
+                    rotation: 0,
+                    circumference: 360,
+                    elements: {
+                        arc: {
+                            borderRadius: 10
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'centerText',
+                    afterDraw: function(chart) {
+                        const ctx = chart.ctx;
+                        const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                        const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+                        const averageDuration = chart.options.plugins.centerText.averageDuration;
+                        const textColor = chart.options.plugins.centerText.textColor;
+                        ctx.save();
+                        ctx.font = 'bold 16px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillStyle = textColor;
+                        ctx.fillText(averageDuration + ' hours', centerX, centerY);
+                        ctx.restore();
+                    }
+                }]
+            });
+        }
+
+        let currentPeriod = '';
+
+        function toggleDropdown(dropdownId) {
+            // Close all dropdowns first
+            document.querySelectorAll('.dropdown').forEach(dd => dd.classList.remove('show'));
+            document.querySelectorAll('.dropdown-content').forEach(dd => dd.classList.remove('show'));
+            // Open the clicked dropdown
+            const dropdown = document.getElementById(dropdownId).parentElement;
+            dropdown.classList.toggle('show');
+            // Add event listener to close dropdown when clicking outside
+            if (dropdown.classList.contains('show')) {
+                setTimeout(() => {
+                    document.addEventListener('click', closeDropdownOnOutsideClick);
+                }, 1);
+            }
+        }
+
+        function closeDropdownOnOutsideClick(e) {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown').forEach(dd => dd.classList.remove('show'));
+                document.querySelectorAll('.dropdown-content').forEach(dd => dd.classList.remove('show'));
+                document.removeEventListener('click', closeDropdownOnOutsideClick);
+            }
+        }
+
+
+        function setPeriod(period) {
+            currentPeriod = period;
+            // Only remove active from period buttons (inside dropdowns)
+            document.querySelectorAll('.dropdown .filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.dropdown-content').forEach(dd => dd.classList.remove('show'));
+            // Find the parent button and make it active
+            const button = event.target.closest('.dropdown').querySelector('.filter-btn');
+            button.classList.add('active');
+            button.innerHTML = period.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) + ' <i class="fas fa-chevron-down"></i>';
+            // Reset the other button to default
+            const isWeek = event.target.closest('.dropdown').querySelector('#week-dropdown') !== null;
+            if (isWeek) {
+                const monthButton = document.querySelector('#month-dropdown').parentElement.querySelector('.filter-btn');
+                monthButton.innerHTML = 'Month <i class="fas fa-chevron-down"></i>';
+            } else {
+                const weekButton = document.querySelector('#week-dropdown').parentElement.querySelector('.filter-btn');
+                weekButton.innerHTML = 'Week <i class="fas fa-chevron-down"></i>';
+            }
+        }
+
+        function setCategory(category) {
+            currentCategory = category;
+            // Only remove active from category buttons (not dropdowns)
+            document.querySelectorAll('.filter-buttons button:not(.dropdown .filter-btn)').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Handle sidebar link clicks with inline onclick
+        function handleSidebarClick(event, section) {
+            event.preventDefault();
+            if (DEBUG) console.log('DEBUG: handleSidebarClick called with:', section);
+            
+            // Remove active class from all sidebar links
+            document.querySelectorAll('.sidebar ul li').forEach(li => {
+                li.classList.remove('active');
+            });
+            
+            // Add active class to clicked link's parent li
+            event.target.closest('li').classList.add('active');
+            
+            showSection(section);
+        }
+
+        function showSection(sectionId) {
+            if (DEBUG) console.log('DEBUG: showSection called with:', sectionId);
+            
+            try {
+                // Check if element exists before trying to modify it
+                const targetSection = document.getElementById(sectionId);
+                if (!targetSection) {
+                    console.error('DEBUG: Section not found:', sectionId);
+                    alert('Error: Section "' + sectionId + '" not found');
+                    return;
+                }
+                
+                // Remove active class and hide ALL content sections
+                document.querySelectorAll('.content-section').forEach(s => {
+                    s.classList.remove('active');
+                    s.style.display = 'none'; // Force hide
+                    if (DEBUG) console.log('DEBUG: Removed active from:', s.id);
+                });
+                
+                // Add active class to target section and show it
+                targetSection.classList.add('active');
+                targetSection.style.display = 'block'; // Force show
+                if (DEBUG) console.log('DEBUG: Added active to:', sectionId);
+            } catch (e) {
+                console.error('DEBUG: Error in showSection:', e);
+                alert('Error switching section: ' + e.message);
+            }
+            
+            document.getElementById('page-title').textContent =
+                sectionId === 'dashboard' ? 'Dashboard' :
+                sectionId === 'upload' ? 'Upload' :
+                sectionId === 'users' ? 'Users Management' :
+                sectionId === 'profile' ? 'Profile' :
+                sectionId === 'settings' ? 'Settings' :
+                'Notifications';
+            // Reset upload section to default (PDF Upload) when navigating to upload
+            if (sectionId === 'upload') {
+                // Reset to PDF Upload form (default)
+                document.querySelectorAll('.upload-subsection').forEach(sub => sub.classList.remove('active'));
+                document.getElementById('upload-form-section').classList.add('active');
+                // Reset buttons to PDF Upload as active
+                document.querySelectorAll('.upload-nav .nav-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('btn-pdf-upload').classList.add('active');
+            }
+            // Reset users section to verified when navigating to users
+            if (sectionId === 'users') {
+                showUserSection('verified');
+            }
+            if (sectionId === 'dashboard') {
+                // Dashboard renders are now handled in loadUsers.then
+            }
+        }
+
+        // Add event listeners for sidebar navigation
+        document.querySelectorAll('.sidebar a[data-section]').forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                const section = this.getAttribute('data-section');
+                handleSidebarClick(event, section);
+            });
+        });
+
+        // Add event listener for profile avatar
+        const avatarRow = document.querySelector('.avatar-name-row[data-section]');
+        if (avatarRow) {
+            avatarRow.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                showSection(section);
+            });
+        }
+
+        // Add event listener to toggle button
+        const toggleBtn = document.getElementById('toggle-btn');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', toggleSidebar);
+        }
+
+
+
+        // Initialize - always default to dashboard on fresh page load
+        // Clear any saved section to ensure we start fresh
+        localStorage.removeItem('adminCurrentSection');
+        if (DEBUG) console.log('DEBUG: Initializing coadmin page - defaulting to dashboard');
+        showSection('dashboard');
+        // Set initial header padding and main-content margin for open sidebar
+        if (window.innerWidth >= 768) {
+            const marginValue = window.innerWidth >= 1025 ? '200px' : window.innerWidth >= 769 ? '180px' : '160px';
+            document.querySelector('.header').style.paddingLeft = marginValue;
+            document.getElementById('main-content').style.marginLeft = marginValue;
+        }
+
+        // Make all user subsections visible
+        document.querySelectorAll('.user-subsection').forEach(sub => sub.style.display = 'block');
+
+        loadUsers().then(() => {
+            // Counts are now updated automatically when tables are populated
+            renderUserChart();
+            renderSigningUpChart();
+            renderDashboardUploadsChart();
+            renderGaugeChart('session-duration-gauge', 'Average Session Duration', 2.5, '#007bff');
+            updateDashboardCounts();
+        }).catch(() => {
+            // Fallback if async fails
+            renderUserChart();
+            renderSigningUpChart();
+            renderDashboardUploadsChart();
+        });
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profile-dropdown');
+            const isOpen = dropdown.classList.contains('open');
+            dropdown.classList.toggle('open');
+            if (!isOpen) {
+                // Add listener to close on outside click
+                setTimeout(() => {
+                    document.addEventListener('click', closeProfileDropdownOnOutsideClick);
+                }, 1);
+            }
+        }
+
+        function toggleAdminDropdown() {
+            const dropdown = document.querySelector('.admin-dropdown');
+            const isOpen = dropdown.classList.contains('open');
+            dropdown.classList.toggle('open');
+            if (!isOpen) {
+                // Add listener to close on outside click
+                setTimeout(() => {
+                    document.addEventListener('click', closeAdminDropdownOnOutsideClick);
+                }, 1);
+            }
+        }
+
+        function closeAdminDropdownOnOutsideClick(e) {
+            const dropdown = document.querySelector('.admin-dropdown');
+            const btn = document.querySelector('.admin-btn');
+            if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                dropdown.classList.remove('open');
+                document.removeEventListener('click', closeAdminDropdownOnOutsideClick);
+            }
+        }
+
+        function toggleSidebarProfileDropdown() {
+            const dropdown = document.querySelector('.sidebar-profile-menu');
+            const isOpen = dropdown.classList.contains('open');
+            dropdown.classList.toggle('open');
+            if (!isOpen) {
+                // Add listener to close on outside click
+                setTimeout(() => {
+                    document.addEventListener('click', closeSidebarProfileDropdownOnOutsideClick);
+                }, 1);
+            }
+        }
+
+        function closeSidebarProfileDropdownOnOutsideClick(e) {
+            const dropdown = document.querySelector('.sidebar-profile-menu');
+            const adminInfo = document.querySelector('.admin-info');
+            if (!dropdown.contains(e.target) && !adminInfo.contains(e.target)) {
+                dropdown.classList.remove('open');
+                document.removeEventListener('click', closeSidebarProfileDropdownOnOutsideClick);
+            }
+        }
+
+        function closeProfileDropdownOnOutsideClick(e) {
+            const dropdown = document.getElementById('profile-dropdown');
+            const btn = document.querySelector('.profile-btn');
+            if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                dropdown.classList.remove('open');
+                document.removeEventListener('click', closeProfileDropdownOnOutsideClick);
+            }
+        }
+
+        function closeSidebarOnOverlayClick() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+        }
+
+        function toggleNotificationModal() {
+            const modal = document.getElementById('notification-modal');
+            if (!modal) return;
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+            if (DEBUG) console.log('toggleNotificationModal called');
+            if (DEBUG) console.log('generateNotifications defined:', typeof generateNotifications);
+            if (DEBUG) console.log('localStorage users:', localStorage.getItem('users') ? 'exists' : 'null');
+            // Refresh notifications when opening modal
+            if (modal.style.display === 'block') {
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                if (DEBUG) console.log('Users count for notifications:', users.length);
+                if (typeof generateNotifications === 'function') {
+                    const freshNotifications = generateNotifications(users);
+                    if (DEBUG) console.log('Fresh notifications count:', freshNotifications.length);
+                    const notificationList = document.getElementById('notification-list');
+                    if (!notificationList) return;
+                    notificationList.innerHTML = '';
+                    const maxNotifications = 10;
+                    const limitedNotifications = freshNotifications.slice(0, maxNotifications);
+                    const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+                    limitedNotifications.forEach(notif => {
+                        const notifDiv = document.createElement('div');
+                        notifDiv.className = 'notification-item';
+                        notifDiv.setAttribute('data-id', notif.id);
+                        const isRead = readNotifications.includes(notif.id);
+                        if (isRead) {
+                            notifDiv.classList.add('read');
+                        }
+                        notifDiv.innerHTML = `
+                            <div class="notification-type ${notif.type}">${notif.typeText}</div>
+                            <div class="notification-content">${notif.content}</div>
+                            <div class="notification-time">${notif.time}</div>
+                            <div class="notification-actions">
+                                <i class="fas ${isRead ? 'fa-check' : 'fa-times'}" title="${isRead ? 'Mark as Unread' : 'Mark as Read'}" onclick="${isRead ? 'markNotificationUnread(this)' : 'markNotificationRead(this)'}"></i>
+                            </div>
+                        `;
+                        notificationList.appendChild(notifDiv);
+                    });
+                    const placeholder = document.querySelector('.notification-placeholder');
+                    if (placeholder) {
+                        placeholder.style.display = freshNotifications.length > 0 ? 'none' : 'block';
+                    }
+                    updateNotificationBadge(freshNotifications);
+                }
+            }
+        }
+        window.toggleNotificationModal = toggleNotificationModal;
+
+        function markNotificationRead(icon) {
+            const notificationItem = icon.closest('.notification-item');
+            const notificationId = notificationItem.getAttribute('data-id');
+            notificationItem.classList.add('read');
+            // Change icon to check mark
+            icon.className = 'fas fa-check';
+            icon.title = 'Mark as Unread';
+            icon.onclick = function() { markNotificationUnread(this); };
+
+            // Persist read state
+            let readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+            if (!readNotifications.includes(notificationId)) {
+                readNotifications.push(notificationId);
+                localStorage.setItem('readNotifications', JSON.stringify(readNotifications));
+            }
+
+            // Update badge count
+            updateNotificationBadge();
+        }
+
+        function markNotificationUnread(icon) {
+            const notificationItem = icon.closest('.notification-item');
+            const notificationId = notificationItem.getAttribute('data-id');
+            notificationItem.classList.remove('read');
+            // Change icon back to cross
+            icon.className = 'fas fa-times';
+            icon.title = 'Mark as Read';
+            icon.onclick = function() { markNotificationRead(this); };
+
+            // Remove from persisted read states
+            let readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+            readNotifications = readNotifications.filter(id => id !== notificationId);
+            localStorage.setItem('readNotifications', JSON.stringify(readNotifications));
+
+            // Update badge count
+            updateNotificationBadge();
+        }
+
+        function updateNotificationBadge(notifications) {
+            if (!notifications) {
+                // If no notifications passed, try to get from DOM
+                const notificationItems = document.querySelectorAll('.notification-item');
+                const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+                let unreadCount = 0;
+
+                notificationItems.forEach(item => {
+                    const notificationId = item.getAttribute('data-id');
+                    if (!readNotifications.includes(notificationId)) {
+                        unreadCount++;
+                    }
+                });
+
+                const badge = document.querySelector('.notification-badge');
+                if (badge) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = 'flex'; // Always visible
+                }
+
+                // Show/hide mark all read button based on unread count
+                const markAllBtn = document.querySelector('.mark-all-read-btn');
+                if (markAllBtn) {
+                    markAllBtn.style.display = unreadCount > 0 ? 'flex' : 'none';
+                }
+                return;
+            }
+
+            // If notifications passed, count unread
+            const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+            let unreadCount = 0;
+
+            notifications.forEach(notif => {
+                if (!readNotifications.includes(notif.id)) {
+                    unreadCount++;
+                }
+            });
+
+            const badge = document.querySelector('.notification-badge');
+            if (badge) {
+                badge.textContent = unreadCount;
+                badge.style.display = 'flex'; // Always visible
+            }
+
+            // Show/hide mark all read button based on unread count
+            const markAllBtn = document.querySelector('.mark-all-read-btn');
+            if (markAllBtn) {
+                markAllBtn.style.display = unreadCount > 0 ? 'flex' : 'none';
+            }
+        }
+
+        function updatePaginationControls() {
+            const paginationControls = document.getElementById('pagination-controls');
+            const pageNumbersContainer = document.getElementById('page-numbers');
+            
+            if (!window.notificationPagination) return;
+            
+            const { currentPage, totalPages, notifications } = window.notificationPagination;
+            
+            // Show/hide pagination controls - only show if notifications exceed 10
+            if (notifications.length > 10) {
+                paginationControls.style.display = 'flex';
+            } else {
+                paginationControls.style.display = 'none';
+            }
+            
+            // Clear existing page numbers
+            pageNumbersContainer.innerHTML = '';
+            
+            // Create page number buttons
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = 'page-number';
+                pageBtn.textContent = i;
+                
+                if (i === currentPage) {
+                    pageBtn.classList.add('active');
+                }
+                
+                pageBtn.addEventListener('click', function() {
+                    goToPage(i);
+                });
+                
+                pageNumbersContainer.appendChild(pageBtn);
+            }
+        }
+
+        function goToPage(page) {
+            if (!window.notificationPagination) return;
+            
+            const { totalPages, itemsPerPage, notifications } = window.notificationPagination;
+            
+            if (page < 1 || page > totalPages) return;
+            
+            window.notificationPagination.currentPage = page;
+            
+            // Re-render notifications for the new page
+            const allNotificationsContainer = document.getElementById('all-notifications-list');
+            if (allNotificationsContainer) {
+                allNotificationsContainer.innerHTML = '';
+                const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+                
+                const startIndex = (page - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, notifications.length);
+                
+                for (let i = endIndex - 1; i >= startIndex; i--) {
+                    const notif = notifications[i];
+                    const notifDiv = document.createElement('div');
+                    notifDiv.className = 'notification-item';
+                    notifDiv.setAttribute('data-id', notif.id);
+                    
+                    const isRead = readNotifications.includes(notif.id);
+                    if (isRead) {
+                        notifDiv.classList.add('read');
+                    }
+                    
+                    notifDiv.innerHTML = `
+                        <input type="checkbox" class="notification-checkbox">
+                        <div class="notification-details">
+                            <div class="notification-type ${notif.type}">${notif.typeText}</div>
+                            <div class="notification-content">${notif.content}</div>
+                            <div class="notification-time">${formatNotificationDate(notif.time)}</div>
+                        </div>
+                        <div class="notification-actions">
+                            <i class="fas ${isRead ? 'fa-check' : 'fa-times'}" title="${isRead ? 'Mark as Unread' : 'Mark as Read'}" onclick="${isRead ? 'markNotificationUnread' : 'markNotificationRead'}(this)"></i>
+                        </div>
+                    `;
+                    allNotificationsContainer.insertBefore(notifDiv, allNotificationsContainer.firstChild);
+                }
+            }
+            
+            updatePaginationControls();
+        }
+
+        let confirmAction = null;
+
+        function showConfirm(title, message, action) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+            confirmAction = action;
+            document.getElementById('confirm-modal').classList.add('show');
+        }
+
+        function hideConfirm() {
+            document.getElementById('confirm-modal').classList.remove('show');
+            confirmAction = null;
+        }
+
+        function executeConfirmAction() {
+            if (confirmAction) {
+                confirmAction();
+            }
+            hideConfirm();
+        }
+
+        function showMarkAllConfirm() {
+            showConfirm('Mark All as Read', 'Are you sure you want to mark all notifications as read? This action cannot be undone.', () => {
+                // Mark all notifications as read
+                const notificationItems = document.querySelectorAll('.notification-item');
+                let readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+
+                notificationItems.forEach(item => {
+                    const notificationId = item.getAttribute('data-id');
+                    item.classList.add('read');
+                    const icon = item.querySelector('.notification-actions i');
+                    if (icon && icon.classList.contains('fa-times')) {
+                        icon.className = 'fas fa-check';
+                        icon.title = 'Mark as Unread';
+                        icon.onclick = function() { markNotificationUnread(this); };
+                    }
+
+                    // Persist read state
+                    if (!readNotifications.includes(notificationId)) {
+                        readNotifications.push(notificationId);
+                    }
+                });
+
+                // Save to localStorage
+                localStorage.setItem('readNotifications', JSON.stringify(readNotifications));
+
+                // Hide the mark all read button and its icon
+                const markAllBtn = document.querySelector('.mark-all-read-btn');
+                if (markAllBtn) {
+                    markAllBtn.style.display = 'none';
+                }
+
+                // Update the notification badge
+                updateNotificationBadge();
+            });
+        }
+
+        function showUploadSection(section, btnElement) {
+            // Hide all upload subsections
+            document.querySelectorAll('.upload-subsection').forEach(sub => sub.classList.remove('active'));
+            // Show the selected section
+            if (section === 'pdf-form') {
+                document.getElementById('upload-form-section').classList.add('active');
+            } else if (section === 'image-form') {
+                document.getElementById('image-form-section').classList.add('active');
+            } else if (section === 'admin') {
+                document.getElementById('admin-uploads-section').classList.add('active');
+                // Force re-render of admin uploads section to ensure articles display correctly
+                const adminContainer = document.getElementById('admin-uploaded-articles');
+                const currentContent = adminContainer.innerHTML;
+                // Temporarily clear and re-fetch articles
+                loadArticlesFromServerForAdmin();
+            } else if (section === 'users') {
+                document.getElementById('user-uploads-section').classList.add('active');
+            } else if (section === 'carousel') {
+                document.getElementById('carousel-section').classList.add('active');
+                // Load carousel items and articles for PDF selection
+                showCarouselItemsList();
+                loadArticlesForCarouselSelect();
+            }
+            // Update nav button active state - remove all active first
+            document.querySelectorAll('.upload-nav .nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Add active to the correct button based on section
+            if (section === 'pdf-form') {
+                document.getElementById('btn-pdf-upload').classList.add('active');
+            } else if (section === 'admin') {
+                document.getElementById('btn-admin-uploads').classList.add('active');
+            } else if (section === 'users') {
+                document.getElementById('btn-user-uploads').classList.add('active');
+            } else if (section === 'carousel') {
+                document.getElementById('btn-carousel').classList.add('active');
+            }
+        }
+
+        // Add event listeners for upload navigation buttons
+        document.querySelectorAll('.upload-nav .nav-btn[data-section]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                showUploadSection(section, this);
+            });
+        });
+
+        // Load articles from server specifically for admin uploads section
+        function loadArticlesFromServerForAdmin() {
+            fetch('/api/articles')
+                .then(response => response.json())
+                .then(data => {
+                    // Handle both 'success' (new) and 'status' (old) response formats
+                    const isSuccess = data.status === 'success' || data.success === true;
+                    if (isSuccess) {
+                        const articles = data.articles || [];
+                        // Save to localStorage for other functions that might need it
+                        localStorage.setItem('allArticles', JSON.stringify(articles));
+                        localStorage.setItem('adminArticles', JSON.stringify(articles));
+                        // Render the articles in admin uploads section
+                        renderAdminUploadsFromServer(articles);
+                    } else {
+                        console.error('✗ Failed to load articles:', data.error || 'Unknown error');
+                        document.getElementById('admin-uploaded-articles').innerHTML = '<p class="empty-state">Failed to load articles</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading articles:', error);
+                    document.getElementById('admin-uploaded-articles').innerHTML = '<p class="empty-state">Error loading articles</p>';
+                });
+        }
+
+        // Render articles in admin uploads section
+        function renderAdminUploadsFromServer(articles) {
+            const container = document.getElementById('admin-uploaded-articles');
+            if (!articles || articles.length === 0) {
+                container.innerHTML = '<p class="empty-state">No articles found.</p>';
+                return;
+            }
+            
+            // Clear container first
+            container.innerHTML = '';
+            
+            // Use the original createArticleTemplate function for proper formatting
+            articles.forEach(article => {
+                const articleElement = createArticleTemplate(article);
+                container.appendChild(articleElement);
+            });
+        }
+
+        function viewAdminArticle(id) {
+            window.open('/library.html?article=' + id, '_blank');
+        }
+
+        function deleteAdminArticle(id) {
+            if (confirm('Are you sure you want to delete this article?')) {
+                fetch('/api/articles/' + id, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert('Article deleted successfully!');
+                            loadArticlesFromServerForAdmin();
+                        } else {
+                            alert('Failed to delete article: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting article:', error);
+                        alert('Error deleting article');
+                    });
+            }
+        }
+
+        function showUploadForm() {
+            showSection('upload');
+            showUploadSection('upload-form');
+        }
+
+        function showUploaded(type) {
+            showSection('upload');
+            showUploadSection(type + '-uploads');
+        }
+
+        function showUserCategory(type) {
+            // Hide all spec sections
+            document.getElementById('shs-spec').style.display = 'none';
+            document.getElementById('college-spec').style.display = 'none';
+            document.getElementById('educator-spec').style.display = 'none';
+            // Show selected spec section
+            document.getElementById(type + '-spec').style.display = 'block';
+        }
+
+
+
+        async function loadStrandUsersForStatus(status, grade, strand) {
+            const users = await getUsers();
+            const tbody = document.getElementById(status + '-strand-users-tbody');
+            tbody.innerHTML = '';
+            const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
+                                status === 'banned' ? user.banned : false;
+            users.forEach(user => {
+                if (user.role === 'senior_high' && user.grade === 'Grade ' + grade && user.strand === strand && statusFilter) {
+                    const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
+                    const dateHeader = status === 'signing-up' ? 'Date Signed Up' : 'Date Banned';
+                let emailToUse = user.personal_email || user.email;
+                    const row = `<tr>
+                        <td>${user.user_id || user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${emailToUse}</td>
+                        <td>${user.role}</td>
+                        <td>${user.Sec_Degr || '-'}</td>
+                        <td>${date}</td>
+                        <td>${getStatus(user)}</td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                        <td>
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <button type="button" class="btn btn-success btn-sm" onclick="acceptUser('${user.user_id || user.id}')">Accept</button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>
+                            </div>
+                        </td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                }
+            });
+        }
+
+        async function loadDegreeUsersForStatus(status, degree) {
+            const users = await getUsers();
+            const tbody = document.getElementById(status + '-degree-users-tbody');
+            tbody.innerHTML = '';
+            const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
+                                status === 'banned' ? user.banned : false;
+            users.forEach(user => {
+                if (user.role === 'college' && user.section === degree.toUpperCase() && statusFilter) {
+                    const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
+                let emailToUse = user.personal_email || user.email;
+                    const row = `<tr>
+                        <td>${user.user_id || user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${emailToUse}</td>
+                        <td>${user.role}</td>
+                        <td>${date}</td>
+                        <td><button class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                        <td>
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <button type="button" class="btn btn-success btn-sm" onclick="acceptUser('${user.user_id || user.id}')">Accept</button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>
+                            </div>
+                        </td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                }
+            });
+        }
+
+        async function loadDepartmentUsersForStatus(status, dept) {
+            const users = await getUsers();
+            const tbody = document.getElementById(status + '-department-users-tbody');
+            tbody.innerHTML = '';
+            const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
+                                status === 'banned' ? user.banned : false;
+            users.forEach(user => {
+                if (user.role === 'educator' && user.section === 'Department ' + dept.toUpperCase() && statusFilter) {
+                    const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
+                let emailToUse = user.personal_email || user.email;
+                    const row = `<tr>
+                        <td>${user.user_id || user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${emailToUse}</td>
+                        <td>${user.role}</td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>
+                        </td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                }
+            });
+        }
+
+        function showGrade(grade) {
+            document.getElementById('grade-selection').style.display = 'block';
+            document.getElementById('grade-title').textContent = 'Grade ' + grade;
+            document.getElementById('grade-selection').dataset.grade = grade;
+        }
+
+        function showStrand(strand) {
+            const grade = document.getElementById('grade-selection').dataset.grade;
+            document.getElementById('strand-table').style.display = 'block';
+            document.getElementById('strand-title').textContent = 'Grade ' + grade + ' - ' + strand.toUpperCase();
+            loadStrandUsers(grade, strand);
+        }
+
+        function showDegree(degree) {
+            document.getElementById('degree-table').style.display = 'block';
+            document.getElementById('degree-title').textContent = degree.toUpperCase();
+            loadDegreeUsers(degree);
+        }
+
+        function showDepartment(dept) {
+            document.getElementById('department-table').style.display = 'block';
+            document.getElementById('department-title').textContent = 'Department ' + dept.toUpperCase();
+            loadDepartmentUsers(dept);
+        }
+
+        async function loadStrandUsers(grade, strand) {
+            const users = await getUsers();
+            const tbody = document.getElementById('strand-users-tbody');
+            tbody.innerHTML = '';
+            users.forEach(user => {
+                if (user.role === 'senior_high' && user.grade === 'Grade ' + grade && user.strand === strand) {
+                    const date = formatDate(user.verified ? user.verified_at : user.created_at);
+                    const row = `<tr>
+                        <td>${user.user_id || user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td>${user.Sec_Degr || '-'}</td>
+                        <td>${date}</td>
+                        <td>${getStatus(user)}</td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                        <td>${getStrandDegree(user)}</td>
+                        <td>
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <button type="button" class="btn btn-success btn-sm" onclick="acceptUser('${user.user_id || user.id}')">Accept</button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>
+                            </div>
+                        </td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                }
+            });
+        }
+
+        async function loadDegreeUsers(degree) {
+            const users = await getUsers();
+            const tbody = document.getElementById('degree-users-tbody');
+            tbody.innerHTML = '';
+            users.forEach(user => {
+                if (user.role === 'college' && user.section === degree.toUpperCase()) {
+                    const date = formatDate(user.verified ? user.verified_at : user.created_at);
+                    const row = `<tr>
+                        <td>${user.user_id || user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td>${user.Sec_Degr || '-'}</td>
+                        <td>${date}</td>
+                        <td>${getStatus(user)}</td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                        <td>${getStrandDegree(user)}</td>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                }
+            });
+        }
+
+        async function loadDepartmentUsers(dept) {
+            const users = await getUsers();
+            const tbody = document.getElementById('department-users-tbody');
+            tbody.innerHTML = '';
+            users.forEach(user => {
+                if (user.role === 'educator' && user.section === 'Department ' + dept.toUpperCase()) {
+                    const date = formatDate(user.verified ? user.verified_at : user.created_at);
+                    const row = `<tr>
+                        <td>${user.user_id || user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td>${date}</td>
+                        <td><button class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                        <td>
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <button type="button" class="btn btn-success btn-sm" onclick="acceptUser('${user.user_id || user.id}')">Accept</button>
+                                <button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>
+                            </div>
+                        </td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                }
+            });
+        }
+
+        function navigateToUploads(type) { 
+            try {
+                if (DEBUG) console.log('navigateToUploads called with type:', type);
+                // First show the upload section
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                document.getElementById('upload').classList.add('active');
+                document.getElementById('page-title').textContent = 'Upload';
+                
+                // Hide all upload subsections and show admin uploads
+                document.querySelectorAll('.upload-subsection').forEach(sub => sub.classList.remove('active'));
+                document.getElementById('admin-uploads-section').classList.add('active');
+                
+                // Remove active from all nav buttons and add to Admin Uploads
+                document.querySelectorAll('.upload-nav .nav-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('btn-admin-uploads').classList.add('active');
+                if (DEBUG) console.log('navigateToUploads completed successfully');
+            } catch (e) {
+                console.error('Error in navigateToUploads:', e);
+                alert('Error navigating to uploads: ' + e.message);
+            }
+        }
+        function navigateToUsers() { 
+            showSection('users');
+            // Update sidebar active state
+            document.querySelectorAll('.sidebar ul li').forEach(li => {
+                li.classList.remove('active');
+            });
+            var usersLink = document.querySelector('.sidebar ul li a[data-section="users"]');
+            if (usersLink) {
+                usersLink.closest('li').classList.add('active');
+            }
+        }
+        // Make functions globally accessible
+        window.navigateToUsers = navigateToUsers;
+        window.navigateToNotifications = navigateToNotifications;
+        window.navigateToUploads = navigateToUploads;
+        window.navigateToUploadSection = navigateToUploadSection;
+        window.showNotificationsFromModal = showNotificationsFromModal;
+        window.scrollToUserSection = scrollToUserSection;
+        window.handleProfileClick = handleProfileClick;
+        window.openProfileModal = openProfileModal;
+        function navigateToNotifications() { showSection('notifications'); }
+        function showNotificationsFromModal() {
+            showSection('notifications');
+            toggleNotificationModal();
+            document.querySelectorAll('.sidebar ul li').forEach(function(li){li.classList.remove('active')});
+            var notifLink = document.querySelector('.sidebar ul li a[data-section="notifications"]');
+            if(notifLink){
+                notifLink.parentElement.classList.add('active');
+            }
+        }
+        function navigateToUploadSection() {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('upload').classList.add('active');
+            document.getElementById('page-title').textContent = 'Upload';
+            document.querySelectorAll('.upload-subsection').forEach(sub => sub.classList.remove('active'));
+            document.getElementById('admin-uploads-section').classList.add('active');
+        }
+        function scrollToUserSection(type) {
+            showSection('users');
+            showUserSection(type);
+        }
+        function handleProfileClick() { showSection('profile'); }
+        function openProfileModal() { showSection('profile'); }
+        function openProfileModal() {
+            // Create and show profile edit modal
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.id = 'profile-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close" onclick="closeProfileModal()">&times;</span>
+                    <h2>Edit Profile</h2>
+                    <form id="profile-form">
+                        <label for="profile-name">Name:</label>
+                        <input type="text" id="profile-name" value="Admin" required>
+                        <label for="profile-email">Email:</label>
+                        <input type="email" id="profile-email" value="admin@example.com" required>
+                        <button type="submit">Save Changes</button>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+
+            // Handle form submission
+            document.getElementById('profile-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('profile-name').value;
+                const email = document.getElementById('profile-email').value;
+                alert('Profile updated successfully!');
+                closeProfileModal();
+            });
+        }
+        function closeProfileModal() {
+            const modal = document.getElementById('profile-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        function handleLogoutClick() { localStorage.removeItem('currentUser'); window.location.href = 'index.html'; }
+
+
+        function saveUsers(users) {
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+        function previewUserDocs(userId) {
+            // Find the user by ID
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => (u.user_id || u.id) === userId);
+            if (!user) {
+                alert('User not found.');
+                return;
+            }
+
+            // Check if modal exists, create if not
+            let modal = document.getElementById('user-docs-preview-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'user-docs-preview-modal';
+                modal.className = 'modal';
+                modal.style.display = 'flex';
+                modal.style.justifyContent = 'center';
+                modal.style.alignItems = 'center';
+                modal.innerHTML = `
+                    <div class="modal-content" style="margin: 0; max-width: 800px; max-height: 80vh; overflow-y: auto;">
+                        <span class="close-modal" onclick="closeUserDocsModal()">&times;</span>
+                        <h3>User Documents Preview</h3>
+                        <div id="user-docs-preview-content" style="margin-top: 15px;"></div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+            modal.style.display = 'flex';
+            const content = document.getElementById('user-docs-preview-content');
+            let html = `<p><strong>User:</strong> ${user.name}</p>`;
+
+            // Display RAF document
+            if (user.raf_path) {
+                const rafUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/Raf-edu_id/' + user.raf_path;
+                const rafExt = user.raf_path.split('.').pop().toLowerCase();
+                html += `<h4>RAF Document</h4>`;
+                if (['jpg', 'jpeg', 'png'].includes(rafExt)) {
+                    html += `<img src="${rafUrl}" alt="RAF Document" style="max-width: 100%; max-height: 400px;">`;
+                } else if (rafExt === 'pdf') {
+                    html += `<embed src="${rafUrl}" type="application/pdf" width="100%" height="400px">`;
+                } else {
+                    html += `<a href="${rafUrl}" target="_blank">Download RAF Document</a>`;
+                }
+            }
+
+            // Display Educator ID document
+            if (user.educator_id) {
+                const eduUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/Raf-edu_id/' + user.educator_id;
+                const eduExt = user.educator_id.split('.').pop().toLowerCase();
+                html += `<h4>Educator ID</h4>`;
+                if (['jpg', 'jpeg', 'png'].includes(eduExt)) {
+                    html += `<img src="${eduUrl}" alt="Educator ID" style="max-width: 100%; max-height: 400px;">`;
+                } else if (eduExt === 'pdf') {
+                    html += `<embed src="${eduUrl}" type="application/pdf" width="100%" height="400px">`;
+                } else {
+                    html += `<a href="${eduUrl}" target="_blank">Download Educator ID</a>`;
+                }
+            }
+
+            content.innerHTML = html;
+        }
+
+        function closeUserDocsModal() {
+            const modal = document.getElementById('user-docs-preview-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function openRejectModal(userId) {
+            // Create the modal
+            let modal = document.getElementById('reject-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'reject-modal';
+                modal.className = 'modal';
+                modal.style.display = 'flex';
+                modal.style.justifyContent = 'center';
+                modal.style.alignItems = 'center';
+                modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                modal.innerHTML = `
+                    <div class="modal-content" style="background-color: #ffebee; border: 1px solid #f44336; max-width: 400px; text-align: center;">
+                        <h3 style="color: #f44336; margin-bottom: 15px;">Rejected for a reason</h3>
+                        <p style="margin-bottom: 15px; color: #333;">Message: did not fulfill the requirements needed</p>
+                        <textarea id="reject-reason" placeholder="Optional additional reason..." style="width: 100%; height: 60px; margin-bottom: 20px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" maxlength="200"></textarea>
+                        <div style="display: flex; gap: 10px; justify-content: center;">
+                            <button id="confirm-reject" style="background-color: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Reject</button>
+                            <button id="cancel-reject" style="background-color: #ccc; color: #333; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Cancel</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                // Add event listeners
+                document.getElementById('confirm-reject').addEventListener('click', function() {
+                    const reason = document.getElementById('reject-reason').value.trim();
+                    updateUserStatus(userId, 'reject', reason);
+                    closeRejectModal();
+                });
+                document.getElementById('cancel-reject').addEventListener('click', function() {
+                    closeRejectModal();
+                });
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeRejectModal() {
+            const modal = document.getElementById('reject-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function previewEducatorId(educatorId) {
+            // Similar to previewRaf but for educator ID
+            alert('Preview functionality for Educator ID: ' + educatorId);
+            // Implement similar to previewRaf if needed
+        }
+
+        function previewRaf(rafPath) {
+            // For testing, use a hardcoded PDF from Supabase
+            rafPath = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Santibanez%20et%20al.pdf';
+            if (!rafPath || rafPath === '') {
+                alert('No RAF file available for preview.');
+                return;
+            }
+            // Check if modal exists, create if not
+            let modal = document.getElementById('raf-preview-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'raf-preview-modal';
+                modal.className = 'modal';
+                modal.style.display = 'flex';
+                modal.style.justifyContent = 'center';
+                modal.style.alignItems = 'center';
+                modal.innerHTML = `
+                    <div class="modal-content" style="margin: 0;">
+                        <span class="close-modal" onclick="closeRafModal()">&times;</span>
+                        <h3>RAF Preview</h3>
+                        <div id="raf-preview-content" style="margin-top: 15px;"></div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+            modal.style.display = 'flex';
+            const content = document.getElementById('raf-preview-content');
+            if (rafPath.startsWith('local:')) {
+                const key = rafPath.substring(6); // remove 'local:'
+                const dataUrl = localStorage.getItem(key + '_raf');
+                if (dataUrl) {
+                    content.innerHTML = '<iframe src="' + dataUrl + '" width="100%" height="600px" frameborder="0"></iframe>';
+                } else {
+                    content.innerHTML = '<p>RAF file not found in local storage.</p>';
+                }
+            } else {
+                // Open the file in Google Docs Viewer in a modal
+                const viewerUrl = 'https://docs.google.com/viewer?url=' + encodeURIComponent(rafPath);
+                content.innerHTML = '<iframe src="' + viewerUrl + '" width="100%" height="600px" frameborder="0"></iframe>';
+            }
+        }
+        function closeRafModal() { document.getElementById('raf-preview-modal').style.display = 'none'; }
+
+        function displayArticlePDF(pdfUrl, title) {
+            if (DEBUG) console.log('displayArticlePDF called with:', pdfUrl, title);
+            if (!pdfUrl || pdfUrl === '') {
+                alert('No PDF file available for preview.');
+                return;
+            }
+            // Check if modal exists, create if not
+            let modal = document.getElementById('pdf-preview-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'pdf-preview-modal';
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content" style="width: 90%; max-width: 800px; max-height: 90vh;">
+                        <span class="close-modal" onclick="closePdfModal()">&times;</span>
+                        <h3>${title}</h3>
+                        <div id="pdf-preview-content" style="margin-top: 15px; height: 600px;"></div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+            modal.style.display = 'flex';
+            const content = document.getElementById('pdf-preview-content');
+            // Use iframe to display PDF
+            content.innerHTML = '<iframe src="' + pdfUrl + '" width="100%" height="100%" frameborder="0"></iframe>';
+        }
+
+        function closePdfModal() { document.getElementById('pdf-preview-modal').style.display = 'none'; }
+        function toggleUploadsDropdown(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const users = document.getElementById('users-dropdown');
+            const uploads = document.getElementById('uploads-dropdown');
+            const notifications = document.getElementById('notifications-dropdown');
+            const terms = document.getElementById('terms-dropdown');
+            if (users) users.classList.remove('open');
+            if (uploads) uploads.classList.toggle('open');
+            if (notifications) notifications.classList.remove('open');
+            if (terms) terms.classList.remove('open');
+            // Add click listener to close dropdown when clicking outside
+            if (uploads && uploads.classList.contains('open')) {
+                setTimeout(() => {
+                    document.addEventListener('click', closeUploadsDropdownOnOutsideClick);
+                }, 1);
+            }
+        }
+        function closeUploadsDropdownOnOutsideClick(e) {
+            const uploads = document.getElementById('uploads-dropdown');
+            if (uploads && !uploads.contains(e.target)) {
+                uploads.classList.remove('open');
+                document.removeEventListener('click', closeUploadsDropdownOnOutsideClick);
+            }
+        }
+
+        // Users Navigation Functions
+        function showUserSection(section) {
+            // Hide all user subsections first
+            document.querySelectorAll('.user-subsection').forEach(sub => sub.style.display = 'none');
+
+            // Handle admins section visibility based on user role and selected section
+            const adminsSection = document.getElementById('admins-section');
+            if (adminsSection) {
+                const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
+                if (currentUserRole === 'coadmin' && section !== 'admins') {
+                    adminsSection.style.display = 'none';
+                } else if (section === 'admins') {
+                    adminsSection.style.display = 'block';
+                } else {
+                    adminsSection.style.display = 'none'; // Hide for non-admin sections
+                }
+            }
+
+            // Ensure the selected section is visible
+            const targetSection = document.getElementById(section + '-section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+
+            // Update nav button active state
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`.nav-btn[data-section="${section}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+
+
+            // Load data for specific sections
+            if (section === 'admins') {
+                loadUsers();
+            } else if (section === 'verified') {
+                // Ensure verified users table is populated
+                loadUsers();
+            } else if (section === 'activity') {
+                loadActivityLogs();
+            }
+        }
+
+        // Add event listeners for user cards
+        document.querySelectorAll('.user-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const section = card.getAttribute('data-section');
+                navigateToUsers();
+                showUserSection(section);
+            });
+        });
+
+        // Add event listeners for nav buttons
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            const section = btn.getAttribute('data-section');
+            if (section) {
+                btn.addEventListener('click', () => showUserSection(section));
+            }
+        });
+
+        function toggleReportsDropdown(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const users = document.getElementById('users-dropdown');
+            const uploads = document.getElementById('uploads-dropdown');
+            const notifications = document.getElementById('notifications-dropdown');
+            const terms = document.getElementById('terms-dropdown');
+            if (users) users.classList.remove('open');
+            if (uploads) uploads.classList.remove('open');
+            if (notifications) notifications.classList.toggle('open');
+            if (terms) terms.classList.remove('open');
+        }
+        function toggleTermsDropdown(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const users = document.getElementById('users-dropdown');
+            const uploads = document.getElementById('uploads-dropdown');
+            const notifications = document.getElementById('notifications-dropdown');
+            const terms = document.getElementById('terms-dropdown');
+            if (users) users.classList.remove('open');
+            if (uploads) uploads.classList.remove('open');
+            if (notifications) notifications.classList.remove('open');
+            if (terms) terms.classList.toggle('open');
+        }
+        function showNotificationsSection(type) {
+            document.querySelectorAll('.notifications-subsection').forEach(s => s.classList.remove('active'));
+            document.getElementById('notifications-' + type).classList.add('active');
+        }
+        function openPasswordChangeModal() { document.getElementById('password-change-modal').style.display = 'block'; }
+        function closePasswordChangeModal() { document.getElementById('password-change-modal').style.display = 'none'; }
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('admin-password');
+            const eyeIcon = event.target;
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.className = 'fas fa-eye';
+            }
+        }
+
+
+        function getVerificationCode() {
+            document.getElementById('get-code-btn').disabled = true;
+            let time = 60;
+            const timerEl = document.getElementById('timer');
+            const interval = setInterval(() => {
+                timerEl.textContent = time;
+                time--;
+                if (time < 0) {
+                    clearInterval(interval);
+                    document.getElementById('get-code-btn').disabled = false;
+                    timerEl.textContent = 'Code sent!';
+                }
+            }, 1000);
+        }
+        function verifyCode() {
+            const code = document.getElementById('verification-code').value;
+            if (code === '123456') { // Demo code
+                alert('Password changed successfully!');
+                closePasswordChangeModal();
+            } else {
+                alert('Invalid code!');
+            }
+        }
+        function showSettingsSection(section) {
+            document.querySelectorAll('.settings-subsection').forEach(sub => sub.classList.remove('active'));
+            document.getElementById(section + '-settings').classList.add('active');
+            document.querySelectorAll('.settings-sidebar li').forEach(li => li.style.color = 'black');
+            event.target.style.color = '#007bff';
+        }
+        function editContent(type) {
+            const viewMode = document.querySelector(`#${type}-content .view-mode`);
+            const editMode = document.querySelector(`#${type}-content .edit-mode`);
+            const textDiv = document.getElementById(`${type}-text`);
+            const textarea = document.getElementById(`${type}-textarea`);
+            textarea.value = textDiv.innerHTML.replace(/<br>/g, '\n').replace(/<\/?[^>]+(>|$)/g, '');
+            viewMode.style.display = 'none';
+            editMode.style.display = 'block';
+        }
+        function saveContent(type) {
+            const viewMode = document.querySelector(`#${type}-content .view-mode`);
+            const editMode = document.querySelector(`#${type}-content .edit-mode`);
+            const textDiv = document.getElementById(`${type}-text`);
+            const textarea = document.getElementById(`${type}-textarea`);
+            const content = textarea.value.replace(/\n/g, '<br>');
+            textDiv.innerHTML = content;
+            localStorage.setItem(`${type}Content`, content);
+            viewMode.style.display = 'block';
+            editMode.style.display = 'none';
+            alert(`${type === 'terms' ? 'Terms and Conditions' : 'Privacy Policy'} saved successfully!`);
+        }
+        function cancelEdit(type) {
+            const viewMode = document.querySelector(`#${type}-content .view-mode`);
+            const editMode = document.querySelector(`#${type}-content .edit-mode`);
+            viewMode.style.display = 'block';
+            editMode.style.display = 'none';
+        }
+
+        // Citation modal functions
+        function openCitationModal(el) {
+            const modal = document.getElementById('citationModal');
+            modal.classList.add('show');
+            // Generate citation based on article data
+            const article = el.closest('.article');
+            const title = article.querySelector('h3').textContent;
+            const authors = article.querySelector('.meta').textContent.split(' – ')[0];
+            const year = new Date().getFullYear();
+            // Default to APA
+            switchCitationTab('APA');
+        }
+        function closeCitationModal() {
+            const modal = document.getElementById('citationModal');
+            modal.classList.remove('show');
+        }
+        function switchCitationTab(format) {
+            document.querySelectorAll('.citation-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            const content = document.getElementById('citationContent');
+            // Placeholder citations
+            const citations = {
+                APA: `${authors} (${year}). ${title}. STI College Calamba.`,
+                MLA: `${authors}. "${title}." STI College Calamba, ${year}.`,
+                Chicago: `${authors}. "${title}." STI College Calamba, ${year}.`,
+                IEEE: `[1] ${authors}, "${title}," STI College Calamba, ${year}.`,
+                Harvard: `${authors} (${year}) ${title}. STI College Calamba.`
+            };
+            content.textContent = citations[format] || 'Citation format not available.';
+        }
+        function copyCitation() {
+            const content = document.getElementById('citationContent').textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                const btn = document.querySelector('.citation-copy-btn');
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copy Citation';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+
+        // Update role description and show/hide additional fields
+        function updateRoleDescription() {
+            const roleRadios = document.getElementsByName('admin-role');
+            let selectedRole = 'admin';
+            for (const radio of roleRadios) {
+                if (radio.checked) {
+                    selectedRole = radio.value;
+                    break;
+                }
+            }
+            
+            const adminRoles = ['admin', 'coadmin', 'subadmin'];
+            const isAdminRole = adminRoles.includes(selectedRole);
+            
+            // Update modal title
+            const modalTitle = document.getElementById('create-user-modal-title');
+            if (selectedRole === 'senior_high') {
+                modalTitle.textContent = 'Create Senior High Student';
+            } else if (selectedRole === 'college') {
+                modalTitle.textContent = 'Create College Student';
+            } else if (selectedRole === 'educator') {
+                modalTitle.textContent = 'Create Educator';
+            } else if (selectedRole === 'coadmin') {
+                modalTitle.textContent = 'Create Co-Admin';
+            } else if (selectedRole === 'subadmin') {
+                modalTitle.textContent = 'Create Sub-Admin';
+            } else {
+                modalTitle.textContent = 'Create Admin';
+            }
+            
+            // Show/hide grade and section fields
+            const gradeSection = document.getElementById('grade-section');
+            const sectionSection = document.getElementById('section-section');
+            const submitBtn = document.getElementById('create-user-btn');
+            
+            if (selectedRole === 'senior_high') {
+                gradeSection.style.display = 'block';
+                sectionSection.style.display = 'block';
+                submitBtn.textContent = 'Create Student';
+            } else if (selectedRole === 'college') {
+                gradeSection.style.display = 'none';
+                sectionSection.style.display = 'block';
+                submitBtn.textContent = 'Create Student';
+            } else if (selectedRole === 'educator') {
+                gradeSection.style.display = 'none';
+                sectionSection.style.display = 'block';
+                submitBtn.textContent = 'Create Educator';
+            } else {
+                gradeSection.style.display = 'none';
+                sectionSection.style.display = 'none';
+                submitBtn.textContent = 'Create Admin';
+            }
+        }
+
+
+
+
+
+        function renderDashboardUploadsChart(category = 'grade11') {
+            const ctx = document.getElementById('dashboard-uploadsChart').getContext('2d');
+            if (window.dashboardUploadsChart) {
+                window.dashboardUploadsChart.destroy();
+            }
+
+            let labels = ['SHS', 'College', 'Teacher', 'Admin'];
+            let data = [30, 25, 40, 35];
+
+            const barColors = [
+                '#008000', // SHS Emerald Green
+                '#00008B', // College Deep Blue
+                '#FFA500', // Teacher Warm Orange
+                '#8A2BE2'  // Admin Cool Purple
+            ];
+            const total = data.reduce((a, b) => a + b, 0);
+            const percentageData = data.map(d => (d / total) * 100);
+
+            window.dashboardUploadsChart = new Chart(ctx, {
+                type: dashboardUploadsChartType,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: percentageData,
+                        backgroundColor: barColors.slice(0, labels.length),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+
+        function renderGaugeChart(canvasId, label, averageDuration, gaugeColor) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+
+            // Destroy existing chart if it exists
+            if (window[canvasId + 'Chart']) {
+                window[canvasId + 'Chart'].destroy();
+            }
+
+            const maxDuration = 5; // Max hours for gauge
+            const percentage = (averageDuration / maxDuration) * 100;
+
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const textColor = isDarkMode ? '#ffffff' : '#000000';
+            const emptyColor = isDarkMode ? '#444' : '#e0e0e0';
+
+            window[canvasId + 'Chart'] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [percentage, 100 - percentage],
+                        backgroundColor: [gaugeColor, emptyColor],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '50%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false },
+                        centerText: {
+                            averageDuration: averageDuration,
+                            textColor: textColor
+                        }
+                    },
+                    rotation: 0,
+                    circumference: 360,
+                    elements: {
+                        arc: {
+                            borderRadius: 10
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'centerText',
+                    afterDraw: function(chart) {
+                        const ctx = chart.ctx;
+                        const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                        const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+                        const averageDuration = chart.options.plugins.centerText.averageDuration;
+                        const textColor = chart.options.plugins.centerText.textColor;
+                        ctx.save();
+                        ctx.font = 'bold 16px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillStyle = textColor;
+                        ctx.fillText(averageDuration + ' hours', centerX, centerY);
+                        ctx.restore();
+                    }
+                }]
+            });
+        }
+
+
+
+
+
+
+
+        // General Settings Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const siteTitleInput = document.getElementById('site-title');
+            const siteFaviconInput = document.getElementById('site-favicon');
+            const settingsForm = document.getElementById('settings-form');
+            const faviconPreview = document.getElementById('favicon-preview');
+            const siteTitlePreview = document.getElementById('site-title-preview');
+
+            // Load saved settings from server on page load
+            loadSiteSettings();
+
+            var isLoadingSiteSettings = false;
+            async function loadSiteSettings() {
+                if (isLoadingSiteSettings) return;
+                isLoadingSiteSettings = true;
+                if (DEBUG) console.log('DEBUG: Attempting to load site settings from server...');
+                try {
+                    const response = await fetch('/api/site-settings');
+                    if (DEBUG) console.log('DEBUG: Site settings fetch response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const responseData = await response.json();
+                    if (DEBUG) console.log('DEBUG: Loaded response:', responseData);
+                    const settings = responseData.settings || responseData;
+                    if (DEBUG) console.log('DEBUG: Extracted settings:', settings);
+                    // Check if favicon is a blob URL and reset to default if so
+                    if (settings.siteFavicon && settings.siteFavicon.startsWith('blob:')) {
+                        if (DEBUG) console.log('DEBUG: Invalid blob URL detected, resetting to default favicon');
+                        settings.siteFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
+                    }
+                    if (siteTitleInput) siteTitleInput.value = settings.siteTitle || 'STI Archives';
+                    if (siteTitlePreview) siteTitlePreview.textContent = settings.siteTitle || 'STI Archives';
+                    if (faviconPreview) faviconPreview.src = settings.siteFavicon || '370044409_696741882497707_8408055328080058811_n.jpg';
+                    updateDocumentTitle(settings.siteTitle || 'STI Archives');
+                    updateDocumentFavicon(settings.siteFavicon || '370044409_696741882497707_8408055328080058811_n.jpg');
+                } catch (error) {
+                    console.error('Failed to load site settings:', error);
+                    // Fallback to defaults
+                    const defaultTitle = 'STI Archives';
+                    const defaultFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
+                    if (siteTitleInput) siteTitleInput.value = defaultTitle;
+                    if (siteTitlePreview) siteTitlePreview.textContent = defaultTitle;
+                    if (faviconPreview) faviconPreview.src = defaultFavicon;
+                    updateDocumentTitle(defaultTitle);
+                    updateDocumentFavicon(defaultFavicon);
+                } finally {
+                    isLoadingSiteSettings = false;
+                }
+            }
+
+            // Real-time preview updates
+            siteTitleInput.addEventListener('input', function() {
+                const newTitle = this.value || 'STI Archives';
+                siteTitlePreview.textContent = newTitle;
+            });
+
+            siteFaviconInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const newFavicon = e.target.result;
+                        faviconPreview.src = newFavicon;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Save settings on form submit
+            settingsForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const title = siteTitleInput.value || 'STI Archives';
+                const faviconFile = siteFaviconInput.files[0];
+
+                let faviconData = '370044409_696741882497707_8408055328080058811_n.jpg'; // Default
+
+                if (faviconFile) {
+                    // Convert file to base64 for server storage
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        faviconData = e.target.result;
+                        await saveSettings(title, faviconData);
+                    };
+                    reader.readAsDataURL(faviconFile);
+                } else {
+                    // Use current favicon preview src
+                    faviconData = faviconPreview.src;
+                    await saveSettings(title, faviconData);
+                }
+            });
+
+            async function saveSettings(title, favicon) {
+                try {
+                    const response = await fetch('/api/site-settings/update', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            siteTitle: title,
+                            siteFavicon: favicon
+                        })
+                    });
+
+                    if (response.ok) {
+                        // Update document title and favicon only on successful save
+                        updateDocumentTitle(title);
+                        updateDocumentFavicon(favicon);
+                        alert('Settings saved successfully!');
+                    } else {
+                        alert('Failed to save settings. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error saving settings:', error);
+                    alert('Failed to save settings. Please try again.');
+                }
+            }
+        });
+        
+
+        function updateDocumentTitle(siteTitle) {
+            const pageName = 'Admin Panel';
+            document.title = `${pageName} | ${siteTitle}`;
+            const preview = document.getElementById('page-title-preview');
+            if (preview) preview.textContent = pageName;
+        }
+
+        function updateDocumentFavicon(faviconSrc) {
+            let faviconLink = document.querySelector('link[rel="icon"]');
+            if (!faviconLink) {
+                faviconLink = document.createElement('link');
+                faviconLink.rel = 'icon';
+                faviconLink.type = 'image/png';
+                document.head.appendChild(faviconLink);
+            }
+            // Add version parameter only for non-data URLs to avoid issues with base64
+            const href = faviconSrc.startsWith('data:') ? faviconSrc : faviconSrc + '?v=1';
+            faviconLink.href = href;
+        }
+
+        function updateFavicon(logoSrc) {
+            updateDocumentFavicon(logoSrc);
+            // Keep sidebar logo as STI Logo.png
+            const sidebarImg = document.querySelector('.sidebar-header img');
+            if (sidebarImg) {
+                sidebarImg.src = 'STI Logo.png';
+            }
+        }
+
+        // Current filter states
+        window.currentFilters = {
+            admins: { role: '', search: '', filterType: 'unified' },
+            verified: { role: '', search: '', filterType: 'unified' },
+            'signing-up': { role: '', search: '', filterType: 'unified' },
+            banned: { role: '', search: '', filterType: 'unified' }
+        };
+
+        // Bulk actions functions
+        function toggleSelectAll(status) {
+            const selectAllCheckbox = document.getElementById(`select-all-${status}`);
+            const tbodyId = status === 'admins' ? 'admins-tbody' : `${status}-users-tbody`;
+            const checkboxes = document.querySelectorAll(`#${tbodyId} .user-checkbox`);
+            checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+        }
+
+        function bulkAction(status, action) {
+            const tbodyId = status === 'admins' ? 'admins-tbody' : `${status}-users-tbody`;
+            const checkboxes = document.querySelectorAll(`#${tbodyId} .user-checkbox:checked`);
+            if (checkboxes.length === 0) {
+                alert('No users selected.');
+                return;
+            }
+            const selectedUsers = Array.from(checkboxes).map(cb => {
+                const row = cb.closest('tr');
+                const tds = row.querySelectorAll('td');
+                const name = status === 'admins' ? tds[1].textContent : tds[3].textContent; // Admin: td1 name, Regular: td3 name
+                return {
+                    id: cb.getAttribute('data-user-id'),
+                    name: name
+                };
+            });
+            if (confirm(`Are you sure you want to ${action} ${checkboxes.length} user(s)?`)) {
+                selectedUsers.forEach(user => {
+                    if (action === 'remove') {
+                        removeUser(user.id, user.name);
+                    } else if (action === 'unban') {
+                        updateUserStatus(user.id, 'accept'); // Unban by accepting
+                    } else {
+                        updateUserStatus(user.id, action);
+                    }
+                });
+            }
+        }
+
+        // Accept user function
+        async function acceptUser(userId) {
+            if (confirm('Are you sure you want to accept this user? This will generate login credentials for them.')) {
+                try {
+                    // Get the user role from localStorage
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    const user = users.find(u => u.id === userId);
+                    const role = user ? user.role : 'user';
+                    
+                    const response = await fetch('/api/auth/accept-user', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user_id: userId, role: role })
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        alert('User accepted successfully! Login credentials have been generated.');
+                        // Refresh the users list
+                        loadUsers();
+                    } else {
+                        alert('Failed to accept user. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error accepting user:', error);
+                    alert('Failed to accept user. Please check your connection.');
+                }
+            }
+        }
+    
+        
+
+        // Close RAF preview modal when clicking outside
+        window.addEventListener('click', function(e) {
+            const rafModal = document.getElementById('raf-preview-modal');
+            if (rafModal && e.target === rafModal) {
+                closeRafModal();
+            }
+        });
+        });
+        // Close DOMContentLoaded
+
+
+    <!-- Retry build after rate limit failure -->
+
+        // === CAROUSEL MANAGEMENT FUNCTIONS ===
+        
+        // Load carousel items from server
+        function loadCarouselItems() {
+            const container = document.getElementById('carousel-items-list');
+            container.innerHTML = '<div style="text-align: center; padding: 40px; width: 100%;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #0057b8;"></i><p>Loading carousel items...</p></div>';
+            fetch('/api/carousel')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Only render if carousel section is currently visible
+                        const carouselSection = document.getElementById('carousel-section');
+                        if (carouselSection && carouselSection.classList.contains('active')) {
+                            renderCarouselItems(data.carousel || []);
+                        }
+                    } else {
+                        console.error('Failed to load carousel items:', data.error);
+                        const carouselItemsList = document.getElementById('carousel-items-list');
+                        if (carouselItemsList) {
+                            carouselItemsList.innerHTML = '<p class="empty-state">Failed to load carousel items</p>';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading carousel items:', error);
+                    const carouselItemsList = document.getElementById('carousel-items-list');
+                    if (carouselItemsList) {
+                        carouselItemsList.innerHTML = '<p class="empty-state">Error loading carousel items</p>';
+                    }
+                });
+        }
+        
+        // Render carousel items in the list
+        function renderCarouselItems(items) {
+            // Only render if carousel section is currently visible
+            const carouselSection = document.getElementById('carousel-section');
+            if (!carouselSection || !carouselSection.classList.contains('active')) {
+                return;
+            }
+            
+            const container = document.getElementById('carousel-items-list');
+            
+            if (!items || items.length === 0) {
+                container.innerHTML = '<p class="empty-state">No carousel items yet. Add one below.</p>';
+                return;
+            }
+            
+            container.innerHTML = items.map(item => `
+                <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 350px; height: 400px; display: flex; flex-direction: column; align-items: stretch; flex-shrink: 0;">
+                    <img src="${item.imageUrl}" alt="${item.title}" style="width: 100%; height: 250px; object-fit: cover; border-radius: 4px; margin-bottom: 10px;">
+                    <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; color: #0057b8; font-size: 14px;">${item.title}</h4>
+                            <p style="margin: 0; font-size: 12px; color: #666;">${item.author || 'No author'}</p>
+                            ${item.pdfId || item.pdfPath ? '<p style="margin: 5px 0 0 0; font-size: 11px; color: green;"><i class="fas fa-link"></i> PDF linked</p>' : ''}
+                        </div>
+                        <div style="display: flex; gap: 5px; margin-top: 10px;">
+                            <button onclick="editCarouselItem('${item.id}')" class="btn btn-sm" style="background: #0057b8; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; flex: 1; font-size: 12px;">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button onclick="deleteCarouselItem('${item.id}')" class="btn btn-sm" style="background: #dc3545; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; flex: 1; font-size: 12px;">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Load articles for PDF selection dropdown
+        function loadArticlesForCarouselSelect() {
+            // Only load if carousel section is currently visible
+            const carouselSection = document.getElementById('carousel-section');
+            if (!carouselSection || !carouselSection.classList.contains('active')) {
+                return;
+            }
+            
+            fetch('/api/articles')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const select = document.getElementById('carousel-pdf-select');
+                        // Keep the first option
+                        select.innerHTML = '<option value="">-- Select PDF from uploaded articles --</option>';
+                        
+                        const articles = data.articles || [];
+                        articles.forEach(article => {
+                            const option = document.createElement('option');
+                            option.value = JSON.stringify({ pdfId: article.pdfId || '', pdfPath: article.pdfPath || '' });
+                            option.textContent = article.title || 'Untitled';
+                            select.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading articles for carousel:', error);
+                });
+        }
+        
+        // Handle carousel form submission
+        document.getElementById('carousel-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const itemId = document.getElementById('carousel-item-id').value;
+            const imageUrl = document.getElementById('carousel-image-url').value;
+            const title = document.getElementById('carousel-title').value;
+            const author = document.getElementById('carousel-author').value;
+            const description = document.getElementById('carousel-description').value;
+            
+            const pdfSelect = document.getElementById('carousel-pdf-select');
+            let pdfId = '';
+            let pdfPath = '';
+            
+            if (pdfSelect.value) {
+                try {
+                    const pdfData = JSON.parse(pdfSelect.value);
+                    pdfId = pdfData.pdfId || '';
+                    pdfPath = pdfData.pdfPath || '';
+                } catch (err) {
+                    console.error('Error parsing PDF selection:', err);
+                }
+            }
+            
+            const carouselData = {
+                imageUrl,
+                title,
+                author,
+                description,
+                pdfId,
+                pdfPath
+            };
+            
+            if (itemId) {
+                // Update existing item
+                fetch(`/api/carousel/${itemId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(carouselData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Carousel item updated successfully!');
+                        resetCarouselForm();
+                        loadCarouselItems();
+                    } else {
+                        alert('Failed to update carousel item: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating carousel item:', error);
+                    alert('Error updating carousel item');
+                });
+            } else {
+                // Add new item
+                fetch('/api/carousel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(carouselData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Carousel item added successfully!');
+                        resetCarouselForm();
+                        loadCarouselItems();
+                    } else {
+                        alert('Failed to add carousel item: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error adding carousel item:', error);
+                    alert('Error adding carousel item');
+                });
+            }
+        });
+        
+        // Edit carousel item - populate form with existing data
+        function editCarouselItem(id) {
+            fetch('/api/carousel')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const item = data.carousel.find(i => i.id === id);
+                        if (item) {
+                            const idEl = document.getElementById('carousel-item-id');
+                            if (idEl) idEl.value = item.id;
+                            const urlEl = document.getElementById('carousel-image-url');
+                            if (urlEl) urlEl.value = item.imageUrl || '';
+                            const titleEl = document.getElementById('carousel-title');
+                            if (titleEl) titleEl.value = item.title || '';
+                            const authorEl = document.getElementById('carousel-author');
+                            if (authorEl) authorEl.value = item.author || '';
+                            const descEl = document.getElementById('carousel-description');
+                            if (descEl) descEl.value = item.description || '';
+                            
+                            // Set PDF selection if there's a linked PDF
+                            const pdfSelect = document.getElementById('carousel-pdf-select');
+                            if (item.pdfId || item.pdfPath) {
+                                const pdfData = { pdfId: item.pdfId || '', pdfPath: item.pdfPath || '' };
+                                pdfSelect.value = JSON.stringify(pdfData);
+                            } else {
+                                pdfSelect.value = '';
+                            }
+                            
+                            // Show cancel button and change title
+                            document.getElementById('carousel-form-title').textContent = 'Edit Carousel Item';
+                            document.getElementById('carousel-cancel-btn').style.display = 'inline-block';
+
+                            // Show the form
+                            document.getElementById('carousel-form-container').style.display = 'block';
+                            document.getElementById('carousel-add-btn').style.display = 'none';
+
+                            // Change submit button text
+                            const submitBtn = document.querySelector('#carousel-form button[type="submit"]');
+                            if (submitBtn) submitBtn.textContent = 'Update Item';
+                            
+                            // Scroll to form
+                            document.getElementById('carousel-form').scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading carousel item for edit:', error);
+                });
+        }
+        
+        // Delete carousel item
+        function deleteCarouselItem(id) {
+            if (!confirm('Are you sure you want to delete this carousel item?')) {
+                return;
+            }
+            
+            fetch(`/api/carousel/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Carousel item deleted successfully!');
+                    loadCarouselItems();
+                } else {
+                    alert('Failed to delete carousel item: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting carousel item:', error);
+                alert('Error deleting carousel item');
+            });
+        }
+        
+        // Reset carousel form
+        function resetCarouselForm() {
+            const carouselItemId = document.getElementById('carousel-item-id');
+            const carouselImageUrl = document.getElementById('carousel-image-url');
+            const carouselTitle = document.getElementById('carousel-title');
+            const carouselAuthor = document.getElementById('carousel-author');
+            const carouselDescription = document.getElementById('carousel-description');
+            const carouselPdfSelect = document.getElementById('carousel-pdf-select');
+            const carouselImagePreview = document.getElementById('carousel-image-preview');
+            const carouselFormTitle = document.getElementById('carousel-form-title');
+            const carouselFormContainer = document.getElementById('carousel-form-container');
+            const carouselItemsList = document.getElementById('carousel-items-list');
+            const carouselAddBtn = document.getElementById('carousel-add-btn');
+            
+            if (carouselItemId) carouselItemId.value = '';
+            if (carouselImageUrl) carouselImageUrl.value = '';
+            if (carouselTitle) carouselTitle.value = '';
+            if (carouselAuthor) carouselAuthor.value = '';
+            if (carouselDescription) carouselDescription.value = '';
+            if (carouselPdfSelect) carouselPdfSelect.value = '';
+            if (carouselImagePreview) carouselImagePreview.innerHTML = '';
+            
+            if (carouselFormTitle) carouselFormTitle.textContent = 'Add New Carousel Item';
+            const submitBtn = document.querySelector('#carousel-form button[type="submit"]');
+            if (submitBtn) submitBtn.textContent = 'Add Item';
+            // Hide form
+            if (carouselFormContainer) carouselFormContainer.style.display = 'none';
+            // Show the add button
+            if (carouselAddBtn) carouselAddBtn.style.display = 'inline-block';
+        }
+        
+        // Show carousel form for adding new item
+        function showCarouselForm() {
+            resetCarouselForm();
+            document.getElementById('carousel-form-container').style.display = 'block';
+            document.getElementById('carousel-add-btn').style.display = 'none';
+            // Load articles for PDF selection
+            loadArticlesForCarouselSelect();
+        }
+        
+        // Show carousel items list
+        function showCarouselItemsList() {
+            document.getElementById('carousel-form-container').style.display = 'none';
+            document.getElementById('carousel-items-list').style.display = 'block';
+            document.getElementById('carousel-add-btn').style.display = 'inline-block';
+            // Load carousel items
+            loadCarouselItems();
+        }
+        
+        // Handle carousel image upload
+        function handleCarouselImageUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image size must be less than 5MB');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = e.target.result;
+                const preview = document.getElementById('carousel-image-preview');
+                preview.innerHTML = '<p>Uploading image...</p>';
+                
+                fetch('/api/carousel/upload-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imageData, filename: file.name })
+                })
+                .then(response => {
+                    if (DEBUG) console.log('Upload response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    if (DEBUG) console.log('Upload response data:', data);
+                    if (data.success) {
+                        document.getElementById('carousel-image-url').value = data.imageUrl;
+                        preview.innerHTML = '<img src="' + data.imageUrl + '" style="max-width: 200px; max-height: 150px; border-radius: 4px; border: 2px solid #0057b8;">';
+                    } else {
+                        preview.innerHTML = '<p style="color: red;">Upload failed: ' + (data.error || data.message || 'Unknown error - check console for details') + '</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error uploading image:', error);
+                    preview.innerHTML = '<p style="color: red;">Error uploading image: ' + error.message + '</p>';
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    
+        // === END CAROUSEL MANAGEMENT ===
+    
+
+        // === REAL-TIME SYNCHRONIZATION ===
+        let ws = null;
+        let isRealTimeEnabled = false; // Disabled - WebSocket server not integrated with main server
+
+        // Initialize WebSocket client using native browser WebSocket API
+        function initWebSocketClient() {
+            if (!isRealTimeEnabled) {
+                if (DEBUG) console.log('⚠️ Real-time synchronization is disabled');
+                return;
+            }
+
+            try {
+                // Use native browser WebSocket API
+                const wsUrl = `ws://${window.location.hostname}:5500/ws`;
+                ws = new WebSocket(wsUrl);
+                
+                ws.onopen = function() {
+                    if (DEBUG) console.log('✅ WebSocket connected');
+                    handleWebSocketConnected();
+                };
+                
+                ws.onclose = function() {
+                    if (DEBUG) console.log('⚠️ WebSocket disconnected');
+                    handleWebSocketDisconnected();
+                    // Try to reconnect after 3 seconds
+                    setTimeout(initWebSocketClient, 3000);
+                };
+                
+                ws.onerror = function(error) {
+                    if (DEBUG) console.log('⚠️ WebSocket error:', error);
+                };
+                
+                ws.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        switch(data.type) {
+                            case 'user_state_update':
+                                handleUserStateUpdate(data);
+                                break;
+                            case 'user_status_change':
+                                handleUserStatusChange(data);
+                                break;
+                            case 'user_deleted':
+                                handleUserDeleted(data);
+                                break;
+                            case 'user_added':
+                                handleUserAdded(data);
+                                break;
+                        }
+                    } catch(e) {
+                        if (DEBUG) console.log('WebSocket message parse error:', e);
+                    }
+                };
+            } catch (error) {
+                if (DEBUG) console.log('⚠️ Failed to initialize WebSocket:', error.message);
+            }
+        }
+
+        // WebSocket event handlers
+        function handleWebSocketConnected(data) {
+            if (DEBUG) console.log('✓ WebSocket connected:', data);
+            showConnectionStatus(true);
+        }
+
+        function handleWebSocketDisconnected(data) {
+            if (DEBUG) console.log('✗ WebSocket disconnected:', data);
+            showConnectionStatus(false);
+        }
+
+        function handleUserStateUpdate(data) {
+            if (DEBUG) console.log('📊 User state update received:', data);
+            // Reload users from localStorage
+            loadUsers();
+            // Update dashboard counts
+            updateDashboardCounts();
+            // Update charts
+            renderUserChart();
+            renderDashboardUploadsChart();
+            renderSigningUpChart('day', null);
+        }
+
+        function handleUserStatusChange(data) {
+            if (DEBUG) console.log('🔄 User status change received:', data);
+            const { userId, action, user } = data;
+            
+            // Find and update the row in the current table
+            updateTableRow(userId, user, action);
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Update dashboard counts
+            updateDashboardCounts();
+            
+            // Show notification
+            showRealTimeNotification(`User ${user.name} has been ${action}ed`);
+        }
+
+        function handleUserDeleted(data) {
+            if (DEBUG) console.log('🗑️ User deletion received:', data);
+            const { userId } = data;
+            
+            // Remove the row from the current table
+            removeTableRow(userId);
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Update dashboard counts
+            updateDashboardCounts();
+            
+            // Show notification
+            showRealTimeNotification('A user has been removed');
+        }
+
+        function handleUserAdded(data) {
+            if (DEBUG) console.log('➕ User addition received:', data);
+            const { user } = data;
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Update dashboard counts
+            updateDashboardCounts();
+            
+            // Show notification
+            showRealTimeNotification(`New user ${user.name} has been added`);
+        }
+
+        function handleUserModified(data) {
+            if (DEBUG) console.log('✏️ User modification received:', data);
+            const { userId, updates } = data;
+            
+            // Find and update the row in the current table
+            updateTableRow(userId, updates, 'modify');
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Show notification
+            showRealTimeNotification('User information has been updated');
+        }
+
+        function handleBulkAction(data) {
+            if (DEBUG) console.log('📦 Bulk action received:', data);
+            const { action, userIds } = data;
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Update dashboard counts
+            updateDashboardCounts();
+            
+            // Show notification
+            showRealTimeNotification(`Bulk action ${action} performed on ${userIds.length} users`);
+        }
+
+        function handleNotification(data) {
+            if (DEBUG) console.log('🔔 Notification received:', data);
+            const { notification } = data;
+            
+            // Add to notifications list
+            addNotification(notification);
+            
+            // Update notification badge
+            updateNotificationBadge();
+        }
+
+        function handleWebSocketError(error) {
+            console.error('✗ WebSocket error:', error);
+            showConnectionStatus(false);
+        }
+
+        // UI update functions
+        function updateTableRow(userId, userData, action) {
+            // Find all rows with this user ID
+            const checkboxes = document.querySelectorAll(`.user-checkbox[data-user-id="${userId}"]`);
+            
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                if (row) {
+                    // Update status cell
+                    const statusCell = row.cells[6]; // Status is at index 6
+                    if (statusCell) {
+                        if (action === 'accept') {
+                            statusCell.textContent = 'Verified';
+                        } else if (action === 'reject') {
+                            statusCell.textContent = 'Rejected';
+                        } else if (action === 'ban') {
+                            statusCell.textContent = 'Banned';
+                        }
+                    }
+                    
+                    // Update actions cell
+                    const actionsCell = row.cells[row.cells.length - 1]; // Actions is last cell
+                    if (actionsCell) {
+                        let newActions = '';
+                        if (action === 'accept') {
+                            newActions = `
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <button class="btn btn-info btn-sm">Edit</button>
+                                    <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button>
+                                    <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
+                                    <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${userData.name}')">Remove</button>
+                                </div>
+                            `;
+                        } else if (action === 'reject') {
+                            newActions = `
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <button class="btn btn-info btn-sm">Edit</button>
+                                    <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
+                                    <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
+                                    <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${userData.name}')">Remove</button>
+                                </div>
+                            `;
+                        } else if (action === 'ban') {
+                            newActions = `
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <button class="btn btn-info btn-sm">Edit</button>
+                                    <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
+                                    <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button>
+                                    <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${userData.name}')">Remove</button>
+                                </div>
+                            `;
+                        }
+                        actionsCell.innerHTML = newActions;
+                    }
+                }
+            });
+        }
+
+        function removeTableRow(userId) {
+            const checkboxes = document.querySelectorAll(`.user-checkbox[data-user-id="${userId}"]`);
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                if (row) {
+                    row.remove();
+                }
+            });
+        }
+
+        function showConnectionStatus(connected) {
+            const statusIndicator = document.getElementById('connection-status');
+            if (!statusIndicator) {
+                // Create status indicator if it doesn't exist
+                const indicator = document.createElement('div');
+                indicator.id = 'connection-status';
+                indicator.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    padding: 10px 15px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    z-index: 9999;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                `;
+                document.body.appendChild(indicator);
+            }
+            
+            const indicator = document.getElementById('connection-status');
+            if (connected) {
+                indicator.style.backgroundColor = '#28a745';
+                indicator.style.color = 'white';
+                indicator.innerHTML = '🟢 Real-time Sync Active';
+            } else {
+                indicator.style.backgroundColor = '#dc3545';
+                indicator.style.color = 'white';
+                indicator.innerHTML = '🔴 Real-time Sync Disconnected';
+            }
+        }
+
+        function showRealTimeNotification(message) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: #007bff;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+                max-width: 300px;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function showTemporaryMessage(message) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: #ff4444;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+                max-width: 300px;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        function addNotification(notification) {
+            // Add to notification list (bell dropdown)
+            const notificationList = document.getElementById('notification-list');
+            if (notificationList) {
+                const notifDiv = document.createElement('div');
+                notifDiv.className = 'notification-item';
+                notifDiv.innerHTML = `
+                    <div class="notification-details">
+                        <div class="notification-type ${notification.type}">${notification.typeText || 'Update'}</div>
+                        <div class="notification-content">${notification.content}</div>
+                        <div class="notification-time">${formatNotificationDate(new Date().toISOString())}</div>
+                    </div>
+                `;
+                notificationList.insertBefore(notifDiv, notificationList.firstChild);
+                
+                // Remove items from bottom if exceeding max 10
+                const maxNotifications = 10;
+                const notificationItems = notificationList.querySelectorAll('.notification-item');
+                if (notificationItems.length > maxNotifications) {
+                    // Remove the last item (oldest)
+                    notificationItems[notificationItems.length - 1].remove();
+                }
+            }
+            
+            // Add to all notifications list (modal) - prepend and update pagination
+            const allNotificationsContainer = document.getElementById('all-notifications-list');
+            if (allNotificationsContainer) {
+                // Add new notification to the beginning of the array
+                if (window.notificationPagination) {
+                    window.notificationPagination.notifications.unshift(notification);
+                    window.notificationPagination.totalPages = Math.ceil(window.notificationPagination.notifications.length / window.notificationPagination.itemsPerPage);
+                    // Go to page 1 to show the new notification
+                    goToPage(1);
+                } else {
+                    // Fallback if pagination not initialized
+                    const notifDiv = document.createElement('div');
+                    notifDiv.className = 'notification-item';
+                    notifDiv.setAttribute('data-id', notification.id || Date.now().toString());
+                    notifDiv.innerHTML = `
+                        <input type="checkbox" class="notification-checkbox">
+                        <div class="notification-details">
+                            <div class="notification-type ${notification.type}">${notification.typeText || 'Update'}</div>
+                            <div class="notification-content">${notification.content}</div>
+                            <div class="notification-time">${formatNotificationDate(new Date().toISOString())}</div>
+                        </div>
+                        <div class="notification-actions">
+                            <i class="fas fa-times" title="Mark as Read" onclick="markNotificationRead(this)"></i>
+                        </div>
+                    `;
+                    allNotificationsContainer.insertBefore(notifDiv, allNotificationsContainer.firstChild);
+                }
+            }
+        }
+
+        // Add CSS animations for notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize WebSocket client on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize WebSocket after a short delay to ensure page is ready
+            setTimeout(initWebSocketClient, 1000);
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (ws) {
+                ws.close();
+            }
+        });
+
+    <script src="/frontend/assets/js/pdf-viewer.js"></script>
+
+        // Handle PDF upload for article
+        function handleArticlePDFUpload(input, articleId) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            if (file.type !== 'application/pdf') {
+                alert('Please select a PDF file');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('pdf', file);
+            formData.append('articleId', articleId);
+            
+            // Get the auth token
+            const token = localStorage.getItem('sti_auth_token');
+            
+            fetch('/api/upload-article-pdf', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Update the article in adminArticles
+                    const adminArticles = getAdminArticles();
+                    const articleIndex = adminArticles.findIndex(a => (a.id || a.title) === articleId);
+                    if (articleIndex !== -1) {
+                        adminArticles[articleIndex].pdfPath = data.pdfPath;
+                        saveAdminArticles(adminArticles);
+                    }
+                    
+                    // Also update allArticles in localStorage
+                    const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+                    const allIndex = allArticles.findIndex(a => (a.id || a.title) === articleId);
+                    if (allIndex !== -1) {
+                        allArticles[allIndex].pdfPath = data.pdfPath;
+                        localStorage.setItem('allArticles', JSON.stringify(allArticles));
+                    }
+                    
+                    // Also update in Couchbase/server
+                    updateArticleInServer(articleId, { pdfPath: data.pdfPath });
+                    
+                    alert('PDF uploaded successfully!');
+                    renderAdminArticles(currentPage);
+                } else {
+                    alert('Failed to upload PDF: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading PDF:', error);
+                alert('Error uploading PDF');
+            });
+        }
+        
+        // Handle PDF removal for article
+        function removeArticlePDF(button, articleId) {
+            if (!confirm('Are you sure you want to remove this PDF?')) return;
+            
+            // Update the article in adminArticles
+            const adminArticles = getAdminArticles();
+            const articleIndex = adminArticles.findIndex(a => (a.id || a.title) === articleId);
+            if (articleIndex !== -1) {
+                adminArticles[articleIndex].pdfPath = null;
+                saveAdminArticles(adminArticles);
+                
+                // Also update allArticles in localStorage
+                const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+                const allIndex = allArticles.findIndex(a => (a.id || a.title) === articleId);
+                if (allIndex !== -1) {
+                    allArticles[allIndex].pdfPath = null;
+                    localStorage.setItem('allArticles', JSON.stringify(allArticles));
+                }
+                
+                // Also update in Couchbase/server
+                updateArticleInServer(articleId, { pdfPath: null });
+                
+                alert('PDF removed successfully!');
+                renderAdminArticles(currentPage);
+            }
+        }
+        
+        // Function to update article in server/Couchbase
+        function updateArticleInServer(articleId, updates) {
+            // Get the auth token
+            const token = localStorage.getItem('sti_auth_token');
+            
+            fetch('/api/articles/' + articleId, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(updates)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (DEBUG) console.log('Article updated in server');
+                } else {
+                    console.error('Failed to update article in server:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating article in server:', error);
+            });
+        }
+
+
+        // === GLOBAL FUNCTION BINDINGS ===
+        // Explicitly bind functions to window to make them globally accessible for onclick handlers
+        // This ensures functions work even when served through PHP
+        if (typeof showSection === 'function') window.showSection = showSection;
+        if (typeof navigateToUsers === 'function') window.navigateToUsers = navigateToUsers;
+        if (typeof navigateToNotifications === 'function') window.navigateToNotifications = navigateToNotifications;
+        if (typeof scrollToUserSection === 'function') window.scrollToUserSection = scrollToUserSection;
+        if (typeof handleProfileClick === 'function') window.handleProfileClick = handleProfileClick;
+        if (typeof openProfileModal === 'function') window.openProfileModal = openProfileModal;
+        if (typeof navigateToUploads === 'function') window.navigateToUploads = navigateToUploads;
+        if (typeof acceptUser === 'function') window.acceptUser = acceptUser;
+        if (typeof removeUser === 'function') window.removeUser = removeUser;
+        if (typeof previewRaf === 'function') window.previewRaf = previewRaf;
+        if (typeof displayArticlePDF === 'function') window.displayArticlePDF = displayArticlePDF;
+        if (typeof closePdfModal === 'function') window.closePdfModal = closePdfModal;
+        if (typeof showGrade === 'function') window.showGrade = showGrade;
+        if (typeof showStrand === 'function') window.showStrand = showStrand;
+        if (typeof showDegree === 'function') window.showDegree = showDegree;
+        if (typeof showDepartment === 'function') window.showDepartment = showDepartment;
+        if (typeof loadStrandUsers === 'function') window.loadStrandUsers = loadStrandUsers;
+        if (typeof loadDegreeUsers === 'function') window.loadDegreeUsers = loadDegreeUsers;
+        if (typeof loadDepartmentUsers === 'function') window.loadDepartmentUsers = loadDepartmentUsers;
+        if (DEBUG) console.log('Global functions bound to window');
+        
+        // Handle upload card click
+        var uploadCard = document.getElementById('upload-card');
+        if (uploadCard) {
+            uploadCard.addEventListener('click', function(e) {
+                e.preventDefault();
+                var dashboard = document.getElementById('dashboard');
+                var upload = document.getElementById('upload');
+                dashboard.classList.remove('active');
+                dashboard.style.display = 'none';
+                upload.classList.add('active');
+                upload.style.display = 'block';
+                document.getElementById('page-title').textContent = 'Upload';
+                
+                // Update sidebar active state
+                document.querySelectorAll('.sidebar ul li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                var uploadLink = document.querySelector('.sidebar ul li a[data-section="upload"]');
+                if (uploadLink) {
+                    uploadLink.closest('li').classList.add('active');
+                }
+            });
+        }
+
+        function updateFilters(section) {
+            const roleSelect = document.getElementById(`role-filter-${section}`);
+            const gradeSelect = document.getElementById(`grade-filter-${section}`);
+            const strandSelect = document.getElementById(`strand-filter-${section}`);
+            const degreeSelect = document.getElementById(`degree-filter-${section}`);
+            const deptSelect = document.getElementById(`dept-filter-${section}`);
+
+            const selectedRole = roleSelect.value;
+
+            // Hide all dynamic selects first
+            gradeSelect.style.display = 'none';
+            strandSelect.style.display = 'none';
+            degreeSelect.style.display = 'none';
+            deptSelect.style.display = 'none';
+
+            // Show relevant selects based on role
+            if (selectedRole === 'shs') {
+                gradeSelect.style.display = 'block';
+                strandSelect.style.display = 'block';
+            } else if (selectedRole === 'college') {
+                degreeSelect.style.display = 'block';
+            } else if (selectedRole === 'educator') {
+                deptSelect.style.display = 'block';
+            }
+
+            // Apply role filter
+            const searchInput = document.querySelector(`#${section}-section input[onkeyup*="filterTable"]`);
+            const filterType = document.getElementById(`search-filter-${section}`).value;
+            filterTable(searchInput ? searchInput.value : '', section, filterType);
+
+            // Store current filter state
+            window.currentFilters[section].role = selectedRole;
+        }
+
+        function filterTable(query, tableType, filterType = 'unified') {
+            const tableId = tableType === 'admins' ? 'admins-tbody' : `${tableType}-users-tbody`;
+            const tbody = document.getElementById(tableId);
+            if (!tbody) return;
+
+            // Store current filter state
+            window.currentFilters[tableType].search = query;
+            window.currentFilters[tableType].filterType = filterType;
+
+            const rows = tbody.getElementsByTagName('tr');
+            const filter = query.toLowerCase();
+            const roleFilter = document.getElementById(`role-filter-${tableType}`).value;
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+
+                // Check role filter first
+                if (roleFilter) {
+                    const roleCell = cells[4]; // Role column for both admins and users
+                    if (roleCell) {
+                        const roleText = roleCell.textContent.trim();
+                        if (tableType === 'admins') {
+                            const expectedText = roleFilter === 'admin' ? 'Admin' : roleFilter === 'co-admin' ? 'Co-Admin' : roleFilter === 'sub-admin' ? 'Sub-Admin' : '';
+                            if (expectedText && roleText !== expectedText) {
+                                rows[i].style.display = 'none';
+                                continue;
+                            }
+                        } else {
+                            // For other tables, check if roleText includes the filter value
+                            if (!roleText.toLowerCase().includes(roleFilter.toLowerCase())) {
+                                rows[i].style.display = 'none';
+                                continue;
+                            }
+                        }
+                    }
+                }
+
+                if (filterType === 'unified') {
+                    // Search in all relevant columns
+                    for (let j = 0; j < cells.length; j++) {
+                        if (cells[j].textContent.toLowerCase().includes(filter)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                } else if (filterType === 'fullname' && cells.length > 2) {
+                    // Full Name column (index 2)
+                    if (cells[2].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                } else if (filterType === 'userid' && cells.length > 1) {
+                    // User ID column (index 1)
+                    if (cells[1].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                } else if (filterType === 'email' && cells.length > 3) {
+                    // Email column (index 3)
+                    if (cells[3].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                }
+
+                rows[i].style.display = found ? '' : 'none';
+            }
+
+            // Reset pagination to page 1 and paginate
+            const paginationDiv = document.getElementById(`${tableType === 'admins' ? 'admins' : tableType}-pagination`);
+            if (paginationDiv) {
+                paginationDiv.dataset.currentPage = 1;
+                paginateTable(tableId, 10);
+            }
+        }
+
+        function paginateTable(tbodyId, rowsPerPage) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+
+            const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+            const totalPages = Math.ceil(rows.length / rowsPerPage);
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            if (!paginationDiv) return;
+
+            let currentPage = parseInt(paginationDiv.dataset.currentPage) || 1;
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+            paginationDiv.dataset.currentPage = currentPage;
+
+            // Show only current page rows among visible
+            rows.forEach((row, index) => {
+                const page = Math.floor(index / rowsPerPage) + 1;
+                row.style.display = page === currentPage ? '' : 'none';
+            });
+
+            // Generate pagination buttons (always visible)
+            let buttons = '';
+
+            // Previous button
+            const prevDisabled = currentPage <= 1 || totalPages <= 1;
+            const prevClass = prevDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const prevOnClick = prevDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage - 1})"`;
+            const prevDisabledAttr = prevDisabled ? ' disabled' : '';
+            buttons += `<button class="${prevClass}"${prevDisabledAttr} ${prevOnClick}>Previous</button>`;
+
+            // Page number buttons (always show at least page 1)
+            if (totalPages > 0) {
+                const maxPagesToShow = Math.min(totalPages, 5); // Show max 5 page numbers
+                let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+                // Adjust start page if we're near the end
+                if (endPage - startPage + 1 < maxPagesToShow) {
+                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const isActive = i === currentPage;
+                    const pageDisabled = totalPages <= 1;
+                    const pageClass = isActive ?
+                        (pageDisabled ? 'btn btn-primary btn-sm active disabled' : 'btn btn-primary btn-sm active') :
+                        (pageDisabled ? 'btn btn-outline-secondary btn-sm disabled' : 'btn btn-outline-secondary btn-sm');
+                    const pageOnClick = pageDisabled ? '' : `onclick="changePage('${tbodyId}', ${i})"`;
+                    const pageDisabledAttr = pageDisabled ? ' disabled' : '';
+                    buttons += `<button class="${pageClass}"${pageDisabledAttr} ${pageOnClick}>${i}</button>`;
+                }
+            } else {
+                // No records, show disabled page 1
+                buttons += `<button class="btn btn-outline-secondary btn-sm disabled" disabled>1</button>`;
+            }
+
+            // Next button
+            const nextDisabled = currentPage >= totalPages || totalPages <= 1;
+            const nextClass = nextDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const nextOnClick = nextDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage + 1})"`;
+            const nextDisabledAttr = nextDisabled ? ' disabled' : '';
+            buttons += `<button class="${nextClass}"${nextDisabledAttr} ${nextOnClick}>Next</button>`;
+
+            // Add page info
+            const startRecord = (currentPage - 1) * rowsPerPage + 1;
+            const endRecord = Math.min(currentPage * rowsPerPage, rows.length);
+            const infoText = totalPages > 0 ?
+                `Showing ${startRecord}-${endRecord} of ${rows.length} records` :
+                'No records to display';
+
+            buttons += `<span class="pagination-info" style="margin-left: 15px; font-size: 12px; color: #666;">${infoText}</span>`;
+
+            paginationDiv.innerHTML = buttons;
+        }
+
+        function changePage(tbodyId, page) {
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            paginationDiv.dataset.currentPage = page;
+            paginateTable(tbodyId, 10);
+        }
+
+
+</body>
+</html>
+
+        // === GLOBAL FUNCTIONS ===
+
+        // Moved outside DOMContentLoaded to ensure availability on page load
+        let currentUser = null;
+        let isLoadingUsers = false;
+        let users = [];
+
+        function generateNotifications(users) {
+            if (!Array.isArray(users)) users = [];
+            const removedUsers = JSON.parse(localStorage.getItem('removedUsers')) || [];
+            const filteredUsers = users.filter(u => !removedUsers.includes(u.user_id || u.id));
+            const signingUpUsers = filteredUsers.filter(u => !u.verified && !u.rejected && !u.banned);
+            const verifiedUsers = filteredUsers.filter(u => u.verified);
+            const notifications = [];
+
+            // Add notifications for signing up users
+            signingUpUsers.forEach(user => {
+                const id = `signup-${user.id}`;
+                notifications.push({
+                    id: id,
+                    type: 'new-user',
+                    typeText: 'New User Access Request',
+                    content: `${getUserName(user)} signed up!`,
+                    time: user.created_at ? new Date(user.created_at).toLocaleString() : 'Just now',
+                    timestamp: user.created_at ? new Date(user.created_at).getTime() : Date.now(),
+                    priority: 1 // Signing up first
+                });
+            });
+
+            // Add notifications for verified users (recent)
+            verifiedUsers.slice(-5).forEach(user => {
+                const id = `verified-${user.id}`;
+                notifications.push({
+                    id: id,
+                    type: 'new-user',
+                    typeText: 'New User Verified',
+                    content: `${getUserName(user)} was verified!`,
+                    time: user.verified_at ? new Date(user.verified_at).toLocaleString() : 'Recently',
+                    timestamp: user.verified_at ? new Date(user.verified_at).getTime() : Date.now() - 1000,
+                    priority: 2 // Verified second
+                });
+            });
+
+            // Filter out deleted notifications
+            const deletedNotifications = JSON.parse(localStorage.getItem('deletedNotifications')) || [];
+            let filteredNotifications = notifications.filter(notif => !deletedNotifications.includes(notif.id));
+
+            // Sort by priority (signing up first), then by timestamp (newest first)
+            filteredNotifications.sort((a, b) => {
+                if (a.priority !== b.priority) {
+                    return a.priority - b.priority; // Lower priority first
+                }
+                return b.timestamp - a.timestamp; // Newest first
+            });
+
+            return filteredNotifications;
+        }
+
+        // Update dashboard counts
+        async function updateDashboardCounts() {
+            // Get total counts without pagination limits
+            try {
+                const token = localStorage.getItem('sti_auth_token');
+                const response = await fetch('/api/users/count?_=' + Date.now(), {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+
+                if (response.ok) {
+                    const countData = await response.json();
+                    if (countData.success && countData.counts) {
+                        const verifiedEl = document.getElementById('verified-users-count');
+                        const adminEl = document.getElementById('admin-users-count');
+                        const signingUpEl = document.getElementById('signing-up-users-count');
+
+                        if (verifiedEl) verifiedEl.textContent = countData.counts.usersCount || 0;
+                        if (adminEl) adminEl.textContent = countData.counts.adminUsers || 0;
+                        if (signingUpEl) signingUpEl.textContent = countData.counts.newSignups || 0;
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to fetch total user counts, falling back to local data:', error);
+                // Fallback to local calculation
+                if (!Array.isArray(users)) users = [];
+                const usersCount = users.filter(u => getUserStatus(u) === 'approved' && !['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
+                const adminCount = users.filter(u => u.role === 'admin').length;
+                const signingUpCount = users.filter(u => getUserStatus(u) === 'pending').length;
+
+                const verifiedEl = document.getElementById('verified-users-count');
+                const adminEl = document.getElementById('admin-users-count');
+                const signingUpEl = document.getElementById('signing-up-users-count');
+
+                if (verifiedEl) verifiedEl.textContent = usersCount;
+                if (adminEl) adminEl.textContent = adminCount;
+                if (signingUpEl) signingUpEl.textContent = signingUpCount;
+            }
+
+            // Update article counts (these come from localStorage, no API limit needed)
+            const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+            const researchCount = allArticles.filter(a => a.category === 'research').length;
+            const capstoneCount = allArticles.filter(a => a.category === 'capstone').length;
+            const totalUploads = researchCount + capstoneCount;
+
+            const revenueEl = document.getElementById('revenue-count');
+            if (revenueEl) revenueEl.textContent = totalUploads;
+        }
+
+        async function loadUsers() {
+            if (DEBUG) if (DEBUG) console.log('DEBUG: loadUsers called');
+            users = await getUsers(false);
+            if (DEBUG) if (DEBUG) console.log('DEBUG: getUsers returned:', users);
+            if (!Array.isArray(users)) users = [];
+            if (DEBUG) console.log('DEBUG: loadUsers got users, count:', users.length);
+
+            // Map fields for display - handle all field variations
+            users.forEach(user => {
+                // Handle grade field variations
+                user.grade = user.grade || user.Grade || user.year_level || '-';
+                
+                // Sec_Degr contains:
+                // - For SHS: strand values (ABM, ITMAWD, STEM)
+                // - For College: degree values (BSBA, BSCS, BSIT)
+                user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
+            });
+
+            // Set global users
+            window.users = users;
+
+            // Clear all tbodys
+            document.querySelectorAll('#users tbody').forEach(tbody => tbody.innerHTML = '');
+
+            // Process users
+            users.forEach(user => {
+                if (DEBUG) console.log('DEBUG: Processing user:', user.id, user.name, user.role, user.email, user.personal_email, user.verified);
+                const date = formatDate(user.verified_at || user.created_at);
+                let actions = '';
+                const userId = user.user_id || user.id;
+                if (user.verified) {
+                    actions = `<button class="btn btn-danger btn-sm" onclick="removeUser('${userId}')">Remove</button>`;
+                } else if (user.banned_user) {
+                    actions = `<button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>`;
+                } else {
+                    actions = `
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
+                            <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
+                        </div>
+                    `;
+                }
+                let emailToUse = user.personal_email || user.email;
+                const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewRaf('${user.raf_path}')">Preview</button>` : `${user.raf_path || ''} ${user.educator_id || ''}`.trim() || '-';
+                const rowWithEmail = `<tr>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
+                    <td>${getUserName(user)}</td>
+                    <td>${emailToUse}</td>
+                    <td>${formatRole(user.role)}</td>
+                    <td>${user.grade || user.Grade || user.year_level || '-'}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
+                    <td>${date}</td>
+                    <td>${rafEduIdCell}</td>
+                    <td>${actions}</td>
+                </tr>`;
+                const rowWithoutActions = `<tr>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
+                    <td>${getUserName(user)}</td>
+                    <td>${emailToUse}</td>
+                    <td>${formatRole(user.role)}</td>
+                    <td>${user.grade || user.Grade || user.year_level || '-'}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
+                    <td>${date}</td>
+                    <td>${rafEduIdCell}</td>
+                </tr>`;
+
+                // Check admin role first (case-insensitive)
+                const roleLower = (user.role || '').toLowerCase();
+                if (DEBUG) console.log('DEBUG: User role check:', user.fullname, 'role:', user.role, 'roleLower:', roleLower);
+                const isAdminRole = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin';
+                // For coadmin, only show coadmin and subadmin, not full admin
+                const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
+                const shouldShowAdmin = currentUserRole === 'admin' || (currentUserRole === 'coadmin' && (roleLower === 'coadmin' || roleLower === 'subadmin'));
+                if (isAdminRole) {
+                    if (shouldShowAdmin) {
+                    if (DEBUG) console.log('DEBUG: Adding admin user to table:', user.fullname, user.email, 'role:', roleLower);
+                    // Determine role display
+                    let roleDisplay;
+                    if (user.fullname === 'admin2' || user.fullname === 'Admin2') {
+                        roleDisplay = 'Co-Admin';
+                    } else if (user.fullname === 'admin3' || user.fullname === 'Admin3') {
+                        roleDisplay = 'Sub-Admin';
+                    } else {
+                        roleDisplay = (roleLower === 'coadmin' ? 'Co-Admin' : roleLower === 'subadmin' ? 'Sub-Admin' : 'Admin');
+                    }
+                    let badgeClass = roleLower === 'coadmin' ? 'badge-coadmin' : roleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
+                    let permissions = user.permissions || (roleLower === 'admin' ? 'Full Access - All Features' : roleLower === 'coadmin' ? 'Limited Access - User & File Management' : 'User Approver - Accept/Reject Registrations');
+                    const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
+                        const adminRow = `<tr>
+                            <td>${userId}</td>
+                            <td>${getUserName(user)}</td>
+                            <td>${user.email || 'N/A'}</td>
+                            <td><span class="badge ${badgeClass}">${roleDisplay}</span></td>
+                            <td>${permissions}</td>
+                            <td>${formatDate(user.created_at)}</td>
+                        </tr>`;
+                        document.getElementById('admins-tbody').innerHTML += adminRow;
+                    }
+                } else {
+                    // Status categorization for regular users
+                    const userStatus = getUserStatus(user);
+                    if (userStatus === 'approved') {
+                        if (DEBUG) console.log('DEBUG: Adding verified user to table:', user.name, user.email);
+                        document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
+                    } else if (userStatus === 'banned' || userStatus === 'rejected') {
+                        document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
+                    } else if (userStatus === 'pending') {
+                        if (DEBUG) console.log('DEBUG: Adding signing-up user to table:', user.name, user.email);
+                        document.getElementById('signing-up-users-tbody').innerHTML += rowWithEmail;
+                    }
+                }
+            });
+
+            // Update counts
+            updateDashboardCounts();
+
+            // Apply pagination
+            paginateTable('verified-users-tbody', 10);
+            paginateTable('signing-up-users-tbody', 10);
+            paginateTable('banned-users-tbody', 10);
+
+            return users;
+        }
+        async function getUsers(forceRefresh = false, page = 1, limit = 50) {
+            if (forceRefresh) {
+                // Clear localStorage and force reload from server
+                localStorage.removeItem('users');
+                isLoadingUsers = false;
+                if (DEBUG) console.log('DEBUG: Force refresh - cleared localStorage and reset isLoadingUsers');
+            }
+            if (isLoadingUsers && !forceRefresh) return JSON.parse(localStorage.getItem('users') || '[]');
+            isLoadingUsers = true;
+            if (DEBUG) console.log('DEBUG: Attempting to fetch users from server...');
+            try {
+                // Get auth token from localStorage (optional for admin)
+                const token = localStorage.getItem('sti_auth_token');
+                if (DEBUG) console.log('DEBUG: Auth token:', token ? 'present' : 'missing');
+
+                const offset = (page - 1) * limit;
+                // Add cache-busting query parameter
+                const response = await fetch(`/api/users?limit=${limit}&offset=${offset}&_=${Date.now()}`, {
+                    headers: token ? {
+                        'Authorization': `Bearer ${token}`
+                    } : {}
+                });
+                if (DEBUG) console.log('DEBUG: Fetch response status:', response.status);
+                if (response.ok) {
+                    if (DEBUG) console.log('DEBUG: Server responded successfully, parsing JSON...');
+                    const usersData = await response.json();
+                    if (DEBUG) console.log('DEBUG: Raw API response:', usersData);
+                    // Handle {success: true, users: []} format from API
+                    const users = usersData.success ? usersData.users : usersData;
+                    if (DEBUG) console.log('DEBUG: Extracted users array:', users);
+                    // Handle both array and {users: []} response formats
+                    const userData = Array.isArray(users) ? users : (users.users || []);
+                    if (DEBUG) console.log('DEBUG: Final userData array, count:', userData.length);
+                    if (DEBUG) console.log('DEBUG: First user sample:', userData[0]);
+                    // Add backward compatibility: map fullname to name
+                    userData.forEach(user => {
+                        if (user.fullname && !user.name) {
+                            user.name = user.fullname;
+                        }
+                    });
+                    // Store pagination info
+                    if (usersData.total !== undefined) {
+                        userData._total = usersData.total;
+                        userData._limit = usersData.limit || limit;
+                        userData._offset = usersData.offset || offset;
+                    }
+                    // Save to localStorage for offline use
+                    localStorage.setItem('users', JSON.stringify(userData));
+                    isLoadingUsers = false;
+                    return userData;
+                } else {
+                    if (DEBUG) console.log('DEBUG: Server returned error:', response.status, 'falling back to localStorage');
+                }
+            } catch (e) {
+                if (DEBUG) console.log('DEBUG: Could not load from server, error:', e.message, 'using localStorage');
+            }
+            let localUsers = JSON.parse(localStorage.getItem('users') || '[]');
+            localStorage.setItem('users', JSON.stringify(localUsers)); // Save users
+            if (DEBUG) console.log('DEBUG: Loaded users from localStorage, count:', localUsers.length);
+            isLoadingUsers = false;
+            return localUsers;
+        }
+        // Add this helper function
+
+        
+        async function refreshUsers() {
+            if (DEBUG) console.log('DEBUG: Auto refreshing users from server...');
+            try {
+                await getUsers(true);
+                await loadUsers();
+            } catch (error) {
+                console.error('Error auto-refreshing users:', error);
+            }
+        }
+        function saveUsers(users) {
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+        function getArticles() {
+            return JSON.parse(localStorage.getItem('articles')) || [];
+        }
+        function saveArticles(articles) {
+            localStorage.setItem('articles', JSON.stringify(articles));
+        }
+        function getAdminArticles() {
+            return JSON.parse(localStorage.getItem('adminArticles')) || [];
+        }
+        function saveAdminArticles(articles) {
+            localStorage.setItem('adminArticles', JSON.stringify(articles));
+        }
+        function loadArticlesFromServer() {
+            return fetch('/api/articles?limit=10&offset=0')
+                .then(response => {
+                    if (!response.ok) throw new Error('Server error');
+                    return response.json();
+                })
+                .then(data => {
+                    // Handle both 'success' (new) and 'status' (old) response formats
+                    const isSuccess = data.status === 'success' || data.success === true;
+                    if (isSuccess) {
+                        const articles = data.articles || [];
+                        saveArticles(articles);
+                        saveAdminArticles(articles);
+                        localStorage.setItem('allArticles', JSON.stringify(articles));
+                        renderAdminArticles();
+                        updateDashboardCounts();
+                    } else {
+                        console.error('✗ Failed to load articles:', data.error || 'Unknown error');
+                    }
+                })
+                .catch(error => {
+                    if (DEBUG) console.log('✗ Error fetching articles (server may be down):', error.message);
+                });
+        }
+        
+        // Load user uploads for admin
+        function loadUserUploadsForAdmin() {
+            return fetch('/api/admin/user-uploads?limit=10&offset=0')
+                .then(response => {
+                    if (!response.ok) throw new Error('Server error');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        window.userUploadsData = data.uploads;
+                        renderUserUploads(data.uploads);
+                    } else {
+                        console.error('✗ Failed to load user uploads:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('✗ Error fetching user uploads:', error);
+                });
+        }
+
+        // Render user uploads in admin
+        function renderUserUploads(uploads) {
+            const container = document.getElementById('user-uploaded-articles');
+            
+            if (!uploads || uploads.length === 0) {
+                container.innerHTML = '<p class="empty-state">No articles uploaded by users yet.</p>';
+                return;
+            }
+            
+            container.innerHTML = uploads.map(upload => {
+                // Test PDF URL - hardcoded for testing
+                const testPdfUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Research/2023-2024/Cejes%20et%20al.pdf';
+                const pdfUrl = testPdfUrl;
+                const hasPdf = pdfUrl && pdfUrl.length > 0;
+
+                // Create onclick handler - call the modal PDF viewer function
+                const safeTitle = upload.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const cardClick = `displayArticlePDF('${testPdfUrl}', '${safeTitle}')`;
+
+                // Get user initials for profile picture
+                const userInitials = (upload.userName || '').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'U';
+
+                // Format user metadata based on role
+                let userMeta = '';
+                const role = upload.userRole || 'unknown';
+                const program = upload.userProgram || 'N/A';
+
+                if (role === 'shs') {
+                    userMeta = `SHS Student - ${program}`;
+                } else if (role === 'college') {
+                    userMeta = `College Student - ${program}`;
+                } else if (role === 'educator') {
+                    userMeta = `Teacher - ${program}`;
+                } else {
+                    userMeta = `${role.charAt(0).toUpperCase() + role.slice(1)} - ${program}`;
+                }
+
+                return `
+                <div class="user-uploaded" data-id="${upload.id}">
+                    <div class="user-info">
+                        <div class="user-pfp">${userInitials}</div>
+                        <div class="user-details">
+                            <div class="user-fullname">${upload.userName}</div>
+                            <div class="user-meta">${userMeta}</div>
+                        </div>
+                    </div>
+                    <div class="uploaded-article" data-id="${upload.id}" ${hasPdf ? "onclick=\"handleUserUploadClick('" + upload.id + "')\" style=\"cursor: pointer;\"" : ''}>
+                        <h3>${upload.title}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : ''}</h3>
+                        <div class="summary">${upload.abstract || 'N/A'}</div>
+                        <div class="meta">
+                            <strong>Category:</strong> ${upload.category}<br>
+                            <strong>Topic:</strong> ${upload.topic ? upload.topic.charAt(0).toUpperCase() + upload.topic.slice(1) : 'Not set'}<br>
+                            <strong>Type:</strong> ${upload.type ? upload.type.charAt(0).toUpperCase() + upload.type.slice(1) : 'Not set'}<br>
+                            <strong>Level:</strong> ${upload.level}<br>
+                            <strong>Year:</strong> ${upload.year}
+                        </div>
+                        <div class="edit-fields" style="display: none;">
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Title:</strong></label>
+                                <input type="text" class="edit-title" value="${upload.title.replace(/"/g, '&quot;')}" style="width: 100%;">
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Author:</strong></label>
+                                <input type="text" class="edit-author" value="${upload.author || ''}" style="width: 100%;">
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Abstract/Summary:</strong></label>
+                                <textarea class="edit-abstract" style="width: 100%; min-height: 80px;">${upload.abstract || ''}</textarea>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Category:</strong></label>
+                                <select class="edit-category" style="width: 100%;">
+                                    <option value="research" ${upload.category === 'research' ? 'selected' : ''}>Research</option>
+                                    <option value="capstone" ${upload.category === 'capstone' ? 'selected' : ''}>Capstone</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Topic:</strong></label>
+                                <select class="edit-topic" style="width: 100%;">
+                                    <option value="">Select Topic</option>
+                                    <option value="agriculture" ${upload.topic === 'agriculture' ? 'selected' : ''}>Agriculture</option>
+                                    <option value="business" ${upload.topic === 'business' ? 'selected' : ''}>Business</option>
+                                    <option value="cosmetics" ${upload.topic === 'cosmetics' ? 'selected' : ''}>Cosmetics</option>
+                                    <option value="education" ${upload.topic === 'education' ? 'selected' : ''}>Education</option>
+                                    <option value="environment" ${upload.topic === 'environment' ? 'selected' : ''}>Environment</option>
+                                    <option value="food" ${upload.topic === 'food' ? 'selected' : ''}>Food</option>
+                                    <option value="technology" ${upload.topic === 'technology' ? 'selected' : ''}>Technology</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Type:</strong></label>
+                                <select class="edit-type" style="width: 100%;">
+                                    <option value="qualitative" ${upload.type === 'qualitative' ? 'selected' : ''}>Qualitative</option>
+                                    <option value="quantitative" ${upload.type === 'quantitative' ? 'selected' : ''}>Quantitative</option>
+                                    <option value="bsba" ${upload.type === 'bsba' ? 'selected' : ''}>BSBA</option>
+                                    <option value="bscs" ${upload.type === 'bscs' ? 'selected' : ''}>BSCS</option>
+                                    <option value="bsit" ${upload.type === 'bsit' ? 'selected' : ''}>BSIT</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Level:</strong></label>
+                                <select class="edit-level" style="width: 100%;">
+                                    <option value="shs" ${upload.level === 'shs' ? 'selected' : ''}>Senior High School</option>
+                                    <option value="college" ${upload.level === 'college' ? 'selected' : ''}>College</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label><strong>Year:</strong></label>
+                                <input type="number" class="edit-year" value="${upload.year}" min="2020" max="2030" style="width: 100%;">
+                            </div>
+                        </div>
+                        <div class="source-tag">
+                            <strong>File:</strong> ${upload.filename}<br>
+                            <strong>Status:</strong> <span style="color: ${upload.status === 'approved' ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">${upload.status}</span><br>
+                            <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}
+                        </div>
+                        <div class="actions">
+                            ${upload.status === 'pending' ? `
+                                <button class="upload-btn" onclick="approveUserUpload('${upload.id}')">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                <button class="delete-btn" onclick="rejectUserUpload('${upload.id}')">
+                                    <i class="fas fa-times"></i> Reject
+                            ` : ''}
+                            <button class="edit-btn" onclick="toggleUserUploadEdit('${upload.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+        
+        // View PDF for user upload
+        function viewUserUploadPDF(pdfUrl, title) {
+            // Decode URL-encoded parameters
+            pdfUrl = decodeURIComponent(pdfUrl);
+            title = decodeURIComponent(title);
+            
+            if (DEBUG) console.log('Opening PDF:', pdfUrl, 'Title:', title);
+            
+            if (typeof displayArticlePDF === 'function') {
+                displayArticlePDF(pdfUrl, title);
+            } else if (typeof openPdfModal === 'function') {
+                openPdfModal(pdfUrl, title);
+            } else {
+                // Fallback: open in new window
+                window.open(pdfUrl, '_blank');
+            }
+        }
+        
+        // Edit user upload topic and type
+        function editUserUploadTopic(id) {
+            const uploads = window.userUploadsData || [];
+            const upload = uploads.find(u => u.id === id);
+            if (!upload) return;
+            
+            const topic = prompt('Enter topic for this article:', upload.topic || '');
+            if (topic !== null) {
+                const type = prompt('Enter type (qualitative/quantitative):', upload.type || '');
+                fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic: topic, type: type })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        alert('Topic and Type updated successfully!');
+                        loadUserUploadsForAdmin();
+                    } else {
+                        alert('Failed to update: ' + result.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating:', error);
+                    alert('Failed to update');
+                });
+            }
+        }
+
+        // Handle click on user uploaded article
+        function handleUserUploadClick(id) {
+            const uploadedArticle = document.querySelector(`.uploaded-article[data-id="${id}"]`);
+            if (uploadedArticle.classList.contains('editing')) {
+                return; // Don't open PDF when editing
+            }
+
+            const uploads = window.userUploadsData || [];
+            const upload = uploads.find(u => u.id === id);
+            if (upload && upload.pdfUrl) {
+                const testPdfUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Research/2023-2024/Cejes%20et%20al.pdf';
+                const safeTitle = upload.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                displayArticlePDF(testPdfUrl, safeTitle);
+            }
+        }
+
+        // Toggle edit mode for user uploads
+        function toggleUserUploadEdit(id) {
+            const userUploadedDiv = document.querySelector(`.user-uploaded[data-id="${id}"]`);
+            const uploadedArticle = userUploadedDiv.querySelector('.uploaded-article');
+            const editBtn = uploadedArticle.querySelector('.edit-btn');
+
+            // Get PDF info from the uploads data
+            const uploads = window.userUploadsData || [];
+            const upload = uploads.find(u => u.id === id);
+            const hasPdf = upload && upload.pdfUrl && upload.pdfUrl.length > 0;
+            const testPdfUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Research/2023-2024/Cejes%20et%20al.pdf';
+
+            if (uploadedArticle.classList.contains('editing')) {
+                // Save changes
+                saveUserUploadEdit(id);
+                uploadedArticle.classList.remove('editing');
+                editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                // Hide edit fields and show meta
+                uploadedArticle.querySelector('.edit-fields').style.display = 'none';
+                uploadedArticle.querySelector('.meta').style.display = 'block';
+                // Restore cursor
+                uploadedArticle.style.cursor = hasPdf ? 'pointer' : 'default';
+            } else {
+                // Enter edit mode
+                uploadedArticle.classList.add('editing');
+                editBtn.innerHTML = '<i class="fas fa-save"></i> Save';
+                // Show edit fields and hide meta
+                uploadedArticle.querySelector('.edit-fields').style.display = 'block';
+                uploadedArticle.querySelector('.meta').style.display = 'none';
+                // Change cursor to default during edit
+                uploadedArticle.style.cursor = 'default';
+            }
+        }
+
+        // Save user upload edits
+        function saveUserUploadEdit(id) {
+            const upload = uploads.find(u => u.id == id);
+            const hasPdf = upload && upload.pdfUrl && upload.pdfUrl.length > 0;
+            const pdfName = hasPdf ? upload.pdfUrl.split('/').pop() : '';
+
+            const userUploadedDiv = document.querySelector(`.user-uploaded[data-id="${id}"]`);
+            const uploadedArticle = userUploadedDiv.querySelector('.uploaded-article');
+
+            const title = uploadedArticle.querySelector('.edit-title').value;
+            const author = uploadedArticle.querySelector('.edit-author').value;
+            const abstract = uploadedArticle.querySelector('.edit-abstract').value;
+            const category = uploadedArticle.querySelector('.edit-category').value;
+            const topic = uploadedArticle.querySelector('.edit-topic').value;
+            const type = uploadedArticle.querySelector('.edit-type').value;
+            const level = uploadedArticle.querySelector('.edit-level').value;
+            const year = uploadedArticle.querySelector('.edit-year').value;
+
+            // Update the display
+            uploadedArticle.querySelector('h3').innerHTML = title + (hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : '');
+            uploadedArticle.querySelector('.summary').textContent = abstract || 'N/A';
+            uploadedArticle.querySelector('.meta').innerHTML = `
+                <strong>Category:</strong> ${category}<br>
+                <strong>Topic:</strong> ${topic ? topic.charAt(0).toUpperCase() + topic.slice(1) : 'Not set'}<br>
+                <strong>Type:</strong> ${type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Not set'}<br>
+                <strong>Level:</strong> ${level}<br>
+                <strong>Year:</strong> ${year}${hasPdf ? '<br><strong>PDF:</strong> ' + pdfName : ''}
+            `;
+
+            // Here you would typically send the update to the server
+            // For now, just update the display
+            alert('Changes saved successfully!');
+        }
+
+        // Approve user upload
+        async function approveUserUpload(id) {
+            try {
+                const response = await fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'approved' })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Upload approved successfully!');
+                    loadUserUploadsForAdmin();
+                } else {
+                    alert('Failed to approve: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error approving upload:', error);
+                alert('Failed to approve upload');
+            }
+        }
+        
+        // Reject user upload
+        async function rejectUserUpload(id) {
+            try {
+                const response = await fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'rejected' })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Upload rejected!');
+                    loadUserUploadsForAdmin();
+                } else {
+                    alert('Failed to reject: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error rejecting upload:', error);
+                alert('Failed to reject upload');
+            }
+        }
+        
+        // Delete user upload
+        async function deleteUserUpload(id) {
+            if (!confirm('Are you sure you want to delete this upload?')) return;
+            
+            try {
+                const response = await fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Upload deleted successfully!');
+                    loadUserUploadsForAdmin();
+                } else {
+                    alert('Failed to delete: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error deleting upload:', error);
+                alert('Failed to delete upload');
+            }
+        }
+        let currentPage = 1;
+        const articlesPerPage = 10;
+
+        function renderAdminArticles(page = 1) {
+            // Store current scroll position
+            const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+
+            currentPage = page;
+            const adminArticles = getAdminArticles();
+            const container = document.getElementById('admin-uploaded-articles');
+            const pagination = document.getElementById('admin-pagination');
+            const pageNumbers = document.getElementById('admin-page-numbers');
+
+            // Clear existing articles
+            container.innerHTML = '';
+
+            if (adminArticles.length === 0) {
+                container.innerHTML = '<p class="empty-state">No articles uploaded by admin yet.</p>';
+                pagination.style.display = 'none';
+                return;
+            }
+
+            // Calculate pagination
+            const totalPages = Math.ceil(adminArticles.length / articlesPerPage);
+            const startIndex = (page - 1) * articlesPerPage;
+            const endIndex = startIndex + articlesPerPage;
+            const articlesToShow = adminArticles.slice(startIndex, endIndex);
+
+            // Render articles
+            articlesToShow.forEach(article => {
+                const articleElement = createArticleTemplate(article);
+                container.appendChild(articleElement);
+            });
+
+            // Render pagination
+            pageNumbers.innerHTML = '';
+            pageNumbers.style.display = 'flex';
+            pageNumbers.style.gap = '5px';
+            pageNumbers.style.visibility = 'visible';
+            
+            if (DEBUG) console.log('Creating buttons for totalPages:', totalPages);
+            for (let i = 1; i <= totalPages; i++) {
+                if (DEBUG) console.log('Creating page button:', i);
+                try {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = 'page-number' + (i === page ? ' active' : '');
+                    pageBtn.textContent = i;
+                    // Clean styling
+                    pageBtn.style.display = 'inline-flex';
+                    pageBtn.style.alignItems = 'center';
+                    pageBtn.style.justifyContent = 'center';
+                    pageBtn.style.minWidth = '40px';
+                    pageBtn.style.height = '36px';
+                    pageBtn.style.padding = '0 12px';
+                    pageBtn.style.margin = '0 4px';
+                    pageBtn.style.visibility = 'visible';
+                    pageBtn.style.opacity = '1';
+                    // Blue background color
+                    pageBtn.style.backgroundColor = i === page ? '#0057b8' : '#e3f2fd';
+                    pageBtn.style.color = i === page ? '#ffffff' : '#333333';
+                    pageBtn.style.border = '1px solid #0057b8';
+                    pageBtn.style.borderRadius = '4px';
+                    pageBtn.style.cursor = 'pointer';
+                    pageBtn.style.fontSize = '14px';
+                    pageBtn.style.fontWeight = '500';
+                    pageBtn.style.transition = 'all 0.2s';
+                    pageBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        window.scrollTo(0, 0);
+                        renderAdminArticles(i);
+                    });
+                    pageNumbers.appendChild(pageBtn);
+                } catch (err) {
+                    console.error('Error creating button', i, ':', err);
+                }
+            }
+
+            pagination.style.display = 'flex';
+            pagination.style.justifyContent = 'center';
+            pagination.style.padding = '20px 0';
+            pagination.style.visibility = 'visible';
+
+            // Restore scroll position after a brief delay to ensure DOM is updated
+            setTimeout(() => {
+                window.scrollTo({
+                    top: scrollPosition,
+                    behavior: 'auto'
+                });
+            }, 0);
+        }
+
+        function confirmDelete(buttonElement) {
+            const articleElement = buttonElement.closest('.article');
+            const title = articleElement.querySelector('h3').textContent;
+            showConfirm('Delete Article', `Are you sure you want to delete "${title}"? This action cannot be undone.`, () => {
+                // Find and remove the article from adminArticles
+                const adminArticles = getAdminArticles();
+                const articleIndex = Array.from(articleElement.parentNode.children).indexOf(articleElement);
+                const pageStartIndex = (currentPage - 1) * articlesPerPage;
+                const globalIndex = pageStartIndex + articleIndex;
+                adminArticles.splice(globalIndex, 1);
+                saveAdminArticles(adminArticles);
+                // Re-render the current page or previous if last article on page
+                const newTotalPages = Math.ceil(adminArticles.length / articlesPerPage);
+                if (currentPage > newTotalPages && currentPage > 1) {
+                    renderAdminArticles(currentPage - 1);
+                } else {
+                    renderAdminArticles(currentPage);
+                }
+            });
+
+
+        }
+
+        function getUserName(user) {
+            return user.fullname || user.name || 'Unknown';
+        }
+
+        function getUserStatus(user) {
+            // Check new boolean columns first
+            if (user.new_user === true) return 'pending';
+            if (user.banned_user === true) return 'banned';
+            if (user.rejected_user === true) return 'rejected';
+            if (user.verified === true) return 'approved';
+
+            // Fallback to legacy boolean logic for backward compatibility
+            if (user.verified && !user.banned && !user.rejected) return 'approved';
+            if (user.banned) return 'banned';
+            if (user.rejected) return 'rejected';
+            return 'pending';
+        }
+
+        function formatRole(role) {
+            if (role === 'senior_high') return 'SHS';
+            if (role === 'college') return 'College';
+            if (role === 'educator') return 'Educator';
+            if (role === 'admin') return 'Admin';
+            if (role === 'coadmin') return 'CO-Admin';
+            if (role === 'subadmin') return 'SUB-Admin';
+            if (role === 'tester') return 'Tester';
+            return 'Teacher';
+        }
+        function getSectionDisplay(user) {
+            return user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
+        }
+        function getStrandDegree(user) {
+            if (user.role === 'senior_high') {
+                return user.strand || '-';
+            } else if (user.role === 'college') {
+                return user.section || '-';
+            } else if (user.role === 'educator') {
+                return user.section || '-';
+            } else {
+                return '-';
+            }
+        }
+        function formatDate(dateString) {
+            if (!dateString || dateString === 'N/A') return 'N/A';
+            const date = new Date(dateString);
+            const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
+            return date.toLocaleDateString('en-US', options);
+        }
+        function formatNotificationDate(dateString) {
+            if (!dateString || dateString === 'N/A' || dateString === 'Just now' || dateString === 'Recently') return dateString;
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString; // If not a valid date, return as is
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+        // Helper function to parse time string to timestamp for sorting
+        function parseTimeToTimestamp(timeString) {
+            if (!timeString) return Date.now();
+            
+            // If it's already a number, assume it's a timestamp
+            if (typeof timeString === 'number') return timeString;
+            
+            // If it's a date string that can be parsed
+            const parsedDate = new Date(timeString);
+            if (!isNaN(parsedDate.getTime())) return parsedDate.getTime();
+            
+            // Parse relative time strings like "2 hours ago", "30 minutes ago"
+            const match = timeString.match(/(\d+)\s*(minute|hour|day|second)s?\s*ago/i);
+            if (match) {
+                const value = parseInt(match[1]);
+                const unit = match[2].toLowerCase();
+                const now = Date.now();
+                switch (unit) {
+                    case 'second': return now - (value * 1000);
+                    case 'minute': return now - (value * 60 * 1000);
+                    case 'hour': return now - (value * 60 * 60 * 1000);
+                    case 'day': return now - (value * 24 * 60 * 60 * 1000);
+                }
+            }
+            
+            // Default to current time if parsing fails
+            return Date.now();
+        }
+        function updateProfileAvatar(imageUrl) {
+            const avatar = document.getElementById('account-profile-avatar');
+            avatar.style.backgroundImage = `url(${imageUrl})`;
+            avatar.style.backgroundSize = 'cover';
+            avatar.style.backgroundPosition = 'center';
+            avatar.textContent = '';
+            const sidebarAvatar = document.querySelector('.sidebar .admin-info .profile-avatar');
+            if (sidebarAvatar) {
+                sidebarAvatar.style.backgroundImage = `url(${imageUrl})`;
+                sidebarAvatar.style.backgroundSize = 'cover';
+                sidebarAvatar.style.backgroundPosition = 'center';
+                sidebarAvatar.textContent = '';
+            }
+        }
+        function getStatus(createdAt) {
+            if (!createdAt) return 'Pending';
+            const now = new Date();
+            const created = new Date(createdAt);
+            const diffMs = now - created;
+            const diffHours = diffMs / (1000 * 60 * 60);
+            return diffHours < 1 ? 'Just Now' : 'Pending';
+        }
+        let dashboardUploadsChartType = 'doughnut';
+        function toggleDashboardUploadsChartType() {
+            dashboardUploadsChartType = dashboardUploadsChartType === 'pie' ? 'doughnut' : 'pie';
+            document.getElementById('toggle-dashboard-uploads-chart').innerText = dashboardUploadsChartType === 'pie' ? 'Doughnut' : 'Pie';
+            renderDashboardUploadsChart();
+            renderGaugeChart('avg-chart', 'Average Session Duration', 5.0, '#007bff');
+        }
+        function toggleTimeChartType() {
+            timeChartType = timeChartType === 'line' ? 'bar' : 'line';
+            document.getElementById('toggle-time-chart').innerText = timeChartType === 'line' ? 'Bar' : 'Line';
+        }
+
+        // === CREATE ARTICLE TEMPLATE (VIEW/EDIT TOGGLE) ===
+        function createArticleTemplate(articleData = {}) {
+            const wrapper = document.createElement('div');
+            wrapper.style.marginBottom = '20px';
+            const template = document.createElement('div');
+            template.className = `article ${articleData.category === 'capstone' ? 'capstone' : ''}`;
+            template.setAttribute('data-category', articleData.category);
+            const actionButtons = document.createElement('div');
+            actionButtons.style.display = 'flex';
+            actionButtons.style.justifyContent = 'flex-start';
+            actionButtons.style.gap = '10px';
+            actionButtons.style.marginTop = '10px';
+            wrapper.appendChild(template);
+            wrapper.appendChild(actionButtons);
+            function setViewMode() {
+                template.classList.remove('editing');
+                // Escape special characters for onclick handler
+                const safePdfPath = (articleData.pdfPath || articleData.pdf_path || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const safeTitle = (articleData.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                if (DEBUG) console.log('Creating View button for article:', articleData.id, 'Title:', safeTitle);
+                const hasPdf = articleData.pdfPath || articleData.pdf_path || articleData.pdfId;
+                const pdfUrl = hasPdf ? (articleData.pdfPath || articleData.pdf_path ? safePdfPath : '/api/pdf/' + articleData.pdfId) : '';
+                template.innerHTML = `
+                    <h3>${articleData.title}</h3>
+                    <div class="meta">${articleData.meta}</div>
+                    ${articleData.topic ? `<div class="meta" style="color: #0057b8;">Topic: ${articleData.topic.charAt(0).toUpperCase() + articleData.topic.slice(1)}</div>` : ''}
+                    ${(articleData.type || articleData.qualitativeQuantitative) ? `<div class="meta" style="color: #0057b8;">Type: ${(articleData.type || articleData.qualitativeQuantitative).charAt(0).toUpperCase() + (articleData.type || articleData.qualitativeQuantitative).slice(1)}</div>` : ''}
+                    <div class="summary">${articleData.summary}</div>
+                    <div class="actions">
+                        <button class="edit-btn">Edit</button>
+                        <button class="delete-btn" onclick="confirmDelete(this)">Delete</button>
+                    </div>
+                `;
+                actionButtons.innerHTML = '';
+                // Add onclick to article container to show PDF
+                if (hasPdf) {
+                    template.onclick = (e) => {
+                        if (!e.target.classList.contains('edit-btn') && !e.target.classList.contains('delete-btn')) {
+                            displayArticlePDF(pdfUrl, articleData.title);
+                        }
+                    };
+                    template.style.cursor = 'pointer';
+                }
+                // Add event listener for edit button
+                const editBtn = template.querySelector('.edit-btn');
+                editBtn.addEventListener('click', setEditMode);
+            }
+            function setEditMode() {
+                template.onclick = null;
+                template.style.cursor = 'default';
+                template.classList.add('editing');
+                template.innerHTML = `
+                    <div>
+                        <div contenteditable="true" class="article-title" style="border: none; background: transparent; color: #0057b8; font-size: 18px; font-weight: bold; width: 100%; outline: none; white-space: pre-wrap; word-wrap: break-word;">${articleData.title}</div>
+                    </div>
+                    <div class="meta">
+                        <input type="text" class="article-authors" value="${articleData.meta}" placeholder="Authors" style="border: none; background: transparent; color: #555; font-size: 14px; width: auto; outline: none;">
+                    </div>
+                    <div class="summary">
+                        <div contenteditable="true" class="article-summary" style="border: none; background: transparent; color: #333; font-size: 14px; line-height: 1.5; width: 100%; outline: none; white-space: pre-wrap; word-wrap: break-word;">${articleData.summary}</div>
+                    </div>
+                    <div class="pdf-management" style="margin: 10px 0; padding: 10px; border: 1px dashed #ccc; border-radius: 4px;">
+                        <label style="font-weight: bold; color: #0057b8;">PDF Document:</label>
+                        ${(articleData.pdfPath || articleData.pdf_path || articleData.pdfId) ? `
+                        <div class="current-pdf" style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                            <span style="flex: 1; color: #333; word-break: break-all;">${(articleData.pdfPath || articleData.pdf_path || '').split('/').pop() || 'PDF ID: ' + articleData.pdfId}</span>
+                            <button type="button" onclick="removeArticlePDF(this, '${articleData.id || articleData.title}')" style="background: #dc3545; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; font-size: 16px;">&times;</button>
+                        </div>
+                        ` : '<p style="color: #666; margin: 5px 0;">No PDF uploaded</p>'}
+                        <div class="pdf-upload" style="margin-top: 10px;">
+                            <input type="file" id="pdf-upload-${articleData.id || articleData.title}" accept=".pdf" style="display: none;" onchange="handleArticlePDFUpload(this, '${articleData.id || articleData.title}')">
+                            <button type="button" onclick="document.getElementById('pdf-upload-${articleData.id || articleData.title}').click()" style="background: #0057b8; color: white; border: none; border-radius: 4px; padding: 8px 15px; cursor: pointer;">${(articleData.pdfPath || articleData.pdf_path || articleData.pdfId) ? 'Replace PDF' : 'Upload PDF'}</button>
+                        </div>
+                    </div>
+                    <div class="actions">
+                    </div>
+                    <div class="actions-row">
+                        <label>Category:</label>
+                        <select class="category-select">
+                            <option value="research" ${articleData.category === 'research' ? 'selected' : ''}>Research</option>
+                            <option value="capstone" ${articleData.category === 'capstone' ? 'selected' : ''}>Capstone</option>
+                        </select>
+                        <label style="margin-left: 10px;">Topic:</label>
+                        <select class="topic-select">
+                            <option value="">Select Topic</option>
+                            <option value="agriculture" ${articleData.topic === 'agriculture' ? 'selected' : ''}>Agriculture</option>
+                            <option value="business" ${articleData.topic === 'business' ? 'selected' : ''}>Business</option>
+                            <option value="cosmetics" ${articleData.topic === 'cosmetics' ? 'selected' : ''}>Cosmetics</option>
+                            <option value="education" ${articleData.topic === 'education' ? 'selected' : ''}>Education</option>
+                            <option value="environment" ${articleData.topic === 'environment' ? 'selected' : ''}>Environment</option>
+                            <option value="food" ${articleData.topic === 'food' ? 'selected' : ''}>Food</option>
+                            <option value="technology" ${articleData.topic === 'technology' ? 'selected' : ''}>Technology</option>
+                        </select>
+                        <label style="margin-left: 10px;">Type:</label>
+                        <select class="type-select">
+                            <option value="">Select Type</option>
+                            <option value="qualitative" ${(articleData.type === 'qualitative' || articleData.qualitativeQuantitative === 'qualitative') ? 'selected' : ''}>Qualitative</option>
+                            <option value="quantitative" ${(articleData.type === 'quantitative' || articleData.qualitativeQuantitative === 'quantitative') ? 'selected' : ''}>Quantitative</option>
+                            <option value="bsba" ${(articleData.type === 'bsba' || articleData.qualitativeQuantitative === 'bsba') ? 'selected' : ''}>BSBA</option>
+                            <option value="bscs" ${(articleData.type === 'bscs' || articleData.qualitativeQuantitative === 'bscs') ? 'selected' : ''}>BSCS</option>
+                            <option value="bsit" ${(articleData.type === 'bsit' || articleData.qualitativeQuantitative === 'bsit') ? 'selected' : ''}>BSIT</option>
+                        </select>
+                        <div class="research-options" style="display: ${articleData.category === 'research' ? 'inline' : 'none'};">
+                            <label>Grade:</label>
+                            <select class="grade-select">
+                                <option value="Grade 11" ${articleData.program === 'Grade 11' ? 'selected' : ''}>Grade 11</option>
+                                <option value="Grade 12" ${articleData.program === 'Grade 12' ? 'selected' : ''}>Grade 12</option>
+                            </select>
+                            <label>Strand:</label>
+                            <select class="strand-select">
+                                <option value="ABM" ${articleData.strand === 'ABM' ? 'selected' : ''}>ABM</option>
+                                <option value="ITMAWD" ${articleData.strand === 'ITMAWD' ? 'selected' : ''}>ITMAWD</option>
+                                <option value="STEM" ${articleData.strand === 'STEM' ? 'selected' : ''}>STEM</option>
+                            </select>
+                        </div>
+                        <div class="capstone-options" style="display: ${articleData.category === 'capstone' ? 'inline' : 'none'};">
+                            <label>Program:</label>
+                            <select class="program-select">
+                                <option value="BSBA" ${articleData.strand === 'BSBA' ? 'selected' : ''}>BSBA</option>
+                                <option value="BSCS" ${articleData.strand === 'BSCS' ? 'selected' : ''}>BSCS</option>
+                                <option value="BSIT" ${articleData.strand === 'BSIT' ? 'selected' : ''}>BSIT</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+                // Add event listeners for category
+                const categorySelect = template.querySelector('.category-select');
+                categorySelect.addEventListener('change', function() {
+                    const researchOpts = template.querySelector('.research-options');
+                    const capstoneOpts = template.querySelector('.capstone-options');
+                    if (this.value === 'research') {
+                        researchOpts.style.display = 'inline';
+                        capstoneOpts.style.display = 'none';
+                        template.classList.remove('capstone');
+                    } else {
+                        researchOpts.style.display = 'none';
+                        capstoneOpts.style.display = 'inline';
+                        template.classList.add('capstone');
+                    }
+                });
+                // Create buttons in actionButtons
+                actionButtons.innerHTML = '';
+                const editBtn = document.createElement('button');
+                editBtn.className = 'edit-btn';
+                editBtn.style.backgroundColor = 'gray';
+                editBtn.style.color = 'white';
+                editBtn.style.border = 'none';
+                editBtn.style.padding = '5px 10px';
+                editBtn.style.borderRadius = '4px';
+                editBtn.style.cursor = 'pointer';
+                editBtn.textContent = 'Edit';
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'cancel-btn';
+                cancelBtn.style.backgroundColor = '#6c757d';
+                cancelBtn.style.color = 'white';
+                cancelBtn.style.border = 'none';
+                cancelBtn.style.padding = '5px 10px';
+                cancelBtn.style.borderRadius = '4px';
+                cancelBtn.style.cursor = 'pointer';
+                cancelBtn.textContent = 'Cancel';
+                cancelBtn.addEventListener('click', setViewMode);
+                const saveBtn = document.createElement('button');
+                saveBtn.className = 'save-btn';
+                saveBtn.style.backgroundColor = '#28a745';
+                saveBtn.style.color = 'white';
+                saveBtn.style.border = 'none';
+                saveBtn.style.padding = '5px 10px';
+                saveBtn.style.borderRadius = '4px';
+                saveBtn.style.cursor = 'pointer';
+                saveBtn.textContent = 'Save';
+                saveBtn.addEventListener('click', function() {
+                    articleData.title = template.querySelector('.article-title').textContent;
+                    articleData.authors = template.querySelector('.article-authors').value;
+                    articleData.meta = template.querySelector('.article-authors').value;
+                    articleData.summary = template.querySelector('.article-summary').textContent;
+                    articleData.category = template.querySelector('.category-select').value;
+                    articleData.topic = template.querySelector('.topic-select').value;
+                    articleData.type = template.querySelector('.type-select').value;
+                    articleData.qualitativeQuantitative = template.querySelector('.type-select').value;
+                    if (articleData.category === 'research') {
+                        articleData.program = template.querySelector('.grade-select').value;
+                        articleData.strand = template.querySelector('.strand-select').value;
+                    } else {
+                        articleData.program = '';
+                        articleData.strand = template.querySelector('.program-select').value;
+                    }
+                    
+                    // Update in localStorage
+                    const articles = getArticles();
+                    const articleIndex = articles.findIndex(a => a.id === articleData.id);
+                    if (articleIndex !== -1) {
+                        articles[articleIndex] = articleData;
+                        saveArticles(articles);
+                    }
+                    
+                    // Update admin articles
+                    const adminArticles = getAdminArticles();
+                    const adminIndex = adminArticles.findIndex(a => a.id === articleData.id);
+                    if (adminIndex !== -1) {
+                        adminArticles[adminIndex] = articleData;
+                        saveAdminArticles(adminArticles);
+                    }
+                    
+                    // Update in server
+                    if (articleData.id) {
+                        updateArticleInServer(articleData.id, articleData);
+                    }
+                    
+                    setViewMode();
+                    alert('Article updated!');
+                });
+                actionButtons.appendChild(editBtn);
+                actionButtons.appendChild(cancelBtn);
+                actionButtons.appendChild(saveBtn);
+            }
+            setViewMode(); // Start in view mode
+            return wrapper;
+        }
+
+        // === UPLOAD FORM HANDLER ===
+        document.getElementById('article-upload-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const category = document.getElementById('article-category').value;
+            const pdfInput = document.getElementById('article-pdf');
+            const pdfStatus = document.getElementById('pdf-upload-status');
+            
+            let pdfId = null;
+            let pdfFilename = null;
+            
+            // Handle PDF upload to Couchbase if file is selected
+            if (pdfInput && pdfInput.files.length > 0) {
+                const pdfFile = pdfInput.files[0];
+                pdfStatus.textContent = 'Uploading PDF to Couchbase...';
+                pdfStatus.style.color = '#0057b8';
+                
+                try {
+                    // Read file as base64
+                    const reader = new FileReader();
+                    const fileData = await new Promise((resolve, reject) => {
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(pdfFile);
+                    });
+                    
+                    // Upload to Couchbase via API
+                    if (DEBUG) console.log('Uploading PDF to:', window.location.origin + '/api/pdf/upload');
+                    const uploadResponse = await fetch('/api/pdf/upload', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            fileData: fileData,
+                            filename: pdfFile.name
+                        })
+                    });
+                    
+                    if (DEBUG) console.log('PDF upload response status:', uploadResponse.status);
+                    if (DEBUG) console.log('PDF upload response statusText:', uploadResponse.statusText);
+                    
+                    const responseText = await uploadResponse.text();
+                    if (DEBUG) console.log('PDF upload response text:', responseText);
+                    
+                    if (!uploadResponse.ok || !responseText) {
+                        throw new Error('Failed to upload PDF: ' + uploadResponse.status + ' ' + uploadResponse.statusText + ' - ' + responseText);
+                    }
+                    
+                    const uploadResult = JSON.parse(responseText);
+                    pdfId = uploadResult.fileId;
+                    pdfFilename = uploadResult.filename;
+                    pdfStatus.textContent = 'PDF uploaded successfully!';
+                    pdfStatus.style.color = 'green';
+                    
+                } catch (pdfError) {
+                    console.error('Error uploading PDF - full error:', pdfError);
+                    console.error('Error message:', pdfError.message);
+                    if (pdfError.response) {
+                        console.error('Response data:', pdfError.response.data);
+                    }
+                    pdfStatus.textContent = 'Error uploading PDF: ' + pdfError.message;
+                    pdfStatus.style.color = 'red';
+                    alert('Warning: PDF upload failed. Article will be saved without PDF.');
+                }
+            }
+            
+            const topicValue = document.getElementById('article-topic').value;
+            const levelValue = category === 'research' ? '' : document.getElementById('capstone-grade').value;
+
+            const formData = {
+                title: document.getElementById('article-title').value,
+                authors: document.getElementById('article-authors-year').value,
+                meta: document.getElementById('article-authors-year').value,
+                summary: document.getElementById('article-summary').value,
+                category: category,
+                strand: category === 'research' ? document.getElementById('article-strand').value : document.getElementById('article-program').value,
+                level: levelValue,
+                program: document.getElementById('article-program').value,
+                year: document.getElementById('article-year').value,
+                citation: document.getElementById('article-citation').value,
+                qualitativeQuantitative: category === 'research' ? document.getElementById('article-qualitative-quantitative').value : '',
+                topic: topicValue,
+                pdfId: pdfId,
+                pdfFilename: pdfFilename
+            };
+            const articles = getArticles();
+            articles.push(formData);
+            saveArticles(articles);
+
+            // Add to admin articles for pagination
+            const adminArticles = getAdminArticles();
+            adminArticles.push(formData);
+            saveAdminArticles(adminArticles);
+
+            // Refresh pagination display
+            renderAdminArticles();
+            // Reset form
+            this.reset();
+            document.getElementById('article-category').value = 'research';
+            document.getElementById('article-level').value = 'shs';
+            // Reset topic dropdown
+            document.getElementById('article-topic').innerHTML = '<option value="">Select Topic</option><option value="agriculture">Agriculture</option><option value="business">Business</option><option value="cosmetics">Cosmetics</option><option value="education">Education</option><option value="environment">Environment</option><option value="food">Food</option><option value="technology">Technology</option>';
+            // Reset visibility
+            document.querySelector('.research-options').style.display = 'inline';
+            document.querySelector('.capstone-options').style.display = 'none';
+            document.querySelector('.article-template').classList.remove('capstone');
+            document.getElementById('article-qualitative-quantitative').value = 'qualitative';
+            // Reset PDF upload status
+            if (pdfStatus) {
+                pdfStatus.textContent = '';
+            }
+        });
+
+        // Add event listener for category change in upload form
+        document.getElementById('article-category').addEventListener('change', function() {
+            const researchOpts = document.querySelector('.research-options');
+            const capstoneOpts = document.querySelector('.capstone-options');
+            const template = document.querySelector('.article-template');
+            // Update topic options based on category
+            const baseTopics = [
+                { value: 'agriculture', text: 'Agriculture' },
+                { value: 'business', text: 'Business' },
+                { value: 'cosmetics', text: 'Cosmetics' },
+                { value: 'education', text: 'Education' },
+                { value: 'environment', text: 'Environment' },
+                { value: 'food', text: 'Food' },
+                { value: 'technology', text: 'Technology' }
+            ];
+
+            let topicOptions = '<option value="">Select Topic</option>';
+            baseTopics.forEach(t => {
+                topicOptions += `<option value="${t.value}">${t.text}</option>`;
+            });
+
+            if (this.value === 'research') {
+                researchOpts.style.display = 'inline';
+                capstoneOpts.style.display = 'none';
+                template.classList.remove('capstone');
+            } else {
+                researchOpts.style.display = 'none';
+                capstoneOpts.style.display = 'inline';
+                template.classList.add('capstone');
+            }
+            document.getElementById('article-topic').innerHTML = topicOptions;
+        });
+
+        // Add event listener for level change in upload form
+        const levelSelect = document.getElementById('article-level');
+        if (levelSelect) {
+            levelSelect.addEventListener('change', function() {
+            const strandSelect = document.getElementById('article-strand');
+            const label = document.getElementById('strand-degree-label');
+            if (this.value === 'college') {
+                label.textContent = 'Degree:';
+                strandSelect.innerHTML = `
+                    <option value="BSBA">BSBA</option>
+                    <option value="BSCS">BSCS</option>
+                    <option value="BSIT">BSIT</option>
+                `;
+            } else {
+                label.textContent = 'Strand:';
+                strandSelect.innerHTML = `
+                    <option value="ABM">ABM</option>
+                    <option value="ITMAWD">ITMAWD</option>
+                    <option value="STEM">STEM</option>
+                `;
+            }
+        });
+        }
+
+
+        // Flag to prevent storage event from switching sections
+        let isReloadingUsers = false;
+        
+        // === INIT ===
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Listen for user data changes from other admin tabs
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'users' && !isReloadingUsers) {
+                    if (DEBUG) console.log('DEBUG: Users changed in another tab, reloading...');
+                    isReloadingUsers = true;
+                    loadUsers().then(() => {
+                        // DON'T switch to users section - just reload data
+                        if (DEBUG) console.log('DEBUG: User tables refreshed (section unchanged)');
+                        isReloadingUsers = false;
+                    });
+                }
+            });
+
+            // Show welcome modal
+            const welcomeModal = document.getElementById('welcome-modal');
+            const welcomeModalContent = document.querySelector('.welcome-modal-content');
+            function closeWelcomeModal() {
+                welcomeModal.classList.remove('show');
+            }
+            welcomeModal.classList.add('show');
+            setTimeout(closeWelcomeModal, 4000); // 4 seconds
+            // Close modal when clicking outside
+            welcomeModal.addEventListener('click', function(e) {
+                if (e.target === welcomeModal) {
+                    closeWelcomeModal();
+                }
+            });
+            // Dark mode - Apply saved preference on page load
+            const darkModeToggle = document.querySelector('.dark-mode-toggle');
+            const darkModeIcon = darkModeToggle ? darkModeToggle.querySelector('i') : null;
+            const savedDarkMode = localStorage.getItem('darkMode');
+            if (DEBUG) console.log('Admin page loaded, darkMode from localStorage:', savedDarkMode);
+            if (savedDarkMode === 'on') {
+                document.body.classList.add('dark-mode');
+                if (DEBUG) console.log('Applied dark-mode class to body');
+                if (darkModeIcon) {
+                    darkModeIcon.className = 'fas fa-sun';
+                    darkModeIcon.style.color = '#FFD700';
+                    if (DEBUG) console.log('Updated icon to sun');
+                }
+            }
+
+            // Add event listener to dark mode toggle
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('click', toggleDarkMode);
+            }
+
+            // Load articles from server (await to ensure they're loaded before proceeding)
+            await loadArticlesFromServer();
+            // Load user uploads for admin
+            loadUserUploadsForAdmin();
+            // Load settings
+            const savedSettings = JSON.parse(localStorage.getItem('adminSettings')) || {};
+            const siteTitleEl = document.getElementById('site-title');
+            if (siteTitleEl) siteTitleEl.value = savedSettings.siteTitle || 'STI Archives';
+            function updateTitlePreview() {
+                const siteTitleInput = document.getElementById('site-title');
+                const siteTitlePreview = document.getElementById('site-title-preview');
+                if (siteTitlePreview) {
+                    siteTitlePreview.textContent = siteTitleInput ? siteTitleInput.value : 'STI Archives';
+                }
+            }
+            // Update title preview on load
+            updateTitlePreview();
+            // Load logo if exists
+            if (savedSettings.siteLogo) {
+                const sidebarImg = document.querySelector('.sidebar-header img');
+                if (sidebarImg) sidebarImg.src = savedSettings.siteLogo;
+            }
+            // Load account settings
+            const accountSettings = JSON.parse(localStorage.getItem('accountSettings')) || {};
+            document.getElementById('admin-fullname').value = accountSettings.fullname || 'Admin';
+            document.getElementById('admin-username').value = accountSettings.username || '';
+            document.getElementById('admin-gmail').value = accountSettings.fullname || '';
+            document.getElementById('admin-password').value = accountSettings.password || '';
+            // Update profile avatar display
+            const avatarElement = document.getElementById('account-profile-avatar');
+            if (accountSettings.profilePic) {
+                updateProfileAvatar(accountSettings.profilePic);
+            } else if (accountSettings.fullname) {
+                avatarElement.textContent = accountSettings.fullname.charAt(0).toUpperCase();
+            }
+            // Profile picture upload handler
+            const profilePicUpload = document.getElementById('admin-profile-pic-upload');
+            profilePicUpload.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imageUrl = e.target.result;
+                        updateProfileAvatar(imageUrl);
+                        const accountSettings = JSON.parse(localStorage.getItem('accountSettings')) || {};
+                        accountSettings.profilePic = imageUrl;
+                        localStorage.setItem('accountSettings', JSON.stringify(accountSettings));
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            // Load terms and privacy
+            const defaultTerms = `<h1>Terms & Conditions</h1>
+<p class="last-updated">Last Updated: February 2026</p>
+
+<h2>1. Acceptance of Terms</h2>
+<p>By accessing and using STI Archives, you accept and agree to be bound by the terms and provision of this agreement.</p>
+
+<h2>2. Use License</h2>
+<p>Permission is granted to temporarily use STI Archives for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:</p>
+<ul>
+<li>Modify or copy the materials</li>
+<li>Use the materials for any commercial purpose or public display</li>
+<li>Transfer the materials to another person or entity</li>
+<li>Attempt to reverse engineer any software contained on the website</li>
+</ul>
+
+<h2>3. User Account Responsibilities</h2>
+<p>You are responsible for maintaining the confidentiality of your account and password. You agree to accept responsibility for all activities that occur under your account or password.</p>
+
+<h2>4. Content Submission</h2>
+<p>Users may submit articles and documents to STI Archives. By submitting content, you grant us the right to use, modify, and display such content on our platform.</p>
+
+<h2>5. Disclaimer</h2>
+<p>The materials on STI Archives are provided "as is". STI Archives makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties, including without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.</p>
+
+<h2>6. Limitations</h2>
+<p>In no event shall STI Archives or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on STI Archives.</p>
+
+<h2>7. Privacy Policy</h2>
+<p>Your privacy is important to us. Please review our <a href="/privacy.html">Privacy Policy</a> which describes how we collect, use, and protect your personal information.</p>
+
+<h2>8. Governing Law</h2>
+<p>These terms and conditions are governed by and construed in accordance with the laws of the Philippines and you irrevocably submit to the exclusive jurisdiction of the courts in that State or location.</p>
+
+<h2>9. Contact Us</h2>
+<p>If you have any questions regarding these terms and conditions, you may contact us at [contact information].</p>`;
+            const defaultPrivacy = `<h1>Privacy Policy</h1>
+<p class="last-updated">Last Updated: February 2026</p>
+
+<h2>1. Introduction</h2>
+<p>STI Archives ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how your personal information is collected, used, and disclosed by STI Archives when you use our website.</p>
+
+<h2>2. Information We Collect</h2>
+<p>We may collect the following types of information:</p>
+<ul>
+<li><strong>Personal Information:</strong> Name, email address, student ID, and other information you provide when creating an account</li>
+<li><strong>Profile Information:</strong> Profile picture and other information you choose to add to your profile</li>
+<li><strong>Usage Data:</strong> Information about how you interact with our website, including pages visited and features used</li>
+<li><strong>Content:</strong> Articles, documents, and other materials you upload or save on our platform</li>
+</ul>
+
+<h2>3. How We Use Your Information</h2>
+<p>We use your information to:</p>
+<ul>
+<li>Provide and maintain our services</li>
+<li>Process your registrations and account management</li>
+<li>Improve and personalize your experience</li>
+<li>Send you important updates and notifications</li>
+<li>Respond to your comments, questions, and requests</li>
+<li>Analyze usage patterns to enhance our services</li>
+</ul>
+
+<h2>4. Data Security</h2>
+<p>We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the Internet or electronic storage is 100% secure, and we cannot guarantee absolute security.</p>
+
+<h2>5. Third-Party Services</h2>
+<p>Our website may contain links to third-party websites or services. We are not responsible for the privacy practices of these third parties. We encourage you to review the privacy policies of those third parties.</p>
+
+<h2>6. Cookies and Tracking Technologies</h2>
+<p>We use cookies and similar tracking technologies to track the activity on our website and hold certain information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.</p>
+
+<h2>7. Your Rights</h2>
+<p>You have the right to:</p>
+<ul>
+<li>Access the personal information we hold about you</li>
+<li>Request correction of inaccurate personal information</li>
+<li>Request deletion of your personal information</li>
+<li>Object to processing of your personal information</li>
+<li>Request restriction of processing your personal information</li>
+<li>Request transfer of your personal information</li>
+</ul>
+
+<h2>8. Children's Privacy</h2>
+<p>Our service is not intended for use by children under the age of 13. We do not knowingly collect personal information from children under 13. If you become aware that a child has provided us with personal information, please contact us.</p>
+
+<h2>9. Changes to This Privacy Policy</h2>
+<p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.</p>
+
+<h2>10. Contact Us</h2>
+<p>If you have any questions about this Privacy Policy, please contact us.</p>`;
+            document.getElementById('terms-text').innerHTML = localStorage.getItem('termsContent') || defaultTerms;
+            document.getElementById('privacy-text').innerHTML = localStorage.getItem('privacyContent') || defaultPrivacy;
+            // Load notifications
+            const requests = [
+                { action: 'Request: Accept approval for new user interface design', time: '2023-10-01 10:00 AM' },
+                { action: 'Request: Grant permission to upload research articles', time: '2023-10-02 02:15 PM' },
+                { action: 'Request: Accept approval and permission for site logo update', time: '2023-10-03 09:00 AM' }
+            ];
+            const suggestions = [
+                { action: 'Suggestion by admin: Implement dark mode', time: '2023-10-01 11:30 AM' },
+                { action: 'Suggestion by user: Add search filters', time: '2023-10-02 04:45 PM' }
+            ];
+            const bugs = [
+                { action: 'Bug report: Login page not loading on mobile', time: '2023-10-04 01:00 PM' },
+                { action: 'Bug report: Search function returns incorrect results', time: '2023-10-05 03:30 PM' }
+            ];
+
+            // Load users first, then generate notifications
+            let notifications = [];
+            isReloadingUsers = true;
+            loadUsers().then(() => {
+                if (DEBUG) console.log('DEBUG: Initial loadUsers completed');
+                isReloadingUsers = false;
+                // Ensure proper section visibility on load
+                showUserSection('verified');
+                // Start polling for new users every 5 seconds
+                setInterval(async () => {
+                    try {
+                        const response = await fetch('/api/users');
+                        if (response.ok) {
+                            const serverUsers = await response.json();
+                            if (DEBUG) console.log('DEBUG: Polled users from server, count:', serverUsers.length);
+                            // Update localStorage with server users
+                            localStorage.setItem('users', JSON.stringify(serverUsers));
+                            // Reload the user tables to show new signups
+                            isReloadingUsers = true;
+                            loadUsers();
+                            // Also regenerate notifications
+                            notifications = generateNotifications(serverUsers);
+                            updateNotificationBadge(notifications);
+                            if (DEBUG) console.log('DEBUG: Tables reloaded with new users');
+                            setTimeout(() => { isReloadingUsers = false; }, 100);
+                        }
+                    } catch (error) {
+                        // Silent fail - polling continues in background
+                    }
+                }, 5000); // Poll every 5 seconds
+
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                notifications = generateNotifications(users);
+                updateNotificationBadge(notifications);
+
+                // Set sidebar admin info from current logged in user
+                currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                
+                // If no currentUser, try to get from users array based on role
+                if (!currentUser || !currentUser.name) {
+                    // Load user from users array as fallback
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    const userFromArray = users.find(u => u.verified);
+                    if (userFromArray) {
+                        currentUser = userFromArray;
+                    }
+                }
+            }); // Close loadUsers promise
+
+
+        function renderDashboardUploadsChart() {
+            const ctx = document.getElementById('dashboard-uploadsChart').getContext('2d');
+            if (window.dashboardUploadsChart) {
+                window.dashboardUploadsChart.destroy();
+            }
+
+            const barColors = [
+                '#8A2BE2', // Admin Cool Purple
+                '#FFA500', // Teacher Warm Orange
+                '#008000', // SHS Emerald Green
+                '#00008B'  // College Deep Blue
+            ];
+            const labels = ['ADMIN', 'TEACHER', 'SHS', 'COLLEGE'];
+            const data = [1, 1, 1, 1]; // Demo data
+            const total = data.reduce((a, b) => a + b, 0);
+            const percentageData = data.map(d => (d / total) * 100);
+
+            window.dashboardUploadsChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: percentageData,
+                        backgroundColor: barColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+
+       
+
+
+
+        // === STUB FUNCTIONS (to prevent errors) ===
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const mainContent = document.getElementById('main-content');
+            const header = document.querySelector('.header');
+            const body = document.body;
+            // Check if mobile view
+            if (window.innerWidth <= 767) {
+                // Mobile: toggle overlay and sidebar
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('show');
+            } else {
+                // Desktop/tablet: collapse sidebar
+                sidebar.classList.toggle('collapsed');
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                const marginValue = window.innerWidth >= 1025 ? '200px' : window.innerWidth >= 769 ? '180px' : window.innerWidth >= 768 ? '160px' : '0';
+                const paddingValue = isCollapsed ? '20px' : marginValue;
+                if (isCollapsed) {
+                    mainContent.style.marginLeft = '0';
+                    header.style.paddingLeft = paddingValue;
+                    body.classList.add('sidebar-collapsed');
+                } else {
+                    mainContent.style.marginLeft = marginValue;
+                    header.style.paddingLeft = paddingValue;
+                    body.classList.remove('sidebar-collapsed');
+                }
+            }
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const darkModeToggle = document.querySelector('.dark-mode-toggle');
+            const toggleBtn = darkModeToggle ? darkModeToggle.querySelector('i') : null;
+            if (document.body.classList.contains('dark-mode')) {
+                if (toggleBtn) {
+                    toggleBtn.className = 'fas fa-sun';
+                    toggleBtn.style.color = '#FFD700';
+                }
+                localStorage.setItem('darkMode', 'on');
+            } else {
+                if (toggleBtn) {
+                    toggleBtn.className = 'fas fa-moon';
+                    toggleBtn.style.color = '#777';
+                }
+                localStorage.setItem('darkMode', 'off');
+            }
+        }
+
+        async function renderUserChart() {
+            // Example data for demonstration
+            const exampleData = {
+                shs: 150,
+                college: 80,
+                educator: 25,
+                admin: 5
+            };
+            const barColors = [
+                '#008000', // SHS Emerald Green
+                '#00008B', // College Deep Blue
+                '#FFA500', // Teacher Warm Orange
+                '#8A2BE2'  // Admin Cool Purple
+            ];
+            const labels = ['SHS', 'COLLEGE', 'TEACHER', 'ADMIN'];
+            const ctx = document.getElementById('user-chart').getContext('2d');
+            if (window.userChart) {
+                window.userChart.destroy();
+            }
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const textColor = isDarkMode ? '#ffffff' : '#000000';
+            window.userChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: [exampleData.shs, exampleData.college, exampleData.educator, exampleData.admin],
+                        backgroundColor: barColors,
+                        borderColor: barColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: textColor
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: 400,
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderSigningUpChart(period = 'day', filter = null) {
+            if (DEBUG) console.log('DEBUG: Rendering signing up chart');
+            const ctx = document.getElementById('signing-up-chart').getContext('2d');
+            if (window.signingUpChart) {
+                window.signingUpChart.destroy();
+            }
+            let users;
+            try {
+                users = JSON.parse(localStorage.getItem('users') || '[]');
+            } catch (e) {
+                users = [];
+            }
+            if (!Array.isArray(users)) users = [];
+            let filteredUsers = users.filter(user => !user.verified && !user.rejected && !user.banned);
+            if (filter) {
+                filteredUsers = filteredUsers.filter(user => user.role === filter);
+            }
+            const now = new Date();
+            let labels = [];
+            let data = [];
+            if (period === 'day') {
+                // Last 7 days
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date(now);
+                    date.setDate(now.getDate() - i);
+                    const dateStr = date.toISOString().split('T')[0];
+                    labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                    const count = filteredUsers.filter(user => user.created_at && user.created_at.split('T')[0] === dateStr).length;
+                    data.push(count);
+                }
+            } else if (period === 'month') {
+                // Last 12 months
+                for (let i = 11; i >= 0; i--) {
+                    const date = new Date(now);
+                    date.setMonth(now.getMonth() - i);
+                    const monthStr = date.toISOString().slice(0, 7);
+                    labels.push(date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }));
+                    const count = filteredUsers.filter(user => user.created_at && user.created_at.slice(0, 7) === monthStr).length;
+                    data.push(count);
+                }
+            }
+            window.signingUpChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Sign-ups',
+                        data: data,
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderDashboardUploadsChart() {
+            const ctx = document.getElementById('dashboard-uploadsChart').getContext('2d');
+            if (window.dashboardUploadsChart) {
+                window.dashboardUploadsChart.destroy();
+            }
+
+            const barColors = [
+                '#8A2BE2', // Admin Cool Purple
+                '#FFA500', // Teacher Warm Orange
+                '#008000', // SHS Emerald Green
+                '#00008B'  // College Deep Blue
+            ];
+            const labels = ['ADMIN', 'TEACHER', 'SHS', 'COLLEGE'];
+            const data = [1, 1, 1, 1]; // Demo data
+            const total = data.reduce((a, b) => a + b, 0);
+            const percentageData = data.map(d => (d / total) * 100);
+
+            window.dashboardUploadsChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: percentageData,
+                        backgroundColor: barColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderGaugeChart(canvasId, label, averageDuration, gaugeColor) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+
+            // Destroy existing chart if it exists
+            if (window[canvasId + 'Chart']) {
+                window[canvasId + 'Chart'].destroy();
+            }
+
+            const maxDuration = 5; // Max hours for gauge
+            const percentage = (averageDuration / maxDuration) * 100;
+
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const textColor = isDarkMode ? '#ffffff' : '#000000';
+            const emptyColor = isDarkMode ? '#444' : '#e0e0e0';
+
+            window[canvasId + 'Chart'] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [percentage, 100 - percentage],
+                        backgroundColor: [gaugeColor, emptyColor],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '50%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false },
+                        centerText: {
+                            averageDuration: averageDuration,
+                            textColor: textColor
+                        }
+                    },
+                    rotation: 0,
+                    circumference: 360,
+                    elements: {
+                        arc: {
+                            borderRadius: 10
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'centerText',
+                    afterDraw: function(chart) {
+                        const ctx = chart.ctx;
+                        const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                        const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+                        const averageDuration = chart.options.plugins.centerText.averageDuration;
+                        const textColor = chart.options.plugins.centerText.textColor;
+                        ctx.save();
+                        ctx.font = 'bold 16px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillStyle = textColor;
+                        ctx.fillText(averageDuration + ' hours', centerX, centerY);
+                        ctx.restore();
+                    }
+                }]
+            });
+        }
+
+        let currentPeriod = '';
+
+        function toggleDropdown(dropdownId) {
+            // Close all dropdowns first
+            document.querySelectorAll('.dropdown').forEach(dd => dd.classList.remove('show'));
+            document.querySelectorAll('.dropdown-content').forEach(dd => dd.classList.remove('show'));
+            // Open the clicked dropdown
+            const dropdown = document.getElementById(dropdownId).parentElement;
+            dropdown.classList.toggle('show');
+            // Add event listener to close dropdown when clicking outside
+            if (dropdown.classList.contains('show')) {
+                setTimeout(() => {
+                    document.addEventListener('click', closeDropdownOnOutsideClick);
+                }, 1);
+            }
+        }
+
+        function closeDropdownOnOutsideClick(e) {
+            if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown').forEach(dd => dd.classList.remove('show'));
+                document.querySelectorAll('.dropdown-content').forEach(dd => dd.classList.remove('show'));
+                document.removeEventListener('click', closeDropdownOnOutsideClick);
+            }
+        }
+
+
+        function setPeriod(period) {
+            currentPeriod = period;
+            // Only remove active from period buttons (inside dropdowns)
+            document.querySelectorAll('.dropdown .filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.dropdown-content').forEach(dd => dd.classList.remove('show'));
+            // Find the parent button and make it active
+            const button = event.target.closest('.dropdown').querySelector('.filter-btn');
+            button.classList.add('active');
+            button.innerHTML = period.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) + ' <i class="fas fa-chevron-down"></i>';
+            // Reset the other button to default
+            const isWeek = event.target.closest('.dropdown').querySelector('#week-dropdown') !== null;
+            if (isWeek) {
+                const monthButton = document.querySelector('#month-dropdown').parentElement.querySelector('.filter-btn');
+                monthButton.innerHTML = 'Month <i class="fas fa-chevron-down"></i>';
+            } else {
+                const weekButton = document.querySelector('#week-dropdown').parentElement.querySelector('.filter-btn');
+                weekButton.innerHTML = 'Week <i class="fas fa-chevron-down"></i>';
+            }
+        }
+
+        function setCategory(category) {
+            currentCategory = category;
+            // Only remove active from category buttons (not dropdowns)
+            document.querySelectorAll('.filter-buttons button:not(.dropdown .filter-btn)').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Handle sidebar link clicks with inline onclick
+        function handleSidebarClick(event, section) {
+            event.preventDefault();
+            if (DEBUG) console.log('DEBUG: handleSidebarClick called with:', section);
+            
+            // Remove active class from all sidebar links
+            document.querySelectorAll('.sidebar ul li').forEach(li => {
+                li.classList.remove('active');
+            });
+            
+            // Add active class to clicked link's parent li
+            event.target.closest('li').classList.add('active');
+            
+            showSection(section);
+        }
+
+        function showSection(sectionId) {
+            if (DEBUG) console.log('DEBUG: showSection called with:', sectionId);
+            
+            try {
+                // Check if element exists before trying to modify it
+                const targetSection = document.getElementById(sectionId);
+                if (!targetSection) {
+                    console.error('DEBUG: Section not found:', sectionId);
+                    alert('Error: Section "' + sectionId + '" not found');
+                    return;
+                }
+                
+                // Remove active class and hide ALL content sections
+                document.querySelectorAll('.content-section').forEach(s => {
+                    s.classList.remove('active');
+                    s.style.display = 'none'; // Force hide
+                    if (DEBUG) console.log('DEBUG: Removed active from:', s.id);
+                });
+                
+                // Add active class to target section and show it
+                targetSection.classList.add('active');
+                targetSection.style.display = 'block'; // Force show
+                if (DEBUG) console.log('DEBUG: Added active to:', sectionId);
+            } catch (e) {
+                console.error('DEBUG: Error in showSection:', e);
+                alert('Error switching section: ' + e.message);
+            }
+            
+            document.getElementById('page-title').textContent =
+                sectionId === 'dashboard' ? 'Dashboard' :
+                sectionId === 'upload' ? 'Upload' :
+                sectionId === 'users' ? 'Users Management' :
+                sectionId === 'profile' ? 'Profile' :
+                sectionId === 'settings' ? 'Settings' :
+                'Notifications';
+            // Reset upload section to default (PDF Upload) when navigating to upload
+            if (sectionId === 'upload') {
+                // Reset to PDF Upload form (default)
+                document.querySelectorAll('.upload-subsection').forEach(sub => sub.classList.remove('active'));
+                document.getElementById('upload-form-section').classList.add('active');
+                // Reset buttons to PDF Upload as active
+                document.querySelectorAll('.upload-nav .nav-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('btn-pdf-upload').classList.add('active');
+            }
+            // Reset users section to verified when navigating to users
+            if (sectionId === 'users') {
+                showUserSection('verified');
+            }
+            if (sectionId === 'dashboard') {
+                // Dashboard renders are now handled in loadUsers.then
+            }
+        }
+
+        // Add event listeners for sidebar navigation
+        document.querySelectorAll('.sidebar a[data-section]').forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                const section = this.getAttribute('data-section');
+                handleSidebarClick(event, section);
+            });
+        });
+
+        // Add event listener for profile avatar
+        const avatarRow = document.querySelector('.avatar-name-row[data-section]');
+        if (avatarRow) {
+            avatarRow.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                showSection(section);
+            });
+        }
+
+        // Add event listener to toggle button
+        const toggleBtn = document.getElementById('toggle-btn');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', toggleSidebar);
+        }
+
+
+
+        // Initialize - always default to dashboard on fresh page load
+        // Clear any saved section to ensure we start fresh
+        localStorage.removeItem('adminCurrentSection');
+        if (DEBUG) console.log('DEBUG: Initializing coadmin page - defaulting to dashboard');
+        showSection('dashboard');
+        // Set initial header padding and main-content margin for open sidebar
+        if (window.innerWidth >= 768) {
+            const marginValue = window.innerWidth >= 1025 ? '200px' : window.innerWidth >= 769 ? '180px' : '160px';
+            document.querySelector('.header').style.paddingLeft = marginValue;
+            document.getElementById('main-content').style.marginLeft = marginValue;
+        }
+
+        // Make all user subsections visible
+        document.querySelectorAll('.user-subsection').forEach(sub => sub.style.display = 'block');
+
+        loadUsers().then(() => {
+            // Counts are now updated automatically when tables are populated
+            renderUserChart();
+            renderSigningUpChart();
+            renderDashboardUploadsChart();
+            renderGaugeChart('session-duration-gauge', 'Average Session Duration', 2.5, '#007bff');
+            updateDashboardCounts();
+        }).catch(() => {
+            // Fallback if async fails
+            renderUserChart();
+            renderSigningUpChart();
+            renderDashboardUploadsChart();
+        });
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profile-dropdown');
+            const isOpen = dropdown.classList.contains('open');
+            dropdown.classList.toggle('open');
+            if (!isOpen) {
+                // Add listener to close on outside click
+                setTimeout(() => {
+                    document.addEventListener('click', closeProfileDropdownOnOutsideClick);
+                }, 1);
+            }
+        }
+
+        function toggleAdminDropdown() {
+            const dropdown = document.querySelector('.admin-dropdown');
+            const isOpen = dropdown.classList.contains('open');
+            dropdown.classList.toggle('open');
+            if (!isOpen) {
+                // Add listener to close on outside click
+                setTimeout(() => {
+                    document.addEventListener('click', closeAdminDropdownOnOutsideClick);
+                }, 1);
+            }
+        }
+
+        function closeAdminDropdownOnOutsideClick(e) {
+            const dropdown = document.querySelector('.admin-dropdown');
+            const btn = document.querySelector('.admin-btn');
+            if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                dropdown.classList.remove('open');
+                document.removeEventListener('click', closeAdminDropdownOnOutsideClick);
+            }
+        }
+
+        function toggleSidebarProfileDropdown() {
+            const dropdown = document.querySelector('.sidebar-profile-menu');
+            const isOpen = dropdown.classList.contains('open');
+            dropdown.classList.toggle('open');
+            if (!isOpen) {
+                // Add listener to close on outside click
+                setTimeout(() => {
+                    document.addEventListener('click', closeSidebarProfileDropdownOnOutsideClick);
+                }, 1);
+            }
+        }
+
+        function closeSidebarProfileDropdownOnOutsideClick(e) {
+            const dropdown = document.querySelector('.sidebar-profile-menu');
+            const adminInfo = document.querySelector('.admin-info');
+            if (!dropdown.contains(e.target) && !adminInfo.contains(e.target)) {
+                dropdown.classList.remove('open');
+                document.removeEventListener('click', closeSidebarProfileDropdownOnOutsideClick);
+            }
+        }
+
+        function closeProfileDropdownOnOutsideClick(e) {
+            const dropdown = document.getElementById('profile-dropdown');
+            const btn = document.querySelector('.profile-btn');
+            if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                dropdown.classList.remove('open');
+                document.removeEventListener('click', closeProfileDropdownOnOutsideClick);
+            }
+        }
+
+        function closeSidebarOnOverlayClick() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+        }
+
+        function toggleNotificationModal() {
+            const modal = document.getElementById('notification-modal');
+            if (!modal) return;
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+            if (DEBUG) console.log('toggleNotificationModal called');
+            if (DEBUG) console.log('generateNotifications defined:', typeof generateNotifications);
+            if (DEBUG) console.log('localStorage users:', localStorage.getItem('users') ? 'exists' : 'null');
+            // Refresh notifications when opening modal
+            if (modal.style.display === 'block') {
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                if (DEBUG) console.log('Users count for notifications:', users.length);
+                if (typeof generateNotifications === 'function') {
+                    const freshNotifications = generateNotifications(users);
+                    if (DEBUG) console.log('Fresh notifications count:', freshNotifications.length);
+                    const notificationList = document.getElementById('notification-list');
+                    if (!notificationList) return;
+                    notificationList.innerHTML = '';
+                    const maxNotifications = 10;
+                    const limitedNotifications = freshNotifications.slice(0, maxNotifications);
+                    const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+                    limitedNotifications.forEach(notif => {
+                        const notifDiv = document.createElement('div');
+                        notifDiv.className = 'notification-item';
+                        notifDiv.setAttribute('data-id', notif.id);
+                        const isRead = readNotifications.includes(notif.id);
+                        if (isRead) {
+                            notifDiv.classList.add('read');
+                        }
+                        notifDiv.innerHTML = `
+                            <div class="notification-type ${notif.type}">${notif.typeText}</div>
+                            <div class="notification-content">${notif.content}</div>
+                            <div class="notification-time">${notif.time}</div>
+                            <div class="notification-actions">
+                                <i class="fas ${isRead ? 'fa-check' : 'fa-times'}" title="${isRead ? 'Mark as Unread' : 'Mark as Read'}" onclick="${isRead ? 'markNotificationUnread(this)' : 'markNotificationRead(this)'}"></i>
+                            </div>
+                        `;
+                        notificationList.appendChild(notifDiv);
+                    });
+                    const placeholder = document.querySelector('.notification-placeholder');
+                    if (placeholder) {
+                        placeholder.style.display = freshNotifications.length > 0 ? 'none' : 'block';
+                    }
+                    updateNotificationBadge(freshNotifications);
+                }
+            }
+        }
+        window.toggleNotificationModal = toggleNotificationModal;
+
+        function markNotificationRead(icon) {
+            const notificationItem = icon.closest('.notification-item');
+            const notificationId = notificationItem.getAttribute('data-id');
+            notificationItem.classList.add('read');
+            // Change icon to check mark
+            icon.className = 'fas fa-check';
+            icon.title = 'Mark as Unread';
+            icon.onclick = function() { markNotificationUnread(this); };
+
+            // Persist read state
+            let readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+            if (!readNotifications.includes(notificationId)) {
+                readNotifications.push(notificationId);
+                localStorage.setItem('readNotifications', JSON.stringify(readNotifications));
+            }
+
+            // Update badge count
+            updateNotificationBadge();
+        }
+
+        function markNotificationUnread(icon) {
+            const notificationItem = icon.closest('.notification-item');
+            const notificationId = notificationItem.getAttribute('data-id');
+            notificationItem.classList.remove('read');
+            // Change icon back to cross
+            icon.className = 'fas fa-times';
+            icon.title = 'Mark as Read';
+            icon.onclick = function() { markNotificationRead(this); };
+
+            // Remove from persisted read states
+            let readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+            readNotifications = readNotifications.filter(id => id !== notificationId);
+            localStorage.setItem('readNotifications', JSON.stringify(readNotifications));
+
+            // Update badge count
+            updateNotificationBadge();
+        }
+
+        function updateNotificationBadge(notifications) {
+            if (!notifications) {
+                // If no notifications passed, try to get from DOM
+                const notificationItems = document.querySelectorAll('.notification-item');
+                const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+                let unreadCount = 0;
+
+                notificationItems.forEach(item => {
+                    const notificationId = item.getAttribute('data-id');
+                    if (!readNotifications.includes(notificationId)) {
+                        unreadCount++;
+                    }
+                });
+
+                const badge = document.querySelector('.notification-badge');
+                if (badge) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = 'flex'; // Always visible
+                }
+
+                // Show/hide mark all read button based on unread count
+                const markAllBtn = document.querySelector('.mark-all-read-btn');
+                if (markAllBtn) {
+                    markAllBtn.style.display = unreadCount > 0 ? 'flex' : 'none';
+                }
+                return;
+            }
+
+            // If notifications passed, count unread
+            const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+            let unreadCount = 0;
+
+            notifications.forEach(notif => {
+                if (!readNotifications.includes(notif.id)) {
+                    unreadCount++;
+                }
+            });
+
+            const badge = document.querySelector('.notification-badge');
+            if (badge) {
+                badge.textContent = unreadCount;
+                badge.style.display = 'flex'; // Always visible
+            }
+
+            // Show/hide mark all read button based on unread count
+            const markAllBtn = document.querySelector('.mark-all-read-btn');
+            if (markAllBtn) {
+                markAllBtn.style.display = unreadCount > 0 ? 'flex' : 'none';
+            }
+        }
+
+        function updatePaginationControls() {
+            const paginationControls = document.getElementById('pagination-controls');
+            const pageNumbersContainer = document.getElementById('page-numbers');
+            
+            if (!window.notificationPagination) return;
+            
+            const { currentPage, totalPages, notifications } = window.notificationPagination;
+            
+            // Show/hide pagination controls - only show if notifications exceed 10
+            if (notifications.length > 10) {
+                paginationControls.style.display = 'flex';
+            } else {
+                paginationControls.style.display = 'none';
+            }
+            
+            // Clear existing page numbers
+            pageNumbersContainer.innerHTML = '';
+            
+            // Create page number buttons
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = 'page-number';
+                pageBtn.textContent = i;
+                
+                if (i === currentPage) {
+                    pageBtn.classList.add('active');
+                }
+                
+                pageBtn.addEventListener('click', function() {
+                    goToPage(i);
+                });
+                
+                pageNumbersContainer.appendChild(pageBtn);
+            }
+        }
+
+        function goToPage(page) {
+            if (!window.notificationPagination) return;
+            
+            const { totalPages, itemsPerPage, notifications } = window.notificationPagination;
+            
+            if (page < 1 || page > totalPages) return;
+            
+            window.notificationPagination.currentPage = page;
+            
+            // Re-render notifications for the new page
+            const allNotificationsContainer = document.getElementById('all-notifications-list');
+            if (allNotificationsContainer) {
+                allNotificationsContainer.innerHTML = '';
+                const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+                
+                const startIndex = (page - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, notifications.length);
+                
+                for (let i = endIndex - 1; i >= startIndex; i--) {
+                    const notif = notifications[i];
+                    const notifDiv = document.createElement('div');
+                    notifDiv.className = 'notification-item';
+                    notifDiv.setAttribute('data-id', notif.id);
+                    
+                    const isRead = readNotifications.includes(notif.id);
+                    if (isRead) {
+                        notifDiv.classList.add('read');
+                    }
+                    
+                    notifDiv.innerHTML = `
+                        <input type="checkbox" class="notification-checkbox">
+                        <div class="notification-details">
+                            <div class="notification-type ${notif.type}">${notif.typeText}</div>
+                            <div class="notification-content">${notif.content}</div>
+                            <div class="notification-time">${formatNotificationDate(notif.time)}</div>
+                        </div>
+                        <div class="notification-actions">
+                            <i class="fas ${isRead ? 'fa-check' : 'fa-times'}" title="${isRead ? 'Mark as Unread' : 'Mark as Read'}" onclick="${isRead ? 'markNotificationUnread' : 'markNotificationRead'}(this)"></i>
+                        </div>
+                    `;
+                    allNotificationsContainer.insertBefore(notifDiv, allNotificationsContainer.firstChild);
+                }
+            }
+            
+            updatePaginationControls();
+        }
+
+        let confirmAction = null;
+
+        function showConfirm(title, message, action) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+            confirmAction = action;
+            document.getElementById('confirm-modal').classList.add('show');
+        }
+
+        function hideConfirm() {
+            document.getElementById('confirm-modal').classList.remove('show');
+            confirmAction = null;
+        }
+
+        function executeConfirmAction() {
+            if (confirmAction) {
+                confirmAction();
+            }
+            hideConfirm();
+        }
+
+        function showMarkAllConfirm() {
+            showConfirm('Mark All as Read', 'Are you sure you want to mark all notifications as read? This action cannot be undone.', () => {
+                // Mark all notifications as read
+                const notificationItems = document.querySelectorAll('.notification-item');
+                let readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+
+                notificationItems.forEach(item => {
+                    const notificationId = item.getAttribute('data-id');
+                    item.classList.add('read');
+                    const icon = item.querySelector('.notification-actions i');
+                    if (icon && icon.classList.contains('fa-times')) {
+                        icon.className = 'fas fa-check';
+                        icon.title = 'Mark as Unread';
+                        icon.onclick = function() { markNotificationUnread(this); };
+                    }
+
+                    // Persist read state
+                    if (!readNotifications.includes(notificationId)) {
+                        readNotifications.push(notificationId);
+                    }
+                });
+
+                // Save to localStorage
+                localStorage.setItem('readNotifications', JSON.stringify(readNotifications));
+
+                // Hide the mark all read button and its icon
+                const markAllBtn = document.querySelector('.mark-all-read-btn');
+                if (markAllBtn) {
+                    markAllBtn.style.display = 'none';
+                }
+
+                // Update the notification badge
+                updateNotificationBadge();
+            });
+        }
+
+        function showUploadSection(section, btnElement) {
+            // Hide all upload subsections
+            document.querySelectorAll('.upload-subsection').forEach(sub => sub.classList.remove('active'));
+            // Show the selected section
+            if (section === 'pdf-form') {
+                document.getElementById('upload-form-section').classList.add('active');
+            } else if (section === 'image-form') {
+                document.getElementById('image-form-section').classList.add('active');
+            } else if (section === 'admin') {
+                document.getElementById('admin-uploads-section').classList.add('active');
+                // Force re-render of admin uploads section to ensure articles display correctly
+                const adminContainer = document.getElementById('admin-uploaded-articles');
+                const currentContent = adminContainer.innerHTML;
+                // Temporarily clear and re-fetch articles
+                loadArticlesFromServerForAdmin();
+            } else if (section === 'users') {
+                document.getElementById('user-uploads-section').classList.add('active');
+            } else if (section === 'carousel') {
+                document.getElementById('carousel-section').classList.add('active');
+                // Load carousel items and articles for PDF selection
+                showCarouselItemsList();
+                loadArticlesForCarouselSelect();
+            }
+            // Update nav button active state - remove all active first
+            document.querySelectorAll('.upload-nav .nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Add active to the correct button based on section
+            if (section === 'pdf-form') {
+                document.getElementById('btn-pdf-upload').classList.add('active');
+            } else if (section === 'admin') {
+                document.getElementById('btn-admin-uploads').classList.add('active');
+            } else if (section === 'users') {
+                document.getElementById('btn-user-uploads').classList.add('active');
+            } else if (section === 'carousel') {
+                document.getElementById('btn-carousel').classList.add('active');
+            }
+        }
+
+        // Add event listeners for upload navigation buttons
+        document.querySelectorAll('.upload-nav .nav-btn[data-section]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                showUploadSection(section, this);
+            });
+        });
+
+        // Load articles from server specifically for admin uploads section
+        function loadArticlesFromServerForAdmin() {
+            fetch('/api/articles')
+                .then(response => response.json())
+                .then(data => {
+                    // Handle both 'success' (new) and 'status' (old) response formats
+                    const isSuccess = data.status === 'success' || data.success === true;
+                    if (isSuccess) {
+                        const articles = data.articles || [];
+                        // Save to localStorage for other functions that might need it
+                        localStorage.setItem('allArticles', JSON.stringify(articles));
+                        localStorage.setItem('adminArticles', JSON.stringify(articles));
+                        // Render the articles in admin uploads section
+                        renderAdminUploadsFromServer(articles);
+                    } else {
+                        console.error('✗ Failed to load articles:', data.error || 'Unknown error');
+                        document.getElementById('admin-uploaded-articles').innerHTML = '<p class="empty-state">Failed to load articles</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading articles:', error);
+                    document.getElementById('admin-uploaded-articles').innerHTML = '<p class="empty-state">Error loading articles</p>';
+                });
+        }
+
+        // Render articles in admin uploads section
+        function renderAdminUploadsFromServer(articles) {
+            const container = document.getElementById('admin-uploaded-articles');
+            if (!articles || articles.length === 0) {
+                container.innerHTML = '<p class="empty-state">No articles found.</p>';
+                return;
+            }
+            
+            // Clear container first
+            container.innerHTML = '';
+            
+            // Use the original createArticleTemplate function for proper formatting
+            articles.forEach(article => {
+                const articleElement = createArticleTemplate(article);
+                container.appendChild(articleElement);
+            });
+        }
+
+        function viewAdminArticle(id) {
+            window.open('/library.html?article=' + id, '_blank');
+        }
+
+        function deleteAdminArticle(id) {
+            if (confirm('Are you sure you want to delete this article?')) {
+                fetch('/api/articles/' + id, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert('Article deleted successfully!');
+                            loadArticlesFromServerForAdmin();
+                        } else {
+                            alert('Failed to delete article: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting article:', error);
+                        alert('Error deleting article');
+                    });
+            }
+        }
+
+        function showUploadForm() {
+            showSection('upload');
+            showUploadSection('upload-form');
+        }
+
+        function showUploaded(type) {
+            showSection('upload');
+            showUploadSection(type + '-uploads');
+        }
+
+        function showUserCategory(type) {
+            // Hide all spec sections
+            document.getElementById('shs-spec').style.display = 'none';
+            document.getElementById('college-spec').style.display = 'none';
+            document.getElementById('educator-spec').style.display = 'none';
+            // Show selected spec section
+            document.getElementById(type + '-spec').style.display = 'block';
+        }
+
+
+
+        async function loadStrandUsersForStatus(status, grade, strand) {
+            const users = await getUsers();
+            const tbody = document.getElementById(status + '-strand-users-tbody');
+            tbody.innerHTML = '';
+            const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
+                                status === 'banned' ? user.banned : false;
+            users.forEach(user => {
+                if (user.role === 'senior_high' && user.grade === 'Grade ' + grade && user.strand === strand && statusFilter) {
+                    const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
+                    const dateHeader = status === 'signing-up' ? 'Date Signed Up' : 'Date Banned';
+                let emailToUse = user.personal_email || user.email;
+                    const row = `<tr>
+                        <td>${user.user_id || user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${emailToUse}</td>
+                        <td>${user.role}</td>
+                        <td>${user.Sec_Degr || '-'}</td>
+                        <td>${date}</td>
+                        <td>${getStatus(user)}</td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                        <td>
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <button type="button" class="btn btn-success btn-sm" onclick="acceptUser('${user.user_id || user.id}')">Accept</button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>
+                            </div>
+                        </td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                }
+            });
+        }
+
+        async function loadDegreeUsersForStatus(status, degree) {
+            const users = await getUsers();
+            const tbody = document.getElementById(status + '-degree-users-tbody');
+            tbody.innerHTML = '';
+            const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
+                                status === 'banned' ? user.banned : false;
+            users.forEach(user => {
+                if (user.role === 'college' && user.section === degree.toUpperCase() && statusFilter) {
+                    const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
+                let emailToUse = user.personal_email || user.email;
+                    const row = `<tr>
+                        <td>${user.user_id || user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${emailToUse}</td>
+                        <td>${user.role}</td>
+                        <td>${date}</td>
+                        <td><button class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                        <td>
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <button type="button" class="btn btn-success btn-sm" onclick="acceptUser('${user.user_id || user.id}')">Accept</button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>
+                            </div>
+                        </td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                }
+            });
+        }
+
+        async function loadDepartmentUsersForStatus(status, dept) {
+            const users = await getUsers();
+            const tbody = document.getElementById(status + '-department-users-tbody');
+            tbody.innerHTML = '';
+            const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
+                                status === 'banned' ? user.banned : false;
+            users.forEach(user => {
+                if (user.role === 'educator' && user.section === 'Department ' + dept.toUpperCase() && statusFilter) {
+                    const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
+                let emailToUse = user.personal_email || user.email;
+                    const row = `<tr>
+                        <td>${user.user_id || user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${emailToUse}</td>
+                        <td>${user.role}</td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>
+                        </td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                }
+            });
+        }
+
+        function showGrade(grade) {
+            document.getElementById('grade-selection').style.display = 'block';
+            document.getElementById('grade-title').textContent = 'Grade ' + grade;
+            document.getElementById('grade-selection').dataset.grade = grade;
+        }
+
+        function showStrand(strand) {
+            const grade = document.getElementById('grade-selection').dataset.grade;
+            document.getElementById('strand-table').style.display = 'block';
+            document.getElementById('strand-title').textContent = 'Grade ' + grade + ' - ' + strand.toUpperCase();
+            loadStrandUsers(grade, strand);
+        }
+
+        function showDegree(degree) {
+            document.getElementById('degree-table').style.display = 'block';
+            document.getElementById('degree-title').textContent = degree.toUpperCase();
+            loadDegreeUsers(degree);
+        }
+
+        function showDepartment(dept) {
+            document.getElementById('department-table').style.display = 'block';
+            document.getElementById('department-title').textContent = 'Department ' + dept.toUpperCase();
+            loadDepartmentUsers(dept);
+        }
+
+        async function loadStrandUsers(grade, strand) {
+            const users = await getUsers();
+            const tbody = document.getElementById('strand-users-tbody');
+            tbody.innerHTML = '';
+            users.forEach(user => {
+                if (user.role === 'senior_high' && user.grade === 'Grade ' + grade && user.strand === strand) {
+                    const date = formatDate(user.verified ? user.verified_at : user.created_at);
+                    const row = `<tr>
+                        <td>${user.user_id || user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td>${user.Sec_Degr || '-'}</td>
+                        <td>${date}</td>
+                        <td>${getStatus(user)}</td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                        <td>${getStrandDegree(user)}</td>
+                        <td>
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <button type="button" class="btn btn-success btn-sm" onclick="acceptUser('${user.user_id || user.id}')">Accept</button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>
+                            </div>
+                        </td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                }
+            });
+        }
+
+        async function loadDegreeUsers(degree) {
+            const users = await getUsers();
+            const tbody = document.getElementById('degree-users-tbody');
+            tbody.innerHTML = '';
+            users.forEach(user => {
+                if (user.role === 'college' && user.section === degree.toUpperCase()) {
+                    const date = formatDate(user.verified ? user.verified_at : user.created_at);
+                    const row = `<tr>
+                        <td>${user.user_id || user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td>${user.Sec_Degr || '-'}</td>
+                        <td>${date}</td>
+                        <td>${getStatus(user)}</td>
+                        <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+                        <td>${getStrandDegree(user)}</td>
+                        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button></td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                }
+            });
+        }
+
+        async function loadDepartmentUsers(dept) {
+            const users = await getUsers();
+            const tbody = document.getElementById('department-users-tbody');
+            tbody.innerHTML = '';
+            users.forEach(user => {
+                if (user.role === 'educator' && user.section === 'Department ' + dept.toUpperCase()) {
+                    const date = formatDate(user.verified ? user.verified_at : user.created_at);
+                    const row = `<tr>
+                        <td>${user.user_id || user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td>${date}</td>
+                        <td><button class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
+                        <td>
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <button type="button" class="btn btn-success btn-sm" onclick="acceptUser('${user.user_id || user.id}')">Accept</button>
+                                <button class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>
+                            </div>
+                        </td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                }
+            });
+        }
+
+        function navigateToUploads(type) { 
+            try {
+                if (DEBUG) console.log('navigateToUploads called with type:', type);
+                // First show the upload section
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                document.getElementById('upload').classList.add('active');
+                document.getElementById('page-title').textContent = 'Upload';
+                
+                // Hide all upload subsections and show admin uploads
+                document.querySelectorAll('.upload-subsection').forEach(sub => sub.classList.remove('active'));
+                document.getElementById('admin-uploads-section').classList.add('active');
+                
+                // Remove active from all nav buttons and add to Admin Uploads
+                document.querySelectorAll('.upload-nav .nav-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('btn-admin-uploads').classList.add('active');
+                if (DEBUG) console.log('navigateToUploads completed successfully');
+            } catch (e) {
+                console.error('Error in navigateToUploads:', e);
+                alert('Error navigating to uploads: ' + e.message);
+            }
+        }
+        function navigateToUsers() { 
+            showSection('users');
+            // Update sidebar active state
+            document.querySelectorAll('.sidebar ul li').forEach(li => {
+                li.classList.remove('active');
+            });
+            var usersLink = document.querySelector('.sidebar ul li a[data-section="users"]');
+            if (usersLink) {
+                usersLink.closest('li').classList.add('active');
+            }
+        }
+        // Make functions globally accessible
+        window.navigateToUsers = navigateToUsers;
+        window.navigateToNotifications = navigateToNotifications;
+        window.navigateToUploads = navigateToUploads;
+        window.navigateToUploadSection = navigateToUploadSection;
+        window.showNotificationsFromModal = showNotificationsFromModal;
+        window.scrollToUserSection = scrollToUserSection;
+        window.handleProfileClick = handleProfileClick;
+        window.openProfileModal = openProfileModal;
+        function navigateToNotifications() { showSection('notifications'); }
+        function showNotificationsFromModal() {
+            showSection('notifications');
+            toggleNotificationModal();
+            document.querySelectorAll('.sidebar ul li').forEach(function(li){li.classList.remove('active')});
+            var notifLink = document.querySelector('.sidebar ul li a[data-section="notifications"]');
+            if(notifLink){
+                notifLink.parentElement.classList.add('active');
+            }
+        }
+        function navigateToUploadSection() {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('upload').classList.add('active');
+            document.getElementById('page-title').textContent = 'Upload';
+            document.querySelectorAll('.upload-subsection').forEach(sub => sub.classList.remove('active'));
+            document.getElementById('admin-uploads-section').classList.add('active');
+        }
+        function scrollToUserSection(type) {
+            showSection('users');
+            showUserSection(type);
+        }
+        function handleProfileClick() { showSection('profile'); }
+        function openProfileModal() { showSection('profile'); }
+        function openProfileModal() {
+            // Create and show profile edit modal
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.id = 'profile-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close" onclick="closeProfileModal()">&times;</span>
+                    <h2>Edit Profile</h2>
+                    <form id="profile-form">
+                        <label for="profile-name">Name:</label>
+                        <input type="text" id="profile-name" value="Admin" required>
+                        <label for="profile-email">Email:</label>
+                        <input type="email" id="profile-email" value="admin@example.com" required>
+                        <button type="submit">Save Changes</button>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+
+            // Handle form submission
+            document.getElementById('profile-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('profile-name').value;
+                const email = document.getElementById('profile-email').value;
+                alert('Profile updated successfully!');
+                closeProfileModal();
+            });
+        }
+        function closeProfileModal() {
+            const modal = document.getElementById('profile-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        function handleLogoutClick() { localStorage.removeItem('currentUser'); window.location.href = 'index.html'; }
+
+
+        function saveUsers(users) {
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+        function previewUserDocs(userId) {
+            // Find the user by ID
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => (u.user_id || u.id) === userId);
+            if (!user) {
+                alert('User not found.');
+                return;
+            }
+
+            // Check if modal exists, create if not
+            let modal = document.getElementById('user-docs-preview-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'user-docs-preview-modal';
+                modal.className = 'modal';
+                modal.style.display = 'flex';
+                modal.style.justifyContent = 'center';
+                modal.style.alignItems = 'center';
+                modal.innerHTML = `
+                    <div class="modal-content" style="margin: 0; max-width: 800px; max-height: 80vh; overflow-y: auto;">
+                        <span class="close-modal" onclick="closeUserDocsModal()">&times;</span>
+                        <h3>User Documents Preview</h3>
+                        <div id="user-docs-preview-content" style="margin-top: 15px;"></div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+            modal.style.display = 'flex';
+            const content = document.getElementById('user-docs-preview-content');
+            let html = `<p><strong>User:</strong> ${user.name}</p>`;
+
+            // Display RAF document
+            if (user.raf_path) {
+                const rafUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/Raf-edu_id/' + user.raf_path;
+                const rafExt = user.raf_path.split('.').pop().toLowerCase();
+                html += `<h4>RAF Document</h4>`;
+                if (['jpg', 'jpeg', 'png'].includes(rafExt)) {
+                    html += `<img src="${rafUrl}" alt="RAF Document" style="max-width: 100%; max-height: 400px;">`;
+                } else if (rafExt === 'pdf') {
+                    html += `<embed src="${rafUrl}" type="application/pdf" width="100%" height="400px">`;
+                } else {
+                    html += `<a href="${rafUrl}" target="_blank">Download RAF Document</a>`;
+                }
+            }
+
+            // Display Educator ID document
+            if (user.educator_id) {
+                const eduUrl = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/Raf-edu_id/' + user.educator_id;
+                const eduExt = user.educator_id.split('.').pop().toLowerCase();
+                html += `<h4>Educator ID</h4>`;
+                if (['jpg', 'jpeg', 'png'].includes(eduExt)) {
+                    html += `<img src="${eduUrl}" alt="Educator ID" style="max-width: 100%; max-height: 400px;">`;
+                } else if (eduExt === 'pdf') {
+                    html += `<embed src="${eduUrl}" type="application/pdf" width="100%" height="400px">`;
+                } else {
+                    html += `<a href="${eduUrl}" target="_blank">Download Educator ID</a>`;
+                }
+            }
+
+            content.innerHTML = html;
+        }
+
+        function closeUserDocsModal() {
+            const modal = document.getElementById('user-docs-preview-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function openRejectModal(userId) {
+            // Create the modal
+            let modal = document.getElementById('reject-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'reject-modal';
+                modal.className = 'modal';
+                modal.style.display = 'flex';
+                modal.style.justifyContent = 'center';
+                modal.style.alignItems = 'center';
+                modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                modal.innerHTML = `
+                    <div class="modal-content" style="background-color: #ffebee; border: 1px solid #f44336; max-width: 400px; text-align: center;">
+                        <h3 style="color: #f44336; margin-bottom: 15px;">Rejected for a reason</h3>
+                        <p style="margin-bottom: 15px; color: #333;">Message: did not fulfill the requirements needed</p>
+                        <textarea id="reject-reason" placeholder="Optional additional reason..." style="width: 100%; height: 60px; margin-bottom: 20px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" maxlength="200"></textarea>
+                        <div style="display: flex; gap: 10px; justify-content: center;">
+                            <button id="confirm-reject" style="background-color: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Reject</button>
+                            <button id="cancel-reject" style="background-color: #ccc; color: #333; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Cancel</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                // Add event listeners
+                document.getElementById('confirm-reject').addEventListener('click', function() {
+                    const reason = document.getElementById('reject-reason').value.trim();
+                    updateUserStatus(userId, 'reject', reason);
+                    closeRejectModal();
+                });
+                document.getElementById('cancel-reject').addEventListener('click', function() {
+                    closeRejectModal();
+                });
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeRejectModal() {
+            const modal = document.getElementById('reject-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function previewEducatorId(educatorId) {
+            // Similar to previewRaf but for educator ID
+            alert('Preview functionality for Educator ID: ' + educatorId);
+            // Implement similar to previewRaf if needed
+        }
+
+        function previewRaf(rafPath) {
+            // For testing, use a hardcoded PDF from Supabase
+            rafPath = 'https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/Studies/Santibanez%20et%20al.pdf';
+            if (!rafPath || rafPath === '') {
+                alert('No RAF file available for preview.');
+                return;
+            }
+            // Check if modal exists, create if not
+            let modal = document.getElementById('raf-preview-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'raf-preview-modal';
+                modal.className = 'modal';
+                modal.style.display = 'flex';
+                modal.style.justifyContent = 'center';
+                modal.style.alignItems = 'center';
+                modal.innerHTML = `
+                    <div class="modal-content" style="margin: 0;">
+                        <span class="close-modal" onclick="closeRafModal()">&times;</span>
+                        <h3>RAF Preview</h3>
+                        <div id="raf-preview-content" style="margin-top: 15px;"></div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+            modal.style.display = 'flex';
+            const content = document.getElementById('raf-preview-content');
+            if (rafPath.startsWith('local:')) {
+                const key = rafPath.substring(6); // remove 'local:'
+                const dataUrl = localStorage.getItem(key + '_raf');
+                if (dataUrl) {
+                    content.innerHTML = '<iframe src="' + dataUrl + '" width="100%" height="600px" frameborder="0"></iframe>';
+                } else {
+                    content.innerHTML = '<p>RAF file not found in local storage.</p>';
+                }
+            } else {
+                // Open the file in Google Docs Viewer in a modal
+                const viewerUrl = 'https://docs.google.com/viewer?url=' + encodeURIComponent(rafPath);
+                content.innerHTML = '<iframe src="' + viewerUrl + '" width="100%" height="600px" frameborder="0"></iframe>';
+            }
+        }
+        function closeRafModal() { document.getElementById('raf-preview-modal').style.display = 'none'; }
+
+        function displayArticlePDF(pdfUrl, title) {
+            if (DEBUG) console.log('displayArticlePDF called with:', pdfUrl, title);
+            if (!pdfUrl || pdfUrl === '') {
+                alert('No PDF file available for preview.');
+                return;
+            }
+            // Check if modal exists, create if not
+            let modal = document.getElementById('pdf-preview-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'pdf-preview-modal';
+                modal.className = 'modal';
+                modal.innerHTML = `
+                    <div class="modal-content" style="width: 90%; max-width: 800px; max-height: 90vh;">
+                        <span class="close-modal" onclick="closePdfModal()">&times;</span>
+                        <h3>${title}</h3>
+                        <div id="pdf-preview-content" style="margin-top: 15px; height: 600px;"></div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+            modal.style.display = 'flex';
+            const content = document.getElementById('pdf-preview-content');
+            // Use iframe to display PDF
+            content.innerHTML = '<iframe src="' + pdfUrl + '" width="100%" height="100%" frameborder="0"></iframe>';
+        }
+
+        function closePdfModal() { document.getElementById('pdf-preview-modal').style.display = 'none'; }
+        function toggleUploadsDropdown(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const users = document.getElementById('users-dropdown');
+            const uploads = document.getElementById('uploads-dropdown');
+            const notifications = document.getElementById('notifications-dropdown');
+            const terms = document.getElementById('terms-dropdown');
+            if (users) users.classList.remove('open');
+            if (uploads) uploads.classList.toggle('open');
+            if (notifications) notifications.classList.remove('open');
+            if (terms) terms.classList.remove('open');
+            // Add click listener to close dropdown when clicking outside
+            if (uploads && uploads.classList.contains('open')) {
+                setTimeout(() => {
+                    document.addEventListener('click', closeUploadsDropdownOnOutsideClick);
+                }, 1);
+            }
+        }
+        function closeUploadsDropdownOnOutsideClick(e) {
+            const uploads = document.getElementById('uploads-dropdown');
+            if (uploads && !uploads.contains(e.target)) {
+                uploads.classList.remove('open');
+                document.removeEventListener('click', closeUploadsDropdownOnOutsideClick);
+            }
+        }
+
+        // Users Navigation Functions
+        function showUserSection(section) {
+            // Hide all user subsections first
+            document.querySelectorAll('.user-subsection').forEach(sub => sub.style.display = 'none');
+
+            // Handle admins section visibility based on user role and selected section
+            const adminsSection = document.getElementById('admins-section');
+            if (adminsSection) {
+                const currentUserRole = currentUser ? (currentUser.role || '').toLowerCase() : '';
+                if (currentUserRole === 'coadmin' && section !== 'admins') {
+                    adminsSection.style.display = 'none';
+                } else if (section === 'admins') {
+                    adminsSection.style.display = 'block';
+                } else {
+                    adminsSection.style.display = 'none'; // Hide for non-admin sections
+                }
+            }
+
+            // Ensure the selected section is visible
+            const targetSection = document.getElementById(section + '-section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+
+            // Update nav button active state
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`.nav-btn[data-section="${section}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+
+
+            // Load data for specific sections
+            if (section === 'admins') {
+                loadUsers();
+            } else if (section === 'verified') {
+                // Ensure verified users table is populated
+                loadUsers();
+            } else if (section === 'activity') {
+                loadActivityLogs();
+            }
+        }
+
+        // Add event listeners for user cards
+        document.querySelectorAll('.user-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const section = card.getAttribute('data-section');
+                navigateToUsers();
+                showUserSection(section);
+            });
+        });
+
+        // Add event listeners for nav buttons
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            const section = btn.getAttribute('data-section');
+            if (section) {
+                btn.addEventListener('click', () => showUserSection(section));
+            }
+        });
+
+        function toggleReportsDropdown(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const users = document.getElementById('users-dropdown');
+            const uploads = document.getElementById('uploads-dropdown');
+            const notifications = document.getElementById('notifications-dropdown');
+            const terms = document.getElementById('terms-dropdown');
+            if (users) users.classList.remove('open');
+            if (uploads) uploads.classList.remove('open');
+            if (notifications) notifications.classList.toggle('open');
+            if (terms) terms.classList.remove('open');
+        }
+        function toggleTermsDropdown(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const users = document.getElementById('users-dropdown');
+            const uploads = document.getElementById('uploads-dropdown');
+            const notifications = document.getElementById('notifications-dropdown');
+            const terms = document.getElementById('terms-dropdown');
+            if (users) users.classList.remove('open');
+            if (uploads) uploads.classList.remove('open');
+            if (notifications) notifications.classList.remove('open');
+            if (terms) terms.classList.toggle('open');
+        }
+        function showNotificationsSection(type) {
+            document.querySelectorAll('.notifications-subsection').forEach(s => s.classList.remove('active'));
+            document.getElementById('notifications-' + type).classList.add('active');
+        }
+        function openPasswordChangeModal() { document.getElementById('password-change-modal').style.display = 'block'; }
+        function closePasswordChangeModal() { document.getElementById('password-change-modal').style.display = 'none'; }
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('admin-password');
+            const eyeIcon = event.target;
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.className = 'fas fa-eye';
+            }
+        }
+
+
+        function getVerificationCode() {
+            document.getElementById('get-code-btn').disabled = true;
+            let time = 60;
+            const timerEl = document.getElementById('timer');
+            const interval = setInterval(() => {
+                timerEl.textContent = time;
+                time--;
+                if (time < 0) {
+                    clearInterval(interval);
+                    document.getElementById('get-code-btn').disabled = false;
+                    timerEl.textContent = 'Code sent!';
+                }
+            }, 1000);
+        }
+        function verifyCode() {
+            const code = document.getElementById('verification-code').value;
+            if (code === '123456') { // Demo code
+                alert('Password changed successfully!');
+                closePasswordChangeModal();
+            } else {
+                alert('Invalid code!');
+            }
+        }
+        function showSettingsSection(section) {
+            document.querySelectorAll('.settings-subsection').forEach(sub => sub.classList.remove('active'));
+            document.getElementById(section + '-settings').classList.add('active');
+            document.querySelectorAll('.settings-sidebar li').forEach(li => li.style.color = 'black');
+            event.target.style.color = '#007bff';
+        }
+        function editContent(type) {
+            const viewMode = document.querySelector(`#${type}-content .view-mode`);
+            const editMode = document.querySelector(`#${type}-content .edit-mode`);
+            const textDiv = document.getElementById(`${type}-text`);
+            const textarea = document.getElementById(`${type}-textarea`);
+            textarea.value = textDiv.innerHTML.replace(/<br>/g, '\n').replace(/<\/?[^>]+(>|$)/g, '');
+            viewMode.style.display = 'none';
+            editMode.style.display = 'block';
+        }
+        function saveContent(type) {
+            const viewMode = document.querySelector(`#${type}-content .view-mode`);
+            const editMode = document.querySelector(`#${type}-content .edit-mode`);
+            const textDiv = document.getElementById(`${type}-text`);
+            const textarea = document.getElementById(`${type}-textarea`);
+            const content = textarea.value.replace(/\n/g, '<br>');
+            textDiv.innerHTML = content;
+            localStorage.setItem(`${type}Content`, content);
+            viewMode.style.display = 'block';
+            editMode.style.display = 'none';
+            alert(`${type === 'terms' ? 'Terms and Conditions' : 'Privacy Policy'} saved successfully!`);
+        }
+        function cancelEdit(type) {
+            const viewMode = document.querySelector(`#${type}-content .view-mode`);
+            const editMode = document.querySelector(`#${type}-content .edit-mode`);
+            viewMode.style.display = 'block';
+            editMode.style.display = 'none';
+        }
+
+        // Citation modal functions
+        function openCitationModal(el) {
+            const modal = document.getElementById('citationModal');
+            modal.classList.add('show');
+            // Generate citation based on article data
+            const article = el.closest('.article');
+            const title = article.querySelector('h3').textContent;
+            const authors = article.querySelector('.meta').textContent.split(' – ')[0];
+            const year = new Date().getFullYear();
+            // Default to APA
+            switchCitationTab('APA');
+        }
+        function closeCitationModal() {
+            const modal = document.getElementById('citationModal');
+            modal.classList.remove('show');
+        }
+        function switchCitationTab(format) {
+            document.querySelectorAll('.citation-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            const content = document.getElementById('citationContent');
+            // Placeholder citations
+            const citations = {
+                APA: `${authors} (${year}). ${title}. STI College Calamba.`,
+                MLA: `${authors}. "${title}." STI College Calamba, ${year}.`,
+                Chicago: `${authors}. "${title}." STI College Calamba, ${year}.`,
+                IEEE: `[1] ${authors}, "${title}," STI College Calamba, ${year}.`,
+                Harvard: `${authors} (${year}) ${title}. STI College Calamba.`
+            };
+            content.textContent = citations[format] || 'Citation format not available.';
+        }
+        function copyCitation() {
+            const content = document.getElementById('citationContent').textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                const btn = document.querySelector('.citation-copy-btn');
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copy Citation';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+
+        // Update role description and show/hide additional fields
+        function updateRoleDescription() {
+            const roleRadios = document.getElementsByName('admin-role');
+            let selectedRole = 'admin';
+            for (const radio of roleRadios) {
+                if (radio.checked) {
+                    selectedRole = radio.value;
+                    break;
+                }
+            }
+            
+            const adminRoles = ['admin', 'coadmin', 'subadmin'];
+            const isAdminRole = adminRoles.includes(selectedRole);
+            
+            // Update modal title
+            const modalTitle = document.getElementById('create-user-modal-title');
+            if (selectedRole === 'senior_high') {
+                modalTitle.textContent = 'Create Senior High Student';
+            } else if (selectedRole === 'college') {
+                modalTitle.textContent = 'Create College Student';
+            } else if (selectedRole === 'educator') {
+                modalTitle.textContent = 'Create Educator';
+            } else if (selectedRole === 'coadmin') {
+                modalTitle.textContent = 'Create Co-Admin';
+            } else if (selectedRole === 'subadmin') {
+                modalTitle.textContent = 'Create Sub-Admin';
+            } else {
+                modalTitle.textContent = 'Create Admin';
+            }
+            
+            // Show/hide grade and section fields
+            const gradeSection = document.getElementById('grade-section');
+            const sectionSection = document.getElementById('section-section');
+            const submitBtn = document.getElementById('create-user-btn');
+            
+            if (selectedRole === 'senior_high') {
+                gradeSection.style.display = 'block';
+                sectionSection.style.display = 'block';
+                submitBtn.textContent = 'Create Student';
+            } else if (selectedRole === 'college') {
+                gradeSection.style.display = 'none';
+                sectionSection.style.display = 'block';
+                submitBtn.textContent = 'Create Student';
+            } else if (selectedRole === 'educator') {
+                gradeSection.style.display = 'none';
+                sectionSection.style.display = 'block';
+                submitBtn.textContent = 'Create Educator';
+            } else {
+                gradeSection.style.display = 'none';
+                sectionSection.style.display = 'none';
+                submitBtn.textContent = 'Create Admin';
+            }
+        }
+
+
+
+
+
+        function renderDashboardUploadsChart(category = 'grade11') {
+            const ctx = document.getElementById('dashboard-uploadsChart').getContext('2d');
+            if (window.dashboardUploadsChart) {
+                window.dashboardUploadsChart.destroy();
+            }
+
+            let labels = ['SHS', 'College', 'Teacher', 'Admin'];
+            let data = [30, 25, 40, 35];
+
+            const barColors = [
+                '#008000', // SHS Emerald Green
+                '#00008B', // College Deep Blue
+                '#FFA500', // Teacher Warm Orange
+                '#8A2BE2'  // Admin Cool Purple
+            ];
+            const total = data.reduce((a, b) => a + b, 0);
+            const percentageData = data.map(d => (d / total) * 100);
+
+            window.dashboardUploadsChart = new Chart(ctx, {
+                type: dashboardUploadsChartType,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: percentageData,
+                        backgroundColor: barColors.slice(0, labels.length),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+
+        function renderGaugeChart(canvasId, label, averageDuration, gaugeColor) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+
+            // Destroy existing chart if it exists
+            if (window[canvasId + 'Chart']) {
+                window[canvasId + 'Chart'].destroy();
+            }
+
+            const maxDuration = 5; // Max hours for gauge
+            const percentage = (averageDuration / maxDuration) * 100;
+
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const textColor = isDarkMode ? '#ffffff' : '#000000';
+            const emptyColor = isDarkMode ? '#444' : '#e0e0e0';
+
+            window[canvasId + 'Chart'] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [percentage, 100 - percentage],
+                        backgroundColor: [gaugeColor, emptyColor],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '50%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false },
+                        centerText: {
+                            averageDuration: averageDuration,
+                            textColor: textColor
+                        }
+                    },
+                    rotation: 0,
+                    circumference: 360,
+                    elements: {
+                        arc: {
+                            borderRadius: 10
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'centerText',
+                    afterDraw: function(chart) {
+                        const ctx = chart.ctx;
+                        const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                        const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+                        const averageDuration = chart.options.plugins.centerText.averageDuration;
+                        const textColor = chart.options.plugins.centerText.textColor;
+                        ctx.save();
+                        ctx.font = 'bold 16px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillStyle = textColor;
+                        ctx.fillText(averageDuration + ' hours', centerX, centerY);
+                        ctx.restore();
+                    }
+                }]
+            });
+        }
+
+
+
+
+
+
+
+        // General Settings Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const siteTitleInput = document.getElementById('site-title');
+            const siteFaviconInput = document.getElementById('site-favicon');
+            const settingsForm = document.getElementById('settings-form');
+            const faviconPreview = document.getElementById('favicon-preview');
+            const siteTitlePreview = document.getElementById('site-title-preview');
+
+            // Load saved settings from server on page load
+            loadSiteSettings();
+
+            var isLoadingSiteSettings = false;
+            async function loadSiteSettings() {
+                if (isLoadingSiteSettings) return;
+                isLoadingSiteSettings = true;
+                if (DEBUG) console.log('DEBUG: Attempting to load site settings from server...');
+                try {
+                    const response = await fetch('/api/site-settings');
+                    if (DEBUG) console.log('DEBUG: Site settings fetch response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const responseData = await response.json();
+                    if (DEBUG) console.log('DEBUG: Loaded response:', responseData);
+                    const settings = responseData.settings || responseData;
+                    if (DEBUG) console.log('DEBUG: Extracted settings:', settings);
+                    // Check if favicon is a blob URL and reset to default if so
+                    if (settings.siteFavicon && settings.siteFavicon.startsWith('blob:')) {
+                        if (DEBUG) console.log('DEBUG: Invalid blob URL detected, resetting to default favicon');
+                        settings.siteFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
+                    }
+                    if (siteTitleInput) siteTitleInput.value = settings.siteTitle || 'STI Archives';
+                    if (siteTitlePreview) siteTitlePreview.textContent = settings.siteTitle || 'STI Archives';
+                    if (faviconPreview) faviconPreview.src = settings.siteFavicon || '370044409_696741882497707_8408055328080058811_n.jpg';
+                    updateDocumentTitle(settings.siteTitle || 'STI Archives');
+                    updateDocumentFavicon(settings.siteFavicon || '370044409_696741882497707_8408055328080058811_n.jpg');
+                } catch (error) {
+                    console.error('Failed to load site settings:', error);
+                    // Fallback to defaults
+                    const defaultTitle = 'STI Archives';
+                    const defaultFavicon = '370044409_696741882497707_8408055328080058811_n.jpg';
+                    if (siteTitleInput) siteTitleInput.value = defaultTitle;
+                    if (siteTitlePreview) siteTitlePreview.textContent = defaultTitle;
+                    if (faviconPreview) faviconPreview.src = defaultFavicon;
+                    updateDocumentTitle(defaultTitle);
+                    updateDocumentFavicon(defaultFavicon);
+                } finally {
+                    isLoadingSiteSettings = false;
+                }
+            }
+
+            // Real-time preview updates
+            siteTitleInput.addEventListener('input', function() {
+                const newTitle = this.value || 'STI Archives';
+                siteTitlePreview.textContent = newTitle;
+            });
+
+            siteFaviconInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const newFavicon = e.target.result;
+                        faviconPreview.src = newFavicon;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Save settings on form submit
+            settingsForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const title = siteTitleInput.value || 'STI Archives';
+                const faviconFile = siteFaviconInput.files[0];
+
+                let faviconData = '370044409_696741882497707_8408055328080058811_n.jpg'; // Default
+
+                if (faviconFile) {
+                    // Convert file to base64 for server storage
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        faviconData = e.target.result;
+                        await saveSettings(title, faviconData);
+                    };
+                    reader.readAsDataURL(faviconFile);
+                } else {
+                    // Use current favicon preview src
+                    faviconData = faviconPreview.src;
+                    await saveSettings(title, faviconData);
+                }
+            });
+
+            async function saveSettings(title, favicon) {
+                try {
+                    const response = await fetch('/api/site-settings/update', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            siteTitle: title,
+                            siteFavicon: favicon
+                        })
+                    });
+
+                    if (response.ok) {
+                        // Update document title and favicon only on successful save
+                        updateDocumentTitle(title);
+                        updateDocumentFavicon(favicon);
+                        alert('Settings saved successfully!');
+                    } else {
+                        alert('Failed to save settings. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error saving settings:', error);
+                    alert('Failed to save settings. Please try again.');
+                }
+            }
+        });
+        
+
+        function updateDocumentTitle(siteTitle) {
+            const pageName = 'Admin Panel';
+            document.title = `${pageName} | ${siteTitle}`;
+            const preview = document.getElementById('page-title-preview');
+            if (preview) preview.textContent = pageName;
+        }
+
+        function updateDocumentFavicon(faviconSrc) {
+            let faviconLink = document.querySelector('link[rel="icon"]');
+            if (!faviconLink) {
+                faviconLink = document.createElement('link');
+                faviconLink.rel = 'icon';
+                faviconLink.type = 'image/png';
+                document.head.appendChild(faviconLink);
+            }
+            // Add version parameter only for non-data URLs to avoid issues with base64
+            const href = faviconSrc.startsWith('data:') ? faviconSrc : faviconSrc + '?v=1';
+            faviconLink.href = href;
+        }
+
+        function updateFavicon(logoSrc) {
+            updateDocumentFavicon(logoSrc);
+            // Keep sidebar logo as STI Logo.png
+            const sidebarImg = document.querySelector('.sidebar-header img');
+            if (sidebarImg) {
+                sidebarImg.src = 'STI Logo.png';
+            }
+        }
+
+        // Current filter states
+        window.currentFilters = {
+            admins: { role: '', search: '', filterType: 'unified' },
+            verified: { role: '', search: '', filterType: 'unified' },
+            'signing-up': { role: '', search: '', filterType: 'unified' },
+            banned: { role: '', search: '', filterType: 'unified' }
+        };
+
+        // Bulk actions functions
+        function toggleSelectAll(status) {
+            const selectAllCheckbox = document.getElementById(`select-all-${status}`);
+            const tbodyId = status === 'admins' ? 'admins-tbody' : `${status}-users-tbody`;
+            const checkboxes = document.querySelectorAll(`#${tbodyId} .user-checkbox`);
+            checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+        }
+
+        function bulkAction(status, action) {
+            const tbodyId = status === 'admins' ? 'admins-tbody' : `${status}-users-tbody`;
+            const checkboxes = document.querySelectorAll(`#${tbodyId} .user-checkbox:checked`);
+            if (checkboxes.length === 0) {
+                alert('No users selected.');
+                return;
+            }
+            const selectedUsers = Array.from(checkboxes).map(cb => {
+                const row = cb.closest('tr');
+                const tds = row.querySelectorAll('td');
+                const name = status === 'admins' ? tds[1].textContent : tds[3].textContent; // Admin: td1 name, Regular: td3 name
+                return {
+                    id: cb.getAttribute('data-user-id'),
+                    name: name
+                };
+            });
+            if (confirm(`Are you sure you want to ${action} ${checkboxes.length} user(s)?`)) {
+                selectedUsers.forEach(user => {
+                    if (action === 'remove') {
+                        removeUser(user.id, user.name);
+                    } else if (action === 'unban') {
+                        updateUserStatus(user.id, 'accept'); // Unban by accepting
+                    } else {
+                        updateUserStatus(user.id, action);
+                    }
+                });
+            }
+        }
+
+        // Accept user function
+        async function acceptUser(userId) {
+            if (confirm('Are you sure you want to accept this user? This will generate login credentials for them.')) {
+                try {
+                    // Get the user role from localStorage
+                    const users = JSON.parse(localStorage.getItem('users') || '[]');
+                    const user = users.find(u => u.id === userId);
+                    const role = user ? user.role : 'user';
+                    
+                    const response = await fetch('/api/auth/accept-user', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user_id: userId, role: role })
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        alert('User accepted successfully! Login credentials have been generated.');
+                        // Refresh the users list
+                        loadUsers();
+                    } else {
+                        alert('Failed to accept user. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error accepting user:', error);
+                    alert('Failed to accept user. Please check your connection.');
+                }
+            }
+        }
+    
+        
+
+        // Close RAF preview modal when clicking outside
+        window.addEventListener('click', function(e) {
+            const rafModal = document.getElementById('raf-preview-modal');
+            if (rafModal && e.target === rafModal) {
+                closeRafModal();
+            }
+        });
+        });
+        // Close DOMContentLoaded
+
+
+    <!-- Retry build after rate limit failure -->
+
+        // === CAROUSEL MANAGEMENT FUNCTIONS ===
+        
+        // Load carousel items from server
+        function loadCarouselItems() {
+            const container = document.getElementById('carousel-items-list');
+            container.innerHTML = '<div style="text-align: center; padding: 40px; width: 100%;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #0057b8;"></i><p>Loading carousel items...</p></div>';
+            fetch('/api/carousel')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Only render if carousel section is currently visible
+                        const carouselSection = document.getElementById('carousel-section');
+                        if (carouselSection && carouselSection.classList.contains('active')) {
+                            renderCarouselItems(data.carousel || []);
+                        }
+                    } else {
+                        console.error('Failed to load carousel items:', data.error);
+                        const carouselItemsList = document.getElementById('carousel-items-list');
+                        if (carouselItemsList) {
+                            carouselItemsList.innerHTML = '<p class="empty-state">Failed to load carousel items</p>';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading carousel items:', error);
+                    const carouselItemsList = document.getElementById('carousel-items-list');
+                    if (carouselItemsList) {
+                        carouselItemsList.innerHTML = '<p class="empty-state">Error loading carousel items</p>';
+                    }
+                });
+        }
+        
+        // Render carousel items in the list
+        function renderCarouselItems(items) {
+            // Only render if carousel section is currently visible
+            const carouselSection = document.getElementById('carousel-section');
+            if (!carouselSection || !carouselSection.classList.contains('active')) {
+                return;
+            }
+            
+            const container = document.getElementById('carousel-items-list');
+            
+            if (!items || items.length === 0) {
+                container.innerHTML = '<p class="empty-state">No carousel items yet. Add one below.</p>';
+                return;
+            }
+            
+            container.innerHTML = items.map(item => `
+                <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 350px; height: 400px; display: flex; flex-direction: column; align-items: stretch; flex-shrink: 0;">
+                    <img src="${item.imageUrl}" alt="${item.title}" style="width: 100%; height: 250px; object-fit: cover; border-radius: 4px; margin-bottom: 10px;">
+                    <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; color: #0057b8; font-size: 14px;">${item.title}</h4>
+                            <p style="margin: 0; font-size: 12px; color: #666;">${item.author || 'No author'}</p>
+                            ${item.pdfId || item.pdfPath ? '<p style="margin: 5px 0 0 0; font-size: 11px; color: green;"><i class="fas fa-link"></i> PDF linked</p>' : ''}
+                        </div>
+                        <div style="display: flex; gap: 5px; margin-top: 10px;">
+                            <button onclick="editCarouselItem('${item.id}')" class="btn btn-sm" style="background: #0057b8; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; flex: 1; font-size: 12px;">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button onclick="deleteCarouselItem('${item.id}')" class="btn btn-sm" style="background: #dc3545; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; flex: 1; font-size: 12px;">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Load articles for PDF selection dropdown
+        function loadArticlesForCarouselSelect() {
+            // Only load if carousel section is currently visible
+            const carouselSection = document.getElementById('carousel-section');
+            if (!carouselSection || !carouselSection.classList.contains('active')) {
+                return;
+            }
+            
+            fetch('/api/articles')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const select = document.getElementById('carousel-pdf-select');
+                        // Keep the first option
+                        select.innerHTML = '<option value="">-- Select PDF from uploaded articles --</option>';
+                        
+                        const articles = data.articles || [];
+                        articles.forEach(article => {
+                            const option = document.createElement('option');
+                            option.value = JSON.stringify({ pdfId: article.pdfId || '', pdfPath: article.pdfPath || '' });
+                            option.textContent = article.title || 'Untitled';
+                            select.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading articles for carousel:', error);
+                });
+        }
+        
+        // Handle carousel form submission
+        document.getElementById('carousel-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const itemId = document.getElementById('carousel-item-id').value;
+            const imageUrl = document.getElementById('carousel-image-url').value;
+            const title = document.getElementById('carousel-title').value;
+            const author = document.getElementById('carousel-author').value;
+            const description = document.getElementById('carousel-description').value;
+            
+            const pdfSelect = document.getElementById('carousel-pdf-select');
+            let pdfId = '';
+            let pdfPath = '';
+            
+            if (pdfSelect.value) {
+                try {
+                    const pdfData = JSON.parse(pdfSelect.value);
+                    pdfId = pdfData.pdfId || '';
+                    pdfPath = pdfData.pdfPath || '';
+                } catch (err) {
+                    console.error('Error parsing PDF selection:', err);
+                }
+            }
+            
+            const carouselData = {
+                imageUrl,
+                title,
+                author,
+                description,
+                pdfId,
+                pdfPath
+            };
+            
+            if (itemId) {
+                // Update existing item
+                fetch(`/api/carousel/${itemId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(carouselData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Carousel item updated successfully!');
+                        resetCarouselForm();
+                        loadCarouselItems();
+                    } else {
+                        alert('Failed to update carousel item: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating carousel item:', error);
+                    alert('Error updating carousel item');
+                });
+            } else {
+                // Add new item
+                fetch('/api/carousel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(carouselData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Carousel item added successfully!');
+                        resetCarouselForm();
+                        loadCarouselItems();
+                    } else {
+                        alert('Failed to add carousel item: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error adding carousel item:', error);
+                    alert('Error adding carousel item');
+                });
+            }
+        });
+        
+        // Edit carousel item - populate form with existing data
+        function editCarouselItem(id) {
+            fetch('/api/carousel')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const item = data.carousel.find(i => i.id === id);
+                        if (item) {
+                            const idEl = document.getElementById('carousel-item-id');
+                            if (idEl) idEl.value = item.id;
+                            const urlEl = document.getElementById('carousel-image-url');
+                            if (urlEl) urlEl.value = item.imageUrl || '';
+                            const titleEl = document.getElementById('carousel-title');
+                            if (titleEl) titleEl.value = item.title || '';
+                            const authorEl = document.getElementById('carousel-author');
+                            if (authorEl) authorEl.value = item.author || '';
+                            const descEl = document.getElementById('carousel-description');
+                            if (descEl) descEl.value = item.description || '';
+                            
+                            // Set PDF selection if there's a linked PDF
+                            const pdfSelect = document.getElementById('carousel-pdf-select');
+                            if (item.pdfId || item.pdfPath) {
+                                const pdfData = { pdfId: item.pdfId || '', pdfPath: item.pdfPath || '' };
+                                pdfSelect.value = JSON.stringify(pdfData);
+                            } else {
+                                pdfSelect.value = '';
+                            }
+                            
+                            // Show cancel button and change title
+                            document.getElementById('carousel-form-title').textContent = 'Edit Carousel Item';
+                            document.getElementById('carousel-cancel-btn').style.display = 'inline-block';
+
+                            // Show the form
+                            document.getElementById('carousel-form-container').style.display = 'block';
+                            document.getElementById('carousel-add-btn').style.display = 'none';
+
+                            // Change submit button text
+                            const submitBtn = document.querySelector('#carousel-form button[type="submit"]');
+                            if (submitBtn) submitBtn.textContent = 'Update Item';
+                            
+                            // Scroll to form
+                            document.getElementById('carousel-form').scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading carousel item for edit:', error);
+                });
+        }
+        
+        // Delete carousel item
+        function deleteCarouselItem(id) {
+            if (!confirm('Are you sure you want to delete this carousel item?')) {
+                return;
+            }
+            
+            fetch(`/api/carousel/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Carousel item deleted successfully!');
+                    loadCarouselItems();
+                } else {
+                    alert('Failed to delete carousel item: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting carousel item:', error);
+                alert('Error deleting carousel item');
+            });
+        }
+        
+        // Reset carousel form
+        function resetCarouselForm() {
+            const carouselItemId = document.getElementById('carousel-item-id');
+            const carouselImageUrl = document.getElementById('carousel-image-url');
+            const carouselTitle = document.getElementById('carousel-title');
+            const carouselAuthor = document.getElementById('carousel-author');
+            const carouselDescription = document.getElementById('carousel-description');
+            const carouselPdfSelect = document.getElementById('carousel-pdf-select');
+            const carouselImagePreview = document.getElementById('carousel-image-preview');
+            const carouselFormTitle = document.getElementById('carousel-form-title');
+            const carouselFormContainer = document.getElementById('carousel-form-container');
+            const carouselItemsList = document.getElementById('carousel-items-list');
+            const carouselAddBtn = document.getElementById('carousel-add-btn');
+            
+            if (carouselItemId) carouselItemId.value = '';
+            if (carouselImageUrl) carouselImageUrl.value = '';
+            if (carouselTitle) carouselTitle.value = '';
+            if (carouselAuthor) carouselAuthor.value = '';
+            if (carouselDescription) carouselDescription.value = '';
+            if (carouselPdfSelect) carouselPdfSelect.value = '';
+            if (carouselImagePreview) carouselImagePreview.innerHTML = '';
+            
+            if (carouselFormTitle) carouselFormTitle.textContent = 'Add New Carousel Item';
+            const submitBtn = document.querySelector('#carousel-form button[type="submit"]');
+            if (submitBtn) submitBtn.textContent = 'Add Item';
+            // Hide form
+            if (carouselFormContainer) carouselFormContainer.style.display = 'none';
+            // Show the add button
+            if (carouselAddBtn) carouselAddBtn.style.display = 'inline-block';
+        }
+        
+        // Show carousel form for adding new item
+        function showCarouselForm() {
+            resetCarouselForm();
+            document.getElementById('carousel-form-container').style.display = 'block';
+            document.getElementById('carousel-add-btn').style.display = 'none';
+            // Load articles for PDF selection
+            loadArticlesForCarouselSelect();
+        }
+        
+        // Show carousel items list
+        function showCarouselItemsList() {
+            document.getElementById('carousel-form-container').style.display = 'none';
+            document.getElementById('carousel-items-list').style.display = 'block';
+            document.getElementById('carousel-add-btn').style.display = 'inline-block';
+            // Load carousel items
+            loadCarouselItems();
+        }
+        
+        // Handle carousel image upload
+        function handleCarouselImageUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image size must be less than 5MB');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = e.target.result;
+                const preview = document.getElementById('carousel-image-preview');
+                preview.innerHTML = '<p>Uploading image...</p>';
+                
+                fetch('/api/carousel/upload-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imageData, filename: file.name })
+                })
+                .then(response => {
+                    if (DEBUG) console.log('Upload response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    if (DEBUG) console.log('Upload response data:', data);
+                    if (data.success) {
+                        document.getElementById('carousel-image-url').value = data.imageUrl;
+                        preview.innerHTML = '<img src="' + data.imageUrl + '" style="max-width: 200px; max-height: 150px; border-radius: 4px; border: 2px solid #0057b8;">';
+                    } else {
+                        preview.innerHTML = '<p style="color: red;">Upload failed: ' + (data.error || data.message || 'Unknown error - check console for details') + '</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error uploading image:', error);
+                    preview.innerHTML = '<p style="color: red;">Error uploading image: ' + error.message + '</p>';
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    
+        // === END CAROUSEL MANAGEMENT ===
+    
+
+        // === REAL-TIME SYNCHRONIZATION ===
+        let ws = null;
+        let isRealTimeEnabled = false; // Disabled - WebSocket server not integrated with main server
+
+        // Initialize WebSocket client using native browser WebSocket API
+        function initWebSocketClient() {
+            if (!isRealTimeEnabled) {
+                if (DEBUG) console.log('⚠️ Real-time synchronization is disabled');
+                return;
+            }
+
+            try {
+                // Use native browser WebSocket API
+                const wsUrl = `ws://${window.location.hostname}:5500/ws`;
+                ws = new WebSocket(wsUrl);
+                
+                ws.onopen = function() {
+                    if (DEBUG) console.log('✅ WebSocket connected');
+                    handleWebSocketConnected();
+                };
+                
+                ws.onclose = function() {
+                    if (DEBUG) console.log('⚠️ WebSocket disconnected');
+                    handleWebSocketDisconnected();
+                    // Try to reconnect after 3 seconds
+                    setTimeout(initWebSocketClient, 3000);
+                };
+                
+                ws.onerror = function(error) {
+                    if (DEBUG) console.log('⚠️ WebSocket error:', error);
+                };
+                
+                ws.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        switch(data.type) {
+                            case 'user_state_update':
+                                handleUserStateUpdate(data);
+                                break;
+                            case 'user_status_change':
+                                handleUserStatusChange(data);
+                                break;
+                            case 'user_deleted':
+                                handleUserDeleted(data);
+                                break;
+                            case 'user_added':
+                                handleUserAdded(data);
+                                break;
+                        }
+                    } catch(e) {
+                        if (DEBUG) console.log('WebSocket message parse error:', e);
+                    }
+                };
+            } catch (error) {
+                if (DEBUG) console.log('⚠️ Failed to initialize WebSocket:', error.message);
+            }
+        }
+
+        // WebSocket event handlers
+        function handleWebSocketConnected(data) {
+            if (DEBUG) console.log('✓ WebSocket connected:', data);
+            showConnectionStatus(true);
+        }
+
+        function handleWebSocketDisconnected(data) {
+            if (DEBUG) console.log('✗ WebSocket disconnected:', data);
+            showConnectionStatus(false);
+        }
+
+        function handleUserStateUpdate(data) {
+            if (DEBUG) console.log('📊 User state update received:', data);
+            // Reload users from localStorage
+            loadUsers();
+            // Update dashboard counts
+            updateDashboardCounts();
+            // Update charts
+            renderUserChart();
+            renderDashboardUploadsChart();
+            renderSigningUpChart('day', null);
+        }
+
+        function handleUserStatusChange(data) {
+            if (DEBUG) console.log('🔄 User status change received:', data);
+            const { userId, action, user } = data;
+            
+            // Find and update the row in the current table
+            updateTableRow(userId, user, action);
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Update dashboard counts
+            updateDashboardCounts();
+            
+            // Show notification
+            showRealTimeNotification(`User ${user.name} has been ${action}ed`);
+        }
+
+        function handleUserDeleted(data) {
+            if (DEBUG) console.log('🗑️ User deletion received:', data);
+            const { userId } = data;
+            
+            // Remove the row from the current table
+            removeTableRow(userId);
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Update dashboard counts
+            updateDashboardCounts();
+            
+            // Show notification
+            showRealTimeNotification('A user has been removed');
+        }
+
+        function handleUserAdded(data) {
+            if (DEBUG) console.log('➕ User addition received:', data);
+            const { user } = data;
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Update dashboard counts
+            updateDashboardCounts();
+            
+            // Show notification
+            showRealTimeNotification(`New user ${user.name} has been added`);
+        }
+
+        function handleUserModified(data) {
+            if (DEBUG) console.log('✏️ User modification received:', data);
+            const { userId, updates } = data;
+            
+            // Find and update the row in the current table
+            updateTableRow(userId, updates, 'modify');
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Show notification
+            showRealTimeNotification('User information has been updated');
+        }
+
+        function handleBulkAction(data) {
+            if (DEBUG) console.log('📦 Bulk action received:', data);
+            const { action, userIds } = data;
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Update dashboard counts
+            updateDashboardCounts();
+            
+            // Show notification
+            showRealTimeNotification(`Bulk action ${action} performed on ${userIds.length} users`);
+        }
+
+        function handleNotification(data) {
+            if (DEBUG) console.log('🔔 Notification received:', data);
+            const { notification } = data;
+            
+            // Add to notifications list
+            addNotification(notification);
+            
+            // Update notification badge
+            updateNotificationBadge();
+        }
+
+        function handleWebSocketError(error) {
+            console.error('✗ WebSocket error:', error);
+            showConnectionStatus(false);
+        }
+
+        // UI update functions
+        function updateTableRow(userId, userData, action) {
+            // Find all rows with this user ID
+            const checkboxes = document.querySelectorAll(`.user-checkbox[data-user-id="${userId}"]`);
+            
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                if (row) {
+                    // Update status cell
+                    const statusCell = row.cells[6]; // Status is at index 6
+                    if (statusCell) {
+                        if (action === 'accept') {
+                            statusCell.textContent = 'Verified';
+                        } else if (action === 'reject') {
+                            statusCell.textContent = 'Rejected';
+                        } else if (action === 'ban') {
+                            statusCell.textContent = 'Banned';
+                        }
+                    }
+                    
+                    // Update actions cell
+                    const actionsCell = row.cells[row.cells.length - 1]; // Actions is last cell
+                    if (actionsCell) {
+                        let newActions = '';
+                        if (action === 'accept') {
+                            newActions = `
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <button class="btn btn-info btn-sm">Edit</button>
+                                    <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button>
+                                    <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
+                                    <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${userData.name}')">Remove</button>
+                                </div>
+                            `;
+                        } else if (action === 'reject') {
+                            newActions = `
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <button class="btn btn-info btn-sm">Edit</button>
+                                    <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
+                                    <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
+                                    <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${userData.name}')">Remove</button>
+                                </div>
+                            `;
+                        } else if (action === 'ban') {
+                            newActions = `
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <button class="btn btn-info btn-sm">Edit</button>
+                                    <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
+                                    <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button>
+                                    <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${userData.name}')">Remove</button>
+                                </div>
+                            `;
+                        }
+                        actionsCell.innerHTML = newActions;
+                    }
+                }
+            });
+        }
+
+        function removeTableRow(userId) {
+            const checkboxes = document.querySelectorAll(`.user-checkbox[data-user-id="${userId}"]`);
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                if (row) {
+                    row.remove();
+                }
+            });
+        }
+
+        function showConnectionStatus(connected) {
+            const statusIndicator = document.getElementById('connection-status');
+            if (!statusIndicator) {
+                // Create status indicator if it doesn't exist
+                const indicator = document.createElement('div');
+                indicator.id = 'connection-status';
+                indicator.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    padding: 10px 15px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    z-index: 9999;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                `;
+                document.body.appendChild(indicator);
+            }
+            
+            const indicator = document.getElementById('connection-status');
+            if (connected) {
+                indicator.style.backgroundColor = '#28a745';
+                indicator.style.color = 'white';
+                indicator.innerHTML = '🟢 Real-time Sync Active';
+            } else {
+                indicator.style.backgroundColor = '#dc3545';
+                indicator.style.color = 'white';
+                indicator.innerHTML = '🔴 Real-time Sync Disconnected';
+            }
+        }
+
+        function showRealTimeNotification(message) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: #007bff;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+                max-width: 300px;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function showTemporaryMessage(message) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: #ff4444;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+                max-width: 300px;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        function addNotification(notification) {
+            // Add to notification list (bell dropdown)
+            const notificationList = document.getElementById('notification-list');
+            if (notificationList) {
+                const notifDiv = document.createElement('div');
+                notifDiv.className = 'notification-item';
+                notifDiv.innerHTML = `
+                    <div class="notification-details">
+                        <div class="notification-type ${notification.type}">${notification.typeText || 'Update'}</div>
+                        <div class="notification-content">${notification.content}</div>
+                        <div class="notification-time">${formatNotificationDate(new Date().toISOString())}</div>
+                    </div>
+                `;
+                notificationList.insertBefore(notifDiv, notificationList.firstChild);
+                
+                // Remove items from bottom if exceeding max 10
+                const maxNotifications = 10;
+                const notificationItems = notificationList.querySelectorAll('.notification-item');
+                if (notificationItems.length > maxNotifications) {
+                    // Remove the last item (oldest)
+                    notificationItems[notificationItems.length - 1].remove();
+                }
+            }
+            
+            // Add to all notifications list (modal) - prepend and update pagination
+            const allNotificationsContainer = document.getElementById('all-notifications-list');
+            if (allNotificationsContainer) {
+                // Add new notification to the beginning of the array
+                if (window.notificationPagination) {
+                    window.notificationPagination.notifications.unshift(notification);
+                    window.notificationPagination.totalPages = Math.ceil(window.notificationPagination.notifications.length / window.notificationPagination.itemsPerPage);
+                    // Go to page 1 to show the new notification
+                    goToPage(1);
+                } else {
+                    // Fallback if pagination not initialized
+                    const notifDiv = document.createElement('div');
+                    notifDiv.className = 'notification-item';
+                    notifDiv.setAttribute('data-id', notification.id || Date.now().toString());
+                    notifDiv.innerHTML = `
+                        <input type="checkbox" class="notification-checkbox">
+                        <div class="notification-details">
+                            <div class="notification-type ${notification.type}">${notification.typeText || 'Update'}</div>
+                            <div class="notification-content">${notification.content}</div>
+                            <div class="notification-time">${formatNotificationDate(new Date().toISOString())}</div>
+                        </div>
+                        <div class="notification-actions">
+                            <i class="fas fa-times" title="Mark as Read" onclick="markNotificationRead(this)"></i>
+                        </div>
+                    `;
+                    allNotificationsContainer.insertBefore(notifDiv, allNotificationsContainer.firstChild);
+                }
+            }
+        }
+
+        // Add CSS animations for notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize WebSocket client on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize WebSocket after a short delay to ensure page is ready
+            setTimeout(initWebSocketClient, 1000);
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (ws) {
+                ws.close();
+            }
+        });
+
+    <script src="/frontend/assets/js/pdf-viewer.js"></script>
+
+        // Handle PDF upload for article
+        function handleArticlePDFUpload(input, articleId) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            if (file.type !== 'application/pdf') {
+                alert('Please select a PDF file');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('pdf', file);
+            formData.append('articleId', articleId);
+            
+            // Get the auth token
+            const token = localStorage.getItem('sti_auth_token');
+            
+            fetch('/api/upload-article-pdf', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Update the article in adminArticles
+                    const adminArticles = getAdminArticles();
+                    const articleIndex = adminArticles.findIndex(a => (a.id || a.title) === articleId);
+                    if (articleIndex !== -1) {
+                        adminArticles[articleIndex].pdfPath = data.pdfPath;
+                        saveAdminArticles(adminArticles);
+                    }
+                    
+                    // Also update allArticles in localStorage
+                    const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+                    const allIndex = allArticles.findIndex(a => (a.id || a.title) === articleId);
+                    if (allIndex !== -1) {
+                        allArticles[allIndex].pdfPath = data.pdfPath;
+                        localStorage.setItem('allArticles', JSON.stringify(allArticles));
+                    }
+                    
+                    // Also update in Couchbase/server
+                    updateArticleInServer(articleId, { pdfPath: data.pdfPath });
+                    
+                    alert('PDF uploaded successfully!');
+                    renderAdminArticles(currentPage);
+                } else {
+                    alert('Failed to upload PDF: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading PDF:', error);
+                alert('Error uploading PDF');
+            });
+        }
+        
+        // Handle PDF removal for article
+        function removeArticlePDF(button, articleId) {
+            if (!confirm('Are you sure you want to remove this PDF?')) return;
+            
+            // Update the article in adminArticles
+            const adminArticles = getAdminArticles();
+            const articleIndex = adminArticles.findIndex(a => (a.id || a.title) === articleId);
+            if (articleIndex !== -1) {
+                adminArticles[articleIndex].pdfPath = null;
+                saveAdminArticles(adminArticles);
+                
+                // Also update allArticles in localStorage
+                const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+                const allIndex = allArticles.findIndex(a => (a.id || a.title) === articleId);
+                if (allIndex !== -1) {
+                    allArticles[allIndex].pdfPath = null;
+                    localStorage.setItem('allArticles', JSON.stringify(allArticles));
+                }
+                
+                // Also update in Couchbase/server
+                updateArticleInServer(articleId, { pdfPath: null });
+                
+                alert('PDF removed successfully!');
+                renderAdminArticles(currentPage);
+            }
+        }
+        
+        // Function to update article in server/Couchbase
+        function updateArticleInServer(articleId, updates) {
+            // Get the auth token
+            const token = localStorage.getItem('sti_auth_token');
+            
+            fetch('/api/articles/' + articleId, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(updates)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (DEBUG) console.log('Article updated in server');
+                } else {
+                    console.error('Failed to update article in server:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating article in server:', error);
+            });
+        }
+
+
+        // === GLOBAL FUNCTION BINDINGS ===
+        // Explicitly bind functions to window to make them globally accessible for onclick handlers
+        // This ensures functions work even when served through PHP
+        if (typeof showSection === 'function') window.showSection = showSection;
+        if (typeof navigateToUsers === 'function') window.navigateToUsers = navigateToUsers;
+        if (typeof navigateToNotifications === 'function') window.navigateToNotifications = navigateToNotifications;
+        if (typeof scrollToUserSection === 'function') window.scrollToUserSection = scrollToUserSection;
+        if (typeof handleProfileClick === 'function') window.handleProfileClick = handleProfileClick;
+        if (typeof openProfileModal === 'function') window.openProfileModal = openProfileModal;
+        if (typeof navigateToUploads === 'function') window.navigateToUploads = navigateToUploads;
+        if (typeof acceptUser === 'function') window.acceptUser = acceptUser;
+        if (typeof removeUser === 'function') window.removeUser = removeUser;
+        if (typeof previewRaf === 'function') window.previewRaf = previewRaf;
+        if (typeof displayArticlePDF === 'function') window.displayArticlePDF = displayArticlePDF;
+        if (typeof closePdfModal === 'function') window.closePdfModal = closePdfModal;
+        if (typeof showGrade === 'function') window.showGrade = showGrade;
+        if (typeof showStrand === 'function') window.showStrand = showStrand;
+        if (typeof showDegree === 'function') window.showDegree = showDegree;
+        if (typeof showDepartment === 'function') window.showDepartment = showDepartment;
+        if (typeof loadStrandUsers === 'function') window.loadStrandUsers = loadStrandUsers;
+        if (typeof loadDegreeUsers === 'function') window.loadDegreeUsers = loadDegreeUsers;
+        if (typeof loadDepartmentUsers === 'function') window.loadDepartmentUsers = loadDepartmentUsers;
+        if (DEBUG) console.log('Global functions bound to window');
+        
+        // Handle upload card click
+        var uploadCard = document.getElementById('upload-card');
+        if (uploadCard) {
+            uploadCard.addEventListener('click', function(e) {
+                e.preventDefault();
+                var dashboard = document.getElementById('dashboard');
+                var upload = document.getElementById('upload');
+                dashboard.classList.remove('active');
+                dashboard.style.display = 'none';
+                upload.classList.add('active');
+                upload.style.display = 'block';
+                document.getElementById('page-title').textContent = 'Upload';
+                
+                // Update sidebar active state
+                document.querySelectorAll('.sidebar ul li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                var uploadLink = document.querySelector('.sidebar ul li a[data-section="upload"]');
+                if (uploadLink) {
+                    uploadLink.closest('li').classList.add('active');
+                }
+            });
+        }
+
+        function updateFilters(section) {
+            const roleSelect = document.getElementById(`role-filter-${section}`);
+            const gradeSelect = document.getElementById(`grade-filter-${section}`);
+            const strandSelect = document.getElementById(`strand-filter-${section}`);
+            const degreeSelect = document.getElementById(`degree-filter-${section}`);
+            const deptSelect = document.getElementById(`dept-filter-${section}`);
+
+            const selectedRole = roleSelect.value;
+
+            // Hide all dynamic selects first
+            gradeSelect.style.display = 'none';
+            strandSelect.style.display = 'none';
+            degreeSelect.style.display = 'none';
+            deptSelect.style.display = 'none';
+
+            // Show relevant selects based on role
+            if (selectedRole === 'shs') {
+                gradeSelect.style.display = 'block';
+                strandSelect.style.display = 'block';
+            } else if (selectedRole === 'college') {
+                degreeSelect.style.display = 'block';
+            } else if (selectedRole === 'educator') {
+                deptSelect.style.display = 'block';
+            }
+
+            // Apply role filter
+            const searchInput = document.querySelector(`#${section}-section input[onkeyup*="filterTable"]`);
+            const filterType = document.getElementById(`search-filter-${section}`).value;
+            filterTable(searchInput ? searchInput.value : '', section, filterType);
+
+            // Store current filter state
+            window.currentFilters[section].role = selectedRole;
+        }
+
+        function filterTable(query, tableType, filterType = 'unified') {
+            const tableId = tableType === 'admins' ? 'admins-tbody' : `${tableType}-users-tbody`;
+            const tbody = document.getElementById(tableId);
+            if (!tbody) return;
+
+            // Store current filter state
+            window.currentFilters[tableType].search = query;
+            window.currentFilters[tableType].filterType = filterType;
+
+            const rows = tbody.getElementsByTagName('tr');
+            const filter = query.toLowerCase();
+            const roleFilter = document.getElementById(`role-filter-${tableType}`).value;
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+
+                // Check role filter first
+                if (roleFilter) {
+                    const roleCell = cells[4]; // Role column for both admins and users
+                    if (roleCell) {
+                        const roleText = roleCell.textContent.trim();
+                        if (tableType === 'admins') {
+                            const expectedText = roleFilter === 'admin' ? 'Admin' : roleFilter === 'co-admin' ? 'Co-Admin' : roleFilter === 'sub-admin' ? 'Sub-Admin' : '';
+                            if (expectedText && roleText !== expectedText) {
+                                rows[i].style.display = 'none';
+                                continue;
+                            }
+                        } else {
+                            // For other tables, check if roleText includes the filter value
+                            if (!roleText.toLowerCase().includes(roleFilter.toLowerCase())) {
+                                rows[i].style.display = 'none';
+                                continue;
+                            }
+                        }
+                    }
+                }
+
+                if (filterType === 'unified') {
+                    // Search in all relevant columns
+                    for (let j = 0; j < cells.length; j++) {
+                        if (cells[j].textContent.toLowerCase().includes(filter)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                } else if (filterType === 'fullname' && cells.length > 2) {
+                    // Full Name column (index 2)
+                    if (cells[2].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                } else if (filterType === 'userid' && cells.length > 1) {
+                    // User ID column (index 1)
+                    if (cells[1].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                } else if (filterType === 'email' && cells.length > 3) {
+                    // Email column (index 3)
+                    if (cells[3].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                }
+
+                rows[i].style.display = found ? '' : 'none';
+            }
+
+            // Reset pagination to page 1 and paginate
+            const paginationDiv = document.getElementById(`${tableType === 'admins' ? 'admins' : tableType}-pagination`);
+            if (paginationDiv) {
+                paginationDiv.dataset.currentPage = 1;
+                paginateTable(tableId, 10);
+            }
+        }
+
+        function paginateTable(tbodyId, rowsPerPage) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+
+            const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+            const totalPages = Math.ceil(rows.length / rowsPerPage);
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            if (!paginationDiv) return;
+
+            let currentPage = parseInt(paginationDiv.dataset.currentPage) || 1;
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+            paginationDiv.dataset.currentPage = currentPage;
+
+            // Show only current page rows among visible
+            rows.forEach((row, index) => {
+                const page = Math.floor(index / rowsPerPage) + 1;
+                row.style.display = page === currentPage ? '' : 'none';
+            });
+
+            // Generate pagination buttons (always visible)
+            let buttons = '';
+
+            // Previous button
+            const prevDisabled = currentPage <= 1 || totalPages <= 1;
+            const prevClass = prevDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const prevOnClick = prevDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage - 1})"`;
+            const prevDisabledAttr = prevDisabled ? ' disabled' : '';
+            buttons += `<button class="${prevClass}"${prevDisabledAttr} ${prevOnClick}>Previous</button>`;
+
+            // Page number buttons (always show at least page 1)
+            if (totalPages > 0) {
+                const maxPagesToShow = Math.min(totalPages, 5); // Show max 5 page numbers
+                let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+                // Adjust start page if we're near the end
+                if (endPage - startPage + 1 < maxPagesToShow) {
+                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const isActive = i === currentPage;
+                    const pageDisabled = totalPages <= 1;
+                    const pageClass = isActive ?
+                        (pageDisabled ? 'btn btn-primary btn-sm active disabled' : 'btn btn-primary btn-sm active') :
+                        (pageDisabled ? 'btn btn-outline-secondary btn-sm disabled' : 'btn btn-outline-secondary btn-sm');
+                    const pageOnClick = pageDisabled ? '' : `onclick="changePage('${tbodyId}', ${i})"`;
+                    const pageDisabledAttr = pageDisabled ? ' disabled' : '';
+                    buttons += `<button class="${pageClass}"${pageDisabledAttr} ${pageOnClick}>${i}</button>`;
+                }
+            } else {
+                // No records, show disabled page 1
+                buttons += `<button class="btn btn-outline-secondary btn-sm disabled" disabled>1</button>`;
+            }
+
+            // Next button
+            const nextDisabled = currentPage >= totalPages || totalPages <= 1;
+            const nextClass = nextDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const nextOnClick = nextDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage + 1})"`;
+            const nextDisabledAttr = nextDisabled ? ' disabled' : '';
+            buttons += `<button class="${nextClass}"${nextDisabledAttr} ${nextOnClick}>Next</button>`;
+
+            // Add page info
+            const startRecord = (currentPage - 1) * rowsPerPage + 1;
+            const endRecord = Math.min(currentPage * rowsPerPage, rows.length);
+            const infoText = totalPages > 0 ?
+                `Showing ${startRecord}-${endRecord} of ${rows.length} records` :
+                'No records to display';
+
+            buttons += `<span class="pagination-info" style="margin-left: 15px; font-size: 12px; color: #666;">${infoText}</span>`;
+
+            paginationDiv.innerHTML = buttons;
+        }
+
+        function changePage(tbodyId, page) {
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            paginationDiv.dataset.currentPage = page;
+            paginateTable(tbodyId, 10);
+        }
+
+
+</body>
+</html>
+
+        // === CAROUSEL MANAGEMENT FUNCTIONS ===
+        
+        // Load carousel items from server
+        function loadCarouselItems() {
+            const container = document.getElementById('carousel-items-list');
+            container.innerHTML = '<div style="text-align: center; padding: 40px; width: 100%;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #0057b8;"></i><p>Loading carousel items...</p></div>';
+            fetch('/api/carousel')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Only render if carousel section is currently visible
+                        const carouselSection = document.getElementById('carousel-section');
+                        if (carouselSection && carouselSection.classList.contains('active')) {
+                            renderCarouselItems(data.carousel || []);
+                        }
+                    } else {
+                        console.error('Failed to load carousel items:', data.error);
+                        const carouselItemsList = document.getElementById('carousel-items-list');
+                        if (carouselItemsList) {
+                            carouselItemsList.innerHTML = '<p class="empty-state">Failed to load carousel items</p>';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading carousel items:', error);
+                    const carouselItemsList = document.getElementById('carousel-items-list');
+                    if (carouselItemsList) {
+                        carouselItemsList.innerHTML = '<p class="empty-state">Error loading carousel items</p>';
+                    }
+                });
+        }
+        
+        // Render carousel items in the list
+        function renderCarouselItems(items) {
+            // Only render if carousel section is currently visible
+            const carouselSection = document.getElementById('carousel-section');
+            if (!carouselSection || !carouselSection.classList.contains('active')) {
+                return;
+            }
+            
+            const container = document.getElementById('carousel-items-list');
+            
+            if (!items || items.length === 0) {
+                container.innerHTML = '<p class="empty-state">No carousel items yet. Add one below.</p>';
+                return;
+            }
+            
+            container.innerHTML = items.map(item => `
+                <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 350px; height: 400px; display: flex; flex-direction: column; align-items: stretch; flex-shrink: 0;">
+                    <img src="${item.imageUrl}" alt="${item.title}" style="width: 100%; height: 250px; object-fit: cover; border-radius: 4px; margin-bottom: 10px;">
+                    <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; color: #0057b8; font-size: 14px;">${item.title}</h4>
+                            <p style="margin: 0; font-size: 12px; color: #666;">${item.author || 'No author'}</p>
+                            ${item.pdfId || item.pdfPath ? '<p style="margin: 5px 0 0 0; font-size: 11px; color: green;"><i class="fas fa-link"></i> PDF linked</p>' : ''}
+                        </div>
+                        <div style="display: flex; gap: 5px; margin-top: 10px;">
+                            <button onclick="editCarouselItem('${item.id}')" class="btn btn-sm" style="background: #0057b8; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; flex: 1; font-size: 12px;">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button onclick="deleteCarouselItem('${item.id}')" class="btn btn-sm" style="background: #dc3545; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; flex: 1; font-size: 12px;">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Load articles for PDF selection dropdown
+        function loadArticlesForCarouselSelect() {
+            // Only load if carousel section is currently visible
+            const carouselSection = document.getElementById('carousel-section');
+            if (!carouselSection || !carouselSection.classList.contains('active')) {
+                return;
+            }
+            
+            fetch('/api/articles')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const select = document.getElementById('carousel-pdf-select');
+                        // Keep the first option
+                        select.innerHTML = '<option value="">-- Select PDF from uploaded articles --</option>';
+                        
+                        const articles = data.articles || [];
+                        articles.forEach(article => {
+                            const option = document.createElement('option');
+                            option.value = JSON.stringify({ pdfId: article.pdfId || '', pdfPath: article.pdfPath || '' });
+                            option.textContent = article.title || 'Untitled';
+                            select.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading articles for carousel:', error);
+                });
+        }
+        
+        // Handle carousel form submission
+        document.getElementById('carousel-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const itemId = document.getElementById('carousel-item-id').value;
+            const imageUrl = document.getElementById('carousel-image-url').value;
+            const title = document.getElementById('carousel-title').value;
+            const author = document.getElementById('carousel-author').value;
+            const description = document.getElementById('carousel-description').value;
+            
+            const pdfSelect = document.getElementById('carousel-pdf-select');
+            let pdfId = '';
+            let pdfPath = '';
+            
+            if (pdfSelect.value) {
+                try {
+                    const pdfData = JSON.parse(pdfSelect.value);
+                    pdfId = pdfData.pdfId || '';
+                    pdfPath = pdfData.pdfPath || '';
+                } catch (err) {
+                    console.error('Error parsing PDF selection:', err);
+                }
+            }
+            
+            const carouselData = {
+                imageUrl,
+                title,
+                author,
+                description,
+                pdfId,
+                pdfPath
+            };
+            
+            if (itemId) {
+                // Update existing item
+                fetch(`/api/carousel/${itemId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(carouselData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Carousel item updated successfully!');
+                        resetCarouselForm();
+                        loadCarouselItems();
+                    } else {
+                        alert('Failed to update carousel item: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating carousel item:', error);
+                    alert('Error updating carousel item');
+                });
+            } else {
+                // Add new item
+                fetch('/api/carousel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(carouselData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Carousel item added successfully!');
+                        resetCarouselForm();
+                        loadCarouselItems();
+                    } else {
+                        alert('Failed to add carousel item: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error adding carousel item:', error);
+                    alert('Error adding carousel item');
+                });
+            }
+        });
+        
+        // Edit carousel item - populate form with existing data
+        function editCarouselItem(id) {
+            fetch('/api/carousel')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const item = data.carousel.find(i => i.id === id);
+                        if (item) {
+                            const idEl = document.getElementById('carousel-item-id');
+                            if (idEl) idEl.value = item.id;
+                            const urlEl = document.getElementById('carousel-image-url');
+                            if (urlEl) urlEl.value = item.imageUrl || '';
+                            const titleEl = document.getElementById('carousel-title');
+                            if (titleEl) titleEl.value = item.title || '';
+                            const authorEl = document.getElementById('carousel-author');
+                            if (authorEl) authorEl.value = item.author || '';
+                            const descEl = document.getElementById('carousel-description');
+                            if (descEl) descEl.value = item.description || '';
+                            
+                            // Set PDF selection if there's a linked PDF
+                            const pdfSelect = document.getElementById('carousel-pdf-select');
+                            if (item.pdfId || item.pdfPath) {
+                                const pdfData = { pdfId: item.pdfId || '', pdfPath: item.pdfPath || '' };
+                                pdfSelect.value = JSON.stringify(pdfData);
+                            } else {
+                                pdfSelect.value = '';
+                            }
+                            
+                            // Show cancel button and change title
+                            document.getElementById('carousel-form-title').textContent = 'Edit Carousel Item';
+                            document.getElementById('carousel-cancel-btn').style.display = 'inline-block';
+
+                            // Show the form
+                            document.getElementById('carousel-form-container').style.display = 'block';
+                            document.getElementById('carousel-add-btn').style.display = 'none';
+
+                            // Change submit button text
+                            const submitBtn = document.querySelector('#carousel-form button[type="submit"]');
+                            if (submitBtn) submitBtn.textContent = 'Update Item';
+                            
+                            // Scroll to form
+                            document.getElementById('carousel-form').scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading carousel item for edit:', error);
+                });
+        }
+        
+        // Delete carousel item
+        function deleteCarouselItem(id) {
+            if (!confirm('Are you sure you want to delete this carousel item?')) {
+                return;
+            }
+            
+            fetch(`/api/carousel/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Carousel item deleted successfully!');
+                    loadCarouselItems();
+                } else {
+                    alert('Failed to delete carousel item: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting carousel item:', error);
+                alert('Error deleting carousel item');
+            });
+        }
+        
+        // Reset carousel form
+        function resetCarouselForm() {
+            const carouselItemId = document.getElementById('carousel-item-id');
+            const carouselImageUrl = document.getElementById('carousel-image-url');
+            const carouselTitle = document.getElementById('carousel-title');
+            const carouselAuthor = document.getElementById('carousel-author');
+            const carouselDescription = document.getElementById('carousel-description');
+            const carouselPdfSelect = document.getElementById('carousel-pdf-select');
+            const carouselImagePreview = document.getElementById('carousel-image-preview');
+            const carouselFormTitle = document.getElementById('carousel-form-title');
+            const carouselFormContainer = document.getElementById('carousel-form-container');
+            const carouselItemsList = document.getElementById('carousel-items-list');
+            const carouselAddBtn = document.getElementById('carousel-add-btn');
+            
+            if (carouselItemId) carouselItemId.value = '';
+            if (carouselImageUrl) carouselImageUrl.value = '';
+            if (carouselTitle) carouselTitle.value = '';
+            if (carouselAuthor) carouselAuthor.value = '';
+            if (carouselDescription) carouselDescription.value = '';
+            if (carouselPdfSelect) carouselPdfSelect.value = '';
+            if (carouselImagePreview) carouselImagePreview.innerHTML = '';
+            
+            if (carouselFormTitle) carouselFormTitle.textContent = 'Add New Carousel Item';
+            const submitBtn = document.querySelector('#carousel-form button[type="submit"]');
+            if (submitBtn) submitBtn.textContent = 'Add Item';
+            // Hide form
+            if (carouselFormContainer) carouselFormContainer.style.display = 'none';
+            // Show the add button
+            if (carouselAddBtn) carouselAddBtn.style.display = 'inline-block';
+        }
+        
+        // Show carousel form for adding new item
+        function showCarouselForm() {
+            resetCarouselForm();
+            document.getElementById('carousel-form-container').style.display = 'block';
+            document.getElementById('carousel-add-btn').style.display = 'none';
+            // Load articles for PDF selection
+            loadArticlesForCarouselSelect();
+        }
+        
+        // Show carousel items list
+        function showCarouselItemsList() {
+            document.getElementById('carousel-form-container').style.display = 'none';
+            document.getElementById('carousel-items-list').style.display = 'block';
+            document.getElementById('carousel-add-btn').style.display = 'inline-block';
+            // Load carousel items
+            loadCarouselItems();
+        }
+        
+        // Handle carousel image upload
+        function handleCarouselImageUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image size must be less than 5MB');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = e.target.result;
+                const preview = document.getElementById('carousel-image-preview');
+                preview.innerHTML = '<p>Uploading image...</p>';
+                
+                fetch('/api/carousel/upload-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imageData, filename: file.name })
+                })
+                .then(response => {
+                    if (DEBUG) console.log('Upload response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    if (DEBUG) console.log('Upload response data:', data);
+                    if (data.success) {
+                        document.getElementById('carousel-image-url').value = data.imageUrl;
+                        preview.innerHTML = '<img src="' + data.imageUrl + '" style="max-width: 200px; max-height: 150px; border-radius: 4px; border: 2px solid #0057b8;">';
+                    } else {
+                        preview.innerHTML = '<p style="color: red;">Upload failed: ' + (data.error || data.message || 'Unknown error - check console for details') + '</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error uploading image:', error);
+                    preview.innerHTML = '<p style="color: red;">Error uploading image: ' + error.message + '</p>';
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    
+        // === END CAROUSEL MANAGEMENT ===
+    
+
+        // === REAL-TIME SYNCHRONIZATION ===
+        let ws = null;
+        let isRealTimeEnabled = false; // Disabled - WebSocket server not integrated with main server
+
+        // Initialize WebSocket client using native browser WebSocket API
+        function initWebSocketClient() {
+            if (!isRealTimeEnabled) {
+                if (DEBUG) console.log('⚠️ Real-time synchronization is disabled');
+                return;
+            }
+
+            try {
+                // Use native browser WebSocket API
+                const wsUrl = `ws://${window.location.hostname}:5500/ws`;
+                ws = new WebSocket(wsUrl);
+                
+                ws.onopen = function() {
+                    if (DEBUG) console.log('✅ WebSocket connected');
+                    handleWebSocketConnected();
+                };
+                
+                ws.onclose = function() {
+                    if (DEBUG) console.log('⚠️ WebSocket disconnected');
+                    handleWebSocketDisconnected();
+                    // Try to reconnect after 3 seconds
+                    setTimeout(initWebSocketClient, 3000);
+                };
+                
+                ws.onerror = function(error) {
+                    if (DEBUG) console.log('⚠️ WebSocket error:', error);
+                };
+                
+                ws.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        switch(data.type) {
+                            case 'user_state_update':
+                                handleUserStateUpdate(data);
+                                break;
+                            case 'user_status_change':
+                                handleUserStatusChange(data);
+                                break;
+                            case 'user_deleted':
+                                handleUserDeleted(data);
+                                break;
+                            case 'user_added':
+                                handleUserAdded(data);
+                                break;
+                        }
+                    } catch(e) {
+                        if (DEBUG) console.log('WebSocket message parse error:', e);
+                    }
+                };
+            } catch (error) {
+                if (DEBUG) console.log('⚠️ Failed to initialize WebSocket:', error.message);
+            }
+        }
+
+        // WebSocket event handlers
+        function handleWebSocketConnected(data) {
+            if (DEBUG) console.log('✓ WebSocket connected:', data);
+            showConnectionStatus(true);
+        }
+
+        function handleWebSocketDisconnected(data) {
+            if (DEBUG) console.log('✗ WebSocket disconnected:', data);
+            showConnectionStatus(false);
+        }
+
+        function handleUserStateUpdate(data) {
+            if (DEBUG) console.log('📊 User state update received:', data);
+            // Reload users from localStorage
+            loadUsers();
+            // Update dashboard counts
+            updateDashboardCounts();
+            // Update charts
+            renderUserChart();
+            renderDashboardUploadsChart();
+            renderSigningUpChart('day', null);
+        }
+
+        function handleUserStatusChange(data) {
+            if (DEBUG) console.log('🔄 User status change received:', data);
+            const { userId, action, user } = data;
+            
+            // Find and update the row in the current table
+            updateTableRow(userId, user, action);
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Update dashboard counts
+            updateDashboardCounts();
+            
+            // Show notification
+            showRealTimeNotification(`User ${user.name} has been ${action}ed`);
+        }
+
+        function handleUserDeleted(data) {
+            if (DEBUG) console.log('🗑️ User deletion received:', data);
+            const { userId } = data;
+            
+            // Remove the row from the current table
+            removeTableRow(userId);
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Update dashboard counts
+            updateDashboardCounts();
+            
+            // Show notification
+            showRealTimeNotification('A user has been removed');
+        }
+
+        function handleUserAdded(data) {
+            if (DEBUG) console.log('➕ User addition received:', data);
+            const { user } = data;
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Update dashboard counts
+            updateDashboardCounts();
+            
+            // Show notification
+            showRealTimeNotification(`New user ${user.name} has been added`);
+        }
+
+        function handleUserModified(data) {
+            if (DEBUG) console.log('✏️ User modification received:', data);
+            const { userId, updates } = data;
+            
+            // Find and update the row in the current table
+            updateTableRow(userId, updates, 'modify');
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Show notification
+            showRealTimeNotification('User information has been updated');
+        }
+
+        function handleBulkAction(data) {
+            if (DEBUG) console.log('📦 Bulk action received:', data);
+            const { action, userIds } = data;
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Update dashboard counts
+            updateDashboardCounts();
+            
+            // Show notification
+            showRealTimeNotification(`Bulk action ${action} performed on ${userIds.length} users`);
+        }
+
+        function handleNotification(data) {
+            if (DEBUG) console.log('🔔 Notification received:', data);
+            const { notification } = data;
+            
+            // Add to notifications list
+            addNotification(notification);
+            
+            // Update notification badge
+            updateNotificationBadge();
+        }
+
+        function handleWebSocketError(error) {
+            console.error('✗ WebSocket error:', error);
+            showConnectionStatus(false);
+        }
+
+        // UI update functions
+        function updateTableRow(userId, userData, action) {
+            // Find all rows with this user ID
+            const checkboxes = document.querySelectorAll(`.user-checkbox[data-user-id="${userId}"]`);
+            
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                if (row) {
+                    // Update status cell
+                    const statusCell = row.cells[6]; // Status is at index 6
+                    if (statusCell) {
+                        if (action === 'accept') {
+                            statusCell.textContent = 'Verified';
+                        } else if (action === 'reject') {
+                            statusCell.textContent = 'Rejected';
+                        } else if (action === 'ban') {
+                            statusCell.textContent = 'Banned';
+                        }
+                    }
+                    
+                    // Update actions cell
+                    const actionsCell = row.cells[row.cells.length - 1]; // Actions is last cell
+                    if (actionsCell) {
+                        let newActions = '';
+                        if (action === 'accept') {
+                            newActions = `
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <button class="btn btn-info btn-sm">Edit</button>
+                                    <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button>
+                                    <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
+                                    <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${userData.name}')">Remove</button>
+                                </div>
+                            `;
+                        } else if (action === 'reject') {
+                            newActions = `
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <button class="btn btn-info btn-sm">Edit</button>
+                                    <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
+                                    <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
+                                    <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${userData.name}')">Remove</button>
+                                </div>
+                            `;
+                        } else if (action === 'ban') {
+                            newActions = `
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <button class="btn btn-info btn-sm">Edit</button>
+                                    <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
+                                    <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button>
+                                    <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${userData.name}')">Remove</button>
+                                </div>
+                            `;
+                        }
+                        actionsCell.innerHTML = newActions;
+                    }
+                }
+            });
+        }
+
+        function removeTableRow(userId) {
+            const checkboxes = document.querySelectorAll(`.user-checkbox[data-user-id="${userId}"]`);
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                if (row) {
+                    row.remove();
+                }
+            });
+        }
+
+        function showConnectionStatus(connected) {
+            const statusIndicator = document.getElementById('connection-status');
+            if (!statusIndicator) {
+                // Create status indicator if it doesn't exist
+                const indicator = document.createElement('div');
+                indicator.id = 'connection-status';
+                indicator.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    padding: 10px 15px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    z-index: 9999;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                `;
+                document.body.appendChild(indicator);
+            }
+            
+            const indicator = document.getElementById('connection-status');
+            if (connected) {
+                indicator.style.backgroundColor = '#28a745';
+                indicator.style.color = 'white';
+                indicator.innerHTML = '🟢 Real-time Sync Active';
+            } else {
+                indicator.style.backgroundColor = '#dc3545';
+                indicator.style.color = 'white';
+                indicator.innerHTML = '🔴 Real-time Sync Disconnected';
+            }
+        }
+
+        function showRealTimeNotification(message) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: #007bff;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+                max-width: 300px;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function showTemporaryMessage(message) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: #ff4444;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+                max-width: 300px;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        function addNotification(notification) {
+            // Add to notification list (bell dropdown)
+            const notificationList = document.getElementById('notification-list');
+            if (notificationList) {
+                const notifDiv = document.createElement('div');
+                notifDiv.className = 'notification-item';
+                notifDiv.innerHTML = `
+                    <div class="notification-details">
+                        <div class="notification-type ${notification.type}">${notification.typeText || 'Update'}</div>
+                        <div class="notification-content">${notification.content}</div>
+                        <div class="notification-time">${formatNotificationDate(new Date().toISOString())}</div>
+                    </div>
+                `;
+                notificationList.insertBefore(notifDiv, notificationList.firstChild);
+                
+                // Remove items from bottom if exceeding max 10
+                const maxNotifications = 10;
+                const notificationItems = notificationList.querySelectorAll('.notification-item');
+                if (notificationItems.length > maxNotifications) {
+                    // Remove the last item (oldest)
+                    notificationItems[notificationItems.length - 1].remove();
+                }
+            }
+            
+            // Add to all notifications list (modal) - prepend and update pagination
+            const allNotificationsContainer = document.getElementById('all-notifications-list');
+            if (allNotificationsContainer) {
+                // Add new notification to the beginning of the array
+                if (window.notificationPagination) {
+                    window.notificationPagination.notifications.unshift(notification);
+                    window.notificationPagination.totalPages = Math.ceil(window.notificationPagination.notifications.length / window.notificationPagination.itemsPerPage);
+                    // Go to page 1 to show the new notification
+                    goToPage(1);
+                } else {
+                    // Fallback if pagination not initialized
+                    const notifDiv = document.createElement('div');
+                    notifDiv.className = 'notification-item';
+                    notifDiv.setAttribute('data-id', notification.id || Date.now().toString());
+                    notifDiv.innerHTML = `
+                        <input type="checkbox" class="notification-checkbox">
+                        <div class="notification-details">
+                            <div class="notification-type ${notification.type}">${notification.typeText || 'Update'}</div>
+                            <div class="notification-content">${notification.content}</div>
+                            <div class="notification-time">${formatNotificationDate(new Date().toISOString())}</div>
+                        </div>
+                        <div class="notification-actions">
+                            <i class="fas fa-times" title="Mark as Read" onclick="markNotificationRead(this)"></i>
+                        </div>
+                    `;
+                    allNotificationsContainer.insertBefore(notifDiv, allNotificationsContainer.firstChild);
+                }
+            }
+        }
+
+        // Add CSS animations for notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize WebSocket client on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize WebSocket after a short delay to ensure page is ready
+            setTimeout(initWebSocketClient, 1000);
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (ws) {
+                ws.close();
+            }
+        });
+
+    <script src="/frontend/assets/js/pdf-viewer.js"></script>
+
+        // Handle PDF upload for article
+        function handleArticlePDFUpload(input, articleId) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            if (file.type !== 'application/pdf') {
+                alert('Please select a PDF file');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('pdf', file);
+            formData.append('articleId', articleId);
+            
+            // Get the auth token
+            const token = localStorage.getItem('sti_auth_token');
+            
+            fetch('/api/upload-article-pdf', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Update the article in adminArticles
+                    const adminArticles = getAdminArticles();
+                    const articleIndex = adminArticles.findIndex(a => (a.id || a.title) === articleId);
+                    if (articleIndex !== -1) {
+                        adminArticles[articleIndex].pdfPath = data.pdfPath;
+                        saveAdminArticles(adminArticles);
+                    }
+                    
+                    // Also update allArticles in localStorage
+                    const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+                    const allIndex = allArticles.findIndex(a => (a.id || a.title) === articleId);
+                    if (allIndex !== -1) {
+                        allArticles[allIndex].pdfPath = data.pdfPath;
+                        localStorage.setItem('allArticles', JSON.stringify(allArticles));
+                    }
+                    
+                    // Also update in Couchbase/server
+                    updateArticleInServer(articleId, { pdfPath: data.pdfPath });
+                    
+                    alert('PDF uploaded successfully!');
+                    renderAdminArticles(currentPage);
+                } else {
+                    alert('Failed to upload PDF: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading PDF:', error);
+                alert('Error uploading PDF');
+            });
+        }
+        
+        // Handle PDF removal for article
+        function removeArticlePDF(button, articleId) {
+            if (!confirm('Are you sure you want to remove this PDF?')) return;
+            
+            // Update the article in adminArticles
+            const adminArticles = getAdminArticles();
+            const articleIndex = adminArticles.findIndex(a => (a.id || a.title) === articleId);
+            if (articleIndex !== -1) {
+                adminArticles[articleIndex].pdfPath = null;
+                saveAdminArticles(adminArticles);
+                
+                // Also update allArticles in localStorage
+                const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+                const allIndex = allArticles.findIndex(a => (a.id || a.title) === articleId);
+                if (allIndex !== -1) {
+                    allArticles[allIndex].pdfPath = null;
+                    localStorage.setItem('allArticles', JSON.stringify(allArticles));
+                }
+                
+                // Also update in Couchbase/server
+                updateArticleInServer(articleId, { pdfPath: null });
+                
+                alert('PDF removed successfully!');
+                renderAdminArticles(currentPage);
+            }
+        }
+        
+        // Function to update article in server/Couchbase
+        function updateArticleInServer(articleId, updates) {
+            // Get the auth token
+            const token = localStorage.getItem('sti_auth_token');
+            
+            fetch('/api/articles/' + articleId, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(updates)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (DEBUG) console.log('Article updated in server');
+                } else {
+                    console.error('Failed to update article in server:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating article in server:', error);
+            });
+        }
+
+
+        // === GLOBAL FUNCTION BINDINGS ===
+        // Explicitly bind functions to window to make them globally accessible for onclick handlers
+        // This ensures functions work even when served through PHP
+        if (typeof showSection === 'function') window.showSection = showSection;
+        if (typeof navigateToUsers === 'function') window.navigateToUsers = navigateToUsers;
+        if (typeof navigateToNotifications === 'function') window.navigateToNotifications = navigateToNotifications;
+        if (typeof scrollToUserSection === 'function') window.scrollToUserSection = scrollToUserSection;
+        if (typeof handleProfileClick === 'function') window.handleProfileClick = handleProfileClick;
+        if (typeof openProfileModal === 'function') window.openProfileModal = openProfileModal;
+        if (typeof navigateToUploads === 'function') window.navigateToUploads = navigateToUploads;
+        if (typeof acceptUser === 'function') window.acceptUser = acceptUser;
+        if (typeof removeUser === 'function') window.removeUser = removeUser;
+        if (typeof previewRaf === 'function') window.previewRaf = previewRaf;
+        if (typeof displayArticlePDF === 'function') window.displayArticlePDF = displayArticlePDF;
+        if (typeof closePdfModal === 'function') window.closePdfModal = closePdfModal;
+        if (typeof showGrade === 'function') window.showGrade = showGrade;
+        if (typeof showStrand === 'function') window.showStrand = showStrand;
+        if (typeof showDegree === 'function') window.showDegree = showDegree;
+        if (typeof showDepartment === 'function') window.showDepartment = showDepartment;
+        if (typeof loadStrandUsers === 'function') window.loadStrandUsers = loadStrandUsers;
+        if (typeof loadDegreeUsers === 'function') window.loadDegreeUsers = loadDegreeUsers;
+        if (typeof loadDepartmentUsers === 'function') window.loadDepartmentUsers = loadDepartmentUsers;
+        if (DEBUG) console.log('Global functions bound to window');
+        
+        // Handle upload card click
+        var uploadCard = document.getElementById('upload-card');
+        if (uploadCard) {
+            uploadCard.addEventListener('click', function(e) {
+                e.preventDefault();
+                var dashboard = document.getElementById('dashboard');
+                var upload = document.getElementById('upload');
+                dashboard.classList.remove('active');
+                dashboard.style.display = 'none';
+                upload.classList.add('active');
+                upload.style.display = 'block';
+                document.getElementById('page-title').textContent = 'Upload';
+                
+                // Update sidebar active state
+                document.querySelectorAll('.sidebar ul li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                var uploadLink = document.querySelector('.sidebar ul li a[data-section="upload"]');
+                if (uploadLink) {
+                    uploadLink.closest('li').classList.add('active');
+                }
+            });
+        }
+
+        function updateFilters(section) {
+            const roleSelect = document.getElementById(`role-filter-${section}`);
+            const gradeSelect = document.getElementById(`grade-filter-${section}`);
+            const strandSelect = document.getElementById(`strand-filter-${section}`);
+            const degreeSelect = document.getElementById(`degree-filter-${section}`);
+            const deptSelect = document.getElementById(`dept-filter-${section}`);
+
+            const selectedRole = roleSelect.value;
+
+            // Hide all dynamic selects first
+            gradeSelect.style.display = 'none';
+            strandSelect.style.display = 'none';
+            degreeSelect.style.display = 'none';
+            deptSelect.style.display = 'none';
+
+            // Show relevant selects based on role
+            if (selectedRole === 'shs') {
+                gradeSelect.style.display = 'block';
+                strandSelect.style.display = 'block';
+            } else if (selectedRole === 'college') {
+                degreeSelect.style.display = 'block';
+            } else if (selectedRole === 'educator') {
+                deptSelect.style.display = 'block';
+            }
+
+            // Apply role filter
+            const searchInput = document.querySelector(`#${section}-section input[onkeyup*="filterTable"]`);
+            const filterType = document.getElementById(`search-filter-${section}`).value;
+            filterTable(searchInput ? searchInput.value : '', section, filterType);
+
+            // Store current filter state
+            window.currentFilters[section].role = selectedRole;
+        }
+
+        function filterTable(query, tableType, filterType = 'unified') {
+            const tableId = tableType === 'admins' ? 'admins-tbody' : `${tableType}-users-tbody`;
+            const tbody = document.getElementById(tableId);
+            if (!tbody) return;
+
+            // Store current filter state
+            window.currentFilters[tableType].search = query;
+            window.currentFilters[tableType].filterType = filterType;
+
+            const rows = tbody.getElementsByTagName('tr');
+            const filter = query.toLowerCase();
+            const roleFilter = document.getElementById(`role-filter-${tableType}`).value;
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+
+                // Check role filter first
+                if (roleFilter) {
+                    const roleCell = cells[4]; // Role column for both admins and users
+                    if (roleCell) {
+                        const roleText = roleCell.textContent.trim();
+                        if (tableType === 'admins') {
+                            const expectedText = roleFilter === 'admin' ? 'Admin' : roleFilter === 'co-admin' ? 'Co-Admin' : roleFilter === 'sub-admin' ? 'Sub-Admin' : '';
+                            if (expectedText && roleText !== expectedText) {
+                                rows[i].style.display = 'none';
+                                continue;
+                            }
+                        } else {
+                            // For other tables, check if roleText includes the filter value
+                            if (!roleText.toLowerCase().includes(roleFilter.toLowerCase())) {
+                                rows[i].style.display = 'none';
+                                continue;
+                            }
+                        }
+                    }
+                }
+
+                if (filterType === 'unified') {
+                    // Search in all relevant columns
+                    for (let j = 0; j < cells.length; j++) {
+                        if (cells[j].textContent.toLowerCase().includes(filter)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                } else if (filterType === 'fullname' && cells.length > 2) {
+                    // Full Name column (index 2)
+                    if (cells[2].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                } else if (filterType === 'userid' && cells.length > 1) {
+                    // User ID column (index 1)
+                    if (cells[1].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                } else if (filterType === 'email' && cells.length > 3) {
+                    // Email column (index 3)
+                    if (cells[3].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                }
+
+                rows[i].style.display = found ? '' : 'none';
+            }
+
+            // Reset pagination to page 1 and paginate
+            const paginationDiv = document.getElementById(`${tableType === 'admins' ? 'admins' : tableType}-pagination`);
+            if (paginationDiv) {
+                paginationDiv.dataset.currentPage = 1;
+                paginateTable(tableId, 10);
+            }
+        }
+
+        function paginateTable(tbodyId, rowsPerPage) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+
+            const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+            const totalPages = Math.ceil(rows.length / rowsPerPage);
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            if (!paginationDiv) return;
+
+            let currentPage = parseInt(paginationDiv.dataset.currentPage) || 1;
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+            paginationDiv.dataset.currentPage = currentPage;
+
+            // Show only current page rows among visible
+            rows.forEach((row, index) => {
+                const page = Math.floor(index / rowsPerPage) + 1;
+                row.style.display = page === currentPage ? '' : 'none';
+            });
+
+            // Generate pagination buttons (always visible)
+            let buttons = '';
+
+            // Previous button
+            const prevDisabled = currentPage <= 1 || totalPages <= 1;
+            const prevClass = prevDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const prevOnClick = prevDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage - 1})"`;
+            const prevDisabledAttr = prevDisabled ? ' disabled' : '';
+            buttons += `<button class="${prevClass}"${prevDisabledAttr} ${prevOnClick}>Previous</button>`;
+
+            // Page number buttons (always show at least page 1)
+            if (totalPages > 0) {
+                const maxPagesToShow = Math.min(totalPages, 5); // Show max 5 page numbers
+                let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+                // Adjust start page if we're near the end
+                if (endPage - startPage + 1 < maxPagesToShow) {
+                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const isActive = i === currentPage;
+                    const pageDisabled = totalPages <= 1;
+                    const pageClass = isActive ?
+                        (pageDisabled ? 'btn btn-primary btn-sm active disabled' : 'btn btn-primary btn-sm active') :
+                        (pageDisabled ? 'btn btn-outline-secondary btn-sm disabled' : 'btn btn-outline-secondary btn-sm');
+                    const pageOnClick = pageDisabled ? '' : `onclick="changePage('${tbodyId}', ${i})"`;
+                    const pageDisabledAttr = pageDisabled ? ' disabled' : '';
+                    buttons += `<button class="${pageClass}"${pageDisabledAttr} ${pageOnClick}>${i}</button>`;
+                }
+            } else {
+                // No records, show disabled page 1
+                buttons += `<button class="btn btn-outline-secondary btn-sm disabled" disabled>1</button>`;
+            }
+
+            // Next button
+            const nextDisabled = currentPage >= totalPages || totalPages <= 1;
+            const nextClass = nextDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const nextOnClick = nextDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage + 1})"`;
+            const nextDisabledAttr = nextDisabled ? ' disabled' : '';
+            buttons += `<button class="${nextClass}"${nextDisabledAttr} ${nextOnClick}>Next</button>`;
+
+            // Add page info
+            const startRecord = (currentPage - 1) * rowsPerPage + 1;
+            const endRecord = Math.min(currentPage * rowsPerPage, rows.length);
+            const infoText = totalPages > 0 ?
+                `Showing ${startRecord}-${endRecord} of ${rows.length} records` :
+                'No records to display';
+
+            buttons += `<span class="pagination-info" style="margin-left: 15px; font-size: 12px; color: #666;">${infoText}</span>`;
+
+            paginationDiv.innerHTML = buttons;
+        }
+
+        function changePage(tbodyId, page) {
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            paginationDiv.dataset.currentPage = page;
+            paginateTable(tbodyId, 10);
+        }
+
+
+</body>
+</html>
+
+        // === REAL-TIME SYNCHRONIZATION ===
+        let ws = null;
+        let isRealTimeEnabled = false; // Disabled - WebSocket server not integrated with main server
+
+        // Initialize WebSocket client using native browser WebSocket API
+        function initWebSocketClient() {
+            if (!isRealTimeEnabled) {
+                if (DEBUG) console.log('⚠️ Real-time synchronization is disabled');
+                return;
+            }
+
+            try {
+                // Use native browser WebSocket API
+                const wsUrl = `ws://${window.location.hostname}:5500/ws`;
+                ws = new WebSocket(wsUrl);
+                
+                ws.onopen = function() {
+                    if (DEBUG) console.log('✅ WebSocket connected');
+                    handleWebSocketConnected();
+                };
+                
+                ws.onclose = function() {
+                    if (DEBUG) console.log('⚠️ WebSocket disconnected');
+                    handleWebSocketDisconnected();
+                    // Try to reconnect after 3 seconds
+                    setTimeout(initWebSocketClient, 3000);
+                };
+                
+                ws.onerror = function(error) {
+                    if (DEBUG) console.log('⚠️ WebSocket error:', error);
+                };
+                
+                ws.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        switch(data.type) {
+                            case 'user_state_update':
+                                handleUserStateUpdate(data);
+                                break;
+                            case 'user_status_change':
+                                handleUserStatusChange(data);
+                                break;
+                            case 'user_deleted':
+                                handleUserDeleted(data);
+                                break;
+                            case 'user_added':
+                                handleUserAdded(data);
+                                break;
+                        }
+                    } catch(e) {
+                        if (DEBUG) console.log('WebSocket message parse error:', e);
+                    }
+                };
+            } catch (error) {
+                if (DEBUG) console.log('⚠️ Failed to initialize WebSocket:', error.message);
+            }
+        }
+
+        // WebSocket event handlers
+        function handleWebSocketConnected(data) {
+            if (DEBUG) console.log('✓ WebSocket connected:', data);
+            showConnectionStatus(true);
+        }
+
+        function handleWebSocketDisconnected(data) {
+            if (DEBUG) console.log('✗ WebSocket disconnected:', data);
+            showConnectionStatus(false);
+        }
+
+        function handleUserStateUpdate(data) {
+            if (DEBUG) console.log('📊 User state update received:', data);
+            // Reload users from localStorage
+            loadUsers();
+            // Update dashboard counts
+            updateDashboardCounts();
+            // Update charts
+            renderUserChart();
+            renderDashboardUploadsChart();
+            renderSigningUpChart('day', null);
+        }
+
+        function handleUserStatusChange(data) {
+            if (DEBUG) console.log('🔄 User status change received:', data);
+            const { userId, action, user } = data;
+            
+            // Find and update the row in the current table
+            updateTableRow(userId, user, action);
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Update dashboard counts
+            updateDashboardCounts();
+            
+            // Show notification
+            showRealTimeNotification(`User ${user.name} has been ${action}ed`);
+        }
+
+        function handleUserDeleted(data) {
+            if (DEBUG) console.log('🗑️ User deletion received:', data);
+            const { userId } = data;
+            
+            // Remove the row from the current table
+            removeTableRow(userId);
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Update dashboard counts
+            updateDashboardCounts();
+            
+            // Show notification
+            showRealTimeNotification('A user has been removed');
+        }
+
+        function handleUserAdded(data) {
+            if (DEBUG) console.log('➕ User addition received:', data);
+            const { user } = data;
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Update dashboard counts
+            updateDashboardCounts();
+            
+            // Show notification
+            showRealTimeNotification(`New user ${user.name} has been added`);
+        }
+
+        function handleUserModified(data) {
+            if (DEBUG) console.log('✏️ User modification received:', data);
+            const { userId, updates } = data;
+            
+            // Find and update the row in the current table
+            updateTableRow(userId, updates, 'modify');
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Show notification
+            showRealTimeNotification('User information has been updated');
+        }
+
+        function handleBulkAction(data) {
+            if (DEBUG) console.log('📦 Bulk action received:', data);
+            const { action, userIds } = data;
+            
+            // Reload users to ensure consistency
+            loadUsers();
+            
+            // Update dashboard counts
+            updateDashboardCounts();
+            
+            // Show notification
+            showRealTimeNotification(`Bulk action ${action} performed on ${userIds.length} users`);
+        }
+
+        function handleNotification(data) {
+            if (DEBUG) console.log('🔔 Notification received:', data);
+            const { notification } = data;
+            
+            // Add to notifications list
+            addNotification(notification);
+            
+            // Update notification badge
+            updateNotificationBadge();
+        }
+
+        function handleWebSocketError(error) {
+            console.error('✗ WebSocket error:', error);
+            showConnectionStatus(false);
+        }
+
+        // UI update functions
+        function updateTableRow(userId, userData, action) {
+            // Find all rows with this user ID
+            const checkboxes = document.querySelectorAll(`.user-checkbox[data-user-id="${userId}"]`);
+            
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                if (row) {
+                    // Update status cell
+                    const statusCell = row.cells[6]; // Status is at index 6
+                    if (statusCell) {
+                        if (action === 'accept') {
+                            statusCell.textContent = 'Verified';
+                        } else if (action === 'reject') {
+                            statusCell.textContent = 'Rejected';
+                        } else if (action === 'ban') {
+                            statusCell.textContent = 'Banned';
+                        }
+                    }
+                    
+                    // Update actions cell
+                    const actionsCell = row.cells[row.cells.length - 1]; // Actions is last cell
+                    if (actionsCell) {
+                        let newActions = '';
+                        if (action === 'accept') {
+                            newActions = `
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <button class="btn btn-info btn-sm">Edit</button>
+                                    <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button>
+                                    <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
+                                    <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${userData.name}')">Remove</button>
+                                </div>
+                            `;
+                        } else if (action === 'reject') {
+                            newActions = `
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <button class="btn btn-info btn-sm">Edit</button>
+                                    <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
+                                    <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
+                                    <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${userData.name}')">Remove</button>
+                                </div>
+                            `;
+                        } else if (action === 'ban') {
+                            newActions = `
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <button class="btn btn-info btn-sm">Edit</button>
+                                    <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
+                                    <button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button>
+                                    <button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${userData.name}')">Remove</button>
+                                </div>
+                            `;
+                        }
+                        actionsCell.innerHTML = newActions;
+                    }
+                }
+            });
+        }
+
+        function removeTableRow(userId) {
+            const checkboxes = document.querySelectorAll(`.user-checkbox[data-user-id="${userId}"]`);
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                if (row) {
+                    row.remove();
+                }
+            });
+        }
+
+        function showConnectionStatus(connected) {
+            const statusIndicator = document.getElementById('connection-status');
+            if (!statusIndicator) {
+                // Create status indicator if it doesn't exist
+                const indicator = document.createElement('div');
+                indicator.id = 'connection-status';
+                indicator.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    padding: 10px 15px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    z-index: 9999;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                `;
+                document.body.appendChild(indicator);
+            }
+            
+            const indicator = document.getElementById('connection-status');
+            if (connected) {
+                indicator.style.backgroundColor = '#28a745';
+                indicator.style.color = 'white';
+                indicator.innerHTML = '🟢 Real-time Sync Active';
+            } else {
+                indicator.style.backgroundColor = '#dc3545';
+                indicator.style.color = 'white';
+                indicator.innerHTML = '🔴 Real-time Sync Disconnected';
+            }
+        }
+
+        function showRealTimeNotification(message) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: #007bff;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+                max-width: 300px;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function showTemporaryMessage(message) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: #ff4444;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+                max-width: 300px;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        function addNotification(notification) {
+            // Add to notification list (bell dropdown)
+            const notificationList = document.getElementById('notification-list');
+            if (notificationList) {
+                const notifDiv = document.createElement('div');
+                notifDiv.className = 'notification-item';
+                notifDiv.innerHTML = `
+                    <div class="notification-details">
+                        <div class="notification-type ${notification.type}">${notification.typeText || 'Update'}</div>
+                        <div class="notification-content">${notification.content}</div>
+                        <div class="notification-time">${formatNotificationDate(new Date().toISOString())}</div>
+                    </div>
+                `;
+                notificationList.insertBefore(notifDiv, notificationList.firstChild);
+                
+                // Remove items from bottom if exceeding max 10
+                const maxNotifications = 10;
+                const notificationItems = notificationList.querySelectorAll('.notification-item');
+                if (notificationItems.length > maxNotifications) {
+                    // Remove the last item (oldest)
+                    notificationItems[notificationItems.length - 1].remove();
+                }
+            }
+            
+            // Add to all notifications list (modal) - prepend and update pagination
+            const allNotificationsContainer = document.getElementById('all-notifications-list');
+            if (allNotificationsContainer) {
+                // Add new notification to the beginning of the array
+                if (window.notificationPagination) {
+                    window.notificationPagination.notifications.unshift(notification);
+                    window.notificationPagination.totalPages = Math.ceil(window.notificationPagination.notifications.length / window.notificationPagination.itemsPerPage);
+                    // Go to page 1 to show the new notification
+                    goToPage(1);
+                } else {
+                    // Fallback if pagination not initialized
+                    const notifDiv = document.createElement('div');
+                    notifDiv.className = 'notification-item';
+                    notifDiv.setAttribute('data-id', notification.id || Date.now().toString());
+                    notifDiv.innerHTML = `
+                        <input type="checkbox" class="notification-checkbox">
+                        <div class="notification-details">
+                            <div class="notification-type ${notification.type}">${notification.typeText || 'Update'}</div>
+                            <div class="notification-content">${notification.content}</div>
+                            <div class="notification-time">${formatNotificationDate(new Date().toISOString())}</div>
+                        </div>
+                        <div class="notification-actions">
+                            <i class="fas fa-times" title="Mark as Read" onclick="markNotificationRead(this)"></i>
+                        </div>
+                    `;
+                    allNotificationsContainer.insertBefore(notifDiv, allNotificationsContainer.firstChild);
+                }
+            }
+        }
+
+        // Add CSS animations for notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize WebSocket client on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize WebSocket after a short delay to ensure page is ready
+            setTimeout(initWebSocketClient, 1000);
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (ws) {
+                ws.close();
+            }
+        });
+
+    <script src="/frontend/assets/js/pdf-viewer.js"></script>
+
+        // Handle PDF upload for article
+        function handleArticlePDFUpload(input, articleId) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            if (file.type !== 'application/pdf') {
+                alert('Please select a PDF file');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('pdf', file);
+            formData.append('articleId', articleId);
+            
+            // Get the auth token
+            const token = localStorage.getItem('sti_auth_token');
+            
+            fetch('/api/upload-article-pdf', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Update the article in adminArticles
+                    const adminArticles = getAdminArticles();
+                    const articleIndex = adminArticles.findIndex(a => (a.id || a.title) === articleId);
+                    if (articleIndex !== -1) {
+                        adminArticles[articleIndex].pdfPath = data.pdfPath;
+                        saveAdminArticles(adminArticles);
+                    }
+                    
+                    // Also update allArticles in localStorage
+                    const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+                    const allIndex = allArticles.findIndex(a => (a.id || a.title) === articleId);
+                    if (allIndex !== -1) {
+                        allArticles[allIndex].pdfPath = data.pdfPath;
+                        localStorage.setItem('allArticles', JSON.stringify(allArticles));
+                    }
+                    
+                    // Also update in Couchbase/server
+                    updateArticleInServer(articleId, { pdfPath: data.pdfPath });
+                    
+                    alert('PDF uploaded successfully!');
+                    renderAdminArticles(currentPage);
+                } else {
+                    alert('Failed to upload PDF: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading PDF:', error);
+                alert('Error uploading PDF');
+            });
+        }
+        
+        // Handle PDF removal for article
+        function removeArticlePDF(button, articleId) {
+            if (!confirm('Are you sure you want to remove this PDF?')) return;
+            
+            // Update the article in adminArticles
+            const adminArticles = getAdminArticles();
+            const articleIndex = adminArticles.findIndex(a => (a.id || a.title) === articleId);
+            if (articleIndex !== -1) {
+                adminArticles[articleIndex].pdfPath = null;
+                saveAdminArticles(adminArticles);
+                
+                // Also update allArticles in localStorage
+                const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+                const allIndex = allArticles.findIndex(a => (a.id || a.title) === articleId);
+                if (allIndex !== -1) {
+                    allArticles[allIndex].pdfPath = null;
+                    localStorage.setItem('allArticles', JSON.stringify(allArticles));
+                }
+                
+                // Also update in Couchbase/server
+                updateArticleInServer(articleId, { pdfPath: null });
+                
+                alert('PDF removed successfully!');
+                renderAdminArticles(currentPage);
+            }
+        }
+        
+        // Function to update article in server/Couchbase
+        function updateArticleInServer(articleId, updates) {
+            // Get the auth token
+            const token = localStorage.getItem('sti_auth_token');
+            
+            fetch('/api/articles/' + articleId, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(updates)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (DEBUG) console.log('Article updated in server');
+                } else {
+                    console.error('Failed to update article in server:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating article in server:', error);
+            });
+        }
+
+
+        // === GLOBAL FUNCTION BINDINGS ===
+        // Explicitly bind functions to window to make them globally accessible for onclick handlers
+        // This ensures functions work even when served through PHP
+        if (typeof showSection === 'function') window.showSection = showSection;
+        if (typeof navigateToUsers === 'function') window.navigateToUsers = navigateToUsers;
+        if (typeof navigateToNotifications === 'function') window.navigateToNotifications = navigateToNotifications;
+        if (typeof scrollToUserSection === 'function') window.scrollToUserSection = scrollToUserSection;
+        if (typeof handleProfileClick === 'function') window.handleProfileClick = handleProfileClick;
+        if (typeof openProfileModal === 'function') window.openProfileModal = openProfileModal;
+        if (typeof navigateToUploads === 'function') window.navigateToUploads = navigateToUploads;
+        if (typeof acceptUser === 'function') window.acceptUser = acceptUser;
+        if (typeof removeUser === 'function') window.removeUser = removeUser;
+        if (typeof previewRaf === 'function') window.previewRaf = previewRaf;
+        if (typeof displayArticlePDF === 'function') window.displayArticlePDF = displayArticlePDF;
+        if (typeof closePdfModal === 'function') window.closePdfModal = closePdfModal;
+        if (typeof showGrade === 'function') window.showGrade = showGrade;
+        if (typeof showStrand === 'function') window.showStrand = showStrand;
+        if (typeof showDegree === 'function') window.showDegree = showDegree;
+        if (typeof showDepartment === 'function') window.showDepartment = showDepartment;
+        if (typeof loadStrandUsers === 'function') window.loadStrandUsers = loadStrandUsers;
+        if (typeof loadDegreeUsers === 'function') window.loadDegreeUsers = loadDegreeUsers;
+        if (typeof loadDepartmentUsers === 'function') window.loadDepartmentUsers = loadDepartmentUsers;
+        if (DEBUG) console.log('Global functions bound to window');
+        
+        // Handle upload card click
+        var uploadCard = document.getElementById('upload-card');
+        if (uploadCard) {
+            uploadCard.addEventListener('click', function(e) {
+                e.preventDefault();
+                var dashboard = document.getElementById('dashboard');
+                var upload = document.getElementById('upload');
+                dashboard.classList.remove('active');
+                dashboard.style.display = 'none';
+                upload.classList.add('active');
+                upload.style.display = 'block';
+                document.getElementById('page-title').textContent = 'Upload';
+                
+                // Update sidebar active state
+                document.querySelectorAll('.sidebar ul li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                var uploadLink = document.querySelector('.sidebar ul li a[data-section="upload"]');
+                if (uploadLink) {
+                    uploadLink.closest('li').classList.add('active');
+                }
+            });
+        }
+
+        function updateFilters(section) {
+            const roleSelect = document.getElementById(`role-filter-${section}`);
+            const gradeSelect = document.getElementById(`grade-filter-${section}`);
+            const strandSelect = document.getElementById(`strand-filter-${section}`);
+            const degreeSelect = document.getElementById(`degree-filter-${section}`);
+            const deptSelect = document.getElementById(`dept-filter-${section}`);
+
+            const selectedRole = roleSelect.value;
+
+            // Hide all dynamic selects first
+            gradeSelect.style.display = 'none';
+            strandSelect.style.display = 'none';
+            degreeSelect.style.display = 'none';
+            deptSelect.style.display = 'none';
+
+            // Show relevant selects based on role
+            if (selectedRole === 'shs') {
+                gradeSelect.style.display = 'block';
+                strandSelect.style.display = 'block';
+            } else if (selectedRole === 'college') {
+                degreeSelect.style.display = 'block';
+            } else if (selectedRole === 'educator') {
+                deptSelect.style.display = 'block';
+            }
+
+            // Apply role filter
+            const searchInput = document.querySelector(`#${section}-section input[onkeyup*="filterTable"]`);
+            const filterType = document.getElementById(`search-filter-${section}`).value;
+            filterTable(searchInput ? searchInput.value : '', section, filterType);
+
+            // Store current filter state
+            window.currentFilters[section].role = selectedRole;
+        }
+
+        function filterTable(query, tableType, filterType = 'unified') {
+            const tableId = tableType === 'admins' ? 'admins-tbody' : `${tableType}-users-tbody`;
+            const tbody = document.getElementById(tableId);
+            if (!tbody) return;
+
+            // Store current filter state
+            window.currentFilters[tableType].search = query;
+            window.currentFilters[tableType].filterType = filterType;
+
+            const rows = tbody.getElementsByTagName('tr');
+            const filter = query.toLowerCase();
+            const roleFilter = document.getElementById(`role-filter-${tableType}`).value;
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+
+                // Check role filter first
+                if (roleFilter) {
+                    const roleCell = cells[4]; // Role column for both admins and users
+                    if (roleCell) {
+                        const roleText = roleCell.textContent.trim();
+                        if (tableType === 'admins') {
+                            const expectedText = roleFilter === 'admin' ? 'Admin' : roleFilter === 'co-admin' ? 'Co-Admin' : roleFilter === 'sub-admin' ? 'Sub-Admin' : '';
+                            if (expectedText && roleText !== expectedText) {
+                                rows[i].style.display = 'none';
+                                continue;
+                            }
+                        } else {
+                            // For other tables, check if roleText includes the filter value
+                            if (!roleText.toLowerCase().includes(roleFilter.toLowerCase())) {
+                                rows[i].style.display = 'none';
+                                continue;
+                            }
+                        }
+                    }
+                }
+
+                if (filterType === 'unified') {
+                    // Search in all relevant columns
+                    for (let j = 0; j < cells.length; j++) {
+                        if (cells[j].textContent.toLowerCase().includes(filter)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                } else if (filterType === 'fullname' && cells.length > 2) {
+                    // Full Name column (index 2)
+                    if (cells[2].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                } else if (filterType === 'userid' && cells.length > 1) {
+                    // User ID column (index 1)
+                    if (cells[1].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                } else if (filterType === 'email' && cells.length > 3) {
+                    // Email column (index 3)
+                    if (cells[3].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                }
+
+                rows[i].style.display = found ? '' : 'none';
+            }
+
+            // Reset pagination to page 1 and paginate
+            const paginationDiv = document.getElementById(`${tableType === 'admins' ? 'admins' : tableType}-pagination`);
+            if (paginationDiv) {
+                paginationDiv.dataset.currentPage = 1;
+                paginateTable(tableId, 10);
+            }
+        }
+
+        function paginateTable(tbodyId, rowsPerPage) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+
+            const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+            const totalPages = Math.ceil(rows.length / rowsPerPage);
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            if (!paginationDiv) return;
+
+            let currentPage = parseInt(paginationDiv.dataset.currentPage) || 1;
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+            paginationDiv.dataset.currentPage = currentPage;
+
+            // Show only current page rows among visible
+            rows.forEach((row, index) => {
+                const page = Math.floor(index / rowsPerPage) + 1;
+                row.style.display = page === currentPage ? '' : 'none';
+            });
+
+            // Generate pagination buttons (always visible)
+            let buttons = '';
+
+            // Previous button
+            const prevDisabled = currentPage <= 1 || totalPages <= 1;
+            const prevClass = prevDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const prevOnClick = prevDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage - 1})"`;
+            const prevDisabledAttr = prevDisabled ? ' disabled' : '';
+            buttons += `<button class="${prevClass}"${prevDisabledAttr} ${prevOnClick}>Previous</button>`;
+
+            // Page number buttons (always show at least page 1)
+            if (totalPages > 0) {
+                const maxPagesToShow = Math.min(totalPages, 5); // Show max 5 page numbers
+                let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+                // Adjust start page if we're near the end
+                if (endPage - startPage + 1 < maxPagesToShow) {
+                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const isActive = i === currentPage;
+                    const pageDisabled = totalPages <= 1;
+                    const pageClass = isActive ?
+                        (pageDisabled ? 'btn btn-primary btn-sm active disabled' : 'btn btn-primary btn-sm active') :
+                        (pageDisabled ? 'btn btn-outline-secondary btn-sm disabled' : 'btn btn-outline-secondary btn-sm');
+                    const pageOnClick = pageDisabled ? '' : `onclick="changePage('${tbodyId}', ${i})"`;
+                    const pageDisabledAttr = pageDisabled ? ' disabled' : '';
+                    buttons += `<button class="${pageClass}"${pageDisabledAttr} ${pageOnClick}>${i}</button>`;
+                }
+            } else {
+                // No records, show disabled page 1
+                buttons += `<button class="btn btn-outline-secondary btn-sm disabled" disabled>1</button>`;
+            }
+
+            // Next button
+            const nextDisabled = currentPage >= totalPages || totalPages <= 1;
+            const nextClass = nextDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const nextOnClick = nextDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage + 1})"`;
+            const nextDisabledAttr = nextDisabled ? ' disabled' : '';
+            buttons += `<button class="${nextClass}"${nextDisabledAttr} ${nextOnClick}>Next</button>`;
+
+            // Add page info
+            const startRecord = (currentPage - 1) * rowsPerPage + 1;
+            const endRecord = Math.min(currentPage * rowsPerPage, rows.length);
+            const infoText = totalPages > 0 ?
+                `Showing ${startRecord}-${endRecord} of ${rows.length} records` :
+                'No records to display';
+
+            buttons += `<span class="pagination-info" style="margin-left: 15px; font-size: 12px; color: #666;">${infoText}</span>`;
+
+            paginationDiv.innerHTML = buttons;
+        }
+
+        function changePage(tbodyId, page) {
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            paginationDiv.dataset.currentPage = page;
+            paginateTable(tbodyId, 10);
+        }
+
+
+</body>
+</html>
+
+        // Handle PDF upload for article
+        function handleArticlePDFUpload(input, articleId) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            if (file.type !== 'application/pdf') {
+                alert('Please select a PDF file');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('pdf', file);
+            formData.append('articleId', articleId);
+            
+            // Get the auth token
+            const token = localStorage.getItem('sti_auth_token');
+            
+            fetch('/api/upload-article-pdf', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Update the article in adminArticles
+                    const adminArticles = getAdminArticles();
+                    const articleIndex = adminArticles.findIndex(a => (a.id || a.title) === articleId);
+                    if (articleIndex !== -1) {
+                        adminArticles[articleIndex].pdfPath = data.pdfPath;
+                        saveAdminArticles(adminArticles);
+                    }
+                    
+                    // Also update allArticles in localStorage
+                    const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+                    const allIndex = allArticles.findIndex(a => (a.id || a.title) === articleId);
+                    if (allIndex !== -1) {
+                        allArticles[allIndex].pdfPath = data.pdfPath;
+                        localStorage.setItem('allArticles', JSON.stringify(allArticles));
+                    }
+                    
+                    // Also update in Couchbase/server
+                    updateArticleInServer(articleId, { pdfPath: data.pdfPath });
+                    
+                    alert('PDF uploaded successfully!');
+                    renderAdminArticles(currentPage);
+                } else {
+                    alert('Failed to upload PDF: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading PDF:', error);
+                alert('Error uploading PDF');
+            });
+        }
+        
+        // Handle PDF removal for article
+        function removeArticlePDF(button, articleId) {
+            if (!confirm('Are you sure you want to remove this PDF?')) return;
+            
+            // Update the article in adminArticles
+            const adminArticles = getAdminArticles();
+            const articleIndex = adminArticles.findIndex(a => (a.id || a.title) === articleId);
+            if (articleIndex !== -1) {
+                adminArticles[articleIndex].pdfPath = null;
+                saveAdminArticles(adminArticles);
+                
+                // Also update allArticles in localStorage
+                const allArticles = JSON.parse(localStorage.getItem('allArticles')) || [];
+                const allIndex = allArticles.findIndex(a => (a.id || a.title) === articleId);
+                if (allIndex !== -1) {
+                    allArticles[allIndex].pdfPath = null;
+                    localStorage.setItem('allArticles', JSON.stringify(allArticles));
+                }
+                
+                // Also update in Couchbase/server
+                updateArticleInServer(articleId, { pdfPath: null });
+                
+                alert('PDF removed successfully!');
+                renderAdminArticles(currentPage);
+            }
+        }
+        
+        // Function to update article in server/Couchbase
+        function updateArticleInServer(articleId, updates) {
+            // Get the auth token
+            const token = localStorage.getItem('sti_auth_token');
+            
+            fetch('/api/articles/' + articleId, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(updates)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (DEBUG) console.log('Article updated in server');
+                } else {
+                    console.error('Failed to update article in server:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating article in server:', error);
+            });
+        }
+
+
+        // === GLOBAL FUNCTION BINDINGS ===
+        // Explicitly bind functions to window to make them globally accessible for onclick handlers
+        // This ensures functions work even when served through PHP
+        if (typeof showSection === 'function') window.showSection = showSection;
+        if (typeof navigateToUsers === 'function') window.navigateToUsers = navigateToUsers;
+        if (typeof navigateToNotifications === 'function') window.navigateToNotifications = navigateToNotifications;
+        if (typeof scrollToUserSection === 'function') window.scrollToUserSection = scrollToUserSection;
+        if (typeof handleProfileClick === 'function') window.handleProfileClick = handleProfileClick;
+        if (typeof openProfileModal === 'function') window.openProfileModal = openProfileModal;
+        if (typeof navigateToUploads === 'function') window.navigateToUploads = navigateToUploads;
+        if (typeof acceptUser === 'function') window.acceptUser = acceptUser;
+        if (typeof removeUser === 'function') window.removeUser = removeUser;
+        if (typeof previewRaf === 'function') window.previewRaf = previewRaf;
+        if (typeof displayArticlePDF === 'function') window.displayArticlePDF = displayArticlePDF;
+        if (typeof closePdfModal === 'function') window.closePdfModal = closePdfModal;
+        if (typeof showGrade === 'function') window.showGrade = showGrade;
+        if (typeof showStrand === 'function') window.showStrand = showStrand;
+        if (typeof showDegree === 'function') window.showDegree = showDegree;
+        if (typeof showDepartment === 'function') window.showDepartment = showDepartment;
+        if (typeof loadStrandUsers === 'function') window.loadStrandUsers = loadStrandUsers;
+        if (typeof loadDegreeUsers === 'function') window.loadDegreeUsers = loadDegreeUsers;
+        if (typeof loadDepartmentUsers === 'function') window.loadDepartmentUsers = loadDepartmentUsers;
+        if (DEBUG) console.log('Global functions bound to window');
+        
+        // Handle upload card click
+        var uploadCard = document.getElementById('upload-card');
+        if (uploadCard) {
+            uploadCard.addEventListener('click', function(e) {
+                e.preventDefault();
+                var dashboard = document.getElementById('dashboard');
+                var upload = document.getElementById('upload');
+                dashboard.classList.remove('active');
+                dashboard.style.display = 'none';
+                upload.classList.add('active');
+                upload.style.display = 'block';
+                document.getElementById('page-title').textContent = 'Upload';
+                
+                // Update sidebar active state
+                document.querySelectorAll('.sidebar ul li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                var uploadLink = document.querySelector('.sidebar ul li a[data-section="upload"]');
+                if (uploadLink) {
+                    uploadLink.closest('li').classList.add('active');
+                }
+            });
+        }
+
+        function updateFilters(section) {
+            const roleSelect = document.getElementById(`role-filter-${section}`);
+            const gradeSelect = document.getElementById(`grade-filter-${section}`);
+            const strandSelect = document.getElementById(`strand-filter-${section}`);
+            const degreeSelect = document.getElementById(`degree-filter-${section}`);
+            const deptSelect = document.getElementById(`dept-filter-${section}`);
+
+            const selectedRole = roleSelect.value;
+
+            // Hide all dynamic selects first
+            gradeSelect.style.display = 'none';
+            strandSelect.style.display = 'none';
+            degreeSelect.style.display = 'none';
+            deptSelect.style.display = 'none';
+
+            // Show relevant selects based on role
+            if (selectedRole === 'shs') {
+                gradeSelect.style.display = 'block';
+                strandSelect.style.display = 'block';
+            } else if (selectedRole === 'college') {
+                degreeSelect.style.display = 'block';
+            } else if (selectedRole === 'educator') {
+                deptSelect.style.display = 'block';
+            }
+
+            // Apply role filter
+            const searchInput = document.querySelector(`#${section}-section input[onkeyup*="filterTable"]`);
+            const filterType = document.getElementById(`search-filter-${section}`).value;
+            filterTable(searchInput ? searchInput.value : '', section, filterType);
+
+            // Store current filter state
+            window.currentFilters[section].role = selectedRole;
+        }
+
+        function filterTable(query, tableType, filterType = 'unified') {
+            const tableId = tableType === 'admins' ? 'admins-tbody' : `${tableType}-users-tbody`;
+            const tbody = document.getElementById(tableId);
+            if (!tbody) return;
+
+            // Store current filter state
+            window.currentFilters[tableType].search = query;
+            window.currentFilters[tableType].filterType = filterType;
+
+            const rows = tbody.getElementsByTagName('tr');
+            const filter = query.toLowerCase();
+            const roleFilter = document.getElementById(`role-filter-${tableType}`).value;
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+
+                // Check role filter first
+                if (roleFilter) {
+                    const roleCell = cells[4]; // Role column for both admins and users
+                    if (roleCell) {
+                        const roleText = roleCell.textContent.trim();
+                        if (tableType === 'admins') {
+                            const expectedText = roleFilter === 'admin' ? 'Admin' : roleFilter === 'co-admin' ? 'Co-Admin' : roleFilter === 'sub-admin' ? 'Sub-Admin' : '';
+                            if (expectedText && roleText !== expectedText) {
+                                rows[i].style.display = 'none';
+                                continue;
+                            }
+                        } else {
+                            // For other tables, check if roleText includes the filter value
+                            if (!roleText.toLowerCase().includes(roleFilter.toLowerCase())) {
+                                rows[i].style.display = 'none';
+                                continue;
+                            }
+                        }
+                    }
+                }
+
+                if (filterType === 'unified') {
+                    // Search in all relevant columns
+                    for (let j = 0; j < cells.length; j++) {
+                        if (cells[j].textContent.toLowerCase().includes(filter)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                } else if (filterType === 'fullname' && cells.length > 2) {
+                    // Full Name column (index 2)
+                    if (cells[2].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                } else if (filterType === 'userid' && cells.length > 1) {
+                    // User ID column (index 1)
+                    if (cells[1].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                } else if (filterType === 'email' && cells.length > 3) {
+                    // Email column (index 3)
+                    if (cells[3].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                }
+
+                rows[i].style.display = found ? '' : 'none';
+            }
+
+            // Reset pagination to page 1 and paginate
+            const paginationDiv = document.getElementById(`${tableType === 'admins' ? 'admins' : tableType}-pagination`);
+            if (paginationDiv) {
+                paginationDiv.dataset.currentPage = 1;
+                paginateTable(tableId, 10);
+            }
+        }
+
+        function paginateTable(tbodyId, rowsPerPage) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+
+            const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+            const totalPages = Math.ceil(rows.length / rowsPerPage);
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            if (!paginationDiv) return;
+
+            let currentPage = parseInt(paginationDiv.dataset.currentPage) || 1;
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+            paginationDiv.dataset.currentPage = currentPage;
+
+            // Show only current page rows among visible
+            rows.forEach((row, index) => {
+                const page = Math.floor(index / rowsPerPage) + 1;
+                row.style.display = page === currentPage ? '' : 'none';
+            });
+
+            // Generate pagination buttons (always visible)
+            let buttons = '';
+
+            // Previous button
+            const prevDisabled = currentPage <= 1 || totalPages <= 1;
+            const prevClass = prevDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const prevOnClick = prevDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage - 1})"`;
+            const prevDisabledAttr = prevDisabled ? ' disabled' : '';
+            buttons += `<button class="${prevClass}"${prevDisabledAttr} ${prevOnClick}>Previous</button>`;
+
+            // Page number buttons (always show at least page 1)
+            if (totalPages > 0) {
+                const maxPagesToShow = Math.min(totalPages, 5); // Show max 5 page numbers
+                let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+                // Adjust start page if we're near the end
+                if (endPage - startPage + 1 < maxPagesToShow) {
+                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const isActive = i === currentPage;
+                    const pageDisabled = totalPages <= 1;
+                    const pageClass = isActive ?
+                        (pageDisabled ? 'btn btn-primary btn-sm active disabled' : 'btn btn-primary btn-sm active') :
+                        (pageDisabled ? 'btn btn-outline-secondary btn-sm disabled' : 'btn btn-outline-secondary btn-sm');
+                    const pageOnClick = pageDisabled ? '' : `onclick="changePage('${tbodyId}', ${i})"`;
+                    const pageDisabledAttr = pageDisabled ? ' disabled' : '';
+                    buttons += `<button class="${pageClass}"${pageDisabledAttr} ${pageOnClick}>${i}</button>`;
+                }
+            } else {
+                // No records, show disabled page 1
+                buttons += `<button class="btn btn-outline-secondary btn-sm disabled" disabled>1</button>`;
+            }
+
+            // Next button
+            const nextDisabled = currentPage >= totalPages || totalPages <= 1;
+            const nextClass = nextDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const nextOnClick = nextDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage + 1})"`;
+            const nextDisabledAttr = nextDisabled ? ' disabled' : '';
+            buttons += `<button class="${nextClass}"${nextDisabledAttr} ${nextOnClick}>Next</button>`;
+
+            // Add page info
+            const startRecord = (currentPage - 1) * rowsPerPage + 1;
+            const endRecord = Math.min(currentPage * rowsPerPage, rows.length);
+            const infoText = totalPages > 0 ?
+                `Showing ${startRecord}-${endRecord} of ${rows.length} records` :
+                'No records to display';
+
+            buttons += `<span class="pagination-info" style="margin-left: 15px; font-size: 12px; color: #666;">${infoText}</span>`;
+
+            paginationDiv.innerHTML = buttons;
+        }
+
+        function changePage(tbodyId, page) {
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            paginationDiv.dataset.currentPage = page;
+            paginateTable(tbodyId, 10);
+        }
+
+
+</body>
+</html>
+
+        // === GLOBAL FUNCTION BINDINGS ===
+        // Explicitly bind functions to window to make them globally accessible for onclick handlers
+        // This ensures functions work even when served through PHP
+        if (typeof showSection === 'function') window.showSection = showSection;
+        if (typeof navigateToUsers === 'function') window.navigateToUsers = navigateToUsers;
+        if (typeof navigateToNotifications === 'function') window.navigateToNotifications = navigateToNotifications;
+        if (typeof scrollToUserSection === 'function') window.scrollToUserSection = scrollToUserSection;
+        if (typeof handleProfileClick === 'function') window.handleProfileClick = handleProfileClick;
+        if (typeof openProfileModal === 'function') window.openProfileModal = openProfileModal;
+        if (typeof navigateToUploads === 'function') window.navigateToUploads = navigateToUploads;
+        if (typeof acceptUser === 'function') window.acceptUser = acceptUser;
+        if (typeof removeUser === 'function') window.removeUser = removeUser;
+        if (typeof previewRaf === 'function') window.previewRaf = previewRaf;
+        if (typeof displayArticlePDF === 'function') window.displayArticlePDF = displayArticlePDF;
+        if (typeof closePdfModal === 'function') window.closePdfModal = closePdfModal;
+        if (typeof showGrade === 'function') window.showGrade = showGrade;
+        if (typeof showStrand === 'function') window.showStrand = showStrand;
+        if (typeof showDegree === 'function') window.showDegree = showDegree;
+        if (typeof showDepartment === 'function') window.showDepartment = showDepartment;
+        if (typeof loadStrandUsers === 'function') window.loadStrandUsers = loadStrandUsers;
+        if (typeof loadDegreeUsers === 'function') window.loadDegreeUsers = loadDegreeUsers;
+        if (typeof loadDepartmentUsers === 'function') window.loadDepartmentUsers = loadDepartmentUsers;
+        if (DEBUG) console.log('Global functions bound to window');
+        
+        // Handle upload card click
+        var uploadCard = document.getElementById('upload-card');
+        if (uploadCard) {
+            uploadCard.addEventListener('click', function(e) {
+                e.preventDefault();
+                var dashboard = document.getElementById('dashboard');
+                var upload = document.getElementById('upload');
+                dashboard.classList.remove('active');
+                dashboard.style.display = 'none';
+                upload.classList.add('active');
+                upload.style.display = 'block';
+                document.getElementById('page-title').textContent = 'Upload';
+                
+                // Update sidebar active state
+                document.querySelectorAll('.sidebar ul li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                var uploadLink = document.querySelector('.sidebar ul li a[data-section="upload"]');
+                if (uploadLink) {
+                    uploadLink.closest('li').classList.add('active');
+                }
+            });
+        }
+
+        function updateFilters(section) {
+            const roleSelect = document.getElementById(`role-filter-${section}`);
+            const gradeSelect = document.getElementById(`grade-filter-${section}`);
+            const strandSelect = document.getElementById(`strand-filter-${section}`);
+            const degreeSelect = document.getElementById(`degree-filter-${section}`);
+            const deptSelect = document.getElementById(`dept-filter-${section}`);
+
+            const selectedRole = roleSelect.value;
+
+            // Hide all dynamic selects first
+            gradeSelect.style.display = 'none';
+            strandSelect.style.display = 'none';
+            degreeSelect.style.display = 'none';
+            deptSelect.style.display = 'none';
+
+            // Show relevant selects based on role
+            if (selectedRole === 'shs') {
+                gradeSelect.style.display = 'block';
+                strandSelect.style.display = 'block';
+            } else if (selectedRole === 'college') {
+                degreeSelect.style.display = 'block';
+            } else if (selectedRole === 'educator') {
+                deptSelect.style.display = 'block';
+            }
+
+            // Apply role filter
+            const searchInput = document.querySelector(`#${section}-section input[onkeyup*="filterTable"]`);
+            const filterType = document.getElementById(`search-filter-${section}`).value;
+            filterTable(searchInput ? searchInput.value : '', section, filterType);
+
+            // Store current filter state
+            window.currentFilters[section].role = selectedRole;
+        }
+
+        function filterTable(query, tableType, filterType = 'unified') {
+            const tableId = tableType === 'admins' ? 'admins-tbody' : `${tableType}-users-tbody`;
+            const tbody = document.getElementById(tableId);
+            if (!tbody) return;
+
+            // Store current filter state
+            window.currentFilters[tableType].search = query;
+            window.currentFilters[tableType].filterType = filterType;
+
+            const rows = tbody.getElementsByTagName('tr');
+            const filter = query.toLowerCase();
+            const roleFilter = document.getElementById(`role-filter-${tableType}`).value;
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+
+                // Check role filter first
+                if (roleFilter) {
+                    const roleCell = cells[4]; // Role column for both admins and users
+                    if (roleCell) {
+                        const roleText = roleCell.textContent.trim();
+                        if (tableType === 'admins') {
+                            const expectedText = roleFilter === 'admin' ? 'Admin' : roleFilter === 'co-admin' ? 'Co-Admin' : roleFilter === 'sub-admin' ? 'Sub-Admin' : '';
+                            if (expectedText && roleText !== expectedText) {
+                                rows[i].style.display = 'none';
+                                continue;
+                            }
+                        } else {
+                            // For other tables, check if roleText includes the filter value
+                            if (!roleText.toLowerCase().includes(roleFilter.toLowerCase())) {
+                                rows[i].style.display = 'none';
+                                continue;
+                            }
+                        }
+                    }
+                }
+
+                if (filterType === 'unified') {
+                    // Search in all relevant columns
+                    for (let j = 0; j < cells.length; j++) {
+                        if (cells[j].textContent.toLowerCase().includes(filter)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                } else if (filterType === 'fullname' && cells.length > 2) {
+                    // Full Name column (index 2)
+                    if (cells[2].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                } else if (filterType === 'userid' && cells.length > 1) {
+                    // User ID column (index 1)
+                    if (cells[1].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                } else if (filterType === 'email' && cells.length > 3) {
+                    // Email column (index 3)
+                    if (cells[3].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                    }
+                }
+
+                rows[i].style.display = found ? '' : 'none';
+            }
+
+            // Reset pagination to page 1 and paginate
+            const paginationDiv = document.getElementById(`${tableType === 'admins' ? 'admins' : tableType}-pagination`);
+            if (paginationDiv) {
+                paginationDiv.dataset.currentPage = 1;
+                paginateTable(tableId, 10);
+            }
+        }
+
+        function paginateTable(tbodyId, rowsPerPage) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+
+            const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+            const totalPages = Math.ceil(rows.length / rowsPerPage);
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            if (!paginationDiv) return;
+
+            let currentPage = parseInt(paginationDiv.dataset.currentPage) || 1;
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+            paginationDiv.dataset.currentPage = currentPage;
+
+            // Show only current page rows among visible
+            rows.forEach((row, index) => {
+                const page = Math.floor(index / rowsPerPage) + 1;
+                row.style.display = page === currentPage ? '' : 'none';
+            });
+
+            // Generate pagination buttons (always visible)
+            let buttons = '';
+
+            // Previous button
+            const prevDisabled = currentPage <= 1 || totalPages <= 1;
+            const prevClass = prevDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const prevOnClick = prevDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage - 1})"`;
+            const prevDisabledAttr = prevDisabled ? ' disabled' : '';
+            buttons += `<button class="${prevClass}"${prevDisabledAttr} ${prevOnClick}>Previous</button>`;
+
+            // Page number buttons (always show at least page 1)
+            if (totalPages > 0) {
+                const maxPagesToShow = Math.min(totalPages, 5); // Show max 5 page numbers
+                let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+                // Adjust start page if we're near the end
+                if (endPage - startPage + 1 < maxPagesToShow) {
+                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const isActive = i === currentPage;
+                    const pageDisabled = totalPages <= 1;
+                    const pageClass = isActive ?
+                        (pageDisabled ? 'btn btn-primary btn-sm active disabled' : 'btn btn-primary btn-sm active') :
+                        (pageDisabled ? 'btn btn-outline-secondary btn-sm disabled' : 'btn btn-outline-secondary btn-sm');
+                    const pageOnClick = pageDisabled ? '' : `onclick="changePage('${tbodyId}', ${i})"`;
+                    const pageDisabledAttr = pageDisabled ? ' disabled' : '';
+                    buttons += `<button class="${pageClass}"${pageDisabledAttr} ${pageOnClick}>${i}</button>`;
+                }
+            } else {
+                // No records, show disabled page 1
+                buttons += `<button class="btn btn-outline-secondary btn-sm disabled" disabled>1</button>`;
+            }
+
+            // Next button
+            const nextDisabled = currentPage >= totalPages || totalPages <= 1;
+            const nextClass = nextDisabled ? 'btn btn-secondary btn-sm disabled' : 'btn btn-secondary btn-sm';
+            const nextOnClick = nextDisabled ? '' : `onclick="changePage('${tbodyId}', ${currentPage + 1})"`;
+            const nextDisabledAttr = nextDisabled ? ' disabled' : '';
+            buttons += `<button class="${nextClass}"${nextDisabledAttr} ${nextOnClick}>Next</button>`;
+
+            // Add page info
+            const startRecord = (currentPage - 1) * rowsPerPage + 1;
+            const endRecord = Math.min(currentPage * rowsPerPage, rows.length);
+            const infoText = totalPages > 0 ?
+                `Showing ${startRecord}-${endRecord} of ${rows.length} records` :
+                'No records to display';
+
+            buttons += `<span class="pagination-info" style="margin-left: 15px; font-size: 12px; color: #666;">${infoText}</span>`;
+
+            paginationDiv.innerHTML = buttons;
+        }
+
+        function changePage(tbodyId, page) {
+            const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
+            paginationDiv.dataset.currentPage = page;
+            paginateTable(tbodyId, 10);
+        }
+
+
+</body>
+</html>

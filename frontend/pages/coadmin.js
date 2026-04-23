@@ -364,15 +364,19 @@
 
         // Update dashboard counts
         async function updateDashboardCounts() {
+            console.log('updateDashboardCounts called');
+
             // Get total counts without pagination limits
             try {
                 const token = localStorage.getItem('sti_auth_token');
                 const response = await fetch('/api/users/count?_=' + Date.now(), {
                     headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                 });
+                console.log('API response status:', response.status);
 
                 if (response.ok) {
                     const countData = await response.json();
+                    console.log('Count data:', countData);
                     if (countData.success && countData.counts) {
                         const verifiedEl = document.getElementById('verified-users-count');
                         const adminEl = document.getElementById('admin-users-count');
@@ -381,6 +385,7 @@
                         if (verifiedEl) verifiedEl.textContent = countData.counts.usersCount || 0;
                         if (adminEl) adminEl.textContent = countData.counts.adminUsers || 0;
                         if (signingUpEl) signingUpEl.textContent = countData.counts.newSignups || 0;
+                        console.log('Updated dashboard counts from API');
                     }
                 }
             } catch (error) {
@@ -453,6 +458,87 @@
                     `;
                 }
                 let emailToUse = user.personal_email || user.email;
+                const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewUserDocs('${userId}')">Preview</button>` : `${user.raf_path || ''} ${user.educator_id || ''}`.trim() || '-';
+                const rowWithEmail = `<tr>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
+                    <td>${getUserName(user)}</td>
+                    <td>${emailToUse}</td>
+                    <td>${formatRole(user.role)}</td>
+                    <td>${user.grade || user.Grade || user.year_level || '-'}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
+                    <td>${date}</td>
+                    <td>${rafEduIdCell}</td>
+                    <td>${actions}</td>
+                </tr>`;
+                const rowWithoutActions = `<tr>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
+                    <td>${getUserName(user)}</td>
+                    <td>${emailToUse}</td>
+                    <td>${formatRole(user.role)}</td>
+                    <td>${user.grade || user.Grade || user.year_level || '-'}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
+                    <td>${date}</td>
+                    <td>${rafEduIdCell}</td>
+                </tr>`;
+
+                // Check admin role first (case-insensitive)
+                const roleLower = (user.role || '').toLowerCase();
+                if (DEBUG) console.log('DEBUG: User role check:', user.fullname, 'role:', user.role, 'roleLower:', roleLower);
+                const isAdminRole = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin';
+                // For coadmin, only show coadmin and subadmin, not full admin
+                const currentUserRole = 'coadmin'; // Hardcoded for coadmin page
+                const shouldShowAdmin = currentUserRole === 'admin' || (currentUserRole === 'coadmin' && (roleLower === 'coadmin' || roleLower === 'subadmin'));
+                if (isAdminRole) {
+                    if (shouldShowAdmin) {
+                    if (DEBUG) console.log('DEBUG: Adding admin user to table:', user.fullname, user.email, 'role:', roleLower);
+                    // Determine role display
+                    let roleDisplay;
+                    if (user.fullname === 'admin2' || user.fullname === 'Admin2') {
+                        roleDisplay = 'Co-Admin';
+                    } else if (user.fullname === 'admin3' || user.fullname === 'Admin3') {
+                        roleDisplay = 'Sub-Admin';
+                    } else {
+                        roleDisplay = (roleLower === 'coadmin' ? 'Co-Admin' : roleLower === 'subadmin' ? 'Sub-Admin' : 'Admin');
+                    }
+                    let badgeClass = roleLower === 'coadmin' ? 'badge-coadmin' : roleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
+                    let permissions = user.permissions || (roleLower === 'admin' ? 'Full Access - All Features' : roleLower === 'coadmin' ? 'Limited Access - User & File Management' : 'User Approver - Accept/Reject Registrations');
+                    const currentUserRole = 'coadmin';
+                        const adminRow = `<tr>
+                            <td>${userId}</td>
+                            <td>${getUserName(user)}</td>
+                            <td>${user.email || 'N/A'}</td>
+                            <td><span class="badge ${badgeClass}">${roleDisplay}</span></td>
+                            <td>${permissions}</td>
+                            <td>${formatDate(user.created_at)}</td>
+                        </tr>`;
+                        document.getElementById('admins-tbody').innerHTML += adminRow;
+                    }
+                } else {
+                    // Status categorization for regular users
+                    const userStatus = getUserStatus(user);
+                    if (userStatus === 'approved') {
+                        if (DEBUG) console.log('DEBUG: Adding verified user to table:', user.name, user.email);
+                        document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
+                    } else if (userStatus === 'banned' || userStatus === 'rejected') {
+                        document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
+                    } else if (userStatus === 'pending') {
+                        if (DEBUG) console.log('DEBUG: Adding signing-up user to table:', user.name, user.email);
+                        document.getElementById('signing-up-users-tbody').innerHTML += rowWithEmail;
+                    }
+                }
+            });
+
+            // Update counts
+            updateDashboardCounts();
+
+            // Apply pagination
+            paginateTable('verified-users-tbody', 10);
+            paginateTable('signing-up-users-tbody', 10);
+            paginateTable('banned-users-tbody', 10);
+
+            return users;
+        }
+                let emailToUse = user.personal_email || user.email;
                 const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewRaf('${user.raf_path}')">Preview</button>` : `${user.raf_path || ''} ${user.educator_id || ''}`.trim() || '-';
                 const rowWithEmail = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
@@ -521,7 +607,7 @@
                         document.getElementById('signing-up-users-tbody').innerHTML += rowWithEmail;
                     }
                 }
-            });
+            
 
             // Update counts
             updateDashboardCounts();
@@ -531,8 +617,9 @@
             paginateTable('signing-up-users-tbody', 10);
             paginateTable('banned-users-tbody', 10);
 
+            console.log('loadUsers completed for coadmin');
             return users;
-        }
+        
         async function getUsers(forceRefresh = false, page = 1, limit = 50) {
             if (forceRefresh) {
                 // Clear localStorage and force reload from server
@@ -997,6 +1084,224 @@
         let currentPage = 1;
         const articlesPerPage = 10;
 
+        function createArticleTemplate(articleData = {}) {
+            const wrapper = document.createElement('div');
+            wrapper.style.marginBottom = '20px';
+            const template = document.createElement('div');
+            template.className = `article ${articleData.category === 'capstone' ? 'capstone' : ''}`;
+            template.setAttribute('data-category', articleData.category);
+            const actionButtons = document.createElement('div');
+            actionButtons.style.display = 'flex';
+            actionButtons.style.justifyContent = 'flex-start';
+            actionButtons.style.gap = '10px';
+            actionButtons.style.marginTop = '10px';
+            wrapper.appendChild(template);
+            wrapper.appendChild(actionButtons);
+            function setViewMode() {
+                template.classList.remove('editing');
+                // Escape special characters for onclick handler
+                const safePdfPath = (articleData.pdfPath || articleData.pdf_path || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const safeTitle = (articleData.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                if (DEBUG) console.log('Creating View button for article:', articleData.id, 'Title:', safeTitle);
+                const hasPdf = articleData.pdfPath || articleData.pdf_path || articleData.pdfId;
+                const pdfUrl = hasPdf ? (articleData.pdfPath || articleData.pdf_path ? safePdfPath : '/api/pdf/' + articleData.pdfId) : '';
+                template.innerHTML = `
+                <h3>${articleData.title}</h3>
+                <div class="meta">${articleData.meta}</div>
+                ${articleData.topic ? `<div class="meta" style="color: #0057b8;">Topic: ${articleData.topic.charAt(0).toUpperCase() + articleData.topic.slice(1)}</div>` : ''}
+                ${(articleData.type || articleData.qualitativeQuantitative) ? `<div class="meta" style="color: #0057b8;">Type: ${(articleData.type || articleData.qualitativeQuantitative).charAt(0).toUpperCase() + (articleData.type || articleData.qualitativeQuantitative).slice(1)}</div>` : ''}
+                <div class="summary">${articleData.summary}</div>
+                <div class="actions">
+                <button class="edit-btn">Edit</button>
+                <button class="delete-btn" onclick="confirmDelete(this)">Delete</button>
+                </div>
+                `;
+                actionButtons.innerHTML = '';
+                // Add onclick to article container to show PDF
+                if (hasPdf) {
+                    template.onclick = (e) => {
+                        if (!e.target.classList.contains('edit-btn') && !e.target.classList.contains('delete-btn')) {
+                            displayArticlePDF(pdfUrl, articleData.title);
+                        }
+                    };
+                    template.style.cursor = 'pointer';
+                }
+                // Add event listener for edit button
+                const editBtn = template.querySelector('.edit-btn');
+                editBtn.addEventListener('click', setEditMode);
+            }
+            function setEditMode() {
+                template.onclick = null;
+                template.style.cursor = 'default';
+                template.classList.add('editing');
+                template.innerHTML = `
+                <div>
+                <div contenteditable="true" class="article-title" style="border: none; background: transparent; color: #0057b8; font-size: 18px; font-weight: bold; width: 100%; outline: none; white-space: pre-wrap; word-wrap: break-word;">${articleData.title}</div>
+                </div>
+                <div class="meta">
+                <input type="text" class="article-authors" value="${articleData.meta}" placeholder="Authors" style="border: none; background: transparent; color: #555; font-size: 14px; width: auto; outline: none;">
+                </div>
+                <div class="summary">
+                <div contenteditable="true" class="article-summary" style="border: none; background: transparent; color: #333; font-size: 14px; line-height: 1.5; width: 100%; outline: none; white-space: pre-wrap; word-wrap: break-word;">${articleData.summary}</div>
+                </div>
+                <div class="pdf-management" style="margin: 10px 0; padding: 10px; border: 1px dashed #ccc; border-radius: 4px;">
+                <label style="font-weight: bold; color: #0057b8;">PDF Document:</label>
+                ${(articleData.pdfPath || articleData.pdf_path || articleData.pdfId) ? `
+                <div class="current-pdf" style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                <span style="flex: 1; color: #333; word-break: break-all;">${(articleData.pdfPath || articleData.pdf_path || '').split('/').pop() || 'PDF ID: ' + articleData.pdfId}</span>
+                <button type="button" onclick="removeArticlePDF(this, '${articleData.id || articleData.title}')" style="background: #dc3545; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; font-size: 16px;">&times;</button>
+                </div>
+                ` : '<p style="color: #666; margin: 5px 0;">No PDF uploaded</p>'}
+                <div class="pdf-upload" style="margin-top: 10px;">
+                <input type="file" id="pdf-upload-${articleData.id || articleData.title}" accept=".pdf" style="display: none;" onchange="handleArticlePDFUpload(this, '${articleData.id || articleData.title}')">
+                <button type="button" onclick="document.getElementById('pdf-upload-${articleData.id || articleData.title}').click()" style="background: #0057b8; color: white; border: none; border-radius: 4px; padding: 8px 15px; cursor: pointer;">${(articleData.pdfPath || articleData.pdf_path || articleData.pdfId) ? 'Replace PDF' : 'Upload PDF'}</button>
+                </div>
+                </div>
+                <div class="actions">
+                </div>
+                <div class="actions-row">
+                <label>Category:</label>
+                <select class="category-select">
+                <option value="research" ${articleData.category === 'research' ? 'selected' : ''}>Research</option>
+                <option value="capstone" ${articleData.category === 'capstone' ? 'selected' : ''}>Capstone</option>
+                </select>
+                <label style="margin-left: 10px;">Topic:</label>
+                <select class="topic-select">
+                <option value="">Select Topic</option>
+                <option value="agriculture" ${articleData.topic === 'agriculture' ? 'selected' : ''}>Agriculture</option>
+                <option value="business" ${articleData.topic === 'business' ? 'selected' : ''}>Business</option>
+                <option value="cosmetics" ${articleData.topic === 'cosmetics' ? 'selected' : ''}>Cosmetics</option>
+                <option value="education" ${articleData.topic === 'education' ? 'selected' : ''}>Education</option>
+                <option value="environment" ${articleData.topic === 'environment' ? 'selected' : ''}>Environment</option>
+                <option value="food" ${articleData.topic === 'food' ? 'selected' : ''}>Food</option>
+                <option value="technology" ${articleData.topic === 'technology' ? 'selected' : ''}>Technology</option>
+                </select>
+                <label style="margin-left: 10px;">Type:</label>
+                <select class="type-select">
+                <option value="">Select Type</option>
+                <option value="qualitative" ${(articleData.type === 'qualitative' || articleData.qualitativeQuantitative === 'qualitative') ? 'selected' : ''}>Qualitative</option>
+                <option value="quantitative" ${(articleData.type === 'quantitative' || articleData.qualitativeQuantitative === 'quantitative') ? 'selected' : ''}>Quantitative</option>
+                <option value="bsba" ${(articleData.type === 'bsba' || articleData.qualitativeQuantitative === 'bsba') ? 'selected' : ''}>BSBA</option>
+                <option value="bscs" ${(articleData.type === 'bscs' || articleData.qualitativeQuantitative === 'bscs') ? 'selected' : ''}>BSCS</option>
+                <option value="bsit" ${(articleData.type === 'bsit' || articleData.qualitativeQuantitative === 'bsit') ? 'selected' : ''}>BSIT</option>
+                </select>
+                <div class="research-options" style="display: ${articleData.category === 'research' ? 'inline' : 'none'};">
+                <label>Grade:</label>
+                <select class="grade-select">
+                <option value="Grade 11" ${articleData.program === 'Grade 11' ? 'selected' : ''}>Grade 11</option>
+                <option value="Grade 12" ${articleData.program === 'Grade 12' ? 'selected' : ''}>Grade 12</option>
+                </select>
+                <label>Strand:</label>
+                <select class="strand-select">
+                <option value="ABM" ${articleData.strand === 'ABM' ? 'selected' : ''}>ABM</option>
+                <option value="ITMAWD" ${articleData.strand === 'ITMAWD' ? 'selected' : ''}>ITMAWD</option>
+                <option value="STEM" ${articleData.strand === 'STEM' ? 'selected' : ''}>STEM</option>
+                </select>
+                </div>
+                <div class="capstone-options" style="display: ${articleData.category === 'capstone' ? 'inline' : 'none'};">
+                <label>Program:</label>
+                <select class="program-select">
+                <option value="BSBA" ${articleData.strand === 'BSBA' ? 'selected' : ''}>BSBA</option>
+                <option value="BSCS" ${articleData.strand === 'BSCS' ? 'selected' : ''}>BSCS</option>
+                <option value="BSIT" ${articleData.strand === 'BSIT' ? 'selected' : ''}>BSIT</option>
+                </select>
+                </div>
+                </div>
+                `;
+                // Add event listeners for category
+                const categorySelect = template.querySelector('.category-select');
+                categorySelect.addEventListener('change', function() {
+                    const researchOpts = template.querySelector('.research-options');
+                    const capstoneOpts = template.querySelector('.capstone-options');
+                    if (this.value === 'research') {
+                        researchOpts.style.display = 'inline';
+                        capstoneOpts.style.display = 'none';
+                        template.classList.remove('capstone');
+                    } else {
+                        researchOpts.style.display = 'none';
+                        capstoneOpts.style.display = 'inline';
+                        template.classList.add('capstone');
+                    }
+                });
+                // Create buttons in actionButtons
+                actionButtons.innerHTML = '';
+                const editBtn = document.createElement('button');
+                editBtn.className = 'edit-btn';
+                editBtn.style.backgroundColor = 'gray';
+                editBtn.style.color = 'white';
+                editBtn.style.border = 'none';
+                editBtn.style.padding = '5px 10px';
+                editBtn.style.borderRadius = '4px';
+                editBtn.style.cursor = 'pointer';
+                editBtn.textContent = 'Edit';
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'cancel-btn';
+                cancelBtn.style.backgroundColor = '#6c757d';
+                cancelBtn.style.color = 'white';
+                cancelBtn.style.border = 'none';
+                cancelBtn.style.padding = '5px 10px';
+                cancelBtn.style.borderRadius = '4px';
+                cancelBtn.style.cursor = 'pointer';
+                cancelBtn.textContent = 'Cancel';
+                cancelBtn.addEventListener('click', setViewMode);
+                const saveBtn = document.createElement('button');
+                saveBtn.className = 'save-btn';
+                saveBtn.style.backgroundColor = '#28a745';
+                saveBtn.style.color = 'white';
+                saveBtn.style.border = 'none';
+                saveBtn.style.padding = '5px 10px';
+                saveBtn.style.borderRadius = '4px';
+                saveBtn.style.cursor = 'pointer';
+                saveBtn.textContent = 'Save';
+                saveBtn.addEventListener('click', function() {
+                    articleData.title = template.querySelector('.article-title').textContent;
+                    articleData.authors = template.querySelector('.article-authors').value;
+                    articleData.meta = template.querySelector('.article-authors').value;
+                    articleData.summary = template.querySelector('.article-summary').textContent;
+                    articleData.category = template.querySelector('.category-select').value;
+                    articleData.topic = template.querySelector('.topic-select').value;
+                    articleData.type = template.querySelector('.type-select').value;
+                    articleData.qualitativeQuantitative = template.querySelector('.type-select').value;
+                    if (articleData.category === 'research') {
+                        articleData.program = template.querySelector('.grade-select').value;
+                        articleData.strand = template.querySelector('.strand-select').value;
+                    } else {
+                        articleData.program = '';
+                        articleData.strand = template.querySelector('.program-select').value;
+                    }
+
+                    // Update in localStorage
+                    const articles = getArticles();
+                    const articleIndex = articles.findIndex(a => a.id === articleData.id);
+                    if (articleIndex !== -1) {
+                        articles[articleIndex] = articleData;
+                        saveArticles(articles);
+                    }
+
+                    // Update admin articles
+                    const adminArticles = getAdminArticles();
+                    const adminIndex = adminArticles.findIndex(a => a.id === articleData.id);
+                    if (adminIndex !== -1) {
+                        adminArticles[adminIndex] = articleData;
+                        saveAdminArticles(adminArticles);
+                    }
+
+                    // Update in server
+                    if (articleData.id) {
+                        updateArticleInServer(articleData.id, articleData);
+                    }
+
+                    setViewMode();
+                    alert('Article updated!');
+                });
+                actionButtons.appendChild(editBtn);
+                actionButtons.appendChild(cancelBtn);
+                actionButtons.appendChild(saveBtn);
+            }
+            setViewMode(); // Start in view mode
+            return wrapper;
+        }
+
         function renderAdminArticles(page = 1) {
             // Store current scroll position
             const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
@@ -1312,15 +1617,17 @@
 
         // Navigation setup for coadmin
         function setupNavigation() {
-            const navButtons = document.querySelectorAll('.nav-btn');
+            const sidebarLinks = document.querySelectorAll('.sidebar ul li a[data-section]');
             const contentSections = document.querySelectorAll('.content-section');
 
-            navButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    // Remove active class from all buttons
-                    navButtons.forEach(btn => btn.classList.remove('active'));
-                    // Add active class to clicked button
-                    this.classList.add('active');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // Remove active class from all sidebar items
+                    document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.parentElement.classList.add('active');
 
                     // Hide all sections
                     contentSections.forEach(section => section.classList.remove('active'));
@@ -1334,15 +1641,78 @@
                 });
             });
 
+            // Set up users subsection navigation
+            const userNavButtons = document.querySelectorAll('.users-nav .nav-btn');
+            const userSubsections = document.querySelectorAll('.user-subsection');
+
+            userNavButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all user nav buttons
+                    userNavButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    // Hide all user subsections
+                    userSubsections.forEach(section => section.style.display = 'none');
+
+                    // Show selected subsection
+                    const sectionId = this.getAttribute('data-section') + '-section';
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.style.display = 'block';
+                    }
+                });
+            });
+
             // Set default active section (dashboard)
-            const dashboardBtn = document.querySelector('.nav-btn[data-section="dashboard"]');
-            if (dashboardBtn) {
-                dashboardBtn.click();
+            const dashboardLink = document.querySelector('.sidebar ul li a[data-section="dashboard"]');
+            if (dashboardLink) {
+                dashboardLink.click();
             }
+        }
+
+        // Stub functions for article management (coadmin has limited article management)
+        function displayArticlePDF(pdfUrl, title) {
+            console.log('displayArticlePDF called with:', pdfUrl, title);
+            // Simple implementation - open in new tab
+            window.open(pdfUrl, '_blank');
+        }
+
+        function removeArticlePDF(button, articleId) {
+            console.log('removeArticlePDF called with:', button, articleId);
+            // Stub - not implemented for coadmin
+        }
+
+        function handleArticlePDFUpload(input, articleId) {
+            console.log('handleArticlePDFUpload called with:', input, articleId);
+            // Stub - not implemented for coadmin
+        }
+
+        function getArticles() {
+            return JSON.parse(localStorage.getItem('articles') || '[]');
+        }
+
+        function saveArticles(articles) {
+            localStorage.setItem('articles', JSON.stringify(articles));
+        }
+
+        function getAdminArticles() {
+            return JSON.parse(localStorage.getItem('adminArticles') || '[]');
+        }
+
+        function saveAdminArticles(articles) {
+            localStorage.setItem('adminArticles', JSON.stringify(articles));
+        }
+
+        function updateArticleInServer(articleId, articleData) {
+            console.log('updateArticleInServer called with:', articleId, articleData);
+            // Stub - API call not implemented for coadmin
         }
 
         // === INIT ===
         document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Coadmin page DOMContentLoaded fired');
+
             // Dark mode - Apply saved preference on page load
             const darkModeToggle = document.querySelector('.dark-mode-toggle');
             const darkModeIcon = darkModeToggle ? darkModeToggle.querySelector('i') : null;

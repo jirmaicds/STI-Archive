@@ -404,28 +404,102 @@
         };
 
         async function loadUsers() {
+            console.log('loadUsers called for subadmin');
+
             try {
-                const response = await fetch('/api/users?limit=100&offset=0');
-                const data = await response.json();
-                if (Array.isArray(data)) {
-                    users = data;
-                } else if (data.users && Array.isArray(data.users)) {
-                    users = data.users;
-                } else {
-                    users = [];
-                }
-                users = Array.isArray(users) ? users : [];
-                localStorage.setItem('users', JSON.stringify(users));
-                updateDashboardCounts();
+                users = await getUsers();
+                console.log('getUsers returned:', users);
             } catch (error) {
-                // console.error('Error loading users:', error);
-                try {
-                    const stored = localStorage.getItem('users');
-                    users = stored ? JSON.parse(stored) : [];
-                } catch (e) {
-                    users = [];
-                }
+                console.error('Error loading users:', error);
+                users = JSON.parse(localStorage.getItem('users')) || [];
+                console.log('Fallback to localStorage users:', users);
             }
+            if (!Array.isArray(users)) users = [];
+            console.log('loadUsers got users, count:', users.length);
+
+            const removedUsers = JSON.parse(localStorage.getItem('removedUsers')) || [];
+            const filteredUsers = (users || []).filter(user => !removedUsers.includes(user.id));
+            if (DEBUG) console.log('DEBUG: filteredUsers count:', filteredUsers.length);
+
+            // Set global users
+            window.users = filteredUsers;
+
+            // Map fields for display - handle all field variations
+            filteredUsers.forEach(user => {
+                // Handle grade field variations
+                user.grade = user.grade || user.Grade || user.year_level || '-';
+
+                // Sec_Degr contains:
+                // - For SHS: strand values (ABM, ITMAWD, STEM)
+                // - For College: degree values (BSBA, BSCS, BSIT)
+                user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
+            });
+
+            // Clear all tbodys
+            document.querySelectorAll('#users tbody').forEach(tbody => tbody.innerHTML = '');
+
+            // Process users - subadmin only sees regular users, not admin accounts
+            filteredUsers.forEach(user => {
+                if (DEBUG) console.log('DEBUG: Processing user:', user.id, user.name, user.role, user.email, user.personal_email, user.verified);
+
+                // Skip admin accounts for subadmin
+                const roleLower = (user.role || '').toLowerCase();
+                if (roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin') {
+                    return; // Skip admin users
+                }
+
+                const date = formatDate(user.verified_at || user.created_at);
+                let actions = '';
+                const userId = user.user_id || user.id;
+                if (user.verified) {
+                    actions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button></div>`;
+                } else if (user.banned_user) {
+                    actions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Unban</button></div>`;
+                } else {
+                    actions = `
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
+                            <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
+                        </div>
+                    `;
+                }
+                let emailToUse = user.personal_email || user.email;
+                const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewUserDocs('${userId}')">Preview</button>` : `${user.raf_path || ''} ${user.educator_id || ''}`.trim() || '-';
+                const rowWithEmail = `<tr>
+                    <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
+                    <td>${getUserName(user)}</td>
+                    <td>${emailToUse}</td>
+                    <td>${formatRole(user.role)}</td>
+                    <td>${user.grade || user.Grade || user.year_level || '-'}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
+                    <td>${date}</td>
+                    <td>${rafEduIdCell}</td>
+                    <td>${actions}</td>
+                </tr>`;
+
+                // Status categorization for regular users only
+                const userStatus = getUserStatus(user);
+                if (userStatus === 'approved') {
+                    if (DEBUG) console.log('DEBUG: Adding verified user to table:', user.name, user.email);
+                    document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
+                } else if (userStatus === 'banned' || userStatus === 'rejected') {
+                    document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
+                } else if (userStatus === 'pending') {
+                    if (DEBUG) console.log('DEBUG: Adding signing-up user to table:', user.name, user.email);
+                    document.getElementById('signing-up-users-tbody').innerHTML += rowWithEmail;
+                }
+            });
+
+            // Update counts
+            updateDashboardCounts();
+
+            // Apply pagination
+            paginateTable('verified-users-tbody', 10);
+            paginateTable('signing-up-users-tbody', 10);
+            paginateTable('banned-users-tbody', 10);
+
+            console.log('loadUsers completed for subadmin');
+            return users;
         }
 
         function paginateTable(tbodyId, rowsPerPage) {
@@ -626,6 +700,8 @@
 
         // === INIT ===
         document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Subadmin page DOMContentLoaded fired');
+
             // Dark mode - Apply saved preference on page load
             const darkModeToggle = document.querySelector('.dark-mode-toggle');
             const darkModeIcon = darkModeToggle ? darkModeToggle.querySelector('i') : null;
@@ -684,15 +760,17 @@
 
         // Navigation setup for subadmin
         function setupNavigation() {
-            const navButtons = document.querySelectorAll('.nav-btn');
+            const sidebarLinks = document.querySelectorAll('.sidebar ul li a[data-section]');
             const contentSections = document.querySelectorAll('.content-section');
 
-            navButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    // Remove active class from all buttons
-                    navButtons.forEach(btn => btn.classList.remove('active'));
-                    // Add active class to clicked button
-                    this.classList.add('active');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // Remove active class from all sidebar items
+                    document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.parentElement.classList.add('active');
 
                     // Hide all sections
                     contentSections.forEach(section => section.classList.remove('active'));
@@ -706,9 +784,32 @@
                 });
             });
 
+            // Set up users subsection navigation
+            const userNavButtons = document.querySelectorAll('.users-nav .nav-btn');
+            const userSubsections = document.querySelectorAll('.user-subsection');
+
+            userNavButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all user nav buttons
+                    userNavButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    // Hide all user subsections
+                    userSubsections.forEach(section => section.style.display = 'none');
+
+                    // Show selected subsection
+                    const sectionId = this.getAttribute('data-section') + '-section';
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.style.display = 'block';
+                    }
+                });
+            });
+
             // Set default active section (dashboard)
-            const dashboardBtn = document.querySelector('.nav-btn[data-section="dashboard"]');
-            if (dashboardBtn) {
-                dashboardBtn.click();
+            const dashboardLink = document.querySelector('.sidebar ul li a[data-section="dashboard"]');
+            if (dashboardLink) {
+                dashboardLink.click();
             }
         }

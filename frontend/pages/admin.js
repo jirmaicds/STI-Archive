@@ -1444,9 +1444,7 @@ template.classList.add('capstone');
 }
 document.getElementById('article-topic').innerHTML = topicOptions;
 });
-+    <script src="/frontend/assets/js/pdf-viewer.js"></script>
-+    <script src="admin.js"></script>
- 
+
 // Add event listener for level change in upload form
 const levelSelect = document.getElementById('article-level');
 if (levelSelect) {

@@ -35,12 +35,14 @@
       width: 130px;
       background: #fff;
       border-right: 1px solid #ddd;
+      
       padding: 20px;
       flex-shrink: 0;
       min-height: calc(100vh - 70px);
       position: sticky;
       top: 70px;
       transition: transform 0.3s ease, width 0.3s ease;
+      
     }
    .sidebarlft.collapsed {
      transform: translateX(-100%);
@@ -977,6 +979,7 @@
       /* Show main content search */
       #mainSearchContainer {
         display: flex !important;
+        
       }
       /* Hide navbar search */
       #searchContainer .search-input {
@@ -1872,13 +1875,14 @@
           top: 60px;
           left: 0;
           right: 0;
-          height: 50px;
+          
           background: #fff;
           z-index: 1001;
           align-items: center;
           justify-content: flex-start;
           padding: 0 10px;
           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          border-bottom:1px solid #ddd;
         }
         #mainArticleSearch {
           width: 80% !important;
@@ -1910,7 +1914,7 @@
           top: 60px;
           left: 0;
           right: 0;
-          height: 50px;
+          height: 51px;
           background: #fff;
           z-index: 1001;
           align-items: center;

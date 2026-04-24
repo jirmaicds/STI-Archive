@@ -1052,19 +1052,16 @@
       padding: 8px;
       transition: color 0.3s;
     }
-    /* Hide menu-btn on large screens, show only on mobile */
+    /* menu-btn always visible */
     .menu-btn {
-      display: none;
+      display: block;
     }
-     @media (max-width: 1020px) {
-       .menu-btn {
-         display: block;
-       }
+
        .nav-icons-center {
          display: none !important;
        }
 
-     }
+     
      @media (min-width: 1021px) {
        .nav-icons-center {
          display: flex !important;
@@ -2932,23 +2929,15 @@
     const menuBtn = document.querySelector('.menu-btn');
     const searchBtn = document.querySelector('.search-btn');
     
-    // mnb is always visible now, just adjust menuBtn
-    if (window.innerWidth > 1059) { // Laptop screen and above
-      if (menuBtn) menuBtn.style.display = 'none';
-      if (searchBtn) searchBtn.style.display = 'block';
-    } else { // Mobile/tablet screens
-      if (menuBtn) menuBtn.style.display = 'block';
-    }
+    // menuBtn always visible
+    if (menuBtn) menuBtn.style.display = 'block';
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   
-  // Handle search in navbar - mnb is always visible now
+  // Handle search in navbar
   document.getElementById('articleSearch').addEventListener('input', function() {
-    const menuBtn = document.querySelector('.menu-btn');
-    if (window.innerWidth > 1140 && menuBtn) {
-      menuBtn.style.display = 'none';
-    }
+    // menuBtn always visible, no hiding
   });
 
   // === CLEAR ALL FILTERS ===

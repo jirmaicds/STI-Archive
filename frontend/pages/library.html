@@ -31,17 +31,17 @@
      margin-top: auto;
      margin-bottom: auto;
    }
-   .sidebarlft {
-     width: 130px;
-     background: #fff;
-     border-right: 1px solid #ddd;
-     padding: 20px;
-     flex-shrink: 0;
-     min-height: calc(100vh - 70px);
-     position: sticky;
-     top: 70px;
-     transition: transform 0.3s ease, width 0.3s ease;
-   }
+    .sidebarlft {
+      width: 130px;
+      background: #fff;
+      border-right: 1px solid #ddd;
+      padding: 20px;
+      flex-shrink: 0;
+      min-height: calc(100vh - 70px);
+      position: sticky;
+      top: 70px;
+      transition: transform 0.3s ease, width 0.3s ease;
+    }
    .sidebarlft.collapsed {
      transform: translateX(-100%);
      width: 0;
@@ -54,9 +54,7 @@
    .sidebarlft.collapsed .dropdown {
      display: none;
    }
-   .sidebar-close {
-     display: none;
-   }
+
    .main {
      flex: 1;
      padding: 20px 40px;
@@ -578,6 +576,19 @@
     .dark-mode #mainSearchContainer {
       background: #232f41;
     }
+    /* Position mainClearIcon inside mainArticleSearch */
+    #mainArticleSearch {
+      position: relative;
+      padding-right: 30px;
+    }
+    #mainClearIcon {
+      position: absolute;
+      right: 15%;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      z-index: 1;
+    }
     .dark-mode .article {
       background: #232f41;
       color: #e2e8f0;
@@ -965,7 +976,7 @@
       }
       /* Show main content search */
       #mainSearchContainer {
-        display: block !important;
+        display: flex !important;
       }
       /* Hide navbar search */
       #searchContainer .search-input {
@@ -1045,19 +1056,20 @@
     .menu-btn {
       display: none;
     }
-    @media (max-width: 874px) {
-      .menu-btn {
-        display: block;
-      }
-      .nav-icons-center {
-        display: none !important;
-      }
-    }
-    @media (min-width: 875px) {
-      .nav-icons-center {
-        display: flex !important;
-      }
-    }
+     @media (max-width: 1020px) {
+       .menu-btn {
+         display: block;
+       }
+       .nav-icons-center {
+         display: none !important;
+       }
+
+     }
+     @media (min-width: 1021px) {
+       .nav-icons-center {
+         display: flex !important;
+       }
+     }
     .menu-btn:hover,
     .search-btn:hover {
       color: #0057b8;
@@ -1795,26 +1807,19 @@
     .navbar-right {
        position: absolute;
        right: 20px;
-     }
+      }
 
-     /* Responsive navbar for small screens */
-     @media (max-width: 1060px) {
+      
+
+      /* Responsive navbar for small screens */
+      @media (max-width: 1020px) {
        .main-navbar {
          height: 60px;
          padding: 0 10px;
        }
 
-       .sti-logo img {
-         height: 35px;
-         margin-left: 10px;
-       }
-
-       .sti-logo span {
-         font-size: 18px;
-       }
-
        .nav-icons-center {
-         margin-left: 20px;
+         display:none !important;
        }
 
        .search-container {
@@ -1822,15 +1827,9 @@
          max-width: 250px;
        }
 
-       .search-input {
-         padding: 8px 20px;
-         font-size: 13px;
-       }
+       
 
-       .dropdown-toggle {
-         padding: 6px 12px;
-         font-size: 12px;
-       }
+       
 
        .navbar-right {
          right: 10px;
@@ -1839,7 +1838,9 @@
        .navbar-right.user-nav-fixed .fa-user-circle {
          font-size: 28px;
        }
-
+       .mainSearchContainer {
+         display: flex !important;
+        }
         /* Hide nav dropdowns and show sidebar dropdowns on tablet/cellphone */
         .nav-icons-center .dropdown {
           display: none;
@@ -1853,6 +1854,46 @@
         }
         .sidebar-filter-btn {
           display: block;
+        }
+        .filter-list {
+          margin-top:20px;
+        }
+        .search-toggle {
+          display: block;
+        }
+        /* Keep search input in navbar hidden on mobile, but show in main content */
+        #searchContainer .search-input {
+          display: none;
+        }
+        .menu-btn {
+          display: block;
+        }
+        /* Show main content search on mobile and tablet */
+        #mainSearchContainer {
+          display: flex !important;
+          position: fixed;
+          top: 60px;
+          left: 0;
+          right: 0;
+          height: 50px;
+          background: #fff;
+          z-index: 1001;
+          align-items: center;
+          justify-content: flex-start;
+          padding: 0 10px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #mainArticleSearch {
+          width: 80% !important;
+          height: 50px;
+        }
+
+        #mainSearchContainer .search-bar {
+          width: 100%;
+          max-width: 400px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
      }
 
@@ -1882,6 +1923,7 @@
         }
         #mainArticleSearch {
           width: 80% !important;
+          height: 50px;
         }
 
         #mainSearchContainer .search-bar {
@@ -1902,43 +1944,37 @@
 
       /* Desktop screens above 874px */
       @media (min-width: 875px) {
-        /* Hide main content search on desktop */
-        #mainSearchContainer {
-          display: none;
-        }
+        
         /* Show navbar search on desktop */
         #searchContainer .search-input {
           display: block;
         }
       }
       
-      @media (max-width: 798px) {
-          .sidebarlft {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 130px;
-            height: 100%;
-            transform: translateX(-100%);
-            z-index: 9999;
-            transition: transform 0.3s ease;
-          }
-          .sidebarlft.open {
-            transform: translateX(0);
-          }
-          .sidebar-close {
-            display: block;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #333;
-            cursor: pointer;
-            z-index: 10000;
-          }
-      }
+       @media (max-width: 874px) {
+           .sidebarlft {
+             position: fixed;
+             top: 110px;
+             left: 0;
+             width: 130px;
+             height: calc(100% - 110px);
+             padding-top: 20px;
+             transform: translateX(-100%);
+             z-index: 9999;
+             transition: transform 0.3s ease;
+           }
+           .sidebarlft.open {
+             transform: translateX(0);
+           }
+           .sidebarlft .dropdown:first-child {
+             margin-bottom: 25px;
+           }
+       
+           .sidebarlft.open {
+             transform: translateX(0);
+           }
+           
+         }
 
      @media (min-width: 1061px) {
        .search-toggle {
@@ -1946,26 +1982,10 @@
        }
      }
 
-     /* Show sidebarlft dropdowns between 1061px and 874px */
-     @media (min-width: 1061px) and (max-width: 874px) {
-       .sidebarlft .dropdown {
-         display: block;
-       }
-     }
+
 
      @media (max-width: 480px) {
-       .main-navbar {
-         height: 55px;
-       }
-
-       .sti-logo img {
-         height: 30px;
-         margin-left: 5px;
-       }
-
-       .sti-logo span {
-         font-size: 16px;
-       }
+       
 
        .nav-icons-center {
          margin-left: 15px;
@@ -1981,10 +2001,7 @@
          font-size: 12px;
        }
 
-       .dropdown-toggle {
-         padding: 5px 10px;
-         font-size: 11px;
-       }
+       
 
        .navbar-right.user-nav-fixed .fa-user-circle {
          font-size: 24px;
@@ -2050,7 +2067,7 @@
       border-color: #444 !important;
     }
     /* Hide mnb on larger screens */
-    @media (min-width: 1060px) {
+    @media (min-width: 1021px) {
       #mnb {
         display: none !important;
       }
@@ -2221,11 +2238,12 @@
       <button class="filter-icon-btn filter-icon-btn-main" id="filterIconBtnMain" onclick="toggleTopicsModal()" title="Filter by topic">
         <i class="fas fa-filter"></i>
       </button>
-      <div class="search-container in-main" id="mainSearchContainer" style="flex: 1; max-width: 100%;">
-        <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-        <input type="text" id="mainArticleSearch" placeholder="Search works, authors, or topics... " class="search-input" style="width: 100%; position: relative; top: 7px;">
-        <i class="fas fa-times clear-icon" id="mainClearIcon" style="display: none;"></i>
-        <div class="search-suggestions" id="mainSearchSuggestions"></div>
+      <div class="search-container in-main" id="mainSearchContainer" style="flex: 1; max-width: 100%; display: flex;">
+        <button class="menu-btn" onclick="toggleSidebar()" style="flex-shrink: 0;"><i class="fas fa-bars"></i></button>
+      <div style="flex: 1; display: flex; justify-content: center;">
+          <input type="text" id="mainArticleSearch" placeholder="Search works, authors, or topics... " class="search-input" style="width: 100%;">
+          <i class="fas fa-times clear-icon" id="mainClearIcon" style="display: none;"></i>
+      </div>
       </div>
     </div>
   </div>
@@ -2244,13 +2262,11 @@
   <div class="content-wrapper" style="padding-top: 50px;">
     <!-- Sidebar -->
     <div class="sidebarlft">
-
-      <button class="sidebar-close" onclick="closeSidebar()">&times;</button>
       <button class="filter-icon-btn sidebar-filter-btn" id="sidebarFilterBtn" onclick="toggleTopicsModal()" title="Filter by topic" style="display: none;">
         <i class="fas fa-filter"></i> Filter
       </button>
       <!-- Research Dropdown -->
-      <div class="dropdown">
+      <div class="dropdown" style="margin-bottom: 15px;">
         <div class="dropdown-toggle research-btn" onclick="toggleCategory('research')">
           Research
         </div>
@@ -2824,7 +2840,7 @@
   function toggleSidebar() {
     const sidebar = document.querySelector('.sidebarlft');
     if (sidebar) {
-      if (window.innerWidth <= 798) {
+      if (window.innerWidth <= 874) {
         sidebar.classList.toggle('open');
       } else {
         sidebar.classList.toggle('collapsed');
@@ -3138,12 +3154,7 @@
     });
   }
 
-  function closeSidebar() {
-    const sidebar = document.querySelector('.sidebarlft');
-    if (sidebar) {
-      sidebar.classList.remove('open');
-    }
-  }
+
 
   function toggleSidebarLft() {
     const sidebar = document.querySelector('.sidebarlft');
@@ -3157,7 +3168,7 @@
     const sc = document.getElementById('searchContainer');
     const main = document.querySelector('.main');
     const searchFilterBar = document.querySelector('.search-filter-bar');
-    if (window.innerWidth > 1060) {
+    if (window.innerWidth > 1021) {
       if (sc.parentElement !== searchFilterBar) {
         searchFilterBar.appendChild(sc);
         sc.classList.remove('in-main');
@@ -3255,7 +3266,7 @@
     searchInput.addEventListener('input', function() {
       syncSearchInputs(this, mainSearchInput, clearIcon, mainClearIcon);
     });
-    
+
     mainSearchInput.addEventListener('input', function() {
       syncSearchInputs(this, searchInput, mainClearIcon, clearIcon);
     });
@@ -3276,6 +3287,112 @@
       clearIcon.style.display = 'none';
       currentQuery = '';
       applyAllFilters();
+    });
+
+    // Clear search input on page refresh
+    window.addEventListener('beforeunload', function() {
+      searchInput.value = '';
+      currentQuery = '';
+      clearIcon.style.display = 'none';
+      applyAllFilters();
+    });
+
+    // Recent searches functionality
+    let recentSearches = JSON.parse(localStorage.getItem('libraryRecentSearches')) || [];
+
+    function addToRecent(term) {
+      term = term.trim();
+      if (!term) return;
+      // Remove if exists
+      recentSearches = recentSearches.filter(t => t !== term);
+      // Add to front
+      recentSearches.unshift(term);
+      // Max 5
+      if (recentSearches.length > 5) recentSearches.length = 5;
+      localStorage.setItem('libraryRecentSearches', JSON.stringify(recentSearches));
+    }
+
+    function removeFromRecent(term) {
+      recentSearches = recentSearches.filter(t => t !== term);
+      localStorage.setItem('libraryRecentSearches', JSON.stringify(recentSearches));
+    }
+
+    function showRecentSuggestions() {
+      const suggestions = document.getElementById('searchSuggestions');
+      if (!suggestions) return;
+      if (recentSearches.length === 0) {
+        suggestions.innerHTML = '';
+        suggestions.classList.remove('show');
+        return;
+      }
+      suggestions.innerHTML = recentSearches.map(term =>
+        `<li class="recent-item" onclick="selectRecent('${term.replace(/'/g, "\\'")}')">
+          <i class="fas fa-history"></i> ${term}
+          <span class="remove-icon" onclick="removeFromRecent('${term.replace(/'/g, "\\'")}'); showRecentSuggestions(); event.stopPropagation();">×</span>
+        </li>`
+      ).join('');
+      suggestions.classList.add('show');
+    }
+
+    function selectRecent(term) {
+      mainSearchInput.value = term;
+      searchInput.value = term;
+      currentQuery = term.toLowerCase().trim();
+      addToRecent(term);
+      applyAllFilters();
+      document.getElementById('searchSuggestions').classList.remove('show');
+    }
+
+    // Modify input events to show recent
+    searchInput.addEventListener('input', function() {
+      const query = this.value.trim();
+      if (query === '') {
+        showRecentSuggestions();
+      } else {
+        document.getElementById('searchSuggestions').classList.remove('show');
+      }
+      syncSearchInputs(this, mainSearchInput, clearIcon, mainClearIcon);
+    });
+
+    mainSearchInput.addEventListener('input', function() {
+      const query = this.value.trim();
+      if (query === '') {
+        showRecentSuggestions();
+      } else {
+        document.getElementById('searchSuggestions').classList.remove('show');
+      }
+      syncSearchInputs(this, searchInput, mainClearIcon, clearIcon);
+    });
+
+    // Add to recent on blur
+    searchInput.addEventListener('blur', function() {
+      const query = this.value.trim();
+      if (query) addToRecent(query);
+    });
+
+    mainSearchInput.addEventListener('blur', function() {
+      const query = this.value.trim();
+      if (query) addToRecent(query);
+    });
+
+    // Focus to show recent if empty
+    searchInput.addEventListener('focus', function() {
+      if (this.value.trim() === '') {
+        showRecentSuggestions();
+      }
+    });
+
+    mainSearchInput.addEventListener('focus', function() {
+      if (this.value.trim() === '') {
+        showRecentSuggestions();
+      }
+    });
+
+    // Click outside to hide
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.search-container')) {
+        document.getElementById('searchSuggestions').classList.remove('show');
+      }
     });
 
     // Clear search input on page refresh

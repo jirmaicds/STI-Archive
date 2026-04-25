@@ -2826,7 +2826,7 @@
   function updateURL() {
     const params = new URLSearchParams();
     if (currentFilter.category) params.set('category', currentFilter.category);
-    if (currentFilter.value) params.set('strand', currentFilter.value);
+    if (currentFilter.value) params.set('filter', currentFilter.value);
     if (currentFilters.year !== 'any') params.set('year', currentFilters.year);
     const newURL = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
     history.replaceState(null, '', newURL);
@@ -2937,7 +2937,8 @@
     // Read URL params
     const urlParams = new URLSearchParams(window.location.search);
     const category = urlParams.get('category');
-    const strand = urlParams.get('strand');
+    const filter = urlParams.get('filter');
+    const topic = urlParams.get('topic');
     const year = urlParams.get('year');
     let search = urlParams.get('search'); // Support search parameter
 
@@ -2950,21 +2951,28 @@
         }
     }
 
-    // Handle category filtering from homepage links (e.g., ?category=agriculture)
-    // This filters by topic and highlights the topic in the UI
+    // Handle category from homepage links (e.g., ?category=research)
     if (category) {
-      // Use filterArticles with null category - we only want to filter by topic
-      filterArticles(null, category, 'both');
-      // Highlight the topic in both modals (delayed to ensure DOM is ready)
-      setTimeout(() => highlightTopicInUI(category), 100);
-      // Also save to localStorage for persistence
-      localStorage.setItem('librarySelectedTopic', category);
+      if (category === 'research' || category === 'capstone') {
+        currentFilter.category = category;
+      } else {
+        // Old link, treat as topic
+        filterArticles(null, category, 'topic');
+        localStorage.setItem('librarySelectedTopic', category);
+        setTimeout(() => highlightTopicInUI(category), 100);
+      }
+    }
+
+    // Handle topic from homepage links (e.g., ?topic=agriculture)
+    if (topic) {
+      filterArticles(null, topic, 'topic');
+      localStorage.setItem('librarySelectedTopic', topic);
+      setTimeout(() => highlightTopicInUI(topic), 100);
     } else {
       // Check for saved topic from previous session (localStorage)
       const savedTopic = localStorage.getItem('librarySelectedTopic');
-      if (savedTopic) {
-        filterArticles(null, savedTopic, 'both');
-        // Highlight the topic in both modals (delayed to ensure DOM is ready)
+      if (savedTopic && !topic) {
+        filterArticles(null, savedTopic, 'topic');
         setTimeout(() => highlightTopicInUI(savedTopic), 100);
       }
     }
@@ -2989,14 +2997,14 @@
       if (searchInput) searchInput.value = search;
       if (mainSearchInput) mainSearchInput.value = search;
     }
-    
-    if (strand) {
-      currentFilter.value = strand;
-      if (category === 'capstone') {
+
+    if (filter) {
+      currentFilter.value = filter;
+      if (currentFilter.category === 'capstone') {
         currentFilter.attribute = 'program';
-      } else if (strand === 'Qualitative' || strand === 'Quantitative') {
+      } else if (filter === 'Qualitative' || filter === 'Quantitative') {
         currentFilter.attribute = 'type';
-        lastGrade = strand;
+        lastGrade = filter;
       } else {
         currentFilter.attribute = 'strand';
       }
@@ -3015,6 +3023,9 @@
     applyAllFilters();
     updateDropdownActiveStates();
     updateFilterSummary();
+
+    // Remove URL params after loading to prevent persistence on refresh
+    history.replaceState(null, '', window.location.pathname);
   }
 
   function ensureArticlesVisible() {

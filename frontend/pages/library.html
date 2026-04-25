@@ -14,14 +14,25 @@
   <title>Library | STI Archives</title>
   <link rel="icon" type="image/png" href="/frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg?v=1" id="favicon-link">
   <style>
+    /* Global overflow prevention */
+    html, body {
+      overflow-x: hidden !important;
+      max-width: 100vw !important;
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+
    body {
-     margin: 0;
-     padding: 0;
-     font-family: 'Segoe UI', sans-serif;
-     display: flex;
-     flex-direction: column;
-     min-height: 100vh;
-   }
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow-x: hidden;
+      max-width: 100vw;
+      box-sizing: border-box;
+    }
    .content-wrapper {
      display: flex;
      flex-direction: row;
@@ -57,11 +68,19 @@
      display: none;
    }
 
-   .main {
-     flex: 1;
-     padding: 20px 40px;
-     background: #f8f9fa;
-   }
+    .main {
+      flex: 1;
+      padding: 20px 40px;
+      background: #f8f9fa;
+      display: flex;
+      flex-direction: column;
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      box-sizing: border-box;
+    }
    .library-footer {
      background: #002244;
      border-top: 1px solid #ddd;
@@ -238,14 +257,14 @@
         display: block;
       }
       .sidebarlft {
-        position: fixed;
+        
         top: 0;
         left: 0;
-        width: 240px;
+        width: 150px;
         height: 100%;
-        padding-top: 75px;
-        transform: translateX(-100%);
-        z-index: 9999;
+        padding-top: 30px;
+        
+        
         transition: transform 0.3s ease;
       }
       .sidebarlft.open {
@@ -581,11 +600,11 @@
     /* Position mainClearIcon inside mainArticleSearch */
     #mainArticleSearch {
       position: relative;
-      padding-right: 30px;
+      padding-right: 50px;
     }
     #mainClearIcon {
       position: absolute;
-      right: 15%;
+      right: 13%;
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
@@ -771,7 +790,7 @@
     }
     
     /* Position modal near filter icon on larger screens */
-    @media (min-width: 875px) {
+    @media (min-width: 1025px) {
       .topics-modal-content {
         position: absolute;
         top: 120px;
@@ -792,11 +811,45 @@
     }
     
     /* Navbar modal specific positioning */
-    .topics-modal-navbar {
-      display: none;
+    @media (min-width: 1025px) {
+      .topics-modal-navbar {
+        display: none;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: auto;
+        height: auto;
+        background: transparent;
+        z-index: 10000;
+      }
+      .topics-modal-navbar .topics-modal-content {
+        position: relative;
+        top: auto;
+        left: auto;
+      }
+      .topics-modal-navbar.show {
+        display: block;
+      }
+      /* Hide main content modal on large screens */
+      #topicsModal {
+        display: none !important;
+      }
+    }
+
+    /* Main content modal for small screens */
+    @media (max-width: 1024px) {
+      .topics-modal-navbar {
+        display: none !important;
+      }
+      #topicsModal {
+        display: none;
+      }
+      #topicsModal.show {
+        display: flex;
+      }
     }
     
-    @media (min-width: 875px) {
+    @media (min-width: 1025px) {
       .topics-modal-navbar {
         display: none;
         position: absolute;
@@ -822,7 +875,7 @@
     }
     
     /* Main content modal for small screens */
-    @media (max-width: 874px) {
+    @media (max-width: 1024px) {
       .topics-modal-navbar {
         display: none !important;
       }
@@ -968,8 +1021,8 @@
       display: flex;
     }
     
-    /* Below 874px: show main content filter icon, hide navbar filter icon */
-    @media (max-width: 874px) {
+    /* Below 1024px: show main content filter icon, hide navbar filter icon */
+    @media (max-width: 1024px) {
       .filter-icon-btn {
         display: none;
       }
@@ -979,16 +1032,16 @@
       /* Show main content search */
       #mainSearchContainer {
         display: flex !important;
-        
+
       }
       /* Hide navbar search */
       #searchContainer .search-input {
         display: none !important;
       }
     }
-    
-    /* Above 874px: show navbar filter icon, hide main content filter icon */
-    @media (min-width: 875px) {
+
+    /* Above 1024px: show navbar filter icon, hide main content filter icon */
+    @media (min-width: 1025px) {
       .filter-icon-btn {
         display: flex;
       }
@@ -1149,55 +1202,36 @@
       padding-bottom: 15px;
       font-weight: 600;
     }
+    .content-layout-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      transition: all 0.3s ease;
+    }
+
     .filter-summary {
       font-size: 1.2em;
       font-weight: bold;
       color: #0057b8;
-      margin-bottom: 20px;
+      margin-bottom: 0;
       text-align: center;
-    }
-    .dark-mode .section-title {
-      color: #ffd700;
-      border-bottom-color: #ffd700;
-    }
-    .subsection {
-      margin-bottom: 40px;
-    }
-    .subsection-title {
-      color: #333;
-      font-size: 1.4rem;
-      margin-bottom: 20px;
-      padding: 10px 15px;
-      background: #f8f9fa;
-      border-left: 4px solid #0057b8;
-      border-radius: 0 8px 8px 0;
-      font-weight: 500;
-    }
-    .dark-mode .subsection-title {
-      color: #e2e8f0;
-      background: #232f41;
-      border-left-color: #ffd700;
-    }
-    .subsection:empty,
-    .subsection:has(div:empty) {
-      display: none;
-    }
-    .subsection-title[data-strand="ABM"] {
-      border-left-color: #ff5722;
-    }
-    .subsection-title[data-strand="ITMAWD"] {
-      border-left-color: #4caf50;
-    }
-    .subsection-title[data-strand="STEM"] {
-      border-left-color: #2196f3;
-    }
-    .subsection-title[data-strand="Grade 11"],
-    .subsection-title[data-strand="Grade 12"] {
-      border-left-color: #ff9800;
-    }
-    .filter-btn {
-      border: 2px solid;
-      font-weight: 600;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      hyphens: auto;
+      white-space: normal;
+      max-width: 100%;
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 10px;
+      box-sizing: border-box;
       transition: all 0.3s ease;
       padding: 12px 24px;
       border-radius: 8px;
@@ -1518,6 +1552,165 @@
       background-color: #3d3d3d;
       color: #ffffff;
     }
+
+    /* No-results message styling */
+    .no-results-message {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+
+    .no-results-message .no-results-title {
+      margin: 0;
+      font-size: 1.5em;
+      color: #333;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      white-space: normal;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    .no-results-message .no-results-desc {
+      margin: 0;
+      font-size: 1.1em;
+      color: #666;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      white-space: normal;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    .no-results-message .no-results-suggestion {
+      margin: 0;
+      font-size: 0.95em;
+      color: #888;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      white-space: normal;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    /* Responsive content layout - ensure proper stacking on small screens */
+    @media (max-width: 1024px) {
+      .content-layout-wrapper {
+        flex-direction: column !important;
+        gap: 15px;
+        overflow-x: hidden;
+      }
+
+      .filter-summary {
+        font-size: 1.1em;
+        padding: 0 5px;
+        margin-bottom: 0;
+        max-width: 100%;
+        overflow: hidden;
+      }
+    }
+
+    /* Extra small screens - ensure text doesn't overflow */
+    @media (max-width: 768px) {
+      .content-layout-wrapper {
+        gap: 10px;
+        overflow-x: hidden;
+      }
+
+      .filter-summary {
+        font-size: 1em;
+        line-height: 1.3;
+        padding: 0 5px;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .no-results-message {
+        padding: 30px 15px;
+        gap: 12px;
+        max-width: 100%;
+        overflow-x: hidden;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .no-results-message .no-results-title {
+        font-size: 1.3em;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .no-results-message .no-results-desc {
+        font-size: 1em;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .no-results-message .no-results-suggestion {
+        font-size: 0.9em;
+        max-width: 100%;
+        overflow: hidden;
+      }
+    }
+
+    /* Very small screens - ensure proper stacking */
+    @media (max-width: 480px) {
+      .content-layout-wrapper {
+        gap: 8px;
+        overflow-x: hidden;
+      }
+
+      .filter-summary {
+        font-size: 0.9em;
+        padding: 0 3px;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .no-results-message {
+        padding: 20px 10px;
+        gap: 8px;
+        max-width: 100%;
+        overflow-x: hidden;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .no-results-message .no-results-title {
+        font-size: 1.1em;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .no-results-message .no-results-desc {
+        font-size: 0.95em;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .no-results-message .no-results-suggestion {
+        font-size: 0.85em;
+        max-width: 100%;
+        overflow: hidden;
+      }
+    }
+
     @media (max-width: 1200px) {
       .citation-modal-content {
         width: 700px;
@@ -1849,9 +2042,9 @@
           display: block;
         }
         /* Hide navbar filter button and show sidebar filter button */
-        #filterIconBtnNavbar {
+        /* #filterIconBtnNavbar {
           display: none;
-        }
+        } */
         .sidebar-filter-btn {
           display: block;
         }
@@ -1898,8 +2091,8 @@
         }
      }
 
-      /* Mobile and tablet screens - below 874px */
-      @media (max-width: 874px) {
+      /* Mobile and tablet screens - below 1024px */
+      @media (max-width: 1024px) {
         .search-toggle {
           display: block;
         }
@@ -1936,31 +2129,31 @@
         }
       }
 
-      /* Screens below 1059px - show hamburger */
-      @media (max-width: 1059px) {
+      /* Screens below 1024px - show hamburger */
+      @media (max-width: 1024px) {
         .hamburger-icon {
           display: block;
         }
       }
 
-      /* Desktop screens above 874px */
-      @media (min-width: 875px) {
-        
+      /* Desktop screens above 1024px */
+      @media (min-width: 1025px) {
+
         /* Show navbar search on desktop */
         #searchContainer .search-input {
           display: block;
         }
       }
       
-       @media (max-width: 874px) {
+       @media (max-width: 1024px) {
            .sidebarlft {
              position: fixed;
              top: 110px;
              left: 0;
-             width: 130px;
+             border-top:1px solid #ddd;
              height: calc(100% - 110px);
              padding-top: 20px;
-             transform: translateX(-100%);
+
              z-index: 9999;
              transition: transform 0.3s ease;
            }
@@ -2164,7 +2357,7 @@
     <div class="nav-icons-center">
       <!-- Search bar -->
       <div class="search-filter-bar">
-        <button class="filter-icon-btn" id="filterIconBtnNavbar" onclick="toggleTopicsModal()" title="Filter by topic">
+        <button class="filter-icon-btn" onclick="toggleTopicsModal()" title="Filter by topic">
           <i class="fas fa-filter"></i>
         </button>
         <div class="search-container" id="searchContainer">
@@ -2240,7 +2433,7 @@
         <i class="fas fa-filter"></i>
       </button>
       <div class="search-container in-main" id="mainSearchContainer" style="flex: 1; max-width: 100%; display: flex;">
-        <button class="menu-btn" onclick="toggleSidebar()" style="flex-shrink: 0;"><i class="fas fa-bars"></i></button>
+        <button class="menu-btn" onclick="toggleSidebar()" style="flex-shrink: 0; margin-right: 10px;"><i class="fas fa-bars"></i></button>
       <div style="flex: 1; display: flex; justify-content: center;">
           <input type="text" id="mainArticleSearch" placeholder="Search works, authors, or topics... " class="search-input" style="width: 100%;">
           <i class="fas fa-times clear-icon" id="mainClearIcon" style="display: none;"></i>
@@ -2263,8 +2456,8 @@
   <div class="content-wrapper" style="padding-top: 50px;">
     <!-- Sidebar -->
     <div class="sidebarlft">
-      <button class="filter-icon-btn sidebar-filter-btn" id="sidebarFilterBtn" onclick="toggleTopicsModal()" title="Filter by topic" style="display: none;">
-        <i class="fas fa-filter"></i> Filter
+      <button class="filter-icon-btn filter-icon-btn-main" id="filterIconBtnNavbar" onclick="toggleTopicsModal()" title="Filter by topic" style="margin-bottom: 10px;">
+        <i class="fas fa-filter"></i>
       </button>
       <!-- Research Dropdown -->
       <div class="dropdown" style="margin-bottom: 15px;">
@@ -2328,8 +2521,10 @@
           </div>
         </div>
       </div>
-      <div id="filter-summary" class="filter-summary"></div>
-      <div id="articles-container"></div>
+      <div class="content-layout-wrapper">
+        <div id="filter-summary" class="filter-summary"></div>
+        <div id="articles-container"></div>
+      </div>
       <!-- Hidden research section for dynamic content -->
       <div class="research-section" id="research-section" style="display: none;">
         <h2 class="section-title">Research Papers</h2>
@@ -2686,28 +2881,21 @@
 
   function updateFilterSummary() {
     let text = '';
-    
-    if (currentFilter.category === 'research') {
-      if (currentFilter.attribute === 'strand') {
-        const type = currentFilter.additional ? currentFilter.additional.split('=')[1] : '';
-        text = type + ' - ' + currentFilter.value;
-      } else if (currentFilter.attribute === 'type') {
-        text = currentFilter.value;
-      }
-    } else if (currentFilter.category === 'capstone') {
-      text = currentFilter.value;
+
+    if (currentFilters.category && currentFilters.category !== 'any') {
+      text = currentFilters.category;
     }
+
     if (currentFilters.year !== 'any') {
       text += (text ? ' - ' : '') + currentFilters.year;
     }
-    
-    // Show search term in summary if present
-    if (currentQuery && text) {
-      text = '"' + currentQuery + '" in ' + text;
-    } else if (currentQuery) {
-      text = '"' + currentQuery + '"';
+
+    // Only show selected topics/filters, not search query
+    if (currentFilter.value && currentFilter.attribute === 'topic') {
+      const capitalizedTopic = currentFilter.value.charAt(0).toUpperCase() + currentFilter.value.slice(1);
+      text += (text ? ' - ' : '') + capitalizedTopic;
     }
-    
+
     document.getElementById('filter-summary').textContent = text;
     
     // Update filter summary visibility
@@ -2841,10 +3029,10 @@
   function toggleSidebar() {
     const sidebar = document.querySelector('.sidebarlft');
     if (sidebar) {
-      if (window.innerWidth <= 874) {
-        sidebar.classList.toggle('open');
-      } else {
+      if (window.innerWidth <= 1024) {
         sidebar.classList.toggle('collapsed');
+      } else {
+        sidebar.classList.toggle('open');
       }
     }
   }
@@ -2866,7 +3054,6 @@
     if (allSortedArticles.length === 0) {
       const noResultsMsg = document.createElement('div');
       noResultsMsg.className = 'no-results-message';
-      noResultsMsg.style.cssText = 'text-align: center; padding: 40px 20px; color: #666;';
       
       let filterInfo = '';
       if (currentFilter.value && currentFilter.attribute === 'topic') {
@@ -2879,7 +3066,7 @@
         noResultsMsg.innerHTML = `
           <i class="fas fa-search" style="font-size: 48px; color: #ccc; margin-bottom: 20px;"></i>
           <h3 class="no-results-title">No results found</h3>
-          <p class="no-results-desc">No articles match "${currentQuery}"${filterInfo}.</p>
+          <p class="no-results-desc">No articles found${filterInfo}.</p>
           <p class="no-results-suggestion">Try adjusting your search terms or clearing the filter.</p>
           <button onclick="clearAllFilters()" style="margin-top: 20px; padding: 10px 20px; background: #0057b8; color: white; border: none; border-radius: 6px; cursor: pointer;">Clear Filters</button>
         `;

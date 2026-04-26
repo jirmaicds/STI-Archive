@@ -145,6 +145,7 @@
             width: 100%;
             color: #595d69;
             background: #fff;
+            border-bottom:1px  solid #ddd;
             box-shadow: 0 2px 8px #0001;
             padding: 0 12px;
             z-index: 1000;
@@ -1247,23 +1248,21 @@
             background: rgba(0,0,0,0.7);
         }
 
-        .profile-info-block {
+        .content-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: absolute;
-            top: 300px;
-            left: 50%;
-            transform: translateX(-50%);
             text-align: center;
             width: 100%;
+            margin-top: 20px;
+            top:90px;
         }
 
-        .profile-info-block .full-name {
+        .content-container .full-name {
             margin-bottom: 15px;
         }
 
-        .profile-info-block .profile-tabs {
+        .content-container .profile-tabs {
             margin-top: 10px;
         }
 
@@ -2124,41 +2123,79 @@
             z-index: 999;
         }
 
-        /* Show mobile sidebar on small screens */
-        @media (max-width: 1023px) {
-            .tabs-sidebar {
-                display: block;
-            }
-            .profile-tabs .profile-tabs-burger {
-                display: none;
-            }
-        }
-
         /* Show tabs-burger on large screens */
         @media (min-width: 1024px) {
-            .tabs-sidebar {
+            .profile-tabs {
                 display: none;
             }
             .profile-tabs .profile-tabs-burger {
                 display: block;
+                position: absolute;
+                left: 10px;
+                transform: translateY(-50%);
+                background: #0057b8;
+                border: 2px solid #003f8a;
+                border-radius: 4px;
+                padding: 10px;
+                margin-top: 24px;
+                cursor: pointer;
+                transition: background 0.3s ease;
+            }
+            .profile-tabs .profile-tabs-burger:hover {
+                background: #003f8a;
+            }
+            .profile-tabs .profile-tabs-burger i {
+                color: white;
+                font-size: 20px;
+            }
+            .dark-mode .profile-tabs .profile-tabs-burger {
+                background: #ffd700;
+                border: 2px solid #e6c300;
+            }
+            .dark-mode .profile-tabs .profile-tabs-burger:hover {
+                background: #e6c300;
+            }
+            .dark-mode .profile-tabs .profile-tabs-burger i {
+                color: #232f41;
             }
         }
+            .profile-tabs .profile-tabs-burger:hover {
+                background: #003f8a;
+            }
+            .profile-tabs .profile-tabs-burger i {
+                color: white;
+                font-size: 20px;
+            }
+            .dark-mode .profile-tabs .profile-tabs-burger {
+                background: #ffd700;
+                border: 2px solid #e6c300;
+            }
+            .dark-mode .profile-tabs .profile-tabs-burger:hover {
+                background: #e6c300;
+            }
+            .dark-mode .profile-tabs .profile-tabs-burger i {
+                color: #232f41;
+            }
+        
+            .profile-tabs .profile-tabs-burger {
+                display: block;
+            }
+        
 
-        .profile-tabs-burger {
+        .left-sidebar-tabs-burger {
             position: absolute;
-            left: 10px;
-
-            transform: translateY(-50%);
+            margin-top: 40px;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background: #0057b8;
             border: 2px solid #003f8a;
-            border-radius: 4px;
+            border-radius: 8px;
             padding: 10px;
-            margin-top:24px;
             cursor: pointer;
             transition: background 0.3s ease;
         }
 
-        .profile-tabs-burger:hover {
+        .left-sidebar-tabs-burger:hover {
             background: #003f8a;
         }
 
@@ -2171,17 +2208,17 @@
             color: #0057b8;
         }
 
-        .profile-tabs-burger i {
+        .left-sidebar-tabs-burger i {
             color: white;
             font-size: 20px;
         }
 
-        .dark-mode .profile-tabs-burger {
+        .dark-mode .left-sidebar-tabs-burger {
             background: #ffd700;
             border: 2px solid #e6c300;
         }
 
-        .dark-mode .profile-tabs-burger:hover {
+        .dark-mode .left-sidebar-tabs-burger:hover {
             background: #e6c300;
         }
 
@@ -2194,7 +2231,7 @@
             color: #ffd700;
         }
 
-        .dark-mode .profile-tabs-burger i {
+        .dark-mode .left-sidebar-tabs-burger i {
             color: #232f41;
         }
 
@@ -2380,7 +2417,7 @@
                 display: block;
             }
 
-            .profile-info-block .profile-tabs {
+            .content-container .profile-tabs {
                 display: none;
             }
         }
@@ -2580,13 +2617,30 @@
             width: 60px;
             height: calc(100vh - 50px);
             background: #fff;
+            border-right:1px solid #ddd;
             transition: width 0.3s;
             overflow: hidden;
-            z-index: 1000;
+            z-index: 900;
             box-shadow: 2px 0 8px rgba(0,0,0,0.1);
         }
         .left-sidebar.expanded {
-            width: 100px;
+            width: 300px;
+        }
+
+        .tabs-left-sidebar {
+            display: none;
+        }
+
+        .left-sidebar.expanded .tabs-left-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 80px 30px 30px 30px;
+        }
+
+        .left-sidebar.expanded .left-sidebar-tabs-burger {
+            left: 10px;
+            transform: translateY(-50%);
         }
         .dark-mode .left-sidebar {
             background: #232f41;
@@ -2595,8 +2649,9 @@
             margin-left: 60px;
             transition: margin-left 0.3s;
         }
-        .left-sidebar.expanded ~ .main-content {
-            margin-left: 100px;
+        
+        .left-sidebar:not(.expanded) .profile-tabs {
+            display: none;
         }
         .left-sidebar .profile-tabs {
             flex-direction: column;
@@ -2614,15 +2669,15 @@
             display: none;
         }
         @media (min-width: 1024px) {
-            .left-sidebar {
-                display: none;
-            }
             .main-content {
-                margin-left: 0;
+                margin-left: 60px;
             }
-            .profile-info-block {
+            .content-container {
                 display: block;
             }
+        }
+        .content{
+            margin-top:20px;
         }
     </style>
 </head>
@@ -2648,31 +2703,18 @@
     <!-- Left Sidebar -->
     <div class="left-sidebar" id="left-sidebar">
         <!-- Tab Navigation -->
-        <div class="profile-tabs">
-            <button class="profile-tabs-burger" onclick="toggleLeftSidebar()">
-                <i class="fas fa-bars"></i>
-            </button>
-            <button class="tab-btn active" onclick="showMyUploadsTab('myuploads')">My Uploads</button>
-            <button class="tab-btn" onclick="showMyUploadsTab('upload')">Uploads</button>
-            <button class="tab-btn" onclick="showMyUploadsTab('cited')">Cited</button>
-            <button class="tab-btn" onclick="showMyUploadsTab('saved-articles')">Saved Article</button>
+        <button class="left-sidebar-tabs-burger" onclick="toggleLeftSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="tabs-left-sidebar">
+            <button class="tab-btn active" onclick="showMyUploadsTab('myuploads', event)">My Uploads</button>
+            <button class="tab-btn" onclick="showCited('cited', event)">Cited</button>
+            <button class="tab-btn" onclick="showSavedArticles('saved-articles', event)">Saved Article</button>
         </div>
+        
 
-        <!-- Profile Tabs Sidebar -->
-        <div class="profile-tabs-sidebar" id="profileTabsSidebar">
-            <div class="profile-tabs-sidebar-header">
-                <h3>Menu</h3>
-                <button class="profile-tabs-sidebar-close" onclick="closeProfileTabsSidebar()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="profile-tabs-sidebar-content">
-                <button class="tab-btn active" onclick="showMyUploadsTab('myuploads'); closeProfileTabsSidebar();">My Uploads</button>
-                <button class="tab-btn" onclick="showMyUploadsTab('upload'); closeProfileTabsSidebar();">Uploads</button>
-                <button class="tab-btn" onclick="showMyUploadsTab('cited'); closeProfileTabsSidebar();">Cited</button>
-                <button class="tab-btn" onclick="showMyUploadsTab('saved-articles'); closeProfileTabsSidebar();">Saved Article</button>
-            </div>
-        </div>
+       
     </div>
     <!-- Sidebar -->
     <div id="sidebar" class="sidebar">
@@ -2687,13 +2729,8 @@
         </div>
     </div>
     <section class="main-content" style="margin-top: 50px;">
-        <div id="p-n-p" class="profile-section" style="display:block; text-align: center;">
+        
             <div class="profile-container">
-                <div class="tabs-sidebar">
-                    <button class="tabs-burger" id="tabsBurger" onclick="toggleProfileTabsSidebar()">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                </div>
                 <div class="background-image-container" id="backgroundContainer" style="background-image: url('/frontend/assets/images/dbgc.png'); background-size: cover; background-position: center;">
                     <div class="edit-icon" onclick="showProfilePicModal()">✏️</div>
                     <input type="file" id="backgroundUpload" accept="image/*" onchange="changeBackground(event)" style="display: none;">
@@ -2702,47 +2739,15 @@
                             <img src="/frontend/assets/images/Screenshot 2025-09-10 204105.png" alt="Profile" class="pfp-pic" id="pfpPic">
                         </label>
                         <input type="file" id="profileUpload" accept="image/*" onchange="changeProfile(event)" style="display: none;">
+                        <div class="full-name">Username</div>
+                    </div>    
                 </div>
 
-                <div class="profile-info-block" style="text-align: center;">
-                    <div class="full-name" style="display: none;">Username</div>
-
-                    <!-- Tab Navigation -->
-                    <div class="profile-tabs">
-                        <button class="profile-tabs-burger" onclick="toggleTabButtons()">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                        <button class="tab-btn active" onclick="showMyUploadsTab('myuploads')">My Uploads</button>
-                        <button class="tab-btn" onclick="showMyUploadsTab('upload')">Uploads</button>
-                        <button class="tab-btn" onclick="showMyUploadsTab('cited')">Cited</button>
-                        <button class="tab-btn" onclick="showMyUploadsTab('saved-articles')">Saved Article</button>
-                    </div>
-
-                    <!-- Profile Tabs Sidebar -->
-                    <div class="profile-tabs-sidebar" id="profileTabsSidebar">
-                        <div class="profile-tabs-sidebar-header">
-                            <h3>Menu</h3>
-                            <button class="profile-tabs-sidebar-close" onclick="closeProfileTabsSidebar()">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="profile-tabs-sidebar-content">
-                            <button class="tab-btn active" onclick="showMyUploadsTab('myuploads'); closeProfileTabsSidebar();">My Uploads</button>
-                            <button class="tab-btn" onclick="showMyUploadsTab('upload'); closeProfileTabsSidebar();">Uploads</button>
-                            <button class="tab-btn" onclick="showMyUploadsTab('cited'); closeProfileTabsSidebar();">Cited</button>
-                            <button class="tab-btn" onclick="showMyUploadsTab('saved-articles'); closeProfileTabsSidebar();">Saved Article</button>
-                        </div>
-                    </div>
-
-                    <!-- My Uploads Container -->
+                <div class="content-container">
+                        <!-- My Uploads Container -->
                     <div id="myuploads-list-container" style="display: block;">
                         <div id="uploaded-files-container" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
-                        </div>
-                    </div>
-
-                    <!-- Upload Container -->
-                    <div id="upload-form-container" style="display: none;">
-                        <div class="upload-form-content">
+                            <div class="upload-form-content">
                             <div class="drop-zone" id="myuploads-drop-zone" onclick="document.getElementById('user-pdf-upload').click()">
                                 <div class="upload-icon">
                                     <i class="fas fa-cloud-upload-alt"></i>
@@ -2751,6 +2756,7 @@
                                 <p>PDF files only (max 10MB)</p>
                                 <input type="file" id="user-pdf-upload" accept=".pdf" multiple style="display: none;">
                             </div>
+                        </div>
                         </div>
                     </div>
 
@@ -2767,10 +2773,13 @@
                             <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No saved articles yet</p>
                         </div>
                     </div>
+
                 </div>
 
+            
+
             </div>
-        </div>
+        
     </section>
 
 
@@ -6280,7 +6289,7 @@
     </div>
     <script>
         // Function to switch between My Uploads tabs
-        function showMyUploadsTab(tabName) {
+        function showMyUploadsTab(tabName, event) {
             const myUploadsList = document.getElementById('myuploads-list-container');
             const uploadForm = document.getElementById('upload-form-container');
             const citedContainer = document.getElementById('cited-articles-container');

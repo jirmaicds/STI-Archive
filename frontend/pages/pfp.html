@@ -10,7 +10,10 @@
     <link rel="stylesheet" href="/frontend/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <script>
+        // PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -1198,9 +1201,7 @@
 
         }
 
-        .background-image-container:hover .pic-overlay {
-            opacity: 1;
-        }
+        
 
         .background-image-container {
             position: relative;
@@ -1222,6 +1223,10 @@
             box-shadow: 0 12px 40px rgba(0,0,0,0.2);
         }
 
+        .background-image-container:hover .edit-icon {
+            opacity: 1;
+        }
+
         
 
         
@@ -1241,7 +1246,8 @@
             justify-content: center;
             cursor: pointer;
             background: rgba(0,0,0,0.5);
-            transition: background 0.3s ease;
+            opacity: 0;
+            transition: opacity 0.3s ease, background 0.3s ease;
         }
 
         .edit-icon:hover {
@@ -2446,15 +2452,7 @@
             align-items: center;
             z-index: 1000;
         }
-        .upload-modal {
-            background: #fff;
-            width: 90%;
-            max-width: 600px;
-            height: 580px;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px #0004;
-            position: relative;
-        }
+        
         .dark-mode .upload-modal {
             background: #232f41;
             color: #ffd700;
@@ -4253,7 +4251,7 @@
                     </div>
                     <div class="upload-modal-body">
                         <div class="modal-left">
-                             ${files.length > 0 ? (previewFile ? (previewFile.type === 'application/pdf' ? `<div class="pdf-preview"><canvas id="pdf-canvas"></canvas></div>` : previewFile.type.startsWith('image/') ? `<img src="${URL.createObjectURL(previewFile)}" style="max-width: 100%; max-height: 400px; object-fit: contain;">` : `<i class="fas fa-file" style="font-size: 48px; color: #6c757d;"></i><p>${previewFile.name}</p>`) : '') : `<div class="upload-drop-zone" id="modal-drop-zone" onclick="document.getElementById('modal-file-upload').click()">
+                             ${files.length > 0 ? (previewFile ? (previewFile.type === 'application/pdf' ? `<div class="pdf-preview"><canvas id="pdf-canvas"></canvas></div>` : previewFile.type.startsWith('image/') ? `<img src="${URL.createObjectURL(previewFile)}" style="max-width: 100%; max-height: 400px; object-fit: contain;">` : `<i class="fas fa-file" style="font-size: 48px; color: #6c757d;"></i><p>${previewFile.name}</p>`) : '') : `<div class="upload-drop-zone" id="modal-drop-zone">
                                 <div class="drop-zone-content" style="display: flex;">
                                     <i class="fas fa-cloud-upload-alt"></i><p>Drag & drop files here or click to upload</p>
                                 </div>
@@ -4300,7 +4298,7 @@
                 .upload-modal-content {
                     background: white;
                     border-radius: 12px;
-                    width: 800px;
+                    width: 900px;
                     max-width: 90vw;
                     
                     
@@ -4351,16 +4349,16 @@
                 }
 
                 .modal-left {
-                    flex: 1;
+                    width: 400px;
                     padding-right: 20px;
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    
+
                 }
 
                 .modal-right {
-                    flex: 1;
+                    width: 400px;
                     display: flex;
                     flex-direction: column;
                 }
@@ -4401,7 +4399,7 @@
                     padding: 20px;
                     border-top: 1px solid #eee;
                     display: flex;
-                    justify-content: space-between;
+                    justify-content: flex-end;
                     gap: 10px;
                     background: white;
                 }
@@ -4565,7 +4563,7 @@
                     gap: 10px;
                 }
 
-                .modal-buttons-left {
+                .modal-buttons-right {
                     display: flex;
                     gap: 10px;
                 }
@@ -4848,11 +4846,11 @@
                 pdfjsLib.getDocument({data: e.target.result}).promise.then(function(pdf) {
                     pdf.getPage(1).then(function(page) {
                         const isAdditional = canvasId && canvasId.includes('-');
-                        const desiredWidth = isAdditional ? 61 : 1000;
+                        const desiredWidth = isAdditional ? 61 : 400;
                         const desiredHeight = isAdditional ? 800 : 400;
 
                         const viewport = page.getViewport({scale: 1});
-                        const scale = Math.min(desiredHeight / viewport.height, desiredWidth / viewport.width) * 2;
+                        const scale = Math.min(desiredHeight / viewport.height, desiredWidth / viewport.width);
                         const scaledViewport = page.getViewport({scale: scale});
 
                         canvas.width = scaledViewport.width;
@@ -5642,7 +5640,7 @@
                 .upload-modal-content {
                     background: white;
                     border-radius: 12px;
-                    width: 60%;
+                    
                     
                     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
                     display: flex;
@@ -5676,6 +5674,7 @@
                     padding: 20px;
                     display: flex;
                     height: 580px;
+
                 }
 
                 .modal-left {
@@ -5904,12 +5903,7 @@
         }
 
         // Close upload modal
-        function closeUploadModal() {
-            const modal = document.querySelector('.upload-modal');
-            if (modal) {
-                modal.remove();
-            }
-        }
+
 
 
         // Calendar functionality
@@ -6315,7 +6309,7 @@
         }
 
         // Function to close upload modal
-        function closeUploadModal() {
+        function closeAdminUploadModal() {
             const modal = document.getElementById('uploadModal');
             if (modal) {
                 modal.style.display = 'none';
@@ -6325,7 +6319,7 @@
         // Close modal when clicking outside
         document.getElementById('uploadModal').addEventListener('click', function(e) {
             if (e.target === this) {
-                closeUploadModal();
+                closeAdminUploadModal();
             }
         });
     </script>

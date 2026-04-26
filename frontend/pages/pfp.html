@@ -3779,6 +3779,7 @@
             // });
 
             // Add sidebar toggle functionality
+            let sidebarOutsideClickListener = null;
             document.getElementById('userIcon').addEventListener('click', function() {
                 const sidebar = document.getElementById('sidebar');
                 if (sidebar) {
@@ -3787,10 +3788,27 @@
                         sidebar.style.right = '0';
                         sidebar.style.visibility = 'visible';
                         sidebar.style.pointerEvents = 'auto';
+                        // Add outside click listener
+                        sidebarOutsideClickListener = function(event) {
+                            if (!sidebar.contains(event.target) && !document.getElementById('userIcon').contains(event.target)) {
+                                sidebar.classList.remove('open');
+                                sidebar.style.right = '-320px';
+                                sidebar.style.visibility = 'hidden';
+                                sidebar.style.pointerEvents = 'none';
+                                document.removeEventListener('click', sidebarOutsideClickListener);
+                                sidebarOutsideClickListener = null;
+                            }
+                        };
+                        document.addEventListener('click', sidebarOutsideClickListener);
                     } else {
                         sidebar.style.right = '-320px';
                         sidebar.style.visibility = 'hidden';
                         sidebar.style.pointerEvents = 'none';
+                        // Remove outside click listener if exists
+                        if (sidebarOutsideClickListener) {
+                            document.removeEventListener('click', sidebarOutsideClickListener);
+                            sidebarOutsideClickListener = null;
+                        }
                     }
                 }
             });

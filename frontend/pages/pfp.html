@@ -2450,7 +2450,7 @@
             background: #fff;
             width: 90%;
             max-width: 600px;
-            padding: 30px;
+            height: 580px;
             border-radius: 12px;
             box-shadow: 0 4px 16px #0004;
             position: relative;
@@ -2748,7 +2748,7 @@
                     <div id="myuploads-list-container" style="display: block;">
                         <div id="uploaded-files-container" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
                             <div class="upload-form-content">
-                            <div class="drop-zone" id="myuploads-drop-zone" onclick="document.getElementById('user-pdf-upload').click()">
+                            <div class="drop-zone" id="myuploads-drop-zone" onclick="showUploadModal([])">
                                 <div class="upload-icon">
                                     <i class="fas fa-cloud-upload-alt"></i>
                                 </div>
@@ -2784,33 +2784,7 @@
 
 
 
-    <!-- Change Password Modal -->
-    <div id="changePasswordModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Change Password</h2>
-                <span class="close-modal" onclick="closeChangePasswordModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="password-input-container">
-                    <i class="fas fa-lock password-icon"></i>
-                    <input type="password" id="modalCurrentPassword" placeholder="Current password" class="password-input" />
-                    <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility('modalCurrentPassword')"></i>
-                </div>
-                <div class="password-input-container">
-                    <i class="fas fa-lock password-icon"></i>
-                    <input type="password" id="modalNewPassword" placeholder="New password" class="password-input" />
-                    <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility('modalNewPassword')"></i>
-                </div>
-                <div class="password-input-container">
-                    <i class="fas fa-lock password-icon"></i>
-                    <input type="password" id="modalConfirmPassword" placeholder="Confirm new password" class="password-input" />
-                    <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility('modalConfirmPassword')"></i>
-                </div>
-                <button onclick="sendVerificationCode()">Send Verification Code</button>
-            </div>
-        </div>
-    </div>
+   
 
     <!-- Verification Code Modal -->
     <div id="verificationModal" class="modal" style="display: none;">
@@ -4279,7 +4253,7 @@
                     </div>
                     <div class="upload-modal-body">
                         <div class="modal-left">
-                            ${files.length > 0 ? (previewFile ? (previewFile.type === 'application/pdf' ? `<div class="pdf-preview"><canvas id="pdf-canvas"></canvas></div>` : previewFile.type.startsWith('image/') ? `<img src="${URL.createObjectURL(previewFile)}" style="max-width: 100%; max-height: 400px; object-fit: contain;">` : `<i class="fas fa-file" style="font-size: 48px; color: #6c757d;"></i><p>${previewFile.name}</p>`) : '') : `<div class="upload-drop-zone" id="modal-drop-zone">
+                             ${files.length > 0 ? (previewFile ? (previewFile.type === 'application/pdf' ? `<div class="pdf-preview"><canvas id="pdf-canvas"></canvas></div>` : previewFile.type.startsWith('image/') ? `<img src="${URL.createObjectURL(previewFile)}" style="max-width: 100%; max-height: 400px; object-fit: contain;">` : `<i class="fas fa-file" style="font-size: 48px; color: #6c757d;"></i><p>${previewFile.name}</p>`) : '') : `<div class="upload-drop-zone" id="modal-drop-zone" onclick="document.getElementById('modal-file-upload').click()">
                                 <div class="drop-zone-content" style="display: flex;">
                                     <i class="fas fa-cloud-upload-alt"></i><p>Drag & drop files here or click to upload</p>
                                 </div>
@@ -4313,7 +4287,7 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: transparent;
+                background: rgba(0,0,0,0.5);
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -4326,8 +4300,10 @@
                 .upload-modal-content {
                     background: white;
                     border-radius: 12px;
-                    width: 60%;
-                    height: 650px;
+                    width: 800px;
+                    max-width: 90vw;
+                    
+                    
                     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
                     display: flex;
                     flex-direction: column;
@@ -5667,7 +5643,7 @@
                     background: white;
                     border-radius: 12px;
                     width: 60%;
-                    height: 650px;
+                    
                     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
                     display: flex;
                     flex-direction: column;
@@ -5699,7 +5675,7 @@
                 .upload-modal-body {
                     padding: 20px;
                     display: flex;
-                    height: 520px;
+                    height: 580px;
                 }
 
                 .modal-left {
@@ -6354,70 +6330,7 @@
         });
     </script>
     
-    <!-- User Upload Modal -->
-    <div id="user-upload-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; overflow-y: auto;">
-        <div style="background: white; margin: 50px auto; padding: 30px; max-width: 600px; border-radius: 10px; position: relative;">
-            <span onclick="closeUserUploadModal()" style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #666;">&times;</span>
-            <h2 style="color: #0057b8; margin-top: 0;">Upload Document Details</h2>
-            <form id="user-upload-form" onsubmit="submitUserUpload(event)">
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Title *</label>
-                    <input type="text" id="upload-title" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;">
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Authors</label>
-                    <input type="text" id="upload-authors" placeholder="e.g., John Doe, Jane Smith" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box;">
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Abstract / Summary</label>
-                    <textarea id="upload-abstract" rows="4" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; resize: vertical;"></textarea>
-                </div>
-                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                    <div style="flex: 1;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Category</label>
-                        <select id="upload-category" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                            <option value="research">Research</option>
-                            <option value="capstone">Capstone</option>
-                        </select>
-                    </div>
-                    <div style="flex: 1;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Level</label>
-                        <select id="upload-level" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                            <option value="shs">Senior High School</option>
-                            <option value="college">College</option>
-                        </select>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                    <div style="flex: 1;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Strand/Program</label>
-                        <select id="upload-strand" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                            <option value="ABM">ABM</option>
-                            <option value="ITMAWD">ITMAWD</option>
-                            <option value="STEM">STEM</option>
-                            <option value="BSBA">BSBA</option>
-                            <option value="BSCS">BSCS</option>
-                            <option value="BSIT">BSIT</option>
-                        </select>
-                    </div>
-                    <div style="flex: 1;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Year</label>
-                        <input type="number" id="upload-year" value="2024" min="2020" max="2030" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                    </div>
-                </div>
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Citation</label>
-                    <textarea id="upload-citation" rows="2" placeholder="Enter citation text" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; resize: vertical;"></textarea>
-                </div>
-                <div id="upload-file-info" style="margin-bottom: 20px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-                    <p style="margin: 0; color: #666;"><strong>File:</strong> <span id="modal-filename"></span></p>
-                </div>
-                <button type="submit" style="width: 100%; padding: 12px; background: #0057b8; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
-                    <i class="fas fa-upload"></i> Submit Upload
-                </button>
-            </form>
-        </div>
-    </div>
+
     
     <script>
     // User upload variables

@@ -15,36 +15,11 @@
         // PDF.js worker
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar) {
-                const isOpen = sidebar.classList.toggle('open');
-                if (isOpen) {
-                    sidebar.style.right = '0';
-                    sidebar.style.visibility = 'visible';
-                    sidebar.style.pointerEvents = 'auto';
-                } else {
-                    sidebar.style.right = '-320px';
-                    sidebar.style.visibility = 'hidden';
-                    sidebar.style.pointerEvents = 'none';
-                }
-            }
-        }
+        
 
-        // Profile Tabs Sidebar Functions
-        function toggleProfileTabsSidebar() {
-            const sidebar = document.getElementById('profileTabsSidebar');
-            if (sidebar) {
-                sidebar.classList.toggle('open');
-            }
-        }
+      
 
-        function closeProfileTabsSidebar() {
-            const sidebar = document.getElementById('profileTabsSidebar');
-            if (sidebar) {
-                sidebar.classList.remove('open');
-            }
-        }
+       
 
         // Toggle tab buttons visibility
         function toggleTabButtons() {
@@ -1303,29 +1278,7 @@
             color:white;
         }
 
-        .bio-text {
-            font-size: 1rem;
-            color: #666;
-            margin-top: 8px;
-            margin-bottom: 8px;
-            max-width: 300px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .dark-mode .bio-text {
-            color:white;
-        }
-        .divider{
-            border: none;
-            border-top: none;
-            margin: 20px auto;
-            width: 80%;
-            position: absolute;
-            top: 600px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
+        
 
         .saved-article {
             background: white;
@@ -2402,16 +2355,9 @@
             color: white;
         }
 
-        .profile-tabs-sidebar-content {
-            padding: 20px;
-        }
+        
 
-        .profile-tabs-sidebar-content .tab-btn {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-            text-align: left;
-        }
+        
 
         /* Show burger and sidebar only on screens 1023px and below */
         @media (max-width: 1023px) {
@@ -2536,72 +2482,17 @@
             display: none;
         }
 
-        /* Sidebar styles */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            right: -320px;
-            width: 320px;
-            height: 100vh;
-            background: #fff;
-            transition: right 0.3s ease;
-            z-index: 1000;
-            box-shadow: -2px 0 8px rgba(0,0,0,0.1);
-        }
+        
 
         .sidebar.open {
             right: 0;
-        }
-
-        .sidebar-content {
-            padding: 20px;
-            height: 100%;
-            overflow-y: auto;
-        }
-
-        .sidebar-content ul {
-            list-style: none;
-            padding: 0;
         }
 
         .sidebar-content ul li {
             margin-bottom: 15px;
         }
 
-        .sidebar-content ul li a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            color: #333;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background 0.2s ease;
-        }
-
-        .sidebar-content ul li a:hover {
-            background: #f0f0f0;
-        }
-
-        .sidebar-content ul li a i {
-            width: 20px;
-        }
-
-        .sidebar-content ul li a .text {
-            flex: 1;
-        }
-
-        .dark-mode .sidebar {
-            background: #232f41;
-        }
-
-        .dark-mode .sidebar-content ul li a {
-            color: #e2e8f0;
-        }
-
-        .dark-mode .sidebar-content ul li a:hover {
-            background: #374151;
-        }
+        
         .dark-mode #mainSearchContainer {
           background: #232f41;
         }
@@ -2695,7 +2586,7 @@
         </div>
         <div class="navbar-right user-nav-fixed">
             <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode"><i class="fa fa-moon"></i></button>
-            <img id="userIcon" src="/frontend/assets/images/Screenshot 2025-09-10 204105.png" alt="Profile" style="cursor:pointer;" onclick="toggleProfileTabsSidebar()">
+            <img id="userIcon" src="/frontend/assets/images/Screenshot 2025-09-10 204105.png" alt="Profile" style="cursor:pointer;" onclick="toggleSidebar()">
         </div>
     </nav>
     <!-- Left Sidebar -->

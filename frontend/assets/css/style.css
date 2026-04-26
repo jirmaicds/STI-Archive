@@ -235,7 +235,34 @@ body {
             flex-direction: column;
 
         }
+        .sidebar-content ul li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+        .sidebar-content ul li a:hover {
+            background: #f0f0f0;
+        }
+
+        .sidebar-content ul li a i {
+            width: 20px;
+        }
+
+        .sidebar-content ul li a .text {
+            flex: 1;
+        }
+
         
+
+        .dark-mode .sidebar-content ul li a:hover {
+            background: #374151;
+        }
+
         .close-sidebar {
             background: none;
             border: none;

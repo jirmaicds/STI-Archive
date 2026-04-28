@@ -16,10 +16,10 @@
         // PDF.js worker
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
-        // Supabase client initialization
-        const supabaseUrl = 'https://your-project.supabase.co'; // Replace with your Supabase URL
-        const supabaseKey = 'your-anon-key'; // Replace with your Supabase anon key
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        // Supabase client initialization - using global supabase object
+        const supabaseUrl = 'https://eopbqatvianrjkdbypvk.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJxYXR2aWFucmprZGJ5cHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzA4OTIsImV4cCI6MjA4OTEwNjg5Mn0.k9_xTbjwRdwAQJ9UgGGsosjLWywzxHuYOq-JbGeII8g';
+        window.supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         // Toggle tab buttons visibility
         function toggleTabButtons() {
@@ -89,7 +89,7 @@
                     const filePath = `uploads/${userId}/${fileName}`;
 
                     // Upload file to Supabase Storage
-                    const { data, error } = await supabase.storage
+                    const { data, error } = await window.supabaseClient.storage
                         .from('uploads')
                         .upload(filePath, item.file);
 
@@ -100,7 +100,7 @@
                     }
 
                     // Insert record into pending_uploads table
-                    const { error: dbError } = await supabase
+                    const { error: dbError } = await window.supabaseClient
                         .from('pending_uploads')
                         .insert({
                             user_id: userId,
@@ -2719,7 +2719,7 @@
         <div class="tabs-left-sidebar">
             <button class="tab-btn active" onclick="showMyUploadsTab('myuploads', event)">My Uploads</button>
             <button class="tab-btn" onclick="showCited('cited', event)">Cited</button>
-            <button class="tab-btn" onclick="showSavedArticles('saved-articles', event)">Saved Article</button>
+            <button class="tab-btn" onclick="showMyUploadsTab('saved-articles', event)">Saved Article</button>
         </div>
         
 
@@ -2781,6 +2781,11 @@
                     <div id="saved-articles-container" style="display: none;">
                         <div id="saved-articles-list" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
                             <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No saved articles yet</p>
+                        </div>
+                        <div id="articles-pagination" style="display: none; justify-content: center; align-items: center; gap: 10px; margin-top: 20px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                            <button id="prev-page-btn" style="background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Previous</button>
+                            <span id="page-info" style="font-weight: 500;">Page 1 of 1</span>
+                            <button id="next-page-btn" style="background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Next</button>
                         </div>
                     </div>
 
@@ -3397,10 +3402,10 @@
                 });
 
                 // Update pagination
-                updatePagination(totalPages);
+                updatePagination(currentPage, totalPages);
             }
 
-            function updatePagination(totalPages) {
+            function updatePagination(currentPage, totalPages) {
                 const paginationDiv = document.getElementById('articles-pagination');
                 const pageInfo = document.getElementById('page-info');
                 const prevBtn = document.getElementById('prev-page-btn');

@@ -3337,6 +3337,191 @@
         </div>
     </div>
 
+    <div class="main-content">
+        <div class="header">
+            <button class="toggle-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 id="page-title">Admin Panel</h1>
+            <div class="header-right">
+                <div class="notification-bell" onclick="toggleNotificationModal()">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
+                </div>
+                <div class="pending-requests-btn" onclick="showPendingRequests()">
+                    <i class="fas fa-clock"></i>
+                    <span class="pending-badge" id="pending-badge">0</span>
+                </div>
+                <div class="dark-mode-toggle" onclick="toggleDarkMode()">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <div class="profile-dropdown">
+                    <button class="profile-btn" onclick="toggleProfileMenu()">
+                        <div class="profile-avatar">A</div>
+                        <span>Admin</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="profile-menu" id="profile-menu">
+                        <a href="#" onclick="handleLogoutClick()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="content-section active">
+            <div class="dashboard">
+                <div class="card">
+                    <h3>Total Users</h3>
+                    <p id="total-users">0</p>
+                </div>
+                <div class="card">
+                    <h3>Active Users</h3>
+                    <p id="active-users">0</p>
+                </div>
+                <div class="card">
+                    <h3>Pending Uploads</h3>
+                    <p id="pending-uploads">0</p>
+                </div>
+                <div class="card">
+                    <h3>Approved Uploads</h3>
+                    <p id="approved-uploads">0</p>
+                </div>
+            </div>
+
+            <div class="graphs-section">
+                <h2>Analytics</h2>
+                <div class="graph-container">
+                    <div class="graph-item">
+                        <h4>User Statistics</h4>
+                        <div class="chart-container">
+                            <canvas id="usr-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="graph-item">
+                        <h4>Upload Statistics</h4>
+                        <div class="chart-container">
+                            <canvas id="upld-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div id="users" class="content-section">
+            <div class="users-section">
+                <div class="users-nav">
+                    <button class="nav-btn active" data-section="all">All Users</button>
+                    <button class="nav-btn" data-section="signing-up">Signing Up</button>
+                    <button class="nav-btn" data-section="verified">Verified</button>
+                    <button class="nav-btn" data-section="rejected">Rejected</button>
+                    <button class="nav-btn" data-section="banned">Banned</button>
+                </div>
+                <div id="users-table-container">
+                    <table id="users-table">
+                        <thead>
+                            <tr>
+                                <th>Avatar</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination-controls" id="pagination-controls">
+                    <button id="prev-page" class="page-btn" onclick="changePage(-1)">Previous</button>
+                    <span id="page-info" class="pagination-info">Page 1 of 1</span>
+                    <button id="next-page" class="page-btn" onclick="changePage(1)">Next</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div id="upload" class="content-section">
+            <div class="upload-section">
+                <div class="upload-nav">
+                    <button class="nav-btn active" data-section="users">User Uploads</button>
+                    <button class="nav-btn" data-section="pending">Pending Uploads</button>
+                </div>
+
+                <div class="upload-subsection active" id="users-section">
+                    <h3>User Approved Uploads</h3>
+                    <div id="user-uploaded-articles" class="uploads-container">
+                        <!-- User uploads will be loaded here -->
+                    </div>
+                </div>
+
+                <div class="upload-subsection" id="pending-section">
+                    <h3>Pending Uploads</h3>
+                    <div id="pending-uploaded-articles" class="uploads-container">
+                        <!-- Pending uploads will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications Section -->
+        <div id="notifications" class="content-section">
+            <div class="notifications-section">
+                <div class="notification-controls">
+                    <button class="mark-all-read-btn" onclick="markAllAsRead()">
+                        <i class="fas fa-check"></i> Mark All as Read
+                    </button>
+                </div>
+                <div id="notifications-list" class="notification-list-section">
+                    <!-- Notifications will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settings" class="content-section">
+            <div class="settings-section">
+                <h3>Settings</h3>
+                <p>Settings panel coming soon...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="notification-modal" class="notification-modal">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <button class="notification-close" onclick="toggleNotificationModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="notification-list-bell" class="notification-list-bell">
+            <!-- Notifications will be loaded here -->
+        </div>
+        <div class="notification-footer">
+            <div class="left-btns">
+                <button class="view-all-btn" onclick="viewAllNotifications()">
+                    <i class="fas fa-list"></i> View All
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="confirm-modal">
+        <div class="confirm-content">
+            <h3>Confirm Action</h3>
+            <p id="confirm-message">Are you sure you want to proceed?</p>
+            <div class="confirm-buttons">
+                <button class="confirm-btn cancel" onclick="closeConfirmModal()">Cancel</button>
+                <button class="confirm-btn ok" onclick="confirmAction()">OK</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Initialize upload navigation
         document.addEventListener('DOMContentLoaded', function() {
@@ -3458,7 +3643,7 @@
         async function approveUpload(uploadId) {
             try {
                 // Get upload details
-                const { data: upload, error: fetchError } = await supabase
+                const { data: upload, error: fetchError } = await window.supabaseClient
                     .from('pending_uploads')
                     .select('*')
                     .eq('id', uploadId)
@@ -3467,7 +3652,7 @@
                 if (fetchError) throw fetchError;
 
                 // Move to approved_uploads
-                const { error: insertError } = await supabase
+                const { error: insertError } = await window.supabaseClient
                     .from('approved_uploads')
                     .insert({
                         user_id: upload.user_id,
@@ -3483,7 +3668,7 @@
                 if (insertError) throw insertError;
 
                 // Delete from pending
-                const { error: deleteError } = await supabase
+                const { error: deleteError } = await window.supabaseClient
                     .from('pending_uploads')
                     .delete()
                     .eq('id', uploadId);
@@ -3502,20 +3687,20 @@
         async function rejectUpload(uploadId) {
             try {
                 // Delete from storage
-                const { data: upload } = await supabase
+                const { data: upload } = await window.supabaseClient
                     .from('pending_uploads')
                     .select('file_path')
                     .eq('id', uploadId)
                     .single();
 
                 if (upload) {
-                    await supabase.storage
+                    await window.supabaseClient.storage
                         .from('uploads')
                         .remove([upload.file_path]);
                 }
 
                 // Delete from pending
-                const { error } = await supabase
+                const { error } = await window.supabaseClient
                     .from('pending_uploads')
                     .delete()
                     .eq('id', uploadId);
@@ -3533,20 +3718,20 @@
         async function deleteUserUpload(uploadId) {
             try {
                 // Delete from storage
-                const { data: upload } = await supabase
+                const { data: upload } = await window.supabaseClient
                     .from('approved_uploads')
                     .select('file_path')
                     .eq('id', uploadId)
                     .single();
 
                 if (upload) {
-                    await supabase.storage
+                    await window.supabaseClient.storage
                         .from('uploads')
                         .remove([upload.file_path]);
                 }
 
                 // Delete from approved
-                const { error } = await supabase
+                const { error } = await window.supabaseClient
                     .from('approved_uploads')
                     .delete()
                     .eq('id', uploadId);

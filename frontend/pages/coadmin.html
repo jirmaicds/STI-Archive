@@ -3666,7 +3666,7 @@
         async function approveUpload(uploadId) {
             try {
                 // Get upload details
-                const { data: upload, error: fetchError } = await supabase
+                const { data: upload, error: fetchError } = await window.supabaseClient
                     .from('pending_uploads')
                     .select('*')
                     .eq('id', uploadId)
@@ -3675,7 +3675,7 @@
                 if (fetchError) throw fetchError;
 
                 // Move to approved_uploads
-                const { error: insertError } = await supabase
+                const { error: insertError } = await window.supabaseClient
                     .from('approved_uploads')
                     .insert({
                         user_id: upload.user_id,
@@ -3691,7 +3691,7 @@
                 if (insertError) throw insertError;
 
                 // Delete from pending
-                const { error: deleteError } = await supabase
+                const { error: deleteError } = await window.supabaseClient
                     .from('pending_uploads')
                     .delete()
                     .eq('id', uploadId);
@@ -3710,20 +3710,20 @@
         async function rejectUpload(uploadId) {
             try {
                 // Delete from storage
-                const { data: upload } = await supabase
+                const { data: upload } = await window.supabaseClient
                     .from('pending_uploads')
                     .select('file_path')
                     .eq('id', uploadId)
                     .single();
 
                 if (upload) {
-                    await supabase.storage
+                    await window.supabaseClient.storage
                         .from('uploads')
                         .remove([upload.file_path]);
                 }
 
                 // Delete from pending
-                const { error } = await supabase
+                const { error } = await window.supabaseClient
                     .from('pending_uploads')
                     .delete()
                     .eq('id', uploadId);
@@ -3741,20 +3741,20 @@
         async function deleteUserUpload(uploadId) {
             try {
                 // Delete from storage
-                const { data: upload } = await supabase
+                const { data: upload } = await window.supabaseClient
                     .from('approved_uploads')
                     .select('file_path')
                     .eq('id', uploadId)
                     .single();
 
                 if (upload) {
-                    await supabase.storage
+                    await window.supabaseClient.storage
                         .from('uploads')
                         .remove([upload.file_path]);
                 }
 
                 // Delete from approved
-                const { error } = await supabase
+                const { error } = await window.supabaseClient
                     .from('approved_uploads')
                     .delete()
                     .eq('id', uploadId);

@@ -14,10 +14,10 @@
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Supabase client initialization
-        const supabaseUrl = 'https://your-project.supabase.co'; // Replace with your Supabase URL
-        const supabaseKey = 'your-anon-key'; // Replace with your Supabase anon key
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        // Supabase client initialization - using global supabase object
+        const supabaseUrl = 'https://eopbqatvianrjkdbypvk.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJxYXR2aWFucmprZGJ5cHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzA4OTIsImV4cCI6MjA4OTEwNjg5Mn0.k9_xTbjwRdwAQJ9UgGGsosjLWywzxHuYOq-JbGeII8g';
+        window.supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
@@ -3367,7 +3367,7 @@
 
         async function loadUserUploads() {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await window.supabaseClient
                     .from('approved_uploads')
                     .select('*')
                     .order('upload_date', { ascending: false });
@@ -3411,7 +3411,7 @@
 
         async function loadPendingUploads() {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await window.supabaseClient
                     .from('pending_uploads')
                     .select('*')
                     .eq('status', 'pending')
@@ -3563,7 +3563,7 @@
 
         async function viewFile(filePath) {
             try {
-                const { data, error } = await supabase.storage
+                const { data, error } = await window.supabaseClient.storage
                     .from('uploads')
                     .getPublicUrl(filePath);
 

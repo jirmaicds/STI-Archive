@@ -158,7 +158,7 @@ async function handleUpdateUserUpload(req, res, uploadId) {
 // DELETE /api/admin/user-upload/[id] - Delete user upload
 async function handleDeleteUserUpload(req, res, uploadId) {
   setCorsHeaders(res);
-  
+
   if (req.method === 'OPTIONS') {
     handleOptions(res);
     return;
@@ -173,13 +173,31 @@ async function handleDeleteUserUpload(req, res, uploadId) {
   try {
     if (isSupabaseConfigured()) {
       const supabase = getServiceSupabase();
+
+      // First get the upload record to get the file path
+      const { data: upload, error: fetchError } = await supabase
+        .from('user_uploads')
+        .select('file_path')
+        .eq('upload_id', uploadId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // Delete from storage if file exists
+      if (upload && upload.file_path) {
+        await supabase.storage
+          .from('user-uploads')
+          .remove([upload.file_path]);
+      }
+
+      // Delete from database
       const { error } = await supabase
         .from('user_uploads')
         .delete()
         .eq('upload_id', uploadId);
-      
+
       if (error) throw error;
-      
+
       res.statusCode = 200;
       res.end(JSON.stringify({ success: true }));
     } else {

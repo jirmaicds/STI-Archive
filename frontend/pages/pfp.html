@@ -11,15 +11,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // PDF.js worker
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
-        
-
-      
-
-       
+        // Supabase client initialization
+        const supabaseUrl = 'https://your-project.supabase.co'; // Replace with your Supabase URL
+        const supabaseKey = 'your-anon-key'; // Replace with your Supabase anon key
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
         // Toggle tab buttons visibility
         function toggleTabButtons() {
@@ -31,6 +31,111 @@
 
         // Profile Picture Modal
         var selectedProfilePic = null;
+
+        // Upload handling
+        let selectedFiles = [];
+
+        function handleFileUpload(event, type) {
+            const file = event.target.files[0];
+            if (file) {
+                // Validate file size (max 50MB)
+                if (file.size > 50 * 1024 * 1024) {
+                    alert('File size must be less than 50MB');
+                    return;
+                }
+
+                // Store file with metadata
+                selectedFiles.push({
+                    file: file,
+                    type: type,
+                    name: file.name,
+                    size: file.size
+                });
+
+                // Update UI feedback
+                updateUploadPreview(type, file.name);
+            }
+        }
+
+        function updateUploadPreview(type, filename) {
+            const boxes = document.querySelectorAll('.upld-boxes');
+            boxes.forEach(box => {
+                const input = box.querySelector('input[type="file"]');
+                if (input && input.id.includes(type)) {
+                    const desc = box.querySelector('.upld-dscrpt small');
+                    if (desc) {
+                        desc.textContent = `Selected: ${filename}`;
+                        desc.style.color = '#28a745';
+                    }
+                }
+            });
+        }
+
+        async function submitUploads() {
+            if (selectedFiles.length === 0) {
+                alert('Please select files to upload');
+                return;
+            }
+
+            const submitBtn = document.querySelector('.upload-submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading...';
+
+            try {
+                const userId = localStorage.getItem('userId') || 'anonymous'; // Get user ID if available
+
+                for (const item of selectedFiles) {
+                    const fileName = `${Date.now()}-${item.name}`;
+                    const filePath = `uploads/${userId}/${fileName}`;
+
+                    // Upload file to Supabase Storage
+                    const { data, error } = await supabase.storage
+                        .from('uploads')
+                        .upload(filePath, item.file);
+
+                    if (error) {
+                        console.error('Upload error:', error);
+                        alert(`Failed to upload ${item.name}: ${error.message}`);
+                        continue;
+                    }
+
+                    // Insert record into pending_uploads table
+                    const { error: dbError } = await supabase
+                        .from('pending_uploads')
+                        .insert({
+                            user_id: userId,
+                            file_name: item.name,
+                            file_path: data.path,
+                            file_type: item.type,
+                            file_size: item.size,
+                            upload_date: new Date().toISOString(),
+                            status: 'pending'
+                        });
+
+                    if (dbError) {
+                        console.error('Database error:', dbError);
+                        alert(`Failed to save upload info for ${item.name}`);
+                    } else {
+                        alert(`Upload submitted successfully: ${item.name}`);
+                    }
+                }
+
+                // Clear selections
+                selectedFiles = [];
+                document.querySelectorAll('input[type="file"]').forEach(input => input.value = '');
+                document.querySelectorAll('.upld-dscrpt small').forEach(desc => {
+                    desc.textContent = desc.textContent.includes('document') ? 'Click here to upload your document' : 'Click here to upload your image';
+                    desc.style.color = '';
+                });
+
+            } catch (error) {
+                console.error('Submit error:', error);
+                alert('An error occurred during upload submission: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Uploads';
+            }
+        }
 
         function showProfilePicModal() {
             const modal = document.getElementById('profilePicModal');
@@ -1555,9 +1660,24 @@
             gap: 20px;
             height:auto;
             width:auto;
+            margin-bottom: 20px;
 
-            
+        }
 
+        .upload-submit-btn {
+            background: #0057b8;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .upload-submit-btn:hover {
+            background: #003f8a;
         }
 
         .upload-section {
@@ -2644,9 +2764,24 @@
                                 <p>Click to upload or drag and drop</p>
                                 <p>PDF files only (max 10MB)</p>
                                 <input type="file" id="user-pdf-upload" accept=".pdf" multiple style="display: none;">
-                            </div>
-                        </div>
-                        </div>
+            </div>
+        </div>
+
+        <div class="upld-boxes" onclick="document.getElementById('fileInput').click()">
+            <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.gif" style="display: none;" onchange="handleFileUpload(event, 'document')">
+            <div class="upld-dscrpt">
+                <small>Click here to upload your document</small>
+            </div>
+        </div>
+
+        <div class="upld-boxes" onclick="document.getElementById('imageInput').click()">
+            <input type="file" id="imageInput" accept=".jpg,.jpeg,.png,.gif" style="display: none;" onchange="handleFileUpload(event, 'image')">
+            <div class="upld-dscrpt">
+                <small>Click here to upload your image</small>
+            </div>
+        </div>
+
+        <button class="upload-submit-btn" onclick="submitUploads()">Submit Uploads</button>
                     </div>
 
                     <!-- Cited Container -->

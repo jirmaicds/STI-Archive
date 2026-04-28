@@ -958,24 +958,27 @@
             }
         }
 
-        // Reject user upload
+        // Reject user upload (permanent deletion)
         async function rejectUserUpload(id) {
+            if (!confirm('Are you sure you want to permanently delete this upload? This action cannot be undone.')) {
+                return;
+            }
+
             try {
                 const response = await fetch(`/api/admin/user-upload/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: 'rejected' })
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' }
                 });
                 const result = await response.json();
                 if (result.success) {
-                    alert('Upload rejected!');
+                    alert('Upload permanently deleted.');
                     loadUserUploadsForAdmin();
                 } else {
-                    alert('Failed to reject: ' + result.error);
+                    alert('Failed to delete upload: ' + result.error);
                 }
             } catch (error) {
-                console.error('Error rejecting upload:', error);
-                alert('Failed to reject upload');
+                console.error('Error deleting upload:', error);
+                alert('Failed to delete upload');
             }
         }
 

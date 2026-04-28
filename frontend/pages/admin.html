@@ -13,6 +13,12 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-treemap@2" defer></script>
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Supabase client initialization
+        const supabaseUrl = 'https://your-project.supabase.co'; // Replace with your Supabase URL
+        const supabaseKey = 'your-anon-key'; // Replace with your Supabase anon key
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <style>
@@ -3328,926 +3334,248 @@
             <div class="avatar-name-row" data-section="profile">
                 <div class="profile-avatar">A</div>
                 <div class="admin-name"><span class="a-prefix">A </span>Admin</div>
-            </div>
         </div>
     </div>
-    <div class="header">
-        <div style="display: flex; align-items: center;">
-            <button class="toggle-btn" id="toggle-btn">☰</button>
-            <h1 id="page-title"></h1>
-        </div>
-        <div class="header-right">
-            <button class="notification-bell" title="Notifications" onclick="toggleNotificationModal()">
-                <i class="fas fa-bell"></i>
-                <span class="notification-badge">0</span>
-            </button>
-            <button class="dark-mode-toggle" title="Toggle Dark Mode"><i class="fas fa-moon"></i></button>
-        </div>
-    </div>
-    <div class="main-content" id="main-content">
-        <div id="dashboard" class="content-section active">
-            <div class="dashboard">
-                <div class="card user-card" data-section="verified">
-                    <h3>Users</h3>
-                    <p id="verified-users-count">0</p>
-                </div>
-                <div class="card user-card" data-section="admins">
-                    <h3>Admin Users</h3>
-                    <p id="admin-users-count">0</p>
-                </div>
-                <div class="card user-card" data-section="signing-up">
-                    <h3>New Signups</h3>
-                    <p id="signing-up-users-count">0</p>
-                </div>
-                <div class="card" id="upload-card">
-                    <h3>Uploaded Research & Capstone</h3>
-                    <p id="revenue-count">0</p>
-                </div>
-            </div>
-            <div class="graphs-section">
-                <div class="graph-container">
-                    <div class="graph-item" id="usr-grph">
-                                               <h4>Total Users</h4>
-                                               <div class="chart-container" id="usr-chart">
-                               <canvas id="user-chart"></canvas>
-                    </div>
-                    <div class="pagination" id="verified-pagination" style="text-align: right; margin-top: 10px;"></div>
-                </div>
-                    <div class="graph-item" id="sgn-grph">
-                                                 <h4>New Signups</h4>
-                             <div class="chart-container" id="sgn-chart">
-                                 <canvas id="signing-up-chart"></canvas>
-                    </div>
-                    <div class="pagination" id="signing-up-pagination" style="text-align: right; margin-top: 10px;"></div>
-                </div>
-                    <div class="graph-item" id="upld-grph">
-                        <h4>Uploaded Research & Capstone</h4>
-                        <div class="chart-container" id="upld-chart">
-                            <canvas id="dashboard-uploadsChart" onclick="toggleDashboardUploadsChartType()" style="cursor: pointer;"></canvas>
-                        </div>
-                    </div>
-                    <div class="graph-item" id="avg-grph">
-                        <h4>Average Session Duration</h4>
-                        <div class="chart-container" id="avg-chart">
-                            <canvas id="session-duration-gauge"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- ... [Rest of your HTML sections remain unchanged] ... -->
-        <div id="upload" class="content-section">
-            <div class="upload-section">
-                <!-- Upload Navigation Bar -->
-                <div class="upload-nav" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #007bff; padding-bottom: 15px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    <button id="btn-pdf-upload" class="nav-btn active" data-section="pdf-form">
-                        <i class="fas fa-file-pdf" style="margin-right: 8px;"></i>PDF Upload
-                    </button>
-                    <button id="btn-admin-uploads" class="nav-btn" data-section="admin">
-                        <i class="fas fa-user-tie" style="margin-right: 8px;"></i>Admin Uploads
-                    </button>
-                    <button id="btn-user-uploads" class="nav-btn" data-section="users">
-                        <i class="fas fa-users" style="margin-right: 8px;"></i>User Uploads
-                    </button>
-                    <button id="btn-carousel" class="nav-btn" data-section="carousel">
-                        <i class="fas fa-images" style="margin-right: 8px;"></i>Carousel
-                    </button>
-                </div>
-                <div class="admn-U_A">
-                    <div id="upload-form-section" class="upload-subsection active">
-                        <div class="article-template editing" data-category="research">
-                            <form id="article-upload-form">
-                                <div>
-                                    <input type="text" id="article-title" class="article-title" placeholder="Title" style="border: none; background: transparent; color: #0057b8; font-size: 18px; font-weight: bold; width: 100%; outline: none;" required>
-                                </div>
-                                <div class="meta">
-                                    <input type="text" id="article-authors-year" class="article-authors" placeholder="Authors" style="border: none; background: transparent; color: #555; font-size: 14px; width: auto; outline: none;" required>
-                                </div>
-                                <div class="summary">
-                                    <textarea id="article-summary" class="article-summary" placeholder="Summary" style="border: none; background: transparent; color: #333; font-size: 14px; line-height: 1.5; width: 100%; resize: vertical; outline: none;" rows="4" required></textarea>
-                                </div>
-                                <div class="actions">
-                                </div>
-                                <div class="actions-row">
-                                    <label>Category:</label>
-                                     <select id="article-category" class="category-select" required>
-                                         <option value="research">Research</option>
-                                         <option value="capstone">Capstone</option>
-                                     </select>
-                                     <label style="margin-left: 10px;">Topic:</label>
-                                     <select id="article-topic" required>
-                                         <option value="">Select Topic</option>
-                                         <option value="agriculture">Agriculture</option>
-                                         <option value="business">Business</option>
-                                         <option value="cosmetics">Cosmetics</option>
-                                         <option value="education">Education</option>
-                                         <option value="environment">Environment</option>
-                                         <option value="food">Food</option>
-                                         <option value="technology">Technology</option>
-                                     </select>
-                                     <div class="research-options" style="display: inline;">
-                                         <label id="qualitative-quantitative-label" style="margin-left: 10px;">Type:</label>
-                                         <select id="article-qualitative-quantitative" required>
-                                             <option value="qualitative">Qualitative</option>
-                                             <option value="quantitative">Quantitative</option>
-                                         </select>
-                                         <label id="strand-degree-label" style="margin-left: 10px;">Strand:</label>
-                                         <select id="article-strand" required>
-                                             <option value="ABM">ABM</option>
 
-                                             <option value="ITMAWD">ITMAWD</option>
-                                             <option value="STEM">STEM</option>
-                                         </select>
-                                     </div>
-                                     <div class="capstone-options" style="display: none;">
-                                         <label style="margin-left: 10px;">Grade:</label>
-                                         <select id="capstone-grade" required>
-                                             <option value="grade_11">Grade 11</option>
-                                             <option value="grade_12">Grade 12</option>
-                                         </select>
-                                         <label style="margin-left: 10px;">Program:</label>
-                                         <select id="article-program" required>
-                                             <option value="BSBA">BSBA</option>
-                                             <option value="BSCS">BSCS</option>
-                                             <option value="BSIT">BSIT</option>
-                                         </select>
-                                     </div>
-                                    <label>Year:</label>
-                                    <input type="number" id="article-year" required min="2020" max="2030" style="width: 80px;">
-                                    <label>Citation:</label>
-                                    <textarea id="article-citation" rows="1" placeholder="Enter citation text" style="width: 200px; vertical-align: top;"></textarea>
-                                </div>
-                                <!-- PDF Upload Section -->
-                                <div class="pdf-upload-row" style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px; border: 1px dashed #0057b8;">
-                                    <label style="color: #0057b8; font-weight: bold; display: flex; align-items: center; gap: 8px;">
-                                        <i class="fas fa-file-pdf"></i> Upload PDF:
-                                    </label>
-                                    <input type="file" id="article-pdf" accept=".pdf" style="margin-top: 8px; width: 100%;">
-                                    <div id="pdf-upload-status" style="margin-top: 5px; font-size: 12px; color: #666;"></div>
-                                </div>
-                                <div class="actions">
-                                    <button type="submit" class="upload-btn">Upload Article</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div id="admin-uploads-section" class="upload-subsection">
-                    <h3 style="color: #0057b8; margin: 20px 0;">Uploaded Articles by Admin</h3>
-                    <div id="admin-uploaded-articles" style="max-width: 800px;">
-                        <p class="empty-state">No articles uploaded by admin yet.</p>
-                    </div>
-                    <div id="admin-pagination" class="pagination">
-                        <span id="admin-page-numbers" style="display: flex; gap: 5px; visibility: visible;"></span>
-                    </div>
-                </div>
-                <div id="user-uploads-section" class="upload-subsection">
-                    <h3 style="color: #0057b8; margin: 20px 0;">Uploaded Articles by Users</h3>
-                    <div id="user-uploaded-articles" style="max-width: 800px;">
-                        <p class="empty-state">No articles uploaded by users yet.</p>
-                    </div>
-                </div>
-                <div id="carousel-section" class="upload-subsection">
-                    <h3 style="color: #0057b8; margin: 20px 0;">Carousel Management</h3>
-                    <p style="margin-bottom: 15px; color: #666;">Manage the carousel items displayed on the homepage.</p>
-                    
-                    <!-- Navigation and Add Button -->
-                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                        <button type="button" id="carousel-add-btn" onclick="showCarouselForm()" class="btn" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
-                            <i class="fas fa-plus" style="margin-right: 5px;"></i>Add new carousel item
-                        </button>
-                    </div>
-                    
-                    <!-- Add/Edit Carousel Form -->
-                    <div id="carousel-form-container" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #ddd; display: none;">
-                        <h4 id="carousel-form-title" style="color: #0057b8; margin-top: 0;">Add New Carousel Item</h4>
-                        <form id="carousel-form">
-                            <input type="hidden" id="carousel-item-id" value="">
+    <script>
+        // Initialize upload navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const navBtns = document.querySelectorAll('.upload-nav .nav-btn');
+            const subsections = document.querySelectorAll('.upload-subsection');
 
-                            <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Image *</label>
-                                <input type="file" id="carousel-image-upload" accept="image/*" onchange="handleCarouselImageUpload(this)" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-                                <div id="carousel-image-preview" style="margin-top: 10px;"></div>
-                                <small style="color: #666;">Upload an image for the carousel</small>
-                            </div>
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
 
-                            <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Title *</label>
-                                <input type="text" id="carousel-title" placeholder="Enter title" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;" required>
-                            </div>
+                    const section = this.getAttribute('data-section');
+                    subsections.forEach(sub => sub.classList.remove('active'));
+                    document.getElementById(section + '-section').classList.add('active');
 
-                            <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Author/Source</label>
-                                <input type="text" id="carousel-author" placeholder="Author Name - Year" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-                            </div>
-
-                            <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Description</label>
-                                <textarea id="carousel-description" placeholder="Enter description" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;" rows="3"></textarea>
-                            </div>
-
-                            <div style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">Link to PDF (optional)</label>
-                                <select id="carousel-pdf-select" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-                                    <option value="">-- Select PDF from uploaded articles --</option>
-                                </select>
-                                <small style="color: #666;">When users click this carousel item, they will be directed to myspace.html with the selected PDF.</small>
-                            </div>
-
-                            <div style="display: flex; gap: 10px;">
-                                <button type="submit" class="btn" style="background: #0057b8; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
-                                    Add Item
-                                </button>
-                                <button type="button" id="carousel-cancel-btn" onclick="resetCarouselForm()" class="btn" style="background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- Carousel Items List -->
-                    <div id="carousel-items-list">
-                        <p class="empty-state">No carousel items yet. Add one below.</p>
-                    </div>
-                </div>
-            </div>
-            </div>
-        </div>
-        <div id="users" class="content-section">
-            <div class="users-section">
-                <!-- Users Navigation Bar -->
-                <div class="users-nav" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #007bff; padding-bottom: 15px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    <button class="nav-btn active" data-section="verified">
-                        <i class="fas fa-check-circle" style="margin-right: 8px;"></i>Verified
-                    </button>
-                    <button class="nav-btn" data-section="signing-up">
-                        <i class="fas fa-clock" style="margin-right: 8px;"></i>Signups
-                    </button>
-                    <button class="nav-btn" data-section="banned">
-                        <i class="fas fa-ban" style="margin-right: 8px;"></i>Banned
-                    </button>
-                    <button class="nav-btn" data-section="admins">
-                        <i class="fas fa-user-shield" style="margin-right: 8px;"></i>Admin
-                    </button>
-
-                </div>
-                <style>
-                    /* Activity Log Badge Styles */
-                    .badge {
-                        padding: 4px 8px;
-                        border-radius: 4px;
-                        font-size: 11px;
-                        font-weight: bold;
-                        text-transform: uppercase;
+                    // Load data based on section
+                    if (section === 'users') {
+                        loadUserUploads();
+                    } else if (section === 'pending') {
+                        loadPendingUploads();
                     }
-                    .badge-approved { background: #28a745; color: white; }
-                    .badge-rejected { background: #dc3545; color: white; }
-                    .badge-banned { background: #ffc107; color: black; }
-                    .badge-updated { background: #17a2b8; color: white; }
-                    .badge-created { background: #6f42c1; color: white; }
-                </style>
-                <!-- Admin Accounts Section -->
-                <div id="admins-section" class="user-subsection" style="--border-color: #6f42c1; --header-color: #6f42c1;">
-                    
-                    
-                    <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
-                        <select id="role-filter-admins" onchange="updateFilters('admins')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            <option value="">All Roles</option>
-                            <option value="admin">Admin</option>
-                            <option value="co-admin">Co-Admin</option>
-                            <option value="sub-admin">Sub-Admin</option>
-                        </select>
-                        <select id="grade-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Grades</option>
-                            <option value="11">Grade 11</option>
-                            <option value="12">Grade 12</option>
-                        </select>
-                        <select id="strand-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Strands</option>
-                            <option value="abm">ABM</option>
-                            <option value="itma wd">ITMA WD</option>
-                            <option value="stem">STEM</option>
-                        </select>
-                        <select id="degree-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Degrees</option>
-                            <option value="bsba">BSBA</option>
-                            <option value="bscs">BSCS</option>
-                            <option value="bsit">BSIT</option>
-                        </select>
-                        <select id="dept-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Depts</option>
-                            <option value="shs dept">SHS Dept</option>
-                            <option value="college dept">College Dept</option>
-                        </select>
-                        <select id="search-filter-admins" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            <option value="unified">Unified Search</option>
-                            <option value="fullname" selected>Full Name</option>
-                            <option value="userid">User ID</option>
-                            <option value="email">Email</option>
-                        </select>
-                        <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'admins', document.getElementById('search-filter-admins').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                        <button id="create-admin-btn" class="btn" onclick="openCreateAdminModal()">Create New Admin</button>
-                    </div>
+                });
+            });
 
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-admins-main" onclick="toggleSelectAll('admins')">
-                        <button class="btn btn-danger" onclick="bulkAction('admins', 'remove')">Remove</button>
-                    </div>
+            // Load initial user uploads
+            loadUserUploads();
+        });
 
-                    <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th><input type="checkbox" id="select-all-admins" onclick="toggleSelectAll('admins')"></th>
-                                <th>ID</th>
-                                <th>Full Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Permissions</th>
-                                <th>Created At</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admins-tbody">
-                        </tbody>
-                    </table>
-                    </div>
-                    <div class="pagination" id="admins-pagination" style="text-align: right; margin-top: 10px;"></div>
+        async function loadUserUploads() {
+            try {
+                const { data, error } = await supabase
+                    .from('approved_uploads')
+                    .select('*')
+                    .order('upload_date', { ascending: false });
 
-                </div>
-                <!-- Verified Users Section -->
-                <div id="verified-section" class="user-subsection" style="--border-color: #28a745; --header-color: #28a745;">
-                    <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
-                        <select id="role-filter-verified" onchange="updateFilters('verified')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            <option value="">All Roles</option>
-                            <option value="shs">SHS</option>
-                            <option value="college">College</option>
-                            <option value="educator">Educator</option>
-                        </select>
-                        <select id="grade-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Grades</option>
-                            <option value="11">Grade 11</option>
-                            <option value="12">Grade 12</option>
-                        </select>
-                        <select id="strand-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Strands</option>
-                            <option value="abm">ABM</option>
-                            <option value="itma wd">ITMA WD</option>
-                            <option value="stem">STEM</option>
-                        </select>
-                        <select id="degree-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Degrees</option>
-                            <option value="bsba">BSBA</option>
-                            <option value="bscs">BSCS</option>
-                            <option value="bsit">BSIT</option>
-                        </select>
-                        <select id="dept-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Depts</option>
-                            <option value="shs dept">SHS Dept</option>
-                            <option value="college dept">College Dept</option>
-                        </select>
-                        <select id="search-filter-verified" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            <option value="unified">Unified Search</option>
-                            <option value="fullname" selected>Full Name</option>
-                            <option value="userid">User ID</option>
-                            <option value="email">Email</option>
-                        </select>
-                        <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'verified', document.getElementById('search-filter-verified').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                        <button class="btn" onclick="openAddUserModal()">Add New User</button>
-                    </div>
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-verified-main" onclick="toggleSelectAll('verified')">
-                        <button class="btn btn-danger" onclick="bulkAction('verified', 'ban')">Ban</button>
-                        <button class="btn btn-danger" onclick="bulkAction('verified', 'remove')">Remove</button>
-                    </div>
-                    
-                    <div style="overflow-x: auto;">
-                        <table id="verified-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-verified" onclick="toggleSelectAll('verified')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Verified</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
-                            <tbody id="verified-users-tbody">
-                            </tbody>
-                        </table>
-                        <div id="verified-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
-                    </div>
-                </div>
-                <!-- Signing Up Users Section -->
-                <div id="signing-up-section" class="user-subsection" style="--border-color: #ffc107; --header-color: #ffc107;">
-                    <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
-                        <select id="role-filter-signing-up" onchange="updateFilters('signing-up')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            <option value="">All Roles</option>
-                            <option value="shs">SHS</option>
-                            <option value="college">College</option>
-                            <option value="educator">Educator</option>
-                        </select>
-                        <select id="grade-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Grades</option>
-                            <option value="11">Grade 11</option>
-                            <option value="12">Grade 12</option>
-                        </select>
-                        <select id="strand-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Strands</option>
-                            <option value="abm">ABM</option>
-                            <option value="itma wd">ITMA WD</option>
-                            <option value="stem">STEM</option>
-                        </select>
-                        <select id="degree-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Degrees</option>
-                            <option value="bsba">BSBA</option>
-                            <option value="bscs">BSCS</option>
-                            <option value="bsit">BSIT</option>
-                        </select>
-                        <select id="dept-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Depts</option>
-                            <option value="shs dept">SHS Dept</option>
-                            <option value="college dept">College Dept</option>
-                        </select>
-                        <select id="search-filter-signing-up" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            <option value="unified">Unified Search</option>
-                            <option value="fullname" selected>Full Name</option>
-                            <option value="userid">User ID</option>
-                            <option value="email">Email</option>
-                        </select>
-                        <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'signing-up', document.getElementById('search-filter-signing-up').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                    </div>
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-signing-up-main" onclick="toggleSelectAll('signing-up')">
-                        <button class="btn btn-success" onclick="bulkAction('signing-up', 'accept')">Accept</button>
-                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'ban')">Ban</button>
-                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'remove')">Remove</button>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table id="signing-up-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Signed Up</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
-                            <tbody id="signing-up-users-tbody"></tbody>
-                        </table>
-                        <div id="signing-up-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
-                    </div>
-                </div>
-                <!-- Banned Users Section -->
-                <div id="banned-section" class="user-subsection" style="--border-color: #dc3545; --header-color: #dc3545;">
-                    
-                    <div class="search-with-filters" style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
-                        <select id="role-filter-banned" onchange="updateFilters('banned')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            <option value="">All Roles</option>
-                            <option value="shs">SHS</option>
-                            <option value="college">College</option>
-                            <option value="educator">Educator</option>
-                        </select>
-                        <select id="grade-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Grades</option>
-                            <option value="11">Grade 11</option>
-                            <option value="12">Grade 12</option>
-                        </select>
-                        <select id="strand-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Strands</option>
-                            <option value="abm">ABM</option>
-                            <option value="itma wd">ITMA WD</option>
-                            <option value="stem">STEM</option>
-                        </select>
-                        <select id="degree-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Degrees</option>
-                            <option value="bsba">BSBA</option>
-                            <option value="bscs">BSCS</option>
-                            <option value="bsit">BSIT</option>
-                        </select>
-                        <select id="dept-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Depts</option>
-                            <option value="shs dept">SHS Dept</option>
-                            <option value="college dept">College Dept</option>
-                        </select>
-                        <select id="search-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            <option value="unified">Unified Search</option>
-                            <option value="fullname" selected>Full Name</option>
-                            <option value="userid">User ID</option>
-                            <option value="email">Email</option>
-                        </select>
-                        <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'banned', document.getElementById('search-filter-banned').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                    </div>
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                            <input type="checkbox" id="select-all-banned-main" onclick="toggleSelectAll('banned')">
-                            <button class="btn btn-success" onclick="bulkAction('banned', 'accept')">Accept</button>
-                            <button class="btn btn-danger" onclick="bulkAction('banned', 'remove')">Remove</button>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table id="banned-users-table">
-                                                    <thead><tr><th><input type="checkbox" id="select-all-banned" onclick="toggleSelectAll('banned')"></th><th>ID</th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Banned</th><th>Status</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
-                            <tbody id="banned-users-tbody"></tbody>
-                        </table>
-                        <div id="banned-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
+                const container = document.getElementById('user-uploaded-articles');
+                if (error) {
+                    container.innerHTML = '<p>Error loading uploads: ' + error.message + '</p>';
+                    return;
+                }
 
-                </div>
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p class="empty-state">No articles uploaded by users yet.</p>';
+                    return;
+                }
 
-            </div>
-        </div>
-        <div id="settings" class="content-section">
-            <div class="settings-section">
-                <div style="display: flex;">
-                    <div class="settings-sidebar" style="width: 200px; padding: 20px; background-color: #f8f9fa; border-right: 1px solid #ddd;">
-                        <ul style="list-style: none; padding: 0;">
-                            <li style="padding: 10px 0; cursor: pointer; color: #007bff;" onclick="showSettingsSection('general')">General</li>
-                            <li style="padding: 10px 0; cursor: pointer;" onclick="showSettingsSection('account')">Account</li>
-                            <li onclick="showSettingsSection('terms-conditions')" style="cursor: pointer; padding-top: 10px; padding-bottom: 10px;">Terms & Conditions</li>
-                            <li onclick="showSettingsSection('privacy-policy')" style="cursor: pointer; padding-top: 10px;">Privacy Policy</li>
-                        </ul>
-                    </div>
-                    <div class="settings-content" style="flex: 1; padding: 20px; min-height: calc(100vh - 200px);">
-                        <div id="general-settings" class="settings-subsection active">
-                            <h2>General Settings</h2>
-                            <form id="settings-form">
-                                <label for="site-title">Site Title:</label>
-                                <input type="text" id="site-title" name="site-title" value="STI Archives" placeholder="e.g., STI Archives"><br><br>
-                                <label for="site-favicon">Upload Favicon (Browser Tab Icon):</label>
-                                <input type="file" id="site-favicon" accept="image/*"><br><br>
-                                <button class="btn" type="submit" id="save-settings-btn" style="display: none;">Save Settings</button>
-                            </form>
-                            <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
-                                <h4 style="margin: 0 0 10px 0; color: #495057;">Current Preview:</h4>
-                                <div style="display: flex; align-items: center; gap: 8px; font-family: Arial, sans-serif; font-size: 16px; color: #333;">
-                                    <img id="favicon-preview" src="370044409_696741882497707_8408055328080058811_n.jpg" style="width: 16px; height: 16px; border-radius: 2px;" alt="Favicon">
-                                    <span><span id="page-title-preview">Admin Panel</span> | <span id="site-title-preview">STI Archives</span></span>
-                                </div>
-                                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666; font-style: italic;">Format: Favicon + Page Name | Site Title</p>
+                container.innerHTML = data.map(upload => `
+                    <div class="user-uploaded">
+                        <div class="user-info">
+                            <div class="user-pfp" style="background-color: #4CAF50; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                ${upload.user_id.charAt(0).toUpperCase()}
                             </div>
+                            <div class="user-fullname">${upload.user_id}</div>
+                            <div class="user-meta">${new Date(upload.upload_date).toLocaleDateString()}</div>
                         </div>
-                        <div id="account-settings" class="settings-subsection">
-                            <h2>Account Settings</h2>
-                            <div style="text-align: center; margin-bottom: 30px;">
-                                <div id="account-profile-avatar" style="width: 100px; height: 100px; border-radius: 50%; background-color: #4CAF50; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 40px; margin: 0 auto 20px;">A</div>
-                                <label for="admin-profile-pic-upload">Upload Profile Picture:</label><br>
-                                <input type="file" id="admin-profile-pic-upload" accept="image/*"><br><br>
-                            </div>
-                            <form id="account-form">
-                                <label for="admin-fullname">Full Name:</label>
-                                <input type="text" id="admin-fullname" name="admin-fullname" value="Admin"><br><br>
-                                <label for="admin-username">Username:</label>
-                                <input type="text" id="admin-username" name="admin-username" value=""><br><br>
-                                <label for="admin-gmail">Full Name:</label>
-                                <input type="text" id="admin-gmail" name="admin-gmail" value=""><br><br>
-                                <label for="admin-password">Password:</label>
-                                <div style="position: relative;">
-                                    <input type="password" id="admin-password" name="admin-password" value="" style="padding-right: 40px;">
-                                    <i class="fas fa-eye" onclick="togglePasswordVisibility()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;"></i>
-                                </div><br><br>
-                            </form>
-                        </div>
-                        <div id="terms-conditions-settings" class="settings-subsection">
-                            <div class="editable-content" id="terms-content">
-                                <div class="view-mode">
-                                    <div class="content-text" id="terms-text" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 20px; background: #fff; border-radius: 8px; color: #333;"></div>
-                                    <button onclick="editContent('terms')" style="margin-top: 10px; background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Edit</button>
-                                </div>
-                                <div class="edit-mode" style="display: none;">
-                                    <textarea id="terms-textarea" rows="20" style="width: 100%; padding: 12px; border: 1px solid #bfc9d9; border-radius: 8px; font-size: 16px; outline: none;"></textarea>
-                                    <button onclick="saveContent('terms')" style="margin-top: 10px; background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Save</button>
-                                    <button onclick="cancelEdit('terms')" style="margin-left: 10px; background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="privacy-policy-settings" class="settings-subsection">
-                            <div class="editable-content" id="privacy-content">
-                                <div class="view-mode">
-                                    <div class="content-text" id="privacy-text" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 20px; background: #fff; border-radius: 8px; color: #333;"></div>
-                                    <button onclick="editContent('privacy')" style="margin-top: 10px; background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Edit</button>
-                                </div>
-                                <div class="edit-mode" style="display: none;">
-                                    <textarea id="privacy-textarea" rows="20" style="width: 100%; padding: 12px; border: 1px solid #bfc9d9; border-radius: 8px; font-size: 16px; outline: none;"></textarea>
-                                    <button onclick="saveContent('privacy')" style="margin-top: 10px; background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Save</button>
-                                    <button onclick="cancelEdit('privacy')" style="margin-left: 10px; background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Cancel</button>
-                                </div>
+                        <div class="uploaded-article">
+                            <h3>${upload.file_name}</h3>
+                            <div class="meta">Type: ${upload.file_type} | Size: ${(upload.file_size / 1024 / 1024).toFixed(2)} MB</div>
+                            <div class="summary">File uploaded and approved</div>
+                            <div class="actions">
+                                <button class="view-pdf-btn" onclick="viewFile('${upload.file_path}')">View</button>
+                                <button class="delete-btn" onclick="deleteUserUpload(${upload.id})">Delete</button>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div id="notifications" class="content-section">
-            <div class="notifications-section">
-                <h3>All Notifications</h3>
-                <div class="notification-controls">
-                    <label><input type="checkbox" id="select-all-notifications"></label>
-                    <button id="mark-selected-read" class="btn btn-info">Mark as Read</button>
-                    <button id="delete-selected" class="btn btn-danger">Delete</button>
-                </div>
-                <div id="all-notifications-list" class="notification-list-section"></div>
-                <div id="pagination-controls" class="pagination-controls" style="display: none; margin-top: 20px; text-align: center;">
-                    <div id="page-numbers" style="display: flex; gap: 5px; justify-content: center;"></div>
-                </div>
-            </div>
-        </div>
-        <div id="helpdesk" class="content-section">
-            <div class="helpdesk-section">
-                <h3>Help Desk</h3>
-                <div class="request-controls">
-                    <label><input type="checkbox" id="select-all-requests"></label>
-                    <button id="mark-selected-read" class="btn btn-info">Mark as Read</button>
-                    <button id="delete-selected" class="btn btn-danger">Delete</button>
-                </div>
-                <div id="all-requests-list" class="request-list-section">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Image</th>
-                                <th>Message</th>
-                            </tr>
-                        </thead>
-                        <tbody id="requests-tbody">
-                            <tr>
-                                <td><img src="370044409_696741882497707_8408055328080058811_n.jpg" alt="Image" style="width:50px; height:50px;"></td>
-                                <td>Sample request message</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div id="profile" class="content-section">
-            <div class="profile-section">
-                <div style="text-align: center; margin-bottom: 30px;">
-                    <div style="width: 150px; height: 150px; border-radius: 50%; background-color: #4CAF50; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 60px; margin: 0 auto 20px;">A</div>
-                    <h2 style="font-size: 36px;">Admin</h2>
-                    <p style="font-size: 16px; color: #666; max-width: 600px; margin: 20px auto;">As the administrator of STI Archives, I oversee the management and maintenance of the platform, ensuring a seamless experience for users. Dedicated to fostering an environment of academic excellence and innovation.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Notification Modal -->
-    <div id="notification-modal" class="notification-modal">
-        <div class="notification-header">
-            <h3>Notifications</h3>
-            <button class="notification-close" onclick="toggleNotificationModal()">&times;</button>
-        </div>
-        <div class="notification-list-bell" id="notification-list">
-            <div class="notification-placeholder">No new notifications.</div>
-        </div>
-        <div class="notification-footer">
-            <div class="left-btns">
-                <button class="view-all-btn" onclick="showNotificationsFromModal()">
-                    <i class="fas fa-list"></i> View All
-                </button>
-                <button class="mark-all-read-btn" onclick="showMarkAllConfirm()">
-                    <i class="fas fa-check"></i> Mark All Read
-                </button>
-            </div>
-        </div>
-    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading user uploads:', error);
+                document.getElementById('user-uploaded-articles').innerHTML = '<p>Error loading uploads</p>';
+            }
+        }
 
-    <!-- Confirmation Modal -->
-    <div id="confirm-modal" class="confirm-modal">
-        <div class="confirm-content">
-            <h3 id="confirm-title">Confirm Action</h3>
-            <p id="confirm-message">Are you sure?</p>
-            <div class="confirm-buttons">
-                <button class="confirm-btn cancel" onclick="hideConfirm()">Cancel</button>
-                <button class="confirm-btn ok" onclick="executeConfirmAction()">OK</button>
-            </div>
-        </div>
-    </div>
-    <!-- Send Update Modal -->
-    <div id="send-update-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeSendUpdateModal()">&times;</span>
-            <h3>Send Update to User</h3>
-            <form id="send-update-form">
-                <label for="update-email">To:</label>
-                <input type="email" id="update-email" readonly required>
-                <label for="update-subject">Subject:</label>
-                <input type="text" id="update-subject" required>
-                <label for="update-message">Message:</label>
-                <textarea id="update-message" rows="5" required></textarea>
-                <button type="button" class="btn" onclick="sendUpdateEmail()">Send Update</button>
-            </form>
-        </div>
-    </div>
-    <!-- Filter Modal -->
-    <div id="filter-modal" class="filter-modal">
-        <div class="filter-modal-content">
-            <div id="filter-modal-content">
-                <!-- Content will be populated by JavaScript -->
-            </div>
-        </div>
-    </div>
-    <!-- Password Change Modal -->
-    <div id="password-change-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closePasswordChangeModal()">&times;</span>
-            <h3>Change Password</h3>
-            <p>Your password was changed 1 month ago.</p>
-            <label for="verification-code">Enter code sent to your Gmail:</label>
-            <input type="text" id="verification-code" required>
-            <button id="get-code-btn" onclick="getVerificationCode()">Get Code</button>
-            <p id="timer">60</p>
-            <button onclick="verifyCode()">Verify</button>
-        </div>
-    </div>
-    <!-- Citation Modal -->
-    <div id="citationModal" class="citation-modal">
-      <div class="citation-modal-content">
-        <div class="citation-modal-header">
-          <h2>Citation Formats</h2>
-          <button class="citation-close" onclick="closeCitationModal()">&times;</button>
-        </div>
-        <div class="citation-format-tabs">
-          <button class="citation-tab active" onclick="switchCitationTab('APA')">APA</button>
-          <button class="citation-tab" onclick="switchCitationTab('MLA')">MLA</button>
-          <button class="citation-tab" onclick="switchCitationTab('Chicago')">Chicago</button>
-          <button class="citation-tab" onclick="switchCitationTab('IEEE')">IEEE</button>
-          <button class="citation-tab" onclick="switchCitationTab('Harvard')">Harvard</button>
-        </div>
-        <div class="citation-content" id="citationContent">
-          APA citation format will appear here.
-        </div>
-        <button class="citation-copy-btn" onclick="copyCitation()">Copy Citation</button>
-      </div>
-    </div>
-    <!-- Create Admin Modal -->
-    <div id="create-admin-modal" class="modal">
-        <div class="modal-content" style="max-height: 600px; overflow-y: auto;">
-            <div style="position: relative; margin-bottom: 20px;">
-                <h3 style="margin: 0;" id="create-user-modal-title">Create New User</h3>
-                <span class="close-modal" onclick="closeCreateAdminModal()" style="position: absolute; right: 0; top: 0; cursor: pointer; font-size: 28px; color: #aaa;">&times;</span>
-            </div>
-            <form id="create-admin-form" onsubmit="return handleCreateAdminSubmit(event)">
-                <!-- Admin Roles Section First -->
-                <label style="font-weight: bold; display: block; margin-bottom: 10px;">Admin Role:</label>
-                 <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                     <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                         <input type="radio" name="admin-role" value="admin" onchange="showAdminInputs()">
-                         <strong>Admin (Full Access)</strong>
-                     </label>
-                     <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                         Complete system control. Create, edit, delete other admin accounts. Full access to all features and settings.
-                     </div>
-                     <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                         <input type="radio" name="admin-role" value="co-admin" onchange="showAdminInputs()">
-                         <strong>Co-Admin (Limited Access)</strong>
-                     </label>
-                     <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                         User & File Management. Approve/reject user registrations. Limited access to features.
-                     </div>
-                     <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                         <input type="radio" name="admin-role" value="sub-admin" onchange="showAdminInputs()">
-                         <strong>Sub-Admin (Approver)</strong>
-                     </label>
-                     <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                         User Approver. Accept/Reject Registrations. Basic access to user management.
-                     </div>
-                 </div>
-                
-                <!-- Hidden Input Fields (shown when role is selected) -->
-                <div id="admin-inputs-container" style="display: none;">
-                    <!-- Stacked/Vertical Input Fields -->
-                    <div style="margin-bottom: 15px;">
-                        <label for="create-admin-fullname" style="display: block; margin-bottom: 5px; font-weight: bold;">Full Name:</label>
-                        <input type="text" id="create-admin-fullname" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <label for="create-admin-email" style="display: block; margin-bottom: 5px; font-weight: bold;">Email:</label>
-                        <input type="email" id="create-admin-email" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <label for="create-admin-password" style="display: block; margin-bottom: 5px; font-weight: bold;">Password:</label>
-                        <div style="position: relative;">
-                            <input type="password" id="create-admin-password" style="width: 100%; padding: 10px; padding-right: 40px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                            <span id="create-admin-password-toggle" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #888; font-size: 14px;" onclick="togglePasswordVisibility()">
-                                <i class="fas fa-eye"></i>
-                            </span>
+        async function loadPendingUploads() {
+            try {
+                const { data, error } = await supabase
+                    .from('pending_uploads')
+                    .select('*')
+                    .eq('status', 'pending')
+                    .order('upload_date', { ascending: false });
+
+                const container = document.getElementById('pending-uploaded-articles');
+                if (error) {
+                    container.innerHTML = '<p>Error loading pending uploads: ' + error.message + '</p>';
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p class="empty-state">No pending uploads.</p>';
+                    return;
+                }
+
+                container.innerHTML = data.map(upload => `
+                    <div class="user-uploaded">
+                        <div class="user-info">
+                            <div class="user-pfp" style="background-color: #FFC107; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                ${upload.user_id.charAt(0).toUpperCase()}
+                            </div>
+                            <div class="user-fullname">${upload.user_id}</div>
+                            <div class="user-meta">${new Date(upload.upload_date).toLocaleDateString()}</div>
+                        </div>
+                        <div class="uploaded-article">
+                            <h3>${upload.file_name}</h3>
+                            <div class="meta">Type: ${upload.file_type} | Size: ${(upload.file_size / 1024 / 1024).toFixed(2)} MB</div>
+                            <div class="summary">Pending approval</div>
+                            <div class="actions">
+                                <button class="view-pdf-btn" onclick="viewFile('${upload.file_path}')">View</button>
+                                <button class="upload-btn" onclick="approveUpload(${upload.id})">Approve</button>
+                                <button class="delete-btn" onclick="rejectUpload(${upload.id})">Reject</button>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div id="grade-section" style="display: none; margin-bottom: 15px;">
-                        <label for="create-admin-grade" style="display: block; margin-bottom: 5px; font-weight: bold;">Grade:</label>
-                        <select id="create-admin-grade" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                            <option value="Grade 11">Grade 11</option>
-                            <option value="Grade 12">Grade 12</option>
-                        </select>
-                    </div>
-                    <div id="section-section" style="display: none; margin-bottom: 15px;">
-                        <label for="create-admin-section" style="display: block; margin-bottom: 5px; font-weight: bold;">Section/Strand/Program:</label>
-                        <input type="text" id="create-admin-section" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                    </div>
-                    <button type="submit" class="btn" id="create-user-btn" style="width: 100%; padding: 12px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Create User</button>
-                </div>
-                <div id="select-role-message" style="text-align: center; padding: 20px; color: #666; font-style: italic;">
-                    Please select an Admin Role above to continue
-                </div>
-            </form>
-        </div>
-    </div>
-    <!-- Add User Modal -->
-    <div id="add-user-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeAddUserModal()">&times;</span>
-            <h3>Add New User</h3>
-            <form id="add-user-form">
-                <label for="add-user-id">User ID:</label>
-                <input type="text" id="add-user-id" required>
-                <label for="add-user-fullname">Full Name:</label>
-                <input type="text" id="add-user-fullname" required>
-                <label for="add-user-email">School Email:</label>
-                <input type="email" id="add-user-email" required>
-                <label for="add-user-personal-email">Personal Email:</label>
-                <input type="email" id="add-user-personal-email" required>
-                <label for="add-user-password">Password:</label>
-                <input type="password" id="add-user-password" required>
-                <label for="add-user-role">Role:</label>
-                <select id="add-user-role" required>
-                    <option value="senior_high">Senior High</option>
-                    <option value="college">College</option>
-                    <option value="teacher">Teacher</option>
-                    <option value="educator">Educator</option>
-                </select>
-                <div id="add-user-grade-section" style="display: none;">
-                    <label for="add-user-grade">Grade:</label>
-                    <select id="add-user-grade">
-                        <option value="Grade 11">Grade 11</option>
-                        <option value="Grade 12">Grade 12</option>
-                    </select>
-                </div>
-                <label for="add-user-section">Section/Strand:</label>
-                <input type="text" id="add-user-section" required>
-                <button type="submit" class="btn">Add User</button>
-            </form>
-        </div>
-    </div>
-    <!-- Edit User Modal -->
-    <div id="edit-user-modal" class="modal">
-        <div class="modal-content">
-            <div style="position: relative; margin-bottom: 20px;">
-                <h3 style="margin: 0;">Edit User</h3>
-                <span class="close-modal" onclick="closeEditUserModal()" style="position: absolute; right: 0; top: 0; cursor: pointer; font-size: 28px; color: #aaa;">&times;</span>
-            </div>
-            <form id="edit-user-form">
-                <!-- Stacked Input Fields -->
-                <div style="margin-bottom: 15px;">
-                    <label for="edit-user-id" style="display: block; margin-bottom: 5px; font-weight: bold;">ID:</label>
-                    <input type="text" id="edit-user-id" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                </div>
-                
-                <div style="margin-bottom: 15px;">
-                    <label for="edit-user-fullname" style="display: block; margin-bottom: 5px; font-weight: bold;">Full Name:</label>
-                    <input type="text" id="edit-user-fullname" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" required>
-                </div>
-                
-                <div style="margin-bottom: 15px;">
-                    <label for="edit-user-email" style="display: block; margin-bottom: 5px; font-weight: bold;">Email:</label>
-                    <input type="email" id="edit-user-email" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-                </div>
-                
-                <!-- Admin Roles Section -->
-                <div id="edit-admin-roles-section" style="margin-bottom: 15px;">
-                    <label style="font-weight: bold; display: block; margin-bottom: 10px;">Admin Role:</label>
-                    <div style="display: flex; flex-direction: column; gap: 10px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                        <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                            <input type="radio" name="edit-admin-role" value="admin"> 
-                            <strong>Admin (Full Access)</strong>
-                        </label>
-                        <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                            Complete system control. Create, edit, delete other admin accounts.
-                        </div>
-                        <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                            <input type="radio" name="edit-admin-role" value="coadmin"> 
-                            <strong>Co-Admin (Limited Access)</strong>
-                        </label>
-                        <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                            User management and file oversight. Cannot view other admins.
-                        </div>
-                        <label style="cursor: pointer; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                            <input type="radio" name="edit-admin-role" value="subadmin">
-                            <strong>Sub-Admin (User Approver)</strong>
-                        </label>
-                        <div style="margin-left: 24px; font-size: 12px; color: #666; padding: 5px 0;">
-                            Accept or reject user registrations. Manage pending user accounts.
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Regular user fields (for non-admin roles) -->
-                <div id="edit-regular-user-fields" style="display: none;">
-                    <label for="edit-user-role">Role:</label>
-                    <select id="edit-user-role" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 15px;">
-                        <option value="senior_high">Senior High</option>
-                        <option value="college">College</option>
-                        <option value="teacher">Teacher</option>
-                    </select>
-                    <label for="edit-user-section">Section/Strand:</label>
-                    <input type="text" id="edit-user-section" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-                </div>
-                
-                <button type="submit" class="btn" style="width: 100%; padding: 12px; background: #0057b8; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Save</button>
-                <button type="button" onclick="closeEditUserModal()" class="btn" style="width: 100%; padding: 12px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px;">Cancel</button>
-            </form>
-        </div>
-    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading pending uploads:', error);
+                document.getElementById('pending-uploaded-articles').innerHTML = '<p>Error loading pending uploads</p>';
+            }
+        }
 
-    <!-- Retry build after rate limit failure -->
+        async function approveUpload(uploadId) {
+            try {
+                // Get upload details
+                const { data: upload, error: fetchError } = await supabase
+                    .from('pending_uploads')
+                    .select('*')
+                    .eq('id', uploadId)
+                    .single();
 
+                if (fetchError) throw fetchError;
 
-    <script src="/frontend/assets/js/pdf-viewer.js"></script>
-    <script src="admin.js"></script>
+                // Move to approved_uploads
+                const { error: insertError } = await supabase
+                    .from('approved_uploads')
+                    .insert({
+                        user_id: upload.user_id,
+                        file_name: upload.file_name,
+                        file_path: upload.file_path,
+                        file_type: upload.file_type,
+                        file_size: upload.file_size,
+                        upload_date: upload.upload_date,
+                        approved_date: new Date().toISOString(),
+                        approved_by: 'admin' // Replace with actual admin ID
+                    });
 
+                if (insertError) throw insertError;
 
+                // Delete from pending
+                const { error: deleteError } = await supabase
+                    .from('pending_uploads')
+                    .delete()
+                    .eq('id', uploadId);
 
+                if (deleteError) throw deleteError;
+
+                alert('Upload approved successfully!');
+                loadPendingUploads();
+                loadUserUploads(); // Refresh approved list
+            } catch (error) {
+                console.error('Error approving upload:', error);
+                alert('Error approving upload: ' + error.message);
+            }
+        }
+
+        async function rejectUpload(uploadId) {
+            try {
+                // Delete from storage
+                const { data: upload } = await supabase
+                    .from('pending_uploads')
+                    .select('file_path')
+                    .eq('id', uploadId)
+                    .single();
+
+                if (upload) {
+                    await supabase.storage
+                        .from('uploads')
+                        .remove([upload.file_path]);
+                }
+
+                // Delete from pending
+                const { error } = await supabase
+                    .from('pending_uploads')
+                    .delete()
+                    .eq('id', uploadId);
+
+                if (error) throw error;
+
+                alert('Upload rejected and deleted.');
+                loadPendingUploads();
+            } catch (error) {
+                console.error('Error rejecting upload:', error);
+                alert('Error rejecting upload: ' + error.message);
+            }
+        }
+
+        async function deleteUserUpload(uploadId) {
+            try {
+                // Delete from storage
+                const { data: upload } = await supabase
+                    .from('approved_uploads')
+                    .select('file_path')
+                    .eq('id', uploadId)
+                    .single();
+
+                if (upload) {
+                    await supabase.storage
+                        .from('uploads')
+                        .remove([upload.file_path]);
+                }
+
+                // Delete from approved
+                const { error } = await supabase
+                    .from('approved_uploads')
+                    .delete()
+                    .eq('id', uploadId);
+
+                if (error) throw error;
+
+                alert('Upload deleted successfully.');
+                loadUserUploads();
+            } catch (error) {
+                console.error('Error deleting upload:', error);
+                alert('Error deleting upload: ' + error.message);
+            }
+        }
+
+        async function viewFile(filePath) {
+            try {
+                const { data, error } = await supabase.storage
+                    .from('uploads')
+                    .getPublicUrl(filePath);
+
+                if (error) throw error;
+
+                window.open(data.publicUrl, '_blank');
+            } catch (error) {
+                console.error('Error viewing file:', error);
+                alert('Error opening file: ' + error.message);
+            }
+        }
+    </script>
 </body>
 </html>
         

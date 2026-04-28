@@ -2379,12 +2379,7 @@ document.getElementById('verified-users-count').textContent = usersCount;
 document.getElementById('admin-users-count').textContent = adminCount;
 document.getElementById('signing-up-users-count').textContent = signingUpCount;
 
-// Update pending requests badge
-const pendingBadge = document.getElementById('pending-requests-badge');
-if (pendingBadge) {
-pendingBadge.textContent = signingUpCount;
-pendingBadge.style.display = signingUpCount > 0 ? 'flex' : 'none';
-}
+
 
 // Restore checkbox states after re-rendering
 Object.keys(savedCheckboxStates).forEach(userId => {

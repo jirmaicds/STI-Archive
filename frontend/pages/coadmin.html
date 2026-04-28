@@ -420,41 +420,8 @@
             pointer-events: none;
             display: none;
         }
-        .pending-requests-btn {
-            position: relative;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #FFA500;
-            padding: 8px;
-            border-radius: 50%;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 5px;
-        }
-        .pending-requests-btn i {
-            font-size: 20px;
-        }
-        .pending-requests-btn:hover {
-            background-color: #f0f0f0;
-        }
-        .pending-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: #ffc107;
-            color: #333;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
+
+
         .dark-mode-toggle {
             background: none;
             border: none;
@@ -473,19 +440,7 @@
         .dark-mode-toggle:hover {
             background-color: #f0f0f0;
         }
-        .profile-dropdown {
-            position: relative;
-        }
-        .profile-btn {
-            display: flex;
-            align-items: center;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 20px;
-            transition: background-color 0.3s;
-        }
+
         .profile-avatar {
             width: 32px;
             height: 32px;
@@ -498,20 +453,7 @@
             font-weight: bold;
             margin-right: 8px;
         }
-        .profile-menu {
-            display: none;
-            position: absolute;
-            top:100%;
-            right: 0;
-            background-color: white;
-            min-width: 180px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            border-radius: 8px;
-            z-index: 1001;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+
         .sidebar-profile-menu {
             display: none;
             position: absolute;
@@ -546,47 +488,8 @@
         .sidebar-profile-menu li a:hover {
             color: #ffd700;
         }
-        .profile-dropdown.open .profile-menu {
-            display: block;
-        }
-        .profile-menu li {
-            padding: 10px 15px;
-        }
-        .profile-menu a {
-            color: #333;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: background-color 0.3s;
-        }
-        .profile-menu a:hover {
-            background-color: #f0f0f0;
-        }
-        .profile-menu .logout-item {
-            border-top: 1px solid #eee;
-            color: #ff4444;
-        }
-        .profile-menu .logout-item:hover {
-            background-color: #ffebee;
-        }
-        body.dark-mode .profile-menu {
-            background-color: #2d2d2d;
-            color: #ffffff;
-        }
-        body.dark-mode .profile-menu a {
-            color: white;
-        }
-        body.dark-mode .profile-menu a:hover {
-            background-color: #3d3d3d;
-        }
-        body.dark-mode .profile-menu .logout-item {
-            border-top-color: #444;
-            color: #ff4444;
-        }
-        body.dark-mode .profile-menu .logout-item:hover {
-            background-color: #4d2d2d;
-        }
+
+
         body.dark-mode .sidebar-profile-menu {
             background-color: #0f1a41;
         }
@@ -646,13 +549,8 @@
             color: #ccc;
         }
         body.dark-mode .notification-bell:hover,
-        body.dark-mode .dark-mode-toggle:hover,
-        body.dark-mode .profile-btn:hover {
+        body.dark-mode .dark-mode-toggle:hover {
             background-color: #3d3d3d;
-        }
-        body.dark-mode .users-nav {
-            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%) !important;
-            border-bottom-color: #667eea !important;
         }
         body.dark-mode .nav-btn {
             background-color: #3d3d3d;
@@ -697,9 +595,7 @@
             color: #ffffff;
             border-color: #555;
         }
-        body.dark-mode .profile-btn span {
-            color: white;
-        }
+
         body.dark-mode .graphs-section h2 {
             color: white;
         }
@@ -3371,25 +3267,11 @@
                     <i class="fas fa-bell"></i>
                     <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
                 </div>
-                <div class="pending-requests-btn" onclick="showPendingRequests()">
-                    <i class="fas fa-clock"></i>
-                    <span class="pending-badge" id="pending-badge">0</span>
-                </div>
+
                 <div class="dark-mode-toggle" onclick="toggleDarkMode()">
                     <i class="fas fa-moon"></i>
                 </div>
-                <div class="profile-dropdown">
-                    <button class="profile-btn" onclick="toggleProfileMenu()">
-                        <div class="profile-avatar">A</div>
-                        <span>Admin</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="profile-menu" id="profile-menu">
-                        <a href="#" onclick="handleLogoutClick()">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </a>
-                    </div>
-                </div>
+
             </div>
         </div>
 

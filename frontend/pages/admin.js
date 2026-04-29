@@ -982,7 +982,7 @@ document.getElementById('signing-up-users-tbody').innerHTML += row;
 }
 
 function formatRole(role) {
-if (role === 'senior_high') return 'SHS';
+if (role === 'senior_high') return 'Senior High';
 if (role === 'college') return 'College';
 if (role === 'admin') return 'Admin';
 if (role === 'coadmin') return 'CO-Admin';

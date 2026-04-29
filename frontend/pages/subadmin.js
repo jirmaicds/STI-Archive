@@ -1076,6 +1076,21 @@
             });
         }
 
+        let sectionTemplates = {};
+
+        // === SETTINGS FUNCTIONS ===
+        function showSettingsSection(section) {
+            document.querySelectorAll('.settings-subsection').forEach(sub => sub.classList.remove('active'));
+            document.getElementById(section + '-settings').classList.add('active');
+
+            // Update sidebar active color
+            const sections = ['account', 'terms-conditions', 'privacy-policy'];
+            const index = sections.indexOf(section);
+            document.querySelectorAll('.settings-sidebar li').forEach((li, i) => {
+            li.style.color = i === index ? '#007bff' : '';
+            });
+        }
+
         // === INIT ===
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('Subadmin page DOMContentLoaded fired');
@@ -1203,14 +1218,11 @@
                     // Add active class to clicked item
                     this.parentElement.classList.add('active');
 
-                    // Hide all sections
-                    contentSections.forEach(section => section.classList.remove('active'));
-
-                    // Show selected section
+                    // Inject selected section
                     const sectionId = this.getAttribute('data-section');
-                    const targetSection = document.getElementById(sectionId);
-                    if (targetSection) {
-                        targetSection.classList.add('active');
+                    const mainContent = document.getElementById('main-content');
+                    if (mainContent && sectionTemplates[sectionId]) {
+                        mainContent.innerHTML = sectionTemplates[sectionId];
                         // Special handling for notifications section
                         if (sectionId === 'notifications') {
                             loadAllNotifications();
@@ -1242,9 +1254,15 @@
                 });
             });
 
-            // Set default active section (dashboard)
-            const dashboardLink = document.querySelector('.sidebar ul li a[data-section="dashboard"]');
-            if (dashboardLink) {
-                dashboardLink.click();
+            // Store section templates
+            document.querySelectorAll('.content-section').forEach(section => {
+                sectionTemplates[section.id] = section.innerHTML;
+                section.remove();
+            });
+
+            // Show initial dashboard
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.innerHTML = sectionTemplates['dashboard'];
             }
         }

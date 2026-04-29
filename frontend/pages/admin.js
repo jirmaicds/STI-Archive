@@ -374,7 +374,7 @@ document.querySelectorAll('.settings-subsection').forEach(sub => sub.classList.r
 document.getElementById(section + '-settings').classList.add('active');
 
 // Update sidebar active color
-const sections = ['general', 'account', 'terms-conditions', 'privacy-policy'];
+const sections = ['account', 'terms-conditions', 'privacy-policy'];
 const index = sections.indexOf(section);
 document.querySelectorAll('.settings-sidebar li').forEach((li, i) => {
 li.style.color = i === index ? '#007bff' : '';
@@ -1539,22 +1539,7 @@ if (DEBUG) console.log('Updated icon to sun');
 await loadArticlesFromServer();
 // Load user uploads for admin
 // loadUserUploadsForAdmin(); // Commented out to prevent network error if API not available
-// Load settings
-const savedSettings = JSON.parse(localStorage.getItem('adminSettings')) || {};
-document.getElementById('site-title').value = savedSettings.siteTitle || 'STI Archives';
-// Update title preview on load
-updateTitlePreview();
-// Update favicon preview on load
-if (savedSettings.siteLogo) {
-updateFaviconPreview(savedSettings.siteLogo);
-}
-// Load logo if exists
-if (savedSettings.siteLogo) {
-const sidebarImg = document.querySelector('.sidebar-header img');
-sidebarImg.src = savedSettings.siteLogo;
-// Update favicon
-updateFavicon(savedSettings.siteLogo);
-}
+
 // Load account settings
 const accountSettings = JSON.parse(localStorage.getItem('accountSettings')) || {};
 document.getElementById('admin-fullname').value = accountSettings.fullname || 'Admin';
@@ -1910,71 +1895,9 @@ avatarElement.style.backgroundImage = '';
 }
 alert('Account settings saved!');
 });
-// Function to show save button when inputs change
-function showSaveButton() {
-document.getElementById('save-settings-btn').style.display = 'block';
-}
 
-// Function to update title preview
-function updateTitlePreview() {
-const siteTitle = document.getElementById('site-title').value || 'STI Archives';
-document.getElementById('site-title-preview').textContent = siteTitle;
-}
 
-// Function to update favicon preview
-function updateFaviconPreview(logoSrc) {
-const faviconImg = document.getElementById('favicon-preview');
-if (logoSrc) {
-faviconImg.src = logoSrc;
-}
-}
 
-// Add event listeners to inputs
-document.getElementById('site-title').addEventListener('input', function() {
-showSaveButton();
-updateTitlePreview();
-});
-document.getElementById('site-favicon').addEventListener('change', function(e) {
-showSaveButton();
-const file = e.target.files[0];
-if (file) {
-const reader = new FileReader();
-reader.onload = function(e) {
-updateFaviconPreview(e.target.result);
-};
-reader.readAsDataURL(file);
-}
-});
-
-// Settings form
-document.getElementById('settings-form').addEventListener('submit', function(e) {
-e.preventDefault();
-const faviconFile = document.getElementById('site-favicon').files[0];
-const settings = {
-siteTitle: document.getElementById('site-title').value,
-siteFavicon: faviconFile ? URL.createObjectURL(faviconFile) : null
-};
-localStorage.setItem('adminSettings', JSON.stringify(settings));
-
-// Update page title immediately
-document.title = 'Admin Panel | ' + settings.siteTitle;
-
-// Update favicon if provided
-if (settings.siteFavicon) {
-const faviconLink = document.querySelector('link[rel="icon"]');
-if (faviconLink) {
-// Add timestamp to force browser refresh
-faviconLink.href = settings.siteFavicon + '?t=' + Date.now();
-}
-// Update preview favicon
-updateFaviconPreview(settings.siteFavicon);
-}
-
-// Hide save button after saving
-document.getElementById('save-settings-btn').style.display = 'none';
-
-alert('Settings saved!');
-});
 // Initialize - always default to dashboard on fresh page load
 // Clear any saved section to ensure we start fresh
 localStorage.removeItem('adminCurrentSection');
@@ -4906,14 +4829,7 @@ const href = faviconSrc.startsWith('data:') ? faviconSrc : faviconSrc + '?v=1';
 faviconLink.href = href;
 }
 
-function updateFavicon(logoSrc) {
-updateDocumentFavicon(logoSrc);
-// Keep sidebar logo as STI Logo.png
-const sidebarImg = document.querySelector('.sidebar-header img');
-if (sidebarImg) {
-sidebarImg.src = 'STI Logo.png';
-}
-}
+
 
 // Current filter states
 let currentFilters = {

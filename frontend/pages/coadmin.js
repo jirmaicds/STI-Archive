@@ -310,6 +310,20 @@
         let currentUser = null;
         let isLoadingUsers = false;
         let users = [];
+        let sectionTemplates = {};
+
+        // === SETTINGS FUNCTIONS ===
+        function showSettingsSection(section) {
+            document.querySelectorAll('.settings-subsection').forEach(sub => sub.classList.remove('active'));
+            document.getElementById(section + '-settings').classList.add('active');
+
+            // Update sidebar active color
+            const sections = ['account', 'terms-conditions', 'privacy-policy'];
+            const index = sections.indexOf(section);
+            document.querySelectorAll('.settings-sidebar li').forEach((li, i) => {
+            li.style.color = i === index ? '#007bff' : '';
+            });
+        }
 
         function generateNotifications(users) {
             if (!Array.isArray(users)) users = [];
@@ -1565,14 +1579,11 @@
                     // Add active class to clicked item
                     this.parentElement.classList.add('active');
 
-                    // Hide all sections
-                    contentSections.forEach(section => section.classList.remove('active'));
-
-                    // Show selected section
+                    // Inject selected section
                     const sectionId = this.getAttribute('data-section');
-                    const targetSection = document.getElementById(sectionId);
-                    if (targetSection) {
-                        targetSection.classList.add('active');
+                    const mainContent = document.getElementById('main-content');
+                    if (mainContent && sectionTemplates[sectionId]) {
+                        mainContent.innerHTML = sectionTemplates[sectionId];
                         // Special handling for notifications section
                         if (sectionId === 'notifications') {
                             loadAllNotifications();
@@ -2064,5 +2075,17 @@
                         checkbox.checked = this.checked;
                     });
                 });
+            }
+
+            // Store section templates
+            document.querySelectorAll('.content-section').forEach(section => {
+                sectionTemplates[section.id] = section.innerHTML;
+                section.remove();
+            });
+
+            // Show initial dashboard
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.innerHTML = sectionTemplates['dashboard'];
             }
         });

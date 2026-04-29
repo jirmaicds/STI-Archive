@@ -2840,17 +2840,14 @@ alert('Error: Section "' + sectionId + '" not found');
 return;
 }
 
-// Remove active class and hide ALL content sections
-document.querySelectorAll('.content-section').forEach(s => {
-s.classList.remove('active');
-s.style.display = 'none'; // Force hide
-if (DEBUG) console.log('DEBUG: Removed active from:', s.id);
-});
+const mainContent = document.getElementById('main-content');
+if (!mainContent) {
+console.error('Main content not found');
+return;
+}
 
-// Add active class to target section and show it
-targetSection.classList.add('active');
-targetSection.style.display = 'block'; // Force show
-if (DEBUG) console.log('DEBUG: Added active to:', sectionId);
+// Inject the section's HTML into main-content
+mainContent.innerHTML = targetSection.innerHTML;
 
 // Special handling for notifications section
 if (sectionId === 'notifications') {
@@ -2889,6 +2886,7 @@ renderGaugeChart('session-duration-gauge', 'Average Session Duration', 2.5, '#00
 }
 
 // Add event listeners for sidebar navigation
+document.addEventListener('DOMContentLoaded', function() {
 document.querySelectorAll('.sidebar a[data-section]').forEach(link => {
 link.addEventListener('click', function(event) {
 event.preventDefault();
@@ -2896,15 +2894,18 @@ const section = this.getAttribute('data-section');
 handleSidebarClick(event, section);
 });
 });
+});
 
 // Add event listener for profile avatar
+document.addEventListener('DOMContentLoaded', function() {
 const avatarRow = document.querySelector('.avatar-name-row[data-section]');
 if (avatarRow) {
-avatarRow.addEventListener('click', function() {
+avatarRow.addEventListener('click', function(event) {
 const section = this.getAttribute('data-section');
-showSection(section);
+handleSidebarClick(event, section);
 });
 }
+});
 
 function toggleProfileDropdown() {
 const dropdown = document.getElementById('profile-dropdown');

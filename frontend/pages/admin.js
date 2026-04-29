@@ -2149,16 +2149,24 @@ const filteredUsers = (users || []).filter(user => !removedUsers.includes(user.i
 if (DEBUG) console.log('DEBUG: filteredUsers count:', filteredUsers.length);
 // Set global users
 window.users = filteredUsers; // Or assign to global users
-// Map fields for display - handle all field variations
-filteredUsers.forEach(user => {
-// Handle grade field variations
-user.grade = (user.grade && user.grade !== 'null' && user.grade !== 'undefined') ? user.grade : (user.Grade || user.year_level || '-');
+ // Map fields for display - handle all field variations
+ filteredUsers.forEach(user => {
+ // Handle grade field variations
+ user.grade = (user.grade && user.grade !== 'null' && user.grade !== 'undefined') ? user.grade : (user.Grade || user.year_level || '-');
 
-// Sec_Degr contains:
-// - For SHS: strand values (ABM, ITMAWD, STEM)
-// - For College: degree values (BSBA, BSCS, BSIT)
-user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
-});
+ // Sec_Degr contains:
+ // - For SHS: strand values (ABM, ITMAWD, STEM)
+ // - For College: degree values (BSBA, BSCS, BSIT)
+ user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
+
+ // Set appropriate display values based on role
+ if (user.role !== 'senior_high') {
+   user.grade = user.grade || 'N/A';
+ }
+ if (user.role === 'educator') {
+   user.Sec_Degr = user.Sec_Degr || 'N/A';
+ }
+ });
 // Clear all tbodys
 document.querySelectorAll('#users tbody').forEach(tbody => tbody.innerHTML = '');
 let signingUpUsers = [];

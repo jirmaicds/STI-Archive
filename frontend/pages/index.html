@@ -3315,13 +3315,8 @@ window.supabaseHelpers = {
                 }
             }
 
-            // Create combined Sec_Degr value
-            let secDegrValue;
-            if (role === 'senior_high') {
-                secDegrValue = grade && section ? `${grade} - ${section}` : (section || grade || null);
-            } else {
-                secDegrValue = section;
-            }
+            // Set Sec_Degr value: for senior high show strand, for college show degree
+            let secDegrValue = section;
 
             // Create newUser object
             const newUser = {

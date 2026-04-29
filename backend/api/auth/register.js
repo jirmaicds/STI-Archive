@@ -138,15 +138,15 @@ async function handleRegister(req, res) {
       email: email.toLowerCase(),
       password: hashedPassword,
       fullname: fullname,
-      role: userRole,
-           user_type: 'user',
+      role: 'user',  // Standard role for permissions
+      user_type: userRole,  // Specific user category
       verified: isAdminRole,  // Admin roles are verified immediately
       isactive: isAdminRole,  // Admin roles are active immediately
       new_user: !isAdminRole,  // Regular users are new users initially
       rejected_user: false,   // No one starts as rejected
       banned_user: false,     // No one starts as banned
-        grade: grade || null,
-        Sec_Degr: Sec_Degr || section_degree || section || null,
+      grade: grade || null,
+      Sec_Degr: Sec_Degr || section_degree || section || null,
       registration_assessment_form: null,
       educator_id: null,
       activation_token: activationToken,
@@ -302,7 +302,7 @@ async function handleLogin(req, res) {
       // Check if user is active
       // Allow login for active users or admin/coadmin/subadmin roles
       console.log('User active check:', { isactive: user.isactive, user_type: user.user_type, role: user.role });
-      const isAdminRole = user.role === 'admin' || user.role === 'coadmin' || user.role === 'subadmin';
+      const isAdminRole = user.user_type === 'admin' || user.user_type === 'coadmin' || user.user_type === 'subadmin';
       if (!user.isactive && !isAdminRole) {
         console.log('User not active and not admin role - blocking login');
         res.statusCode = 403;

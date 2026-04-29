@@ -159,8 +159,7 @@ async function handleGetUsers(req, res) {
 
         return {
           ...user,
-          role: role,
-          grade: processedGrade
+          role: user.user_type !== 'user' ? user.user_type : user.role
         };
       });
 

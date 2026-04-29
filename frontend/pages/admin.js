@@ -989,6 +989,8 @@ if (role === 'coadmin') return 'CO-Admin';
 if (role === 'subadmin') return 'SUB-Admin';
 if (role === 'tester') return 'Tester';
 if (role === 'educator') return 'Educator';
+if (role === 'rejected') return 'Rejected';
+if (role === 'banned') return 'Banned';
 return role; // Default to the original role if not matched
 }
 function getSectionDisplay(user) {

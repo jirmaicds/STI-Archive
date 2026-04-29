@@ -430,7 +430,7 @@
                 // Sec_Degr contains:
                 // - For SHS: strand values (ABM, ITMAWD, STEM)
                 // - For College: degree values (BSBA, BSCS, BSIT)
-                user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
+                user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || user.program || '-';
 
                 // Resolve descriptive role name for the table column
                 const typeSlug = (user.user_type || '').toLowerCase();
@@ -438,6 +438,14 @@
                 if (typeSlug === 'senior_high' || roleVal === 'senior_high' || roleVal === 'shs') user.role = 'Senior High';
                 else if (typeSlug === 'college' || roleVal === 'college') user.role = 'College';
                 else if (typeSlug === 'educator' || roleVal === 'educator') user.role = 'Educator';
+
+                // Set fallback values (Fixed case-sensitivity)
+                if (user.role !== 'Senior High' && user.role !== 'College') {
+                    user.grade = (user.grade && user.grade !== '-') ? user.grade : 'N/A';
+                }
+                if (user.role === 'Educator') {
+                    user.Sec_Degr = (user.Sec_Degr && user.Sec_Degr !== '-') ? user.Sec_Degr : 'N/A';
+                }
             });
 
             // Set global users

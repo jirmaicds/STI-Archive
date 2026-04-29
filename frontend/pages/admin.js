@@ -2161,7 +2161,7 @@ window.users = filteredUsers; // Or assign to global users
   // Sec_Degr contains:
   // - For SHS: strand values (ABM, ITMAWD, STEM)
   // - For College: degree values (BSBA, BSCS, BSIT)
-  user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
+ user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || user.program || '-';
 
                 // Resolve descriptive role name for the table column
                 const typeSlug = (user.user_type || '').toLowerCase();
@@ -2170,15 +2170,18 @@ window.users = filteredUsers; // Or assign to global users
                 if (typeSlug === 'senior_high' || roleVal === 'senior_high' || roleVal === 'shs') user.role = 'Senior High';
                 else if (typeSlug === 'college' || roleVal === 'college') user.role = 'College';
                 else if (typeSlug === 'educator' || roleVal === 'educator') user.role = 'Educator';
+                else if (roleVal === 'admin' || roleVal === 'coadmin' || roleVal === 'subadmin') {
+                    user.role = roleVal.charAt(0).toUpperCase() + roleVal.slice(1);
+                }
                 else if (user.role === 'user' || !user.role) user.role = user.user_type || 'User';
 
-                // Set appropriate display values based on resolved role
- if (user.role !== 'senior_high') {
-   user.grade = user.grade || 'N/A';
- }
- if (user.role === 'educator') {
-   user.Sec_Degr = user.Sec_Degr || 'N/A';
- }
+                // Set appropriate display values based on resolved role (Fixed case-sensitivity mismatch)
+                if (user.role !== 'Senior High' && user.role !== 'College') {
+                    user.grade = (user.grade && user.grade !== '-') ? user.grade : 'N/A';
+                }
+                if (user.role === 'Educator') {
+                    user.Sec_Degr = (user.Sec_Degr && user.Sec_Degr !== '-') ? user.Sec_Degr : 'N/A';
+                }
  });
 // Clear all tbodys
 document.querySelectorAll('#users tbody').forEach(tbody => tbody.innerHTML = '');
@@ -2268,7 +2271,7 @@ tbody.innerHTML += rowWithEmail;
 // status - check admin role first (case-insensitive)
 const roleLower = (user.role || '').toLowerCase();
 if (DEBUG) console.log('DEBUG: User role check:', user.fullname, 'role:', user.role, 'roleLower:', roleLower, 'user_type:', user.user_type, 'verified:', user.verified);
-const isAdminRole = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || roleLower === 'Admin' || roleLower === 'Co-Admin' || roleLower === 'Sub-Admin';
+const isAdminRole = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin';
 const isAdminByName = user.fullname && user.fullname.toLowerCase().includes('admin');
 if (DEBUG) console.log('DEBUG: isAdminRole:', isAdminRole, 'isAdminByName:', isAdminByName);
 if (DEBUG) console.log('DEBUG: isAdminRole (based on user.role):', isAdminRole, 'isAdminByName:', isAdminByName, 'user.user_type:', user.user_type);

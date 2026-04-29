@@ -431,12 +431,14 @@
             // Map fields for display - handle all field variations
             filteredUsers.forEach(user => {
                 // Handle grade field variations
-                user.grade = user.grade || user.Grade || user.year_level || '-';
+                user.grade = user.grade || user.Grade || user.year_level || user.grade_level || '-';
+                if (String(user.grade).toLowerCase() === 'null' || String(user.grade).toLowerCase() === 'undefined') user.grade = '-';
 
                 // Sec_Degr contains:
                 // - For SHS: strand values (ABM, ITMAWD, STEM)
                 // - For College: degree values (BSBA, BSCS, BSIT)
-                user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || user.program || '-';
+                user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || user.program || user.str_degr || '-';
+                if (String(user.Sec_Degr).toLowerCase() === 'null' || String(user.Sec_Degr).toLowerCase() === 'undefined') user.Sec_Degr = '-';
 
                 // Resolve descriptive role name for the table column
                 const typeSlug = (user.user_type || '').toLowerCase();
@@ -444,13 +446,22 @@
                 if (typeSlug === 'senior_high' || roleVal === 'senior_high' || roleVal === 'shs') user.role = 'Senior High';
                 else if (typeSlug === 'college' || roleVal === 'college') user.role = 'College';
                 else if (typeSlug === 'educator' || roleVal === 'educator') user.role = 'Educator';
-
-                // Set fallback values (Fixed case-sensitivity)
-                if (user.role !== 'Senior High' && user.role !== 'College') {
-                    user.grade = (user.grade && user.grade !== '-') ? user.grade : 'N/A';
+                else if (roleVal === 'admin' || roleVal === 'coadmin' || roleVal === 'subadmin') {
+                    user.role = roleVal.charAt(0).toUpperCase() + roleVal.slice(1);
                 }
-                if (user.role === 'Educator') {
-                    user.Sec_Degr = (user.Sec_Degr && user.Sec_Degr !== '-') ? user.Sec_Degr : 'N/A';
+                else if (user.role === 'user' || !user.role) user.role = user.user_type || 'User';
+
+                // Set appropriate display values for Grade based on resolved role
+                if (user.role === 'Senior High') {
+                    user.grade = (user.grade && user.grade !== '-' && user.grade !== 'N/A') ? user.grade : '-';
+                } else {
+                    user.grade = 'N/A'; // College, Educator, Admin, etc.
+                }
+                // Set appropriate display values for Sec_Degr based on resolved role
+                if (user.role === 'Educator' || user.role === 'Admin' || user.role === 'Co-Admin' || user.role === 'Sub-Admin') {
+                    user.Sec_Degr = 'N/A';
+                } else {
+                    user.Sec_Degr = (user.Sec_Degr && user.Sec_Degr !== '-' && user.Sec_Degr !== 'N/A') ? user.Sec_Degr : '-';
                 }
             });
 
@@ -491,6 +502,8 @@
                     <td>${formatRole(user.role)}</td>
                     <td>${user.grade || user.Grade || user.year_level || '-'}</td>
                     <td>${user.Sec_Degr || '-'}</td>
+                    <td>${user.grade}</td>
+                    <td>${user.Sec_Degr}</td>
                     <td>${date}</td>
                     <td>${rafEduIdCell}</td>
                     <td>${actions}</td>

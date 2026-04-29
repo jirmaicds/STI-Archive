@@ -2220,8 +2220,8 @@ const rowWithEmail = `<tr>
 <td>${getUserName(user)}</td>
 <td>${emailToUse}</td>
 <td>${formatRole(user.role)}</td>
-<td>${user.grade || '-'}</td>
-<td>${user.Sec_Degr || '-'}</td>
+<td>${user.grade}</td>
+<td>${user.Sec_Degr}</td>
 <td>${date}</td>
 <td>
 <div style="display: flex; align-items: center; gap: 5px;">
@@ -2237,8 +2237,8 @@ const rowWithoutEmail = `<tr>
 <td>${user.name}</td>
 <td>${emailToUse}</td>
 <td>${formatRole(user.role)}</td>
-<td>${user.grade || '-'}</td>
-<td>${user.Sec_Degr || '-'}</td>
+<td>${user.grade}</td>
+<td>${user.Sec_Degr}</td>
 <td>${date}</td>
 <td>${getStatus(user)}</td>
 <td>
@@ -2348,8 +2348,8 @@ const row = `<tr>
 <td>${emailToUse}</td>
 <td>${formatRole(user.role)}</td>
 
-<td>${user.grade || '-'}</td>
-<td>${user.Sec_Degr || '-'}</td>
+<td>${user.grade}</td>
+<td>${user.Sec_Degr}</td>
 <td>${date}</td>
 <td>${getStatus(user)}</td>
 <td>

@@ -304,6 +304,7 @@
             }
         }// === GLOBAL VARIABLES ===
 let currentPeriod = '';
+let sectionTemplates = {};
 
 // === GLOBAL FUNCTIONS ===
 // Moved outside DOMContentLoaded to ensure availability on page load
@@ -1725,6 +1726,15 @@ document.querySelector('.admin-name').innerHTML = `<span class="a-prefix">${init
 document.querySelector('.profile-avatar').textContent = initial;
 }
 
+// Store section templates and remove from DOM
+document.querySelectorAll('.content-section').forEach(section => {
+sectionTemplates[section.id] = section.innerHTML;
+section.remove();
+});
+
+// Show initial dashboard
+showSection('dashboard');
+
 // Populate notification modal
 const notificationList = document.getElementById('notification-list');
 if (notificationList) {
@@ -2832,22 +2842,21 @@ function showSection(sectionId) {
 if (DEBUG) console.log('DEBUG: showSection called with:', sectionId);
 
 try {
-// Check if element exists before trying to modify it
-const targetSection = document.getElementById(sectionId);
-if (!targetSection) {
-console.error('DEBUG: Section not found:', sectionId);
-alert('Error: Section "' + sectionId + '" not found');
-return;
-}
-
 const mainContent = document.getElementById('main-content');
 if (!mainContent) {
 console.error('Main content not found');
 return;
 }
 
+const sectionHTML = sectionTemplates[sectionId];
+if (!sectionHTML) {
+console.error('Section template not found:', sectionId);
+alert('Error: Section "' + sectionId + '" not found');
+return;
+}
+
 // Inject the section's HTML into main-content
-mainContent.innerHTML = targetSection.innerHTML;
+mainContent.innerHTML = sectionHTML;
 
 // Special handling for notifications section
 if (sectionId === 'notifications') {

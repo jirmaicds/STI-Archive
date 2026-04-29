@@ -737,7 +737,7 @@ async function handleApproveUser(req, res) {
       if (action === 'approve') {
         await supabase
           .from('users')
-          .update({ verified: true, role: 'user', isactive: true, new_user: false, rejected_user: false, banned_user: false })
+          .update({ verified: true, isactive: true, new_user: false, rejected_user: false, banned_user: false })
           .eq('id', user.id);
 
         await emailService.sendApprovalNotification(user.email, user.fullname);

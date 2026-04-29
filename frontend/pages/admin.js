@@ -2226,7 +2226,7 @@ const rowWithEmail = `<tr>
 <td>
 <div style="display: flex; align-items: center; gap: 5px;">
 <span>${user.raf_path || ''} ${user.educator_id || ''}</span>
-<button class="btn btn-sm btn-info" onclick="previewUserDocs('${user.user_id || user.id}')">Preview</button>
+<button class="preview-btn" onclick="previewUserDocs('${user.user_id || user.id}')">Preview</button>
 </div>
 </td>
 <td>${actions}</td>
@@ -2244,7 +2244,7 @@ const rowWithoutEmail = `<tr>
 <td>
 <div style="display: flex; align-items: center; gap: 5px;">
 <span>${user.raf_path || ''} ${user.educator_id || ''}</span>
-<button class="btn btn-sm btn-info" onclick="previewUserDocs('${user.user_id || user.id}')">Preview</button>
+<button class="preview-btn" onclick="previewUserDocs('${user.user_id || user.id}')">Preview</button>
 </div>
 </td>
 <td>${actions}</td>

@@ -2044,6 +2044,16 @@ selectAllNotifications.addEventListener('change', function() {
 });
 }
 
+// Setup sidebar navigation
+const sidebarLinks = document.querySelectorAll('.sidebar ul li a[data-section]');
+sidebarLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const section = this.getAttribute('data-section');
+        handleSidebarClick(e, section);
+    });
+});
+
 
 // === SEND UPDATE MODAL FUNCTIONS ===
 function openSendUpdateModal(email, name) {

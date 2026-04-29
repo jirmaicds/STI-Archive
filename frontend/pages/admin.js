@@ -368,6 +368,12 @@ modal.style.display = 'none';
 // Admin users stay in their current location
 }
 
+// === SETTINGS FUNCTIONS ===
+function showSettingsSection(section) {
+document.querySelectorAll('.settings-subsection').forEach(sub => sub.classList.remove('active'));
+document.getElementById(section + '-settings').classList.add('active');
+}
+
 // === UTILS ===
 // Helper function to get user name with backward compatibility
 function getUserName(user) {

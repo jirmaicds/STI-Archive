@@ -431,6 +431,13 @@
                 // - For SHS: strand values (ABM, ITMAWD, STEM)
                 // - For College: degree values (BSBA, BSCS, BSIT)
                 user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
+
+                // Resolve descriptive role name for the table column
+                const typeSlug = (user.user_type || '').toLowerCase();
+                const roleVal = (user.role || '').toLowerCase();
+                if (typeSlug === 'senior_high' || roleVal === 'senior_high' || roleVal === 'shs') user.role = 'Senior High';
+                else if (typeSlug === 'college' || roleVal === 'college') user.role = 'College';
+                else if (typeSlug === 'educator' || roleVal === 'educator') user.role = 'Educator';
             });
 
             // Set global users
@@ -1355,14 +1362,14 @@
         }
 
         function formatRole(role) {
-            if (role === 'senior_high') return 'SHS';
+            if (role === 'senior_high' || role === 'Senior High') return 'Senior High';
             if (role === 'college') return 'College';
             if (role === 'educator') return 'Educator';
             if (role === 'admin') return 'Admin';
             if (role === 'coadmin') return 'CO-Admin';
             if (role === 'subadmin') return 'SUB-Admin';
             if (role === 'tester') return 'Tester';
-            return 'Teacher';
+            return role || 'User';
         }
         function getSectionDisplay(user) {
             return user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';

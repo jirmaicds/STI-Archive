@@ -2163,13 +2163,16 @@ window.users = filteredUsers; // Or assign to global users
   // - For College: degree values (BSBA, BSCS, BSIT)
   user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
 
-  // Debug: Log role and user_type to verify data
-  console.log('User:', user.fullname, 'role:', user.role, 'user_type:', user.user_type);
+                // Resolve descriptive role name for the table column
+                const typeSlug = (user.user_type || '').toLowerCase();
+                const roleVal = (user.role || '').toLowerCase();
+                
+                if (typeSlug === 'senior_high' || roleVal === 'senior_high' || roleVal === 'shs') user.role = 'Senior High';
+                else if (typeSlug === 'college' || roleVal === 'college') user.role = 'College';
+                else if (typeSlug === 'educator' || roleVal === 'educator') user.role = 'Educator';
+                else if (user.role === 'user' || !user.role) user.role = user.user_type || 'User';
 
-  // Ensure role is set to the category for display (use role if it's the category, else user_type)
-  user.role = (user.role && user.role !== 'user') ? user.role : (user.user_type || user.role);
-
-  // Set appropriate display values based on role
+                // Set appropriate display values based on resolved role
  if (user.role !== 'senior_high') {
    user.grade = user.grade || 'N/A';
  }
@@ -5918,4 +5921,3 @@ const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagina
 paginationDiv.dataset.currentPage = page;
 paginateTable(tbodyId, 10);
 }
-

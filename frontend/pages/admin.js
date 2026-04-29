@@ -1991,6 +1991,59 @@ if (toggleBtn) {
 toggleBtn.addEventListener('click', toggleSidebar);
 }
 
+// Setup notification controls
+const markSelectedReadBtn = document.getElementById('mark-selected-read');
+const deleteSelectedBtn = document.getElementById('delete-selected');
+const selectAllNotifications = document.getElementById('select-all-notifications');
+
+if (markSelectedReadBtn) {
+markSelectedReadBtn.addEventListener('click', function() {
+    const selectedNotifications = document.querySelectorAll('#all-notifications-list .notification-checkbox:checked');
+    selectedNotifications.forEach(checkbox => {
+        const notificationItem = checkbox.closest('.notification-item');
+        const notificationId = notificationItem.getAttribute('data-id');
+        markNotificationRead(notificationItem.querySelector('.notification-actions i'));
+    });
+});
+}
+
+if (deleteSelectedBtn) {
+deleteSelectedBtn.addEventListener('click', function() {
+    const selectedNotifications = document.querySelectorAll('#all-notifications-list .notification-checkbox:checked');
+    const notificationIds = Array.from(selectedNotifications).map(checkbox => {
+        return checkbox.closest('.notification-item').getAttribute('data-id');
+    });
+
+    if (notificationIds.length === 0) {
+        alert('Please select notifications to delete.');
+        return;
+    }
+
+    if (confirm(`Are you sure you want to delete ${notificationIds.length} notification(s)?`)) {
+        let deletedNotifications = JSON.parse(localStorage.getItem('deletedNotifications')) || [];
+        deletedNotifications = deletedNotifications.concat(notificationIds);
+        localStorage.setItem('deletedNotifications', JSON.stringify(deletedNotifications));
+
+        // Remove from DOM
+        selectedNotifications.forEach(checkbox => {
+            checkbox.closest('.notification-item').remove();
+        });
+
+        // Reload notifications to update pagination
+        loadAllNotifications();
+    }
+});
+}
+
+if (selectAllNotifications) {
+selectAllNotifications.addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('#all-notifications-list .notification-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+    });
+});
+}
+
 
 // === SEND UPDATE MODAL FUNCTIONS ===
 function openSendUpdateModal(email, name) {
@@ -2788,6 +2841,11 @@ if (DEBUG) console.log('DEBUG: Removed active from:', s.id);
 targetSection.classList.add('active');
 targetSection.style.display = 'block'; // Force show
 if (DEBUG) console.log('DEBUG: Added active to:', sectionId);
+
+// Special handling for notifications section
+if (sectionId === 'notifications') {
+loadAllNotifications();
+}
 } catch (e) {
 console.error('DEBUG: Error in showSection:', e);
 alert('Error switching section: ' + e.message);
@@ -2955,6 +3013,94 @@ updateNotificationBadge(freshNotifications);
 }
 }
 window.toggleNotificationModal = toggleNotificationModal;
+
+function loadAllNotifications() {
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const notifications = generateNotifications(users);
+    const allNotificationsContainer = document.getElementById('all-notifications-list');
+    const paginationControls = document.getElementById('pagination-controls');
+    const pageNumbers = document.getElementById('page-numbers');
+
+    if (!allNotificationsContainer) return;
+
+    allNotificationsContainer.innerHTML = '';
+
+    if (notifications.length === 0) {
+        allNotificationsContainer.innerHTML = '<div class="notification-placeholder">No notifications available.</div>';
+        if (paginationControls) paginationControls.style.display = 'none';
+        return;
+    }
+
+    // Setup pagination
+    const itemsPerPage = 10;
+    const totalPages = Math.ceil(notifications.length / itemsPerPage);
+    let currentPage = 1;
+
+    // Store pagination state globally
+    window.notificationPagination = {
+        notifications: notifications,
+        currentPage: currentPage,
+        totalPages: totalPages,
+        itemsPerPage: itemsPerPage
+    };
+
+    function renderPage(page) {
+        allNotificationsContainer.innerHTML = '';
+        const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, notifications.length);
+
+        for (let i = startIndex; i < endIndex; i++) {
+            const notif = notifications[i];
+            const notifDiv = document.createElement('div');
+            notifDiv.className = 'notification-item';
+            notifDiv.setAttribute('data-id', notif.id);
+
+            const isRead = readNotifications.includes(notif.id);
+            if (isRead) {
+                notifDiv.classList.add('read');
+            }
+
+            notifDiv.innerHTML = `
+                <input type="checkbox" class="notification-checkbox">
+                <div class="notification-details">
+                    <div class="notification-type ${notif.type}">${notif.typeText}</div>
+                    <div class="notification-content">${notif.content}</div>
+                    <div class="notification-time">${notif.time}</div>
+                </div>
+                <div class="notification-actions">
+                    <i class="fas ${isRead ? 'fa-check' : 'fa-times'}" title="${isRead ? 'Mark as Unread' : 'Mark as Read'}" onclick="${isRead ? 'markNotificationUnread(this)' : 'markNotificationRead(this)'}"></i>
+                </div>
+            `;
+            allNotificationsContainer.appendChild(notifDiv);
+        }
+    }
+
+    function renderPagination() {
+        pageNumbers.innerHTML = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.className = 'page-number' + (i === currentPage ? ' active' : '');
+            pageBtn.textContent = i;
+            pageBtn.onclick = function() {
+                currentPage = i;
+                window.notificationPagination.currentPage = i;
+                renderPage(i);
+                renderPagination();
+            };
+            pageNumbers.appendChild(pageBtn);
+        }
+    }
+
+    renderPage(currentPage);
+    renderPagination();
+
+    if (paginationControls) {
+        paginationControls.style.display = totalPages > 1 ? 'block' : 'none';
+    }
+}
 
 function markNotificationRead(icon) {
 const notificationItem = icon.closest('.notification-item');
@@ -3558,6 +3704,8 @@ var notifLink = document.querySelector('.sidebar ul li a[data-section="notificat
 if(notifLink){
 notifLink.parentElement.classList.add('active');
 }
+// Load all notifications when navigating to notifications section from modal
+loadAllNotifications();
 }
 function navigateToUploadSection() {
 document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));

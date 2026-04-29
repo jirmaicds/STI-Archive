@@ -29,6 +29,57 @@
             return user.fullname || user.name || 'Unknown';
         }
 
+        function generateNotifications(users) {
+            if (!Array.isArray(users)) users = [];
+            const removedUsers = JSON.parse(localStorage.getItem('removedUsers')) || [];
+            const filteredUsers = users.filter(u => !removedUsers.includes(u.user_id || u.id));
+            const signingUpUsers = filteredUsers.filter(u => !u.verified && !u.rejected && !u.banned);
+            const verifiedUsers = filteredUsers.filter(u => u.verified);
+            const notifications = [];
+
+            // Add notifications for signing up users
+            signingUpUsers.forEach(user => {
+                const id = `signup-${user.id}`;
+                notifications.push({
+                    id: id,
+                    type: 'new-user',
+                    typeText: 'New User Access Request',
+                    content: `${getUserName(user)} signed up!`,
+                    time: user.created_at ? new Date(user.created_at).toLocaleString() : 'Just now',
+                    timestamp: user.created_at ? new Date(user.created_at).getTime() : Date.now(),
+                    priority: 1 // Signing up first
+                });
+            });
+
+            // Add notifications for verified users (recent)
+            verifiedUsers.slice(-5).forEach(user => {
+                const id = `verified-${user.id}`;
+                notifications.push({
+                    id: id,
+                    type: 'new-user',
+                    typeText: 'New User Verified',
+                    content: `${getUserName(user)} was verified!`,
+                    time: user.verified_at ? new Date(user.verified_at).toLocaleString() : 'Recently',
+                    timestamp: user.verified_at ? new Date(user.verified_at).getTime() : Date.now() - 1000,
+                    priority: 2 // Verified second
+                });
+            });
+
+            // Filter out deleted notifications
+            const deletedNotifications = JSON.parse(localStorage.getItem('deletedNotifications')) || [];
+            let filteredNotifications = notifications.filter(notif => !deletedNotifications.includes(notif.id));
+
+            // Sort by priority (signing up first), then by timestamp (newest first)
+            filteredNotifications.sort((a, b) => {
+                if (a.priority !== b.priority) {
+                    return a.priority - b.priority; // Lower priority first
+                }
+                return b.timestamp - a.timestamp; // Newest first
+            });
+
+            return filteredNotifications;
+        }
+
         function updateUserStatus(userId, action, reason = "") {
             // Handle case where userId might be undefined
             if (typeof userId === "undefined" || userId === null || userId === "") {
@@ -720,6 +771,311 @@
             document.getElementById('toggle-time-chart').innerText = timeChartType === 'line' ? 'Bar' : 'Line';
         }
 
+        // === NOTIFICATION FUNCTIONS ===
+
+        let confirmAction = null;
+
+        function showConfirm(title, message, action) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+            confirmAction = action;
+            document.getElementById('confirm-modal').classList.add('show');
+        }
+
+        function hideConfirm() {
+            document.getElementById('confirm-modal').classList.remove('show');
+            confirmAction = null;
+        }
+
+        function executeConfirmAction() {
+            if (confirmAction) {
+                confirmAction();
+            }
+            hideConfirm();
+        }
+
+        function toggleNotificationModal() {
+            const modal = document.getElementById('notification-modal');
+            if (!modal) return;
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+            if (DEBUG) console.log('toggleNotificationModal called');
+            if (DEBUG) console.log('generateNotifications defined:', typeof generateNotifications);
+            if (DEBUG) console.log('localStorage users:', localStorage.getItem('users') ? 'exists' : 'null');
+            // Refresh notifications when opening modal
+            if (modal.style.display === 'block') {
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                if (DEBUG) console.log('Users count for notifications:', users.length);
+                if (typeof generateNotifications === 'function') {
+                    const freshNotifications = generateNotifications(users);
+                    if (DEBUG) console.log('Fresh notifications count:', freshNotifications.length);
+                    const notificationList = document.getElementById('notification-list');
+                    if (!notificationList) return;
+                    notificationList.innerHTML = '';
+                    const maxNotifications = 10;
+                    const limitedNotifications = freshNotifications.slice(0, maxNotifications);
+                    const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+                    limitedNotifications.forEach(notif => {
+                        const notifDiv = document.createElement('div');
+                        notifDiv.className = 'notification-item';
+                        notifDiv.setAttribute('data-id', notif.id);
+                        const isRead = readNotifications.includes(notif.id);
+                        if (isRead) {
+                            notifDiv.classList.add('read');
+                        }
+                        notifDiv.innerHTML = `
+                            <div class="notification-type ${notif.type}">${notif.typeText}</div>
+                            <div class="notification-content">${notif.content}</div>
+                            <div class="notification-time">${notif.time}</div>
+                            <div class="notification-actions">
+                                <i class="fas ${isRead ? 'fa-check' : 'fa-times'}" title="${isRead ? 'Mark as Unread' : 'Mark as Read'}" onclick="${isRead ? 'markNotificationUnread(this)' : 'markNotificationRead(this)'}"></i>
+                            </div>
+                        `;
+                        notificationList.appendChild(notifDiv);
+                    });
+                    const placeholder = document.querySelector('.notification-placeholder');
+                    if (placeholder) {
+                        placeholder.style.display = freshNotifications.length > 0 ? 'none' : 'block';
+                    }
+                    updateNotificationBadge(freshNotifications);
+                }
+            }
+        }
+
+        window.toggleNotificationModal = toggleNotificationModal;
+
+        function markNotificationRead(icon) {
+            const notificationItem = icon.closest('.notification-item');
+            const notificationId = notificationItem.getAttribute('data-id');
+            notificationItem.classList.add('read');
+            // Change icon to check mark
+            icon.className = 'fas fa-check';
+            icon.title = 'Mark as Unread';
+            icon.onclick = function() { markNotificationUnread(this); };
+
+            // Persist read state
+            let readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+            if (!readNotifications.includes(notificationId)) {
+                readNotifications.push(notificationId);
+                localStorage.setItem('readNotifications', JSON.stringify(readNotifications));
+            }
+
+            // Update badge count
+            updateNotificationBadge();
+        }
+
+        function markNotificationUnread(icon) {
+            const notificationItem = icon.closest('.notification-item');
+            const notificationId = notificationItem.getAttribute('data-id');
+            notificationItem.classList.remove('read');
+            // Change icon back to cross
+            icon.className = 'fas fa-times';
+            icon.title = 'Mark as Read';
+            icon.onclick = function() { markNotificationRead(this); };
+
+            // Remove from persisted read states
+            let readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+            readNotifications = readNotifications.filter(id => id !== notificationId);
+            localStorage.setItem('readNotifications', JSON.stringify(readNotifications));
+
+            // Update badge count
+            updateNotificationBadge();
+        }
+
+        function updateNotificationBadge(notifications) {
+            if (!notifications) {
+                // If no notifications passed, try to get from DOM
+                const notificationItems = document.querySelectorAll('.notification-item');
+                const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+                let unreadCount = 0;
+
+                notificationItems.forEach(item => {
+                    const notificationId = item.getAttribute('data-id');
+                    if (!readNotifications.includes(notificationId)) {
+                        unreadCount++;
+                    }
+                });
+
+                const badge = document.querySelector('.notification-badge');
+                if (badge) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+                }
+
+                // Show/hide mark all read button based on unread count
+                const markAllBtn = document.querySelector('.mark-all-read-btn');
+                if (markAllBtn) {
+                    markAllBtn.style.display = unreadCount > 0 ? 'flex' : 'none';
+                }
+                return;
+            }
+
+            // If notifications passed, count unread
+            const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+            let unreadCount = 0;
+
+            notifications.forEach(notif => {
+                if (!readNotifications.includes(notif.id)) {
+                    unreadCount++;
+                }
+            });
+
+            const badge = document.querySelector('.notification-badge');
+            if (badge) {
+                badge.textContent = unreadCount;
+                badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+            }
+
+            // Show/hide mark all read button based on unread count
+            const markAllBtn = document.querySelector('.mark-all-read-btn');
+            if (markAllBtn) {
+                markAllBtn.style.display = unreadCount > 0 ? 'flex' : 'none';
+            }
+        }
+
+        function loadAllNotifications() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const notifications = generateNotifications(users);
+            const allNotificationsContainer = document.getElementById('all-notifications-list');
+            const paginationControls = document.getElementById('pagination-controls');
+            const pageNumbers = document.getElementById('page-numbers');
+
+            if (!allNotificationsContainer) return;
+
+            allNotificationsContainer.innerHTML = '';
+
+            if (notifications.length === 0) {
+                allNotificationsContainer.innerHTML = '<div class="notification-placeholder">No notifications available.</div>';
+                if (paginationControls) paginationControls.style.display = 'none';
+                return;
+            }
+
+            // Setup pagination
+            const itemsPerPage = 10;
+            const totalPages = Math.ceil(notifications.length / itemsPerPage);
+            let currentPage = 1;
+
+            // Store pagination state globally
+            window.notificationPagination = {
+                notifications: notifications,
+                currentPage: currentPage,
+                totalPages: totalPages,
+                itemsPerPage: itemsPerPage
+            };
+
+            function renderPage(page) {
+                allNotificationsContainer.innerHTML = '';
+                const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+
+                const startIndex = (page - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, notifications.length);
+
+                for (let i = startIndex; i < endIndex; i++) {
+                    const notif = notifications[i];
+                    const notifDiv = document.createElement('div');
+                    notifDiv.className = 'notification-item';
+                    notifDiv.setAttribute('data-id', notif.id);
+
+                    const isRead = readNotifications.includes(notif.id);
+                    if (isRead) {
+                        notifDiv.classList.add('read');
+                    }
+
+                    notifDiv.innerHTML = `
+                        <input type="checkbox" class="notification-checkbox">
+                        <div class="notification-details">
+                            <div class="notification-type ${notif.type}">${notif.typeText}</div>
+                            <div class="notification-content">${notif.content}</div>
+                            <div class="notification-time">${notif.time}</div>
+                        </div>
+                        <div class="notification-actions">
+                            <i class="fas ${isRead ? 'fa-check' : 'fa-times'}" title="${isRead ? 'Mark as Unread' : 'Mark as Read'}" onclick="${isRead ? 'markNotificationUnread(this)' : 'markNotificationRead(this)'}"></i>
+                        </div>
+                    `;
+                    allNotificationsContainer.appendChild(notifDiv);
+                }
+            }
+
+            function renderPagination() {
+                pageNumbers.innerHTML = '';
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = 'page-number' + (i === currentPage ? ' active' : '');
+                    pageBtn.textContent = i;
+                    pageBtn.onclick = function() {
+                        currentPage = i;
+                        window.notificationPagination.currentPage = i;
+                        renderPage(i);
+                        renderPagination();
+                    };
+                    pageNumbers.appendChild(pageBtn);
+                }
+            }
+
+            renderPage(currentPage);
+            renderPagination();
+
+            if (paginationControls) {
+                paginationControls.style.display = totalPages > 1 ? 'block' : 'none';
+            }
+        }
+
+        function showNotificationsFromModal() {
+            // Navigate to notifications section and load all notifications
+            document.querySelectorAll('.sidebar ul li').forEach(function(li){li.classList.remove('active')});
+            var notifLink = document.querySelector('.sidebar ul li a[data-section="notifications"]');
+            if(notifLink){
+                notifLink.parentElement.classList.add('active');
+            }
+            document.querySelectorAll('.content-section').forEach(s => {
+                s.classList.remove('active');
+                s.style.display = 'none';
+            });
+            const notificationsSection = document.getElementById('notifications');
+            if (notificationsSection) {
+                notificationsSection.classList.add('active');
+                notificationsSection.style.display = 'block';
+                loadAllNotifications();
+            }
+            toggleNotificationModal();
+        }
+
+        function showMarkAllConfirm() {
+            showConfirm('Mark All as Read', 'Are you sure you want to mark all notifications as read? This action cannot be undone.', () => {
+                // Mark all notifications as read
+                const notificationItems = document.querySelectorAll('.notification-item');
+                let readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+
+                notificationItems.forEach(item => {
+                    const notificationId = item.getAttribute('data-id');
+                    item.classList.add('read');
+                    const icon = item.querySelector('.notification-actions i');
+                    if (icon && icon.classList.contains('fa-times')) {
+                        icon.className = 'fas fa-check';
+                        icon.title = 'Mark as Unread';
+                        icon.onclick = function() { markNotificationUnread(this); };
+                    }
+
+                    // Persist read state
+                    if (!readNotifications.includes(notificationId)) {
+                        readNotifications.push(notificationId);
+                    }
+                });
+
+                // Save to localStorage
+                localStorage.setItem('readNotifications', JSON.stringify(readNotifications));
+
+                // Hide the mark all read button and its icon
+                const markAllBtn = document.querySelector('.mark-all-read-btn');
+                if (markAllBtn) {
+                    markAllBtn.style.display = 'none';
+                }
+
+                // Update the notification badge
+                updateNotificationBadge();
+            });
+        }
+
         // === INIT ===
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('Subadmin page DOMContentLoaded fired');
@@ -778,6 +1134,59 @@
                     welcomeModal.classList.remove('show');
                 }, 3000);
             }
+
+            // Setup notification controls
+            const markSelectedReadBtn = document.getElementById('mark-selected-read');
+            const deleteSelectedBtn = document.getElementById('delete-selected');
+            const selectAllNotifications = document.getElementById('select-all-notifications');
+
+            if (markSelectedReadBtn) {
+                markSelectedReadBtn.addEventListener('click', function() {
+                    const selectedNotifications = document.querySelectorAll('#all-notifications-list .notification-checkbox:checked');
+                    selectedNotifications.forEach(checkbox => {
+                        const notificationItem = checkbox.closest('.notification-item');
+                        const notificationId = notificationItem.getAttribute('data-id');
+                        markNotificationRead(notificationItem.querySelector('.notification-actions i'));
+                    });
+                });
+            }
+
+            if (deleteSelectedBtn) {
+                deleteSelectedBtn.addEventListener('click', function() {
+                    const selectedNotifications = document.querySelectorAll('#all-notifications-list .notification-checkbox:checked');
+                    const notificationIds = Array.from(selectedNotifications).map(checkbox => {
+                        return checkbox.closest('.notification-item').getAttribute('data-id');
+                    });
+
+                    if (notificationIds.length === 0) {
+                        alert('Please select notifications to delete.');
+                        return;
+                    }
+
+                    if (confirm(`Are you sure you want to delete ${notificationIds.length} notification(s)?`)) {
+                        let deletedNotifications = JSON.parse(localStorage.getItem('deletedNotifications')) || [];
+                        deletedNotifications = deletedNotifications.concat(notificationIds);
+                        localStorage.setItem('deletedNotifications', JSON.stringify(deletedNotifications));
+
+                        // Remove from DOM
+                        selectedNotifications.forEach(checkbox => {
+                            checkbox.closest('.notification-item').remove();
+                        });
+
+                        // Reload notifications to update pagination
+                        loadAllNotifications();
+                    }
+                });
+            }
+
+            if (selectAllNotifications) {
+                selectAllNotifications.addEventListener('change', function() {
+                    const checkboxes = document.querySelectorAll('#all-notifications-list .notification-checkbox');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = this.checked;
+                    });
+                });
+            }
         });
 
         // Navigation setup for subadmin
@@ -802,6 +1211,10 @@
                     const targetSection = document.getElementById(sectionId);
                     if (targetSection) {
                         targetSection.classList.add('active');
+                        // Special handling for notifications section
+                        if (sectionId === 'notifications') {
+                            loadAllNotifications();
+                        }
                     }
                 });
             });

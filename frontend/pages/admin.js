@@ -2851,7 +2851,6 @@ return;
 const sectionHTML = sectionTemplates[sectionId];
 if (!sectionHTML) {
 console.error('Section template not found:', sectionId);
-alert('Error: Section "' + sectionId + '" not found');
 return;
 }
 

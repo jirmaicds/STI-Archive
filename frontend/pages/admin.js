@@ -981,6 +981,24 @@ document.getElementById('signing-up-users-tbody').innerHTML += row;
 });
 }
 
+// Function to derive the specific user classification from profile data
+function getDerivedRole(user) {
+    // Check for Senior High based on grade
+    if (user.grade && (user.grade === 'Grade 11' || user.grade === 'Grade 12')) {
+        return 'senior_high';
+    }
+    // Check for College based on Sec_Degr (degree programs)
+    if (user.Sec_Degr && ['BSBA', 'BSCS', 'BSIT'].includes(user.Sec_Degr)) {
+        return 'college';
+    }
+    // Check for Educator based on role
+    if (user.role === 'teacher' || user.role === 'educator') {
+        return 'educator';
+    }
+    // Default to 'user' if not matched
+    return 'user';
+}
+
 function formatRole(role) {
 if (role === 'senior_high') return 'Senior High';
 if (role === 'college') return 'College';
@@ -2205,7 +2223,7 @@ const rowWithEmail = `<tr>
 <td>${user.user_id || user.id}</td>
 <td>${getUserName(user)}</td>
 <td>${emailToUse}</td>
-<td>${formatRole(user.role)}</td>
+<td>${formatRole(getDerivedRole(user))}</td>
 <td>${user.grade || '-'}</td>
 <td>${user.Sec_Degr || '-'}</td>
 <td>${date}</td>
@@ -2222,7 +2240,7 @@ const rowWithoutEmail = `<tr>
 <td>${user.user_id || user.id}</td>
 <td>${user.name}</td>
 <td>${emailToUse}</td>
-<td>${user.role}</td>
+<td>${formatRole(getDerivedRole(user))}</td>
 <td>${user.grade || '-'}</td>
 <td>${user.Sec_Degr || '-'}</td>
 <td>${date}</td>

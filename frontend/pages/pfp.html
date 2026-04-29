@@ -11,15 +11,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // PDF.js worker
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
-        // Supabase client initialization - using global supabase object
-        const supabaseUrl = 'https://eopbqatvianrjkdbypvk.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJxYXR2aWFucmprZGJ5cHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzA4OTIsImV4cCI6MjA4OTEwNjg5Mn0.k9_xTbjwRdwAQJ9UgGGsosjLWywzxHuYOq-JbGeII8g';
-        window.supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+        
+
+      
+
+       
 
         // Toggle tab buttons visibility
         function toggleTabButtons() {
@@ -31,111 +31,6 @@
 
         // Profile Picture Modal
         var selectedProfilePic = null;
-
-        // Upload handling
-        let selectedFiles = [];
-
-        function handleFileUpload(event, type) {
-            const file = event.target.files[0];
-            if (file) {
-                // Validate file size (max 50MB)
-                if (file.size > 50 * 1024 * 1024) {
-                    alert('File size must be less than 50MB');
-                    return;
-                }
-
-                // Store file with metadata
-                selectedFiles.push({
-                    file: file,
-                    type: type,
-                    name: file.name,
-                    size: file.size
-                });
-
-                // Update UI feedback
-                updateUploadPreview(type, file.name);
-            }
-        }
-
-        function updateUploadPreview(type, filename) {
-            const boxes = document.querySelectorAll('.upld-boxes');
-            boxes.forEach(box => {
-                const input = box.querySelector('input[type="file"]');
-                if (input && input.id.includes(type)) {
-                    const desc = box.querySelector('.upld-dscrpt small');
-                    if (desc) {
-                        desc.textContent = `Selected: ${filename}`;
-                        desc.style.color = '#28a745';
-                    }
-                }
-            });
-        }
-
-        async function submitUploads() {
-            if (selectedFiles.length === 0) {
-                alert('Please select files to upload');
-                return;
-            }
-
-            const submitBtn = document.querySelector('.upload-submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Uploading...';
-
-            try {
-                const userId = localStorage.getItem('userId') || 'anonymous'; // Get user ID if available
-
-                for (const item of selectedFiles) {
-                    const fileName = `${Date.now()}-${item.name}`;
-                    const filePath = `uploads/${userId}/${fileName}`;
-
-                    // Upload file to Supabase Storage
-                    const { data, error } = await window.supabaseClient.storage
-                        .from('uploads')
-                        .upload(filePath, item.file);
-
-                    if (error) {
-                        console.error('Upload error:', error);
-                        alert(`Failed to upload ${item.name}: ${error.message}`);
-                        continue;
-                    }
-
-                    // Insert record into pending_uploads table
-                    const { error: dbError } = await window.supabaseClient
-                        .from('pending_uploads')
-                        .insert({
-                            user_id: userId,
-                            file_name: item.name,
-                            file_path: data.path,
-                            file_type: item.type,
-                            file_size: item.size,
-                            upload_date: new Date().toISOString(),
-                            status: 'pending'
-                        });
-
-                    if (dbError) {
-                        console.error('Database error:', dbError);
-                        alert(`Failed to save upload info for ${item.name}`);
-                    } else {
-                        alert(`Upload submitted successfully: ${item.name}`);
-                    }
-                }
-
-                // Clear selections
-                selectedFiles = [];
-                document.querySelectorAll('input[type="file"]').forEach(input => input.value = '');
-                document.querySelectorAll('.upld-dscrpt small').forEach(desc => {
-                    desc.textContent = desc.textContent.includes('document') ? 'Click here to upload your document' : 'Click here to upload your image';
-                    desc.style.color = '';
-                });
-
-            } catch (error) {
-                console.error('Submit error:', error);
-                alert('An error occurred during upload submission: ' + error.message);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Uploads';
-            }
-        }
 
         function showProfilePicModal() {
             const modal = document.getElementById('profilePicModal');
@@ -1660,24 +1555,9 @@
             gap: 20px;
             height:auto;
             width:auto;
-            margin-bottom: 20px;
 
-        }
+            
 
-        .upload-submit-btn {
-            background: #0057b8;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 20px auto;
-            display: block;
-        }
-
-        .upload-submit-btn:hover {
-            background: #003f8a;
         }
 
         .upload-section {
@@ -2719,7 +2599,7 @@
         <div class="tabs-left-sidebar">
             <button class="tab-btn active" onclick="showMyUploadsTab('myuploads', event)">My Uploads</button>
             <button class="tab-btn" onclick="showCited('cited', event)">Cited</button>
-            <button class="tab-btn" onclick="showMyUploadsTab('saved-articles', event)">Saved Article</button>
+            <button class="tab-btn" onclick="showSavedArticles('saved-articles', event)">Saved Article</button>
         </div>
         
 
@@ -2764,10 +2644,9 @@
                                 <p>Click to upload or drag and drop</p>
                                 <p>PDF files only (max 10MB)</p>
                                 <input type="file" id="user-pdf-upload" accept=".pdf" multiple style="display: none;">
-            </div>
-        </div>
-
-
+                            </div>
+                        </div>
+                        </div>
                     </div>
 
                     <!-- Cited Container -->
@@ -2781,11 +2660,6 @@
                     <div id="saved-articles-container" style="display: none;">
                         <div id="saved-articles-list" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
                             <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No saved articles yet</p>
-                        </div>
-                        <div id="articles-pagination" style="display: none; justify-content: center; align-items: center; gap: 10px; margin-top: 20px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-                            <button id="prev-page-btn" style="background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Previous</button>
-                            <span id="page-info" style="font-weight: 500;">Page 1 of 1</span>
-                            <button id="next-page-btn" style="background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Next</button>
                         </div>
                     </div>
 
@@ -3402,10 +3276,10 @@
                 });
 
                 // Update pagination
-                updatePagination(currentPage, totalPages);
+                updatePagination(totalPages);
             }
 
-            function updatePagination(currentPage, totalPages) {
+            function updatePagination(totalPages) {
                 const paginationDiv = document.getElementById('articles-pagination');
                 const pageInfo = document.getElementById('page-info');
                 const prevBtn = document.getElementById('prev-page-btn');

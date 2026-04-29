@@ -473,7 +473,7 @@
                     `;
                 }
                 let emailToUse = user.personal_email || user.email;
-                const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewUserDocs('${userId}')">Preview</button>` : `${user.raf_path || ''} ${user.educator_id || ''}`.trim() || '-';
+                const rafEduIdCell = `<button class="view-pdf-btn" onclick="previewUserDocs('${userId}')">Preview</button>`;
                 const rowWithEmail = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
                     <td>${getUserName(user)}</td>
@@ -1358,8 +1358,8 @@
         function getUserStatus(user) {
             // Check new boolean columns first
             if (user.new_user === true) return 'pending';
-            if (user.banned_user === true) return 'banned';
-            if (user.rejected_user === true) return 'rejected';
+            if (user.banned === true) return 'banned';
+            if (user.rejected === true) return 'rejected';
             if (user.verified === true) return 'approved';
 
             // Fallback to legacy boolean logic for backward compatibility

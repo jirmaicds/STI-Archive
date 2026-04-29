@@ -494,31 +494,38 @@
                     `;
                 }
                 let emailToUse = user.personal_email || user.email;
-                const rafEduIdCell = (user.raf_path || user.educator_id) ? `<button class="view-pdf-btn" onclick="previewUserDocs('${userId}')">Preview</button>` : `${user.raf_path || ''} ${user.educator_id || ''}`.trim() || '-';
-                const rowWithEmail = `<tr>
+                const rafEduIdCell = `<button class="view-pdf-btn" onclick="previewUserDocs('${userId}')">Preview</button>`;
+                const rowWithCheckboxAndActions = `<tr>
                     <td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
                     <td>${getUserName(user)}</td>
                     <td>${emailToUse}</td>
                     <td>${formatRole(user.role)}</td>
                     <td>${user.grade || user.Grade || user.year_level || '-'}</td>
                     <td>${user.Sec_Degr || '-'}</td>
-                    <td>${user.grade}</td>
-                    <td>${user.Sec_Degr}</td>
                     <td>${date}</td>
                     <td>${rafEduIdCell}</td>
                     <td>${actions}</td>
+                </tr>`;
+                const rowWithoutCheckbox = `<tr>
+                    <td>${getUserName(user)}</td>
+                    <td>${emailToUse}</td>
+                    <td>${formatRole(user.role)}</td>
+                    <td>${user.grade || user.Grade || user.year_level || '-'}</td>
+                    <td>${user.Sec_Degr || '-'}</td>
+                    <td>${date}</td>
+                    <td>${rafEduIdCell}</td>
                 </tr>`;
 
                 // Status categorization for regular users only
                 const userStatus = getUserStatus(user);
                 if (userStatus === 'approved') {
                     if (DEBUG) console.log('DEBUG: Adding verified user to table:', user.name, user.email);
-                    document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
+                    document.getElementById('verified-users-tbody').innerHTML += rowWithoutCheckbox;
                 } else if (userStatus === 'banned' || userStatus === 'rejected') {
-                    document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
+                    document.getElementById('banned-users-tbody').innerHTML += rowWithoutCheckbox;
                 } else if (userStatus === 'pending') {
                     if (DEBUG) console.log('DEBUG: Adding signing-up user to table:', user.name, user.email);
-                    document.getElementById('signing-up-users-tbody').innerHTML += rowWithEmail;
+                    document.getElementById('signing-up-users-tbody').innerHTML += rowWithCheckboxAndActions;
                 }
             });
 
@@ -661,8 +668,8 @@
         // Helper function for subadmin status detection
         function getUserStatus(user) {
             if (user.new_user === true) return 'pending';
-            if (user.banned_user === true) return 'banned';
-            if (user.rejected_user === true) return 'rejected';
+            if (user.banned === true) return 'banned';
+            if (user.rejected === true) return 'rejected';
             if (user.verified === true) return 'approved';
             // Fallback
             if (user.verified && !user.banned && !user.rejected) return 'approved';

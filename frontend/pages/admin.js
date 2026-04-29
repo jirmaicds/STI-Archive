@@ -2692,6 +2692,12 @@ localStorage.setItem('darkMode', 'off');
 }
 }
 
+// Attach event listener to dark mode toggle
+const darkModeToggleBtn = document.querySelector('.dark-mode-toggle');
+if (darkModeToggleBtn) {
+darkModeToggleBtn.addEventListener('click', toggleDarkMode);
+}
+
 const closeDropdownOnOutsideClick = function(e) {
 if (!e.target.closest('.dropdown')) {
 document.querySelectorAll('.dropdown').forEach(dd => dd.classList.remove('show'));

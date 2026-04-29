@@ -533,7 +533,7 @@
                     const userStatus = getUserStatus(user);
                     if (userStatus === 'approved') {
                         if (DEBUG) console.log('DEBUG: Adding verified user to table:', user.name, user.email);
-                        document.getElementById('verified-users-tbody').innerHTML += rowWithEmail;
+                        document.getElementById('verified-users-tbody').innerHTML += rowWithoutActions;
                     } else if (userStatus === 'banned' || userStatus === 'rejected') {
                         document.getElementById('banned-users-tbody').innerHTML += rowWithEmail;
                     } else if (userStatus === 'pending') {

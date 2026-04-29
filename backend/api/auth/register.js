@@ -18,6 +18,19 @@ function getPhilippineISOString(date = new Date()) {
   return philippineTime.toISOString();
 }
 
+// Helper to get descriptive role name for database storage
+function getDescriptiveRole(userType) {
+  const map = {
+    'senior_high': 'Senior High',
+    'college': 'College',
+    'educator': 'Educator',
+    'admin': 'Admin',
+    'coadmin': 'Co-Admin',
+    'subadmin': 'Sub-Admin'
+  };
+  return map[userType] || 'User';
+}
+
 // Helper to set CORS headers
 function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -39,7 +52,8 @@ function generateToken(user) {
   const payload = {
     id: user.id,
     email: user.email,
-    role: user.user_type,
+    user_type: user.user_type,
+    role: user.role,
     name: user.name
   };
   return jwt.sign(payload, config.jwt.secret, { expiresIn: config.jwt.expiry });
@@ -138,7 +152,7 @@ async function handleRegister(req, res) {
       email: email.toLowerCase(),
       password: hashedPassword,
       fullname: fullname,
-      role: 'user',  // Standard role for permissions
+      role: getDescriptiveRole(userRole),  // Naming only
       user_type: userRole,  // Specific user category
       verified: isAdminRole,  // Admin roles are verified immediately
       isactive: isAdminRole,  // Admin roles are active immediately
@@ -301,8 +315,8 @@ async function handleLogin(req, res) {
 
       // Check if user is active
       // Allow login for active users or admin/coadmin/subadmin roles
-      console.log('User active check:', { isactive: user.isactive, user_type: user.user_type, role: user.role });
-      const isAdminRole = user.user_type === 'admin' || user.user_type === 'coadmin' || user.user_type === 'subadmin';
+      console.log('User active check:', { isactive: user.isactive, user_type: user.user_type });
+      const isAdminRole = ['admin', 'coadmin', 'subadmin'].includes(user.user_type);
       if (!user.isactive && !isAdminRole) {
         console.log('User not active and not admin role - blocking login');
         res.statusCode = 403;
@@ -323,7 +337,8 @@ async function handleLogin(req, res) {
           id: user.id,
           email: user.email,
           fullname: user.fullname,
-          role: user.user_type,
+          role: user.role, // Descriptive name
+          user_type: user.user_type, // Permission identifier
           isactive: user.isactive
         }
       }));
@@ -386,7 +401,7 @@ async function handleProfile(req, res) {
       const userId = profile ? profile.id : auth.id;
       const { data, error } = await supabase
         .from('users')
-        .select('id, email, fullname, user_type as role, verified, created_at')
+        .select('id, email, fullname, role, user_type, verified, created_at')
         .eq('id', userId)
         .single();
 
@@ -655,7 +670,7 @@ async function handleActivate(req, res) {
         .update({ 
           verified: true,
           activation_token: null,
-          role: 'user' // Default role for activated users
+          role: getDescriptiveRole(users[0].user_type)
         })
         .eq('id', users[0].id);
 
@@ -702,7 +717,7 @@ async function handleApproveUser(req, res) {
     }
 
     // Check if admin
-    if (auth.role !== 'admin' && auth.role !== 'coadmin') {
+    if (auth.user_type !== 'admin' && auth.user_type !== 'coadmin') {
       res.statusCode = 403;
       res.end(JSON.stringify({ success: false, error: 'Admin access required' }));
       return;
@@ -735,9 +750,17 @@ async function handleApproveUser(req, res) {
       const user = users[0];
 
       if (action === 'approve') {
+        const descriptiveRole = getDescriptiveRole(user.user_type);
         await supabase
           .from('users')
-          .update({ verified: true, isactive: true, new_user: false, rejected_user: false, banned_user: false })
+          .update({ 
+            verified: true, 
+            isactive: true, 
+            new_user: false, 
+            rejected_user: false, 
+            banned_user: false,
+            role: descriptiveRole
+          })
           .eq('id', user.id);
 
         await emailService.sendApprovalNotification(user.email, user.fullname);

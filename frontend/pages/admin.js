@@ -2268,6 +2268,7 @@ if (DEBUG) console.log('DEBUG: User role check:', user.fullname, 'role:', user.r
 const isAdminRole = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || roleLower === 'Admin' || roleLower === 'Co-Admin' || roleLower === 'Sub-Admin';
 const isAdminByName = user.fullname && user.fullname.toLowerCase().includes('admin');
 if (DEBUG) console.log('DEBUG: isAdminRole:', isAdminRole, 'isAdminByName:', isAdminByName);
+if (DEBUG) console.log('DEBUG: isAdminRole (based on user.role):', isAdminRole, 'isAdminByName:', isAdminByName, 'user.user_type:', user.user_type);
 if (isAdminRole || isAdminByName) {
 if (DEBUG) console.log('DEBUG: Adding admin user to table:', user.fullname, user.email, 'role:', roleLower);
 // Determine role display based on role field or specific user names
@@ -2296,6 +2297,7 @@ const adminRow = `<tr>
 <td>${user.user_id || user.id}</td>
 <td>${getUserName(user)}</td>
 <td>${user.email || 'N/A'}</td>
+
 <td><span class="badge ${badgeClass}">${roleDisplay}</span></td>
 <td>${permissions}</td>
 <td>${formatDate(user.created_at)}</td>
@@ -2339,6 +2341,7 @@ const row = `<tr>
 <td>${user.name}</td>
 <td>${emailToUse}</td>
 <td>${formatRole(user.role)}</td>
+
 <td>${user.grade || '-'}</td>
 <td>${user.Sec_Degr || '-'}</td>
 <td>${date}</td>

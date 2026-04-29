@@ -2158,12 +2158,18 @@ window.users = filteredUsers; // Or assign to global users
  // Handle grade field variations
  user.grade = (user.grade && user.grade !== 'null' && user.grade !== 'undefined') ? user.grade : (user.Grade || user.year_level || '-');
 
- // Sec_Degr contains:
- // - For SHS: strand values (ABM, ITMAWD, STEM)
- // - For College: degree values (BSBA, BSCS, BSIT)
- user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
+  // Sec_Degr contains:
+  // - For SHS: strand values (ABM, ITMAWD, STEM)
+  // - For College: degree values (BSBA, BSCS, BSIT)
+  user.Sec_Degr = user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
 
- // Set appropriate display values based on role
+  // Debug: Log role and user_type to verify data
+  console.log('User:', user.fullname, 'role:', user.role, 'user_type:', user.user_type);
+
+  // Ensure role is set to the category for display (use role if it's the category, else user_type)
+  user.role = (user.role && user.role !== 'user') ? user.role : (user.user_type || user.role);
+
+  // Set appropriate display values based on role
  if (user.role !== 'senior_high') {
    user.grade = user.grade || 'N/A';
  }

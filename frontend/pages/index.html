@@ -3003,11 +3003,19 @@ window.supabaseHelpers = {
 
         function validateGrade() {
             const grade = signupGradeSelect.value;
-            if (!grade) {
+            if (!grade || grade === '') {
                 signupGradeError.style.display = 'flex';
                 signupGradeSelect.classList.add('input-error');
                 return false;
             } else {
+                // Validate that grade is one of the expected values
+                const validGrades = ['Grade 11', 'Grade 12'];
+                if (!validGrades.includes(grade)) {
+                    signupGradeError.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please select a valid grade level.';
+                    signupGradeError.style.display = 'flex';
+                    signupGradeSelect.classList.add('input-error');
+                    return false;
+                }
                 signupGradeError.style.display = 'none';
                 signupGradeSelect.classList.remove('input-error');
                 return true;
@@ -3291,7 +3299,7 @@ window.supabaseHelpers = {
                    console.log('DEBUG: Validation failed, not proceeding');
                    return;
                }
-              const grade = roleSelect.value === 'senior_high' ? document.getElementById('signup-grade').value : '';
+               const grade = roleSelect.value === 'senior_high' ? document.getElementById('signup-grade').value : '';
             const section = document.getElementById('signup-section').value;
 
             // Validate required fields
@@ -3307,6 +3315,14 @@ window.supabaseHelpers = {
                 }
             }
 
+            // Create combined Sec_Degr value
+            let secDegrValue;
+            if (role === 'senior_high') {
+                secDegrValue = grade && section ? `${grade} - ${section}` : (section || grade || null);
+            } else {
+                secDegrValue = section;
+            }
+
             // Create newUser object
             const newUser = {
                 id: userId,
@@ -3316,9 +3332,8 @@ window.supabaseHelpers = {
                   personal_email: email,
                 password: document.getElementById('signup-password').value,
                 role: role,
-                section: section,
                 grade: grade,
-                strand: section,
+                Sec_Degr: secDegrValue,
                 created_at: new Date().toISOString(),
                 verified: false,
                 isactive: false,
@@ -3358,21 +3373,21 @@ window.supabaseHelpers = {
            }
            localStorage.setItem('users', JSON.stringify(users));
 
-             // Create JSON data for server with file as base64
-              const signupData = {
-                  fullname,
-                  email,
-                  password: document.getElementById('signup-password').value,
-                  role,
-                  user_id: userId
-              };
+              // Create JSON data for server with file as base64
+               const signupData = {
+                   fullname,
+                   email,
+                   password: document.getElementById('signup-password').value,
+                   role,
+                   user_id: userId,
+                   Sec_Degr: secDegrValue || null
+               };
 
-              // Only send grade and section_degree for student roles
-              if (role === 'senior_high' || role === 'college') {
-                  signupData.grade = grade || null;
-                  signupData.section_degree = section || null;
-                  signupData.section = section || null;
-              }
+               // Only send grade and section_degree for student roles
+               if (role === 'senior_high' || role === 'college') {
+                   signupData.grade = grade || null;
+                   signupData.section_degree = section || null;
+               }
 
              // Add file if present
              if (requiredFile) {
@@ -3402,6 +3417,12 @@ window.supabaseHelpers = {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(data)
+                })
+                .catch(networkError => {
+                    console.error('Network error during signup:', networkError);
+                    document.getElementById('signup-message').innerHTML = '<span style="color: red;">Network error. Please check your connection and try again.</span>';
+                    document.getElementById('signup-message').style.display = 'block';
+                    return Promise.reject(networkError);
                 })
            .then(response => {
                 // Check response status before parsing JSON

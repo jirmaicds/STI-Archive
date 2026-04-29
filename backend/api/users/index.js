@@ -146,14 +146,21 @@ async function handleGetUsers(req, res) {
         // Use the role field for frontend role (admin, coadmin, subadmin, etc.)
         let role = user.role;
 
+        // Ensure grade field is properly handled
+        let processedGrade = user.grade;
+        if (user.grade === null || user.grade === undefined || user.grade === '') {
+          processedGrade = '-';
+        }
+
         // Debug admin users
         if (user.fullname && (user.fullname.includes('admin') || role === 'admin' || role === 'coadmin' || role === 'subadmin')) {
-          console.log('DEBUG API: Admin user mapping:', user.fullname, 'user_type:', user.user_type, 'role:', user.role, 'mapped_role:', role, 'verified:', user.verified);
+          console.log('DEBUG API: Admin user mapping:', user.fullname, 'user_type:', user.user_type, 'role:', user.role, 'mapped_role:', role, 'verified:', user.verified, 'grade:', processedGrade);
         }
 
         return {
           ...user,
-          role: role
+          role: role,
+          grade: processedGrade
         };
       });
 
@@ -511,38 +518,6 @@ async function handleGetUserCounts(req, res) {
 
     res.statusCode = 200;
     res.end(JSON.stringify(result));
-      
-      // Get all users for counting (include banned_user, rejected_user as they exist)
-      const selectFields = 'id, email, fullname, role, user_type, verified, banned_user, rejected_user';
-      const hasBannedColumn = true;
-      const { data: allUsers, error: allError } = await supabase
-        .from('users')
-        .select(selectFields);
-
-      if (allError) throw allError;
-      
-      // Calculate counts based on user_type
-      console.log('DEBUG API: All users for counting:', allUsers.map(u => ({ id: u.id, user_type: u.user_type, role: u.role, verified: u.verified })));
-
-      const userTypeUsers = allUsers.filter(u => u.user_type === 'user').length;
-      const adminUsers = allUsers.filter(u => ['admin', 'coadmin', 'subadmin'].includes(u.role)).length;
-      const newSignups = allUsers.filter(u => u.new_user === true).length;
-      const verifiedUsers = allUsers.filter(u => u.verified === true).length;
-
-      const result = {
-        success: true,
-        counts: {
-          adminUsers,
-          newSignups,
-          usersCount: userTypeUsers,
-          verifiedUsers
-        }
-      };
-
-      console.log('DEBUG API: Calculated counts:', result.counts);
-
-      res.statusCode = 200;
-      res.end(JSON.stringify(result));
   } catch (error) {
     console.error('Error getting user counts:', error);
     res.statusCode = 500;

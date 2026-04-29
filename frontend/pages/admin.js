@@ -2152,7 +2152,7 @@ window.users = filteredUsers; // Or assign to global users
 // Map fields for display - handle all field variations
 filteredUsers.forEach(user => {
 // Handle grade field variations
-user.grade = user.grade || user.Grade || user.year_level || '-';
+user.grade = (user.grade && user.grade !== 'null' && user.grade !== 'undefined') ? user.grade : (user.Grade || user.year_level || '-');
 
 // Sec_Degr contains:
 // - For SHS: strand values (ABM, ITMAWD, STEM)

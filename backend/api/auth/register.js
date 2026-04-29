@@ -96,12 +96,27 @@ async function handleRegister(req, res) {
   }
 
   // Parse JSON data with base64 file
-  const { email, password, fullname, role, grade, section, section_degree, file, filename, mimetype } = req.body;
+  const { email, password, fullname, role, grade, section, section_degree, Sec_Degr, file, filename, mimetype } = req.body;
 
   if (!email || !password || !fullname) {
     res.statusCode = 400;
     res.end(JSON.stringify({ success: false, error: 'Missing required fields' }));
     return;
+  }
+
+  // Validate grade for senior_high role
+  if (role === 'senior_high') {
+    if (!grade || grade === '') {
+      res.statusCode = 400;
+      res.end(JSON.stringify({ success: false, error: 'Grade is required for Senior High students' }));
+      return;
+    }
+    const validGrades = ['Grade 11', 'Grade 12'];
+    if (!validGrades.includes(grade)) {
+      res.statusCode = 400;
+      res.end(JSON.stringify({ success: false, error: 'Invalid grade level provided' }));
+      return;
+    }
   }
 
   // Prevent signing up as admin roles
@@ -130,10 +145,8 @@ async function handleRegister(req, res) {
       new_user: !isAdminRole,  // Regular users are new users initially
       rejected_user: false,   // No one starts as rejected
       banned_user: false,     // No one starts as banned
-       grade: grade || null,
-       Sec_Degr: section_degree || section || null,
-       strand: section_degree || section || null,
-       section: section_degree || section || null,
+        grade: grade || null,
+        Sec_Degr: Sec_Degr || section_degree || section || null,
       registration_assessment_form: null,
       educator_id: null,
       activation_token: activationToken,

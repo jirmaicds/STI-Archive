@@ -3324,7 +3324,7 @@
 </head>
 <body>
     <!-- ... [All your existing HTML structure remains unchanged] ... -->
-    <div id="welcome-modal" class="welcome-modal">
+    <div id="welcome-modal" class="welcome-modal" onclick="if(event.target === this) this.classList.remove('show');">
         <div class="welcome-modal-content">
             <h1>Welcome Admin!</h1>
             <p>Here's what's happening with your Website today</p>
@@ -3373,10 +3373,6 @@
                 <div class="card user-card" data-section="verified">
                     <h3>Users</h3>
                     <p id="verified-users-count">0</p>
-                </div>
-                <div class="card user-card" data-section="admins">
-                    <h3>Admin Users</h3>
-                    <p id="admin-users-count">0</p>
                 </div>
                 <div class="card user-card" data-section="signing-up">
                     <h3>New Signups</h3>

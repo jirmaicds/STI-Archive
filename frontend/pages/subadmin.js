@@ -86,20 +86,14 @@
                     .catch(error => {
                         console.error("Error sending rejection email:", error);
                     });
-                } else if (action === "ban") {
-                    users[userIndex].banned = true;
-                    users[userIndex].verified = false;
-                    users[userIndex].rejected = false;
-                    users[userIndex].status = "banned";
                 }
+
                 localStorage.setItem("users", JSON.stringify(users));
             }
             
-            // Call backend API for accept/ban actions to send emails
-            if ((action === "accept" || action === "ban") && userEmail) {
-                const endpoint = action === "accept" 
-                    ? "/api/auth/approve-user/" + encodeURIComponent(userEmail)
-                    : "/api/auth/ban-user/" + encodeURIComponent(userEmail);
+            // Call backend API for accept actions to send emails
+            if (action === "accept" && userEmail) {
+                const endpoint = "/api/auth/approve-user/" + encodeURIComponent(userEmail);
                 
                 fetch(endpoint, {
                     method: "POST",
@@ -140,9 +134,7 @@
                 if (action === "accept") {
                     newActions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button><button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button><button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button><button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${user.name}')">Remove</button></div>`;
                 } else if (action === "reject") {
-                    newActions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button><button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button><button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button><button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${user.name}')">Remove</button></div>`;
-                } else if (action === "ban") {
-                    newActions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button><button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button><button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button><button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${user.name}')">Remove</button></div>`;
+                    newActions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button><button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button><button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${user.name}')">Remove</button></div>`;
                 }
                 actionsTd.innerHTML = newActions;
                 if (DEBUG) console.log("Updated actions");
@@ -153,10 +145,6 @@
                 if (action === "reject") {
                     clonedRow.removeChild(clonedRow.cells[8]); // status
                     clonedRow.removeChild(clonedRow.cells[4]); // email
-                } else if (action === "ban") {
-                    clonedRow.removeChild(clonedRow.cells[8]); // status
-                    clonedRow.removeChild(clonedRow.cells[4]); // email
-                    clonedRow.removeChild(clonedRow.cells[0]); // checkbox
                 }
                 // Determine target tbody
                 let targetTbodyId = "";
@@ -167,8 +155,6 @@
                     currentRow.remove();
                     if (DEBUG) console.log("Removed rejected user from current table");
                     return;
-                } else if (action === "ban") {
-                    targetTbodyId = "banned-users-tbody";
                 }
                 // Append to target tbody
                 const targetTbody = document.getElementById(targetTbodyId);
@@ -489,7 +475,6 @@
                     actions = `
                         <div style="display: flex; flex-direction: column; gap: 4px;">
                             <button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button>
-                            <button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button>
                         </div>
                     `;
                 }
@@ -521,8 +506,6 @@
                 if (userStatus === 'approved') {
                     if (DEBUG) console.log('DEBUG: Adding verified user to table:', user.name, user.email);
                     document.getElementById('verified-users-tbody').innerHTML += rowWithoutCheckbox;
-                } else if (userStatus === 'banned' || userStatus === 'rejected') {
-                    document.getElementById('banned-users-tbody').innerHTML += rowWithoutCheckbox;
                 } else if (userStatus === 'pending') {
                     if (DEBUG) console.log('DEBUG: Adding signing-up user to table:', user.name, user.email);
                     document.getElementById('signing-up-users-tbody').innerHTML += rowWithCheckboxAndActions;
@@ -535,7 +518,6 @@
             // Apply pagination
             paginateTable('verified-users-tbody', 10);
             paginateTable('signing-up-users-tbody', 10);
-            paginateTable('banned-users-tbody', 10);
 
             console.log('loadUsers completed for subadmin');
             return users;

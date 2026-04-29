@@ -2871,7 +2871,7 @@
 </head>
 <body>
     <!-- ... [All your existing HTML structure remains unchanged] ... -->
-    <div id="welcome-modal" class="welcome-modal">
+    <div id="welcome-modal" class="welcome-modal" onclick="if(event.target === this) this.classList.remove('show');">
         <div class="welcome-modal-content">
             <h1>Welcome Admin!</h1>
             <p>Here's what's happening with your Website today</p>
@@ -2958,9 +2958,6 @@
                     </button>
                     <button class="nav-btn" data-section="signing-up">
                         <i class="fas fa-clock" style="margin-right: 8px;"></i>Signups
-                    </button>
-                    <button class="nav-btn" data-section="banned">
-                        <i class="fas fa-ban" style="margin-right: 8px;"></i>Banned
                     </button>
                 </div>
                 
@@ -3186,52 +3183,7 @@
                     </div>
                 </div>
 
-                <!-- Banned Users Section -->
-                <div id="banned-section" class="user-subsection" style="--border-color: #dc3545; --header-color: #dc3545;">
-                    <h4 style="color: var(--header-color); margin-bottom: 15px;"><i class="fas fa-ban" style="margin-right: 10px;"></i>Banned Users</h4>
-                    <div class="filters-section" style="margin-bottom: 15px;">
-                        <select id="role-filter-banned" onchange="updateFilters('banned')" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            <option value="">All Roles</option>
-                            <option value="student">Student</option>
-                            <option value="educator">Educator</option>
-                        </select>
-                        <select id="grade-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Grades</option>
-                            <option value="11">Grade 11</option>
-                            <option value="12">Grade 12</option>
-                        </select>
-                        <select id="strand-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Strands</option>
-                            <option value="abm">ABM</option>
-                            <option value="itmawd">ITMAWD</option>
-                            <option value="stem">STEM</option>
-                        </select>
-                        <select id="degree-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Degrees</option>
-                            <option value="bsba">BSBA</option>
-                            <option value="bscs">BSCS</option>
-                            <option value="bsit">BSIT</option>
-                        </select>
-                        <select id="dept-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; display: none;">
-                            <option value="">All Departments</option>
-                            <option value="shs">SHS</option>
-                            <option value="college">College</option>
-                        </select>
-                        <select id="search-filter-banned" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                            <option value="name">Search by Name</option>
-                            <option value="email">Search by Email</option>
-                        </select>
-                        <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'banned', document.getElementById('search-filter-banned').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                    </div>
-                    <div class="table-container">
-                        <table id="banned-users-table">
-                            <thead><tr><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Banned</th><th>Raf/Edu_ID</th></tr></thead>
-                            <tbody id="banned-users-tbody"></tbody>
-                        </table>
-                        <div id="banned-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
-                    </div>
-                    </div>
-                </div>
+
             </div>
         </div>
 

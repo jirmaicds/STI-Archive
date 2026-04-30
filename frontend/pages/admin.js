@@ -1937,6 +1937,9 @@ if (toggleBtn) {
 toggleBtn.addEventListener('click', toggleSidebar);
 }
 
+// Add event listener to close sidebar when clicking outside on mobile
+closeSidebarOnOutsideClick();
+
 // Setup notification controls
 const markSelectedReadBtn = document.getElementById('mark-selected-read');
 const deleteSelectedBtn = document.getElementById('delete-selected');
@@ -2679,6 +2682,21 @@ mainContent.style.marginLeft = marginValue;
 header.style.paddingLeft = paddingValue;
 body.classList.remove('sidebar-collapsed');
 }
+}
+}
+
+// Function to close sidebar when clicking outside on mobile
+function closeSidebarOnOutsideClick() {
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('sidebar-overlay');
+
+if (overlay) {
+overlay.addEventListener('click', function() {
+if (window.innerWidth <= 767) {
+sidebar.classList.remove('open');
+overlay.classList.remove('show');
+}
+});
 }
 }
 

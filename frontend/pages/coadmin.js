@@ -1965,6 +1965,40 @@
             });
         }
 
+        // === SIDEBAR FUNCTIONS ===
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const mainContent = document.querySelector('.main-content');
+            const header = document.querySelector('.header');
+            // Check if mobile view
+            if (window.innerWidth <= 767) {
+                // Mobile: toggle overlay and sidebar
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('show');
+            } else {
+                // Desktop/tablet: collapse sidebar
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('sidebar-collapsed');
+                header.classList.toggle('sidebar-collapsed');
+            }
+        }
+
+        // Function to close sidebar when clicking outside on mobile
+        function closeSidebarOnOutsideClick() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            if (overlay) {
+                overlay.addEventListener('click', function() {
+                    if (window.innerWidth <= 767) {
+                        sidebar.classList.remove('open');
+                        overlay.classList.remove('show');
+                    }
+                });
+            }
+        }
+
         // === INIT ===
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('Coadmin page DOMContentLoaded fired');
@@ -1990,17 +2024,13 @@
 
             // Set up sidebar toggle
             const toggleBtn = document.getElementById('toggle-btn');
-            const sidebar = document.querySelector('.sidebar');
-            const mainContent = document.querySelector('.main-content');
-            const header = document.querySelector('.header');
 
-            if (toggleBtn && sidebar && mainContent && header) {
-                toggleBtn.addEventListener('click', function() {
-                    sidebar.classList.toggle('collapsed');
-                    mainContent.classList.toggle('sidebar-collapsed');
-                    header.classList.toggle('sidebar-collapsed');
-                });
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', toggleSidebar);
             }
+
+            // Add event listener to close sidebar when clicking outside on mobile
+            closeSidebarOnOutsideClick();
 
             // Set up dark mode toggle
             if (darkModeToggle) {

@@ -2003,6 +2003,99 @@ sidebarLinks.forEach(link => {
     });
 });
 
+// Setup dashboard card navigation
+function setupDashboardCardNavigation() {
+    const dashboardCards = document.querySelectorAll('.dashboard .card');
+
+    dashboardCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            e.preventDefault();
+            const section = this.getAttribute('data-section');
+            const cardId = this.id;
+
+            handleDashboardCardClick(section, cardId);
+        });
+    });
+}
+
+// Handle dashboard card clicks with role-based routing
+function handleDashboardCardClick(section, cardId) {
+    if (DEBUG) console.log('DEBUG: Dashboard card clicked:', section, cardId);
+
+    // Role-based access control
+    const userRole = getCurrentUserRole(); // We'll need to implement this
+
+    // Define navigation mapping based on role and card
+    let targetSection = null;
+    let targetSubsection = null;
+
+    if (section === 'verified') {
+        targetSection = 'users';
+        targetSubsection = 'verified-section';
+    } else if (section === 'admins' && userRole === 'admin') {
+        targetSection = 'users';
+        targetSubsection = 'admins-section';
+    } else if (section === 'signing-up') {
+        targetSection = 'users';
+        targetSubsection = 'signing-up-section';
+    } else if (cardId === 'upload-card' && (userRole === 'admin' || userRole === 'coadmin')) {
+        targetSection = 'upload';
+    }
+
+    if (targetSection) {
+        navigateToSection(targetSection, targetSubsection);
+    } else {
+        console.warn('No access to section:', section, 'for role:', userRole);
+    }
+}
+
+// Get current user role (implement based on your auth system)
+function getCurrentUserRole() {
+    // Check URL or stored role to determine user type
+    const currentPath = window.location.pathname;
+    if (currentPath.includes('admin.html')) return 'admin';
+    if (currentPath.includes('coadmin.html')) return 'coadmin';
+    if (currentPath.includes('subadmin.html')) return 'subadmin';
+    return 'admin'; // default
+}
+
+// Navigate to section with optional subsection scrolling
+function navigateToSection(sectionId, subsectionId = null) {
+    if (DEBUG) console.log('DEBUG: Navigating to section:', sectionId, 'subsection:', subsectionId);
+
+    // If we're already on the dashboard and clicking a card, navigate to the section
+    const currentSection = document.querySelector('.content-section.active');
+    if (currentSection && currentSection.id === 'dashboard') {
+        // Navigate to the target section
+        handleSidebarClick({ target: document.querySelector(`[data-section="${sectionId}"]`) }, sectionId);
+
+        // After navigation, scroll to subsection if specified
+        if (subsectionId) {
+            setTimeout(() => {
+                scrollToSubsection(subsectionId);
+            }, 100); // Small delay to allow DOM update
+        }
+    } else {
+        // Already in a section, just scroll within current section
+        if (subsectionId) {
+            scrollToSubsection(subsectionId);
+        }
+    }
+}
+
+// Smooth scroll to subsection
+function scrollToSubsection(subsectionId) {
+    const element = document.getElementById(subsectionId);
+    if (element) {
+        element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    } else {
+        console.warn('Subsection not found:', subsectionId);
+    }
+}
+
 
 // === SEND UPDATE MODAL FUNCTIONS ===
 function openSendUpdateModal(email, name) {
@@ -2856,6 +2949,9 @@ const section = this.getAttribute('data-section');
 handleSidebarClick(event, section);
 });
 });
+
+// Setup dashboard card navigation
+setupDashboardCardNavigation();
 });
 
 // Add event listener for profile avatar

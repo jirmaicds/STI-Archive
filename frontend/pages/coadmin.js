@@ -1999,6 +1999,93 @@
             }
         }
 
+        // === DASHBOARD NAVIGATION ===
+        function setupDashboardCardNavigation() {
+            const dashboardCards = document.querySelectorAll('.dashboard .card');
+
+            dashboardCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.getAttribute('data-section');
+                    const cardId = this.id;
+
+                    handleDashboardCardClick(section, cardId);
+                });
+            });
+        }
+
+        // Handle dashboard card clicks with role-based routing
+        function handleDashboardCardClick(section, cardId) {
+            // Role-based access control
+            const userRole = 'coadmin'; // Coadmin page
+
+            // Define navigation mapping
+            let targetSection = null;
+            let targetSubsection = null;
+
+            if (section === 'verified') {
+                targetSection = 'users';
+                targetSubsection = 'verified-section';
+            } else if (section === 'signing-up') {
+                targetSection = 'users';
+                targetSubsection = 'signing-up-section';
+            } else if (cardId === 'upload-card') {
+                targetSection = 'upload';
+            }
+
+            if (targetSection) {
+                navigateToSection(targetSection, targetSubsection);
+            }
+        }
+
+        // Navigate to section with optional subsection scrolling
+        function navigateToSection(sectionId, subsectionId = null) {
+            // If we're already on the dashboard and clicking a card, navigate to the section
+            const currentSection = document.querySelector('.content-section.active');
+            if (currentSection && currentSection.id === 'dashboard') {
+                // Navigate to the target section (coadmin style)
+                const sidebarLink = document.querySelector(`.sidebar a[data-section="${sectionId}"]`);
+                if (sidebarLink && sectionTemplates[sectionId]) {
+                    // Remove active class from all sidebar items
+                    document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
+                    // Add active class to target item
+                    sidebarLink.parentElement.classList.add('active');
+
+                    // Inject selected section
+                    const mainContent = document.getElementById('main-content');
+                    mainContent.innerHTML = sectionTemplates[sectionId];
+
+                    // Special handling for notifications section
+                    if (sectionId === 'notifications') {
+                        loadAllNotifications();
+                    }
+
+                    // After navigation, scroll to subsection if specified
+                    if (subsectionId) {
+                        setTimeout(() => {
+                            scrollToSubsection(subsectionId);
+                        }, 100);
+                    }
+                }
+            } else {
+                // Already in a section, just scroll within current section
+                if (subsectionId) {
+                    scrollToSubsection(subsectionId);
+                }
+            }
+        }
+
+        // Smooth scroll to subsection
+        function scrollToSubsection(subsectionId) {
+            const element = document.getElementById(subsectionId);
+            if (element) {
+                element.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+
         // === INIT ===
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('Coadmin page DOMContentLoaded fired');
@@ -2021,6 +2108,9 @@
 
             // Set up navigation
             setupNavigation();
+
+            // Setup dashboard card navigation
+            setupDashboardCardNavigation();
 
             // Set up sidebar toggle
             const toggleBtn = document.getElementById('toggle-btn');

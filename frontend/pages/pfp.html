@@ -6367,25 +6367,23 @@
             const fileData = e.target.result;
             
             const uploadData = {
-                userId: currentUser.user_id,
-                userEmail: currentUser.email,
-                userName: currentUser.name,
-                title: document.getElementById('upload-title').value,
-                authors: document.getElementById('upload-authors').value,
-                abstract: document.getElementById('upload-abstract').value,
-                category: document.getElementById('upload-category').value,
-                level: document.getElementById('upload-level').value,
-                strand: document.getElementById('upload-strand').value,
-                year: document.getElementById('upload-year').value,
-                citation: document.getElementById('upload-citation').value,
+                title: document.getElementById('doc-title').value,
+                author: document.getElementById('doc-author').value,
+                citation: document.getElementById('doc-description').value,
                 fileData: fileData,
                 filename: selectedUserPdfFile.name
             };
             
             try {
+                const token = localStorage.getItem('sti_auth_token');
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
                 const response = await fetch('/api/user/upload', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: headers,
                     body: JSON.stringify(uploadData)
                 });
                 

@@ -952,9 +952,105 @@ async function handleUserEditorContent(req, res, body) {
 async function handleUserUpload(req, res, body) {
   setCorsHeaders(res);
   if (req.method === 'OPTIONS') { handleOptions(res); return; }
-  
-  res.statusCode = 200;
-  res.end(JSON.stringify({ success: true, message: 'Upload endpoint' }));
+
+  if (req.method !== 'POST') {
+    res.statusCode = 405;
+    res.end(JSON.stringify({ success: false, error: 'Method not allowed' }));
+    return;
+  }
+
+  try {
+    // Check authorization
+    const authHeader = req.headers.authorization;
+    let currentUser = null;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      currentUser = verifyToken(token);
+    }
+
+    if (!currentUser) {
+      res.statusCode = 401;
+      res.end(JSON.stringify({ success: false, error: 'Unauthorized' }));
+      return;
+    }
+
+    // Parse the JSON body
+    const { title, author, citation, fileData, filename } = body;
+
+    if (!title || !fileData || !filename) {
+      res.statusCode = 400;
+      res.end(JSON.stringify({ success: false, error: 'Missing required fields: title, fileData, filename' }));
+      return;
+    }
+
+    // Decode base64 file data
+    const buffer = Buffer.from(fileData, 'base64');
+
+    // Get file extension and create safe filename
+    const fileExt = filename.split('.').pop().toLowerCase();
+    const timestamp = Date.now();
+    const safeFilename = `${currentUser.user_id}_${timestamp}_${filename.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+
+    // Upload to Supabase storage
+    const supabase = getSupabase();
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('user-uploads')
+      .upload(safeFilename, buffer, {
+        contentType: `application/${fileExt}`,
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.error('Storage upload error:', uploadError);
+      res.statusCode = 500;
+      res.end(JSON.stringify({ success: false, error: 'Failed to upload file to storage' }));
+      return;
+    }
+
+    // Get public URL
+    const { data: publicUrlData } = supabase.storage
+      .from('user-uploads')
+      .getPublicUrl(safeFilename);
+
+    const fileUrl = publicUrlData.publicUrl;
+
+    // Save metadata to database
+    const uploadRecord = {
+      user_id: currentUser.user_id,
+      title: title,
+      description: citation || '',
+      file_name: filename,
+      file_path: fileUrl,
+      status: 'pending',
+      created_at: new Date().toISOString()
+    };
+
+    const { data: dbData, error: dbError } = await supabase
+      .from('user_uploads')
+      .insert([uploadRecord])
+      .select();
+
+    if (dbError) {
+      console.error('Database insert error:', dbError);
+      // Try to clean up the uploaded file
+      await supabase.storage.from('user-uploads').remove([safeFilename]);
+      res.statusCode = 500;
+      res.end(JSON.stringify({ success: false, error: 'Failed to save upload metadata' }));
+      return;
+    }
+
+    res.statusCode = 200;
+    res.end(JSON.stringify({
+      success: true,
+      message: 'Upload submitted successfully! Pending admin approval.',
+      upload: dbData[0]
+    }));
+
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.statusCode = 500;
+    res.end(JSON.stringify({ success: false, error: 'Internal server error' }));
+  }
 }
 
 async function handleUserUploadsId(req, res, userId) {

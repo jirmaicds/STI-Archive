@@ -3194,6 +3194,8 @@
         }
 
         // Load saved articles from localStorage and Couchbase
+        let savedArticlesCurrentPage = 1;
+
         function loadSavedArticles() {
             const container = document.querySelector('.saved-studies-container');
             if (!container) return;
@@ -3205,7 +3207,6 @@
             displayArticles(localArticles);
 
             function displayArticles(articles) {
-                let currentPage = 1;
                 const articlesPerPage = 5;
                 if (articles.length === 0) {
                     const noItemsDiv = document.createElement('div');
@@ -3225,7 +3226,7 @@
                 const totalPages = Math.ceil(sortedArticles.length / articlesPerPage);
 
                 // Display current page of articles
-                const startIndex = (currentPage - 1) * articlesPerPage;
+                const startIndex = (savedArticlesCurrentPage - 1) * articlesPerPage;
                 const endIndex = startIndex + articlesPerPage;
                 const articlesToDisplay = sortedArticles.slice(startIndex, endIndex);
 
@@ -3278,48 +3279,54 @@
                 const prevBtn = document.getElementById('prev-page-btn');
                 const nextBtn = document.getElementById('next-page-btn');
 
-                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-                prevBtn.disabled = currentPage === 1;
-                nextBtn.disabled = currentPage === totalPages;
+                if (pageInfo) pageInfo.textContent = `Page ${savedArticlesCurrentPage} of ${totalPages}`;
+                if (prevBtn) prevBtn.disabled = savedArticlesCurrentPage === 1;
+                if (nextBtn) nextBtn.disabled = savedArticlesCurrentPage === totalPages;
 
-                paginationDiv.style.display = 'flex';
+                if (paginationDiv) paginationDiv.style.display = 'flex';
             }
 
             // Pagination button event listeners
-            document.getElementById('prev-page-btn').onclick = () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    loadSavedArticles();
-                }
-            };
+            const prevBtn = document.getElementById('prev-page-btn');
+            if (prevBtn) {
+                prevBtn.onclick = () => {
+                    if (savedArticlesCurrentPage > 1) {
+                        savedArticlesCurrentPage--;
+                        loadSavedArticles();
+                    }
+                };
+            }
 
-            document.getElementById('next-page-btn').onclick = () => {
-                const localArticles = JSON.parse(localStorage.getItem('savedArticles')) || [];
-                fetch('/api/saved-articles')
-                    .then(response => response.json())
-                    .then(data => {
-                        const couchbaseArticles = data.articles || [];
-                        const allArticles = [...localArticles];
-                        couchbaseArticles.forEach(cb => {
-                            if (!allArticles.some(local => local.title === cb.title)) {
-                                allArticles.push(cb);
+            const nextBtn = document.getElementById('next-page-btn');
+            if (nextBtn) {
+                nextBtn.onclick = () => {
+                    const localArticles = JSON.parse(localStorage.getItem('savedArticles')) || [];
+                    fetch('/api/saved-articles')
+                        .then(response => response.json())
+                        .then(data => {
+                            const couchbaseArticles = data.articles || [];
+                            const allArticles = [...localArticles];
+                            couchbaseArticles.forEach(cb => {
+                                if (!allArticles.some(local => local.title === cb.title)) {
+                                    allArticles.push(cb);
+                                }
+                            });
+                            const totalPages = Math.ceil(allArticles.length / articlesPerPage);
+                            if (savedArticlesCurrentPage < totalPages) {
+                                savedArticlesCurrentPage++;
+                                loadSavedArticles();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error loading from Couchbase:', error);
+                            const totalPages = Math.ceil(localArticles.length / articlesPerPage);
+                            if (savedArticlesCurrentPage < totalPages) {
+                                savedArticlesCurrentPage++;
+                                loadSavedArticles();
                             }
                         });
-                        const totalPages = Math.ceil(allArticles.length / articlesPerPage);
-                        if (currentPage < totalPages) {
-                            currentPage++;
-                            loadSavedArticles();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading from Couchbase:', error);
-                        const totalPages = Math.ceil(localArticles.length / articlesPerPage);
-                        if (currentPage < totalPages) {
-                            currentPage++;
-                            loadSavedArticles();
-                        }
-                    });
-            };
+                };
+            }
         }
 
         // Load uploaded files from server
@@ -6211,7 +6218,7 @@
             const mainContent = document.querySelector('.main-content');
             if (!mainContent) return;
 
-            const tabs = document.querySelectorAll('.profile-tabs .tab-btn');
+            const tabs = document.querySelectorAll('.tabs-left-sidebar .tab-btn');
 
             // Clear any existing dynamic containers
             const existingCited = mainContent.querySelector('.cited-container');
@@ -6232,7 +6239,7 @@
             if (typeof loadCitedArticles === 'function') {
                 loadCitedArticles();
             }
-            tabs[1].classList.add('active');
+            if (tabs[1]) tabs[1].classList.add('active');
         }
 
         // Function to show Saved Studies tab
@@ -6240,7 +6247,7 @@
             const mainContent = document.querySelector('.main-content');
             if (!mainContent) return;
 
-            const tabs = document.querySelectorAll('.profile-tabs .tab-btn');
+            const tabs = document.querySelectorAll('.tabs-left-sidebar .tab-btn');
 
             // Clear any existing dynamic containers
             const existingCited = mainContent.querySelector('.cited-container');
@@ -6257,11 +6264,14 @@
             savedContainer.style.cssText = 'display: flex; align-items: center; justify-content: center; min-height: 400px; width: 100%; flex-direction: column;';
             mainContent.appendChild(savedContainer);
 
+            // Reset page
+            savedArticlesCurrentPage = 1;
+
             // Load saved articles
             if (typeof loadSavedArticles === 'function') {
                 loadSavedArticles();
             }
-            tabs[2].classList.add('active');
+            if (tabs[2]) tabs[2].classList.add('active');
         }
 
         // Function to open upload modal

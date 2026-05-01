@@ -2599,7 +2599,7 @@
         <div class="tabs-left-sidebar">
             <button class="tab-btn active" onclick="showMyUploadsTab('myuploads', event)">My Uploads</button>
             <button class="tab-btn" onclick="showCited('cited', event)">Cited</button>
-            <button class="tab-btn" onclick="showSavedArticles('saved-articles', event)">Saved Article</button>
+            <button class="tab-btn" onclick="showSavedArticles('saved-articles', event)">Saved Studies</button>
         </div>
         
 
@@ -2649,19 +2649,7 @@
                         </div>
                     </div>
 
-                    <!-- Cited Container -->
-                    <div id="cited-list-container" style="display: none;">
-                        <div id="cited-articles-container" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
-                            <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No cited articles yet</p>
-                        </div>
-                    </div>
 
-                    <!-- Saved Articles Container -->
-                    <div id="saved-articles-container" style="display: none;">
-                        <div id="saved-articles-list" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
-                            <p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No saved articles yet</p>
-                        </div>
-                    </div>
 
                 </div>
 
@@ -3207,7 +3195,7 @@
 
         // Load saved articles from localStorage and Couchbase
         function loadSavedArticles() {
-            const container = document.getElementById('saved-articles-container');
+            const container = document.querySelector('.saved-studies-container');
             if (!container) return;
 
             container.innerHTML = '';
@@ -3220,8 +3208,13 @@
                 let currentPage = 1;
                 const articlesPerPage = 5;
                 if (articles.length === 0) {
-                    container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;">No uploaded files yet.</p>';
-                    document.getElementById('articles-pagination').style.display = 'none';
+                    const noItemsDiv = document.createElement('div');
+                    noItemsDiv.className = 'no-items-message';
+                    noItemsDiv.textContent = 'No Saved Studies Yet.';
+                    noItemsDiv.style.cssText = 'font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent; width: 100%;';
+                    container.appendChild(noItemsDiv);
+                    const pagination = document.getElementById('articles-pagination');
+                    if (pagination) pagination.style.display = 'none';
                     return;
                 }
 
@@ -3391,7 +3384,7 @@
 
         // Load cited articles from localStorage
         function loadCitedArticles() {
-            const container = document.getElementById('cited-articles-list');
+            const container = document.querySelector('.cited-container');
             if (!container) return;
 
             container.innerHTML = '';
@@ -3400,7 +3393,11 @@
             const citedArticles = JSON.parse(localStorage.getItem('citedArticles')) || [];
 
             if (citedArticles.length === 0) {
-                container.innerHTML = '<p class="no-items-message" style="font-size: 48px; text-align: center; color: #666; font-weight: bold; width: 100%; background: transparent;">No uploaded files yet</p>';
+                const noItemsDiv = document.createElement('div');
+                noItemsDiv.className = 'no-items-message';
+                noItemsDiv.textContent = 'No Cited Yet.';
+                noItemsDiv.style.cssText = 'font-size: 48px; text-align: center; color: #666; font-weight: bold; background: transparent;';
+                container.appendChild(noItemsDiv);
                 return;
             }
 
@@ -6175,17 +6172,17 @@
             const savedArticlesContainer = document.getElementById('saved-articles-container');
 
             const tabs = document.querySelectorAll('.profile-tabs .tab-btn');
-            
+
             // Hide all containers first
             if (myUploadsList) myUploadsList.style.display = 'none';
             if (uploadForm) uploadForm.style.display = 'none';
             if (citedContainer) citedContainer.style.display = 'none';
             if (savedArticlesContainer) savedArticlesContainer.style.display = 'none';
 
-            
+
             // Remove active from all tabs
             tabs.forEach(tab => tab.classList.remove('active'));
-            
+
             if (tabName === 'myuploads') {
                 if (myUploadsList) myUploadsList.style.display = 'block';
                 tabs[0].classList.add('active');
@@ -6198,15 +6195,73 @@
                 if (typeof loadCitedArticles === 'function') {
                     loadCitedArticles();
                 }
-                tabs[2].classList.add('active');
+                tabs[1].classList.add('active');
             } else if (tabName === 'saved-articles') {
                 if (savedArticlesContainer) savedArticlesContainer.style.display = 'flex';
                 // Load saved articles when tab is clicked
                 if (typeof loadSavedArticles === 'function') {
                     loadSavedArticles();
                 }
-                tabs[3].classList.add('active');
+                tabs[2].classList.add('active');
             }
+        }
+
+        // Function to show Cited tab
+        function showCited(tabName, event) {
+            const mainContent = document.querySelector('.main-content');
+            if (!mainContent) return;
+
+            const tabs = document.querySelectorAll('.profile-tabs .tab-btn');
+
+            // Clear any existing dynamic containers
+            const existingCited = mainContent.querySelector('.cited-container');
+            if (existingCited) existingCited.remove();
+            const existingSaved = mainContent.querySelector('.saved-studies-container');
+            if (existingSaved) existingSaved.remove();
+
+            // Remove active from all tabs
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Create cited container
+            const citedContainer = document.createElement('div');
+            citedContainer.className = 'cited-container';
+            citedContainer.style.cssText = 'display: flex; align-items: center; justify-content: center; min-height: 400px; width: 100%;';
+            mainContent.appendChild(citedContainer);
+
+            // Load cited articles
+            if (typeof loadCitedArticles === 'function') {
+                loadCitedArticles();
+            }
+            tabs[1].classList.add('active');
+        }
+
+        // Function to show Saved Studies tab
+        function showSavedArticles(tabName, event) {
+            const mainContent = document.querySelector('.main-content');
+            if (!mainContent) return;
+
+            const tabs = document.querySelectorAll('.profile-tabs .tab-btn');
+
+            // Clear any existing dynamic containers
+            const existingCited = mainContent.querySelector('.cited-container');
+            if (existingCited) existingCited.remove();
+            const existingSaved = mainContent.querySelector('.saved-studies-container');
+            if (existingSaved) existingSaved.remove();
+
+            // Remove active from all tabs
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Create saved studies container
+            const savedContainer = document.createElement('div');
+            savedContainer.className = 'saved-studies-container';
+            savedContainer.style.cssText = 'display: flex; align-items: center; justify-content: center; min-height: 400px; width: 100%; flex-direction: column;';
+            mainContent.appendChild(savedContainer);
+
+            // Load saved articles
+            if (typeof loadSavedArticles === 'function') {
+                loadSavedArticles();
+            }
+            tabs[2].classList.add('active');
         }
 
         // Function to open upload modal

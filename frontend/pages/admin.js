@@ -3771,7 +3771,7 @@ tbody.innerHTML += row;
 });
 }
 
-function navigateToUploads(type) { 
+function navigateToUploads(type) {
 try {
 if (DEBUG) console.log('navigateToUploads called with type:', type);
 // First show the upload section
@@ -3779,13 +3779,25 @@ document.querySelectorAll('.content-section').forEach(s => s.classList.remove('a
 document.getElementById('upload').classList.add('active');
 document.getElementById('page-title').textContent = 'Upload';
 
-// Hide all upload subsections and show admin uploads
+// Hide all upload subsections
 document.querySelectorAll('.upload-subsection').forEach(sub => sub.classList.remove('active'));
-document.getElementById('admin-uploads-section').classList.add('active');
 
-// Remove active from all nav buttons and add to Admin Uploads
+// Remove active from all nav buttons
 document.querySelectorAll('.upload-nav .nav-btn').forEach(btn => btn.classList.remove('active'));
+
+// Show the appropriate subsection based on type
+if (type === 'users') {
+document.getElementById('user-uploads-section').classList.add('active');
+document.getElementById('btn-user-uploads').classList.add('active');
+// Load user uploads for admin review
+loadUserUploadsForAdmin();
+} else {
+// Default to admin uploads
+document.getElementById('admin-uploads-section').classList.add('active');
 document.getElementById('btn-admin-uploads').classList.add('active');
+loadArticlesFromServerForAdmin();
+}
+
 if (DEBUG) console.log('navigateToUploads completed successfully');
 } catch (e) {
 console.error('Error in navigateToUploads:', e);
@@ -4056,6 +4068,12 @@ const section = card.getAttribute('data-section');
 navigateToUsers();
 showUserSection(section);
 });
+});
+
+// Add event listener for Recent Upload card
+document.getElementById('recent-upload-card').addEventListener('click', () => {
+navigateToUploads('users');
+showUploadSection('users', document.getElementById('btn-user-uploads'));
 });
 
 // Add event listeners for nav buttons

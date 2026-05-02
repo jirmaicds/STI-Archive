@@ -226,8 +226,36 @@
                         }
                     }).catch(function(error) {
                         console.error("Error sending verification email:", error);
-                    });
-                }
+            });
+        }
+
+        // Render admin uploads from server
+        function renderAdminUploadsFromServer(articles) {
+            const container = document.getElementById('admin-uploaded-articles');
+            if (!container) return;
+
+            if (!articles || articles.length === 0) {
+                container.innerHTML = '<p class="empty-state">No articles found.</p>';
+                return;
+            }
+
+            container.innerHTML = articles.map(article => `
+                <div class="article" data-id="${article.id}">
+                    <h3>${article.title}</h3>
+                    <div class="meta">Category: ${article.category} | Year: ${article.year}</div>
+                    <div class="summary">${article.abstract || 'No description available.'}</div>
+                </div>
+            `).join('');
+        }
+
+        // Placeholder functions for carousel functionality
+        function showCarouselItemsList() {
+            console.log('Carousel functionality not implemented in coadmin');
+        }
+
+        function loadArticlesForCarouselSelect() {
+            console.log('Carousel article selection not implemented in coadmin');
+        }
             }).catch(function() {
                 if (DEBUG) console.log("Load users failed, reloading page");
                 // Fallback if async fails
@@ -2053,8 +2081,9 @@
             } else if (section === 'signing-up') {
                 targetSection = 'users';
                 targetSubsection = 'signing-up-section';
-            } else if (cardId === 'upload-card') {
+            } else if (cardId === 'upload-card' || cardId === 'recent-upload-card') {
                 targetSection = 'upload';
+                targetSubsection = cardId === 'recent-upload-card' ? 'user-uploads-section' : null;
             }
 
             if (targetSection) {
@@ -2079,13 +2108,38 @@
                     const mainContent = document.getElementById('main-content');
                     mainContent.innerHTML = sectionTemplates[sectionId];
 
-                    // Special handling for notifications section
+                    // Special handling for different sections
                     if (sectionId === 'notifications') {
                         loadAllNotifications();
+                    } else if (sectionId === 'upload') {
+                        // For upload section, set up navigation and activate appropriate subsection
+                        setTimeout(() => {
+                            // Set up upload navigation event listeners
+                            document.querySelectorAll('.upload-nav .nav-btn[data-section]').forEach(btn => {
+                                btn.addEventListener('click', function() {
+                                    const section = this.getAttribute('data-section');
+                                    showUploadSection(section, this);
+                                });
+                            });
+
+                            // Activate the appropriate subsection
+                            if (subsectionId === 'user-uploads-section') {
+                                const userUploadsBtn = document.querySelector('#btn-user-uploads');
+                                if (userUploadsBtn) {
+                                    userUploadsBtn.click();
+                                }
+                            } else {
+                                // Default to admin uploads
+                                const adminUploadsBtn = document.querySelector('#btn-admin-uploads');
+                                if (adminUploadsBtn) {
+                                    adminUploadsBtn.click();
+                                }
+                            }
+                        }, 100);
                     }
 
-                    // After navigation, scroll to subsection if specified
-                    if (subsectionId) {
+                    // After navigation, scroll to subsection if specified (for non-upload sections)
+                    if (subsectionId && sectionId !== 'upload') {
                         setTimeout(() => {
                             scrollToSubsection(subsectionId);
                         }, 100);
@@ -2107,6 +2161,206 @@
                     behavior: 'smooth',
                     block: 'start'
                 });
+            }
+        }
+
+        // Upload section navigation
+        function showUploadSection(section, btnElement) {
+            // Hide all upload subsections
+            document.querySelectorAll('.upload-subsection').forEach(sub => sub.classList.remove('active'));
+            // Show the selected section
+            if (section === 'pdf-form') {
+                document.getElementById('upload-form-section').classList.add('active');
+            } else if (section === 'image-form') {
+                document.getElementById('image-form-section').classList.add('active');
+            } else if (section === 'admin') {
+                document.getElementById('admin-uploads-section').classList.add('active');
+                // Load admin articles
+                loadArticlesFromServerForAdmin();
+            } else if (section === 'users') {
+                document.getElementById('user-uploads-section').classList.add('active');
+                // Load user uploads for review
+                loadUserUploadsForAdmin();
+            } else if (section === 'carousel') {
+                document.getElementById('carousel-section').classList.add('active');
+                // Load carousel items
+                showCarouselItemsList();
+                loadArticlesForCarouselSelect();
+            }
+            // Update nav button active state
+            document.querySelectorAll('.upload-nav .nav-btn').forEach(btn => btn.classList.remove('active'));
+            if (btnElement) {
+                btnElement.classList.add('active');
+            }
+        }
+
+        // Load articles from server for admin uploads section
+        function loadArticlesFromServerForAdmin() {
+            fetch('/api/articles')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const articles = data.articles || [];
+                    localStorage.setItem('allArticles', JSON.stringify(articles));
+                    localStorage.setItem('adminArticles', JSON.stringify(articles));
+                    renderAdminUploadsFromServer(articles);
+                } else {
+                    console.error('Failed to load articles:', data.error);
+                    document.getElementById('admin-uploaded-articles').innerHTML = '<p class="empty-state">Failed to load articles</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching articles:', error);
+                document.getElementById('admin-uploaded-articles').innerHTML = '<p class="empty-state">Error loading articles</p>';
+            });
+        }
+
+        // Load user uploads for admin review
+        function loadUserUploadsForAdmin() {
+            return fetch('/api/admin/user-uploads')
+            .then(response => {
+                if (!response.ok) throw new Error('Server error');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    window.userUploadsData = data.uploads;
+                    renderUserUploads(data.uploads);
+                } else {
+                    console.error('Failed to load user uploads:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching user uploads:', error);
+            });
+        }
+
+        // Render user uploads in admin
+        function renderUserUploads(uploads) {
+            const container = document.getElementById('user-uploaded-articles');
+            if (!container) return;
+
+            if (!uploads || uploads.length === 0) {
+                container.innerHTML = '<p class="empty-state">No articles uploaded by users yet.</p>';
+                return;
+            }
+
+            container.innerHTML = uploads.map(upload => {
+                const hasPdf = upload.file_path && upload.filename.toLowerCase().endsWith('.pdf');
+                const safeTitle = upload.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const userInitials = (upload.userName || '').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'U';
+                const role = upload.userRole || 'unknown';
+                const program = upload.userProgram || 'N/A';
+
+                if (role === 'shs') {
+                    userMeta = `SHS Student - ${program}`;
+                } else if (role === 'college') {
+                    userMeta = `College Student - ${program}`;
+                } else {
+                    userMeta = `${role.charAt(0).toUpperCase() + role.slice(1)} - ${program}`;
+                }
+
+                return `
+                <div class="user-uploaded" data-id="${upload.id}">
+                <div class="user-info">
+                <div class="user-pfp">${userInitials}</div>
+                <div class="user-details">
+                <div class="user-fullname">${upload.userName}</div>
+                <div class="user-meta">${userMeta}</div>
+                </div>
+                </div>
+                <div class="uploaded-article" data-id="${upload.id}" ${hasPdf ? "onclick=\"displayArticlePDF('${upload.file_path}', '${safeTitle}')\" style=\"cursor: pointer;\"" : ''}>
+                <h3>${upload.title}${hasPdf ? ' <i class="fas fa-file-pdf" style="color: #dc3545; margin-left: 5px;"></i>' : ''}</h3>
+                <div class="summary">${upload.abstract || 'N/A'}</div>
+                <div class="meta">
+                <strong>Category:</strong> ${upload.category}<br>
+                <strong>Topic:</strong> ${upload.topic ? upload.topic.charAt(0).toUpperCase() + upload.topic.slice(1) : 'Not set'}<br>
+                <strong>Type:</strong> ${upload.type ? upload.type.charAt(0).toUpperCase() + upload.type.slice(1) : 'Not set'}<br>
+                <strong>Level:</strong> ${upload.level}<br>
+                <strong>Year:</strong> ${upload.year}
+                </div>
+                <div class="source-tag">
+                <strong>File:</strong> ${upload.filename}<br>
+                <strong>Status:</strong> <span style="color: ${upload.status === 'approved' ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">${upload.status.charAt(0).toUpperCase() + upload.status.slice(1)}</span><br>
+                <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}
+                </div>
+                <div class="actions">
+                ${upload.status === 'pending' ? `
+                <button class="upload-btn" onclick="approveUserUpload('${upload.id}')">
+                <i class="fas fa-check"></i> Approve
+                </button>
+                <button class="delete-btn" onclick="rejectUserUpload('${upload.id}')">
+                <i class="fas fa-times"></i> Reject
+                </button>
+                ` : ''}
+                <button class="edit-btn" onclick="toggleUserUploadEdit('${upload.id}')">
+                <i class="fas fa-edit"></i> Edit
+                </button>
+                </div>
+                </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // Approve user upload
+        async function approveUserUpload(id) {
+            try {
+                const response = await fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'approved' })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Upload approved successfully!');
+                    loadUserUploadsForAdmin();
+
+                    // Notify other pages of the update
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({ type: 'upload-approved', uploadId: id }, '*');
+                    } else {
+                        localStorage.setItem('lastUploadUpdate', Date.now().toString());
+                    }
+                } else {
+                    alert('Failed to approve upload: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error approving upload:', error);
+                alert('Failed to approve upload: ' + error.message);
+            }
+        }
+
+        // Reject user upload
+        async function rejectUserUpload(id) {
+            try {
+                const response = await fetch(`/api/admin/user-upload/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'rejected' })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Upload rejected!');
+                    loadUserUploadsForAdmin();
+                } else {
+                    alert('Failed to reject: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error rejecting upload:', error);
+                alert('Failed to reject upload: ' + error.message);
             }
         }
 

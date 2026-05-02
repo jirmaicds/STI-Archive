@@ -2943,10 +2943,18 @@ console.error('Main content not found');
 return;
 }
 
-const sectionHTML = sectionTemplates[sectionId];
+let sectionHTML = sectionTemplates[sectionId];
 if (!sectionHTML) {
-console.error('Section template not found:', sectionId);
-return;
+    // Fallback: try to find the section in the DOM
+    const sectionEl = document.getElementById(sectionId);
+    if (sectionEl) {
+        sectionHTML = sectionEl.innerHTML;
+        sectionEl.remove(); // remove it from DOM
+        sectionTemplates[sectionId] = sectionHTML; // store for future use
+    } else {
+        console.error('Section template not found:', sectionId);
+        return;
+    }
 }
 
 // Inject the section's HTML into main-content

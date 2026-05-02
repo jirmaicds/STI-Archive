@@ -3819,8 +3819,6 @@
                     <div class="settings-sidebar" style="width: 200px; padding: 20px; background-color: #f8f9fa; border-right: 1px solid #ddd;">
                         <ul style="list-style: none; padding: 0;">
                             <li style="padding: 10px 0; cursor: pointer;" onclick="showSettingsSection('account')">Account</li>
-                            <li onclick="showSettingsSection('terms-conditions')" style="cursor: pointer; padding-top: 10px; padding-bottom: 10px;">Terms & Conditions</li>
-                            <li onclick="showSettingsSection('privacy-policy')" style="cursor: pointer; padding-top: 10px;">Privacy Policy</li>
                         </ul>
                     </div>
                     <div class="settings-content" style="flex: 1; padding: 20px; min-height: calc(100vh - 200px);">
@@ -3846,28 +3844,7 @@
                                 </div><br><br>
                             </form>
                         </div>
-                        <div id="terms-conditions-settings" class="settings-subsection">
-                            <div class="editable-content" id="terms-content">
-                                <div class="content-text" id="terms-text" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 20px; background: #fff; border-radius: 8px; color: #333;"></div>
-                            </div>
-                                <div class="edit-mode" style="display: none;">
-                                    <textarea id="terms-textarea" rows="20" style="width: 100%; padding: 12px; border: 1px solid #bfc9d9; border-radius: 8px; font-size: 16px; outline: none;"></textarea>
-                                    <button onclick="saveContent('terms')" style="margin-top: 10px; background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Save</button>
-                                    <button onclick="cancelEdit('terms')" style="margin-left: 10px; background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="privacy-policy-settings" class="settings-subsection">
-                            <div class="editable-content" id="privacy-content">
-                                <div class="content-text" id="privacy-text" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 20px; background: #fff; border-radius: 8px; color: #333;"></div>
-                            </div>
-                                <div class="edit-mode" style="display: none;">
-                                    <textarea id="privacy-textarea" rows="20" style="width: 100%; padding: 12px; border: 1px solid #bfc9d9; border-radius: 8px; font-size: 16px; outline: none;"></textarea>
-                                    <button onclick="saveContent('privacy')" style="margin-top: 10px; background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Save</button>
-                                    <button onclick="cancelEdit('privacy')" style="margin-left: 10px; background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </div>

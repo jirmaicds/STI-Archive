@@ -2384,6 +2384,9 @@
             await loadUsers();
             await updateDashboardCounts();
 
+            // Update notification badge on page load
+            updateNotificationBadge();
+
             // Set up navigation
             setupNavigation();
 

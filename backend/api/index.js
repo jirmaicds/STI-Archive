@@ -1074,6 +1074,66 @@ async function handleUserUploadsId(req, res, userId) {
   }
 }
 
+// GET /api/uploads/approved - Get all approved uploads for public display
+async function handleApprovedUploads(req, res) {
+  setCorsHeaders(res);
+
+  if (req.method === 'OPTIONS') {
+    handleOptions(res);
+    return;
+  }
+
+  if (req.method !== 'GET') {
+    res.statusCode = 405;
+    res.end(JSON.stringify({ success: false, error: 'Method not allowed' }));
+    return;
+  }
+
+  try {
+    if (isSupabaseConfigured()) {
+      const supabase = getSupabase();
+
+      // Get only approved uploads with user info
+      const { data: uploads, error } = await supabase
+        .from('user_uploads')
+        .select(`
+          *,
+          users:user_id (
+            full_name,
+            first_name,
+            last_name,
+            role,
+            program
+          )
+        `)
+        .eq('status', 'approved')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Transform data to include user names
+      const transformedUploads = (uploads || []).map(upload => ({
+        ...upload,
+        userName: upload.users?.full_name ||
+                  (upload.users?.first_name && upload.users?.last_name ?
+                   `${upload.users.first_name} ${upload.users.last_name}` : 'Unknown User'),
+        userRole: upload.users?.role || 'unknown',
+        userProgram: upload.users?.program || 'N/A'
+      }));
+
+      res.statusCode = 200;
+      res.end(JSON.stringify({ success: true, uploads: transformedUploads }));
+    } else {
+      res.statusCode = 200;
+      res.end(JSON.stringify({ success: true, uploads: [] }));
+    }
+  } catch (error) {
+    console.error('Error getting approved uploads:', error);
+    res.statusCode = 500;
+    res.end(JSON.stringify({ success: false, error: error.message }));
+  }
+}
+
 // ============ ADMIN USER UPLOADS ROUTE ============
 async function handleAdminUserUploads(req, res) {
   setCorsHeaders(res);
@@ -1317,7 +1377,12 @@ module.exports = async function handler(req, res) {
         if (segments[1]) await handleAdminUserUploadId(req, res, segments[1], body);
         else await handleAdminUserUploads(req, res);
         break;
-        
+
+      case 'uploads':
+        if (segments[1] === 'approved') await handleApprovedUploads(req, res);
+        else { res.statusCode = 404; res.end(JSON.stringify({ success: false, error: 'Uploads endpoint not found' })); }
+        break;
+
       default:
         res.statusCode = 404;
         res.end(JSON.stringify({ success: false, error: 'Endpoint not found', path: segments[0] }));

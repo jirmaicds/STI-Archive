@@ -20,7 +20,7 @@ function handleOptions(res) {
 // GET /api/admin/user-uploads - Get all user uploads for admin
 async function handleGetUserUploads(req, res) {
   setCorsHeaders(res);
-  
+
   if (req.method === 'OPTIONS') {
     handleOptions(res);
     return;
@@ -33,13 +33,33 @@ async function handleGetUserUploads(req, res) {
   }
 
   try {
+    // Check admin authorization
+    const authHeader = req.headers.authorization;
+    let currentUser = null;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      const jwt = require('jsonwebtoken');
+      try {
+        currentUser = jwt.verify(token, require('../config/index.js').config.jwt.secret);
+      } catch (error) {
+        // Token invalid
+      }
+    }
+
+    // Check if user has admin/coadmin role
+    if (!currentUser || !['admin', 'coadmin'].includes(currentUser.role)) {
+      res.statusCode = 403;
+      res.end(JSON.stringify({ success: false, error: 'Admin access required' }));
+      return;
+    }
     if (isSupabaseConfigured()) {
       const supabase = getServiceSupabase();
       
-      // Get uploads with user info
+      // Get uploads with user info (show pending/unapproved for review)
       const { data: uploads, error } = await supabase
         .from('user_uploads')
         .select('*')
+        .eq('approved', false)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
@@ -109,7 +129,7 @@ async function handleGetUserUploads(req, res) {
 // PUT /api/admin/user-upload/[id] - Update user upload status
 async function handleUpdateUserUpload(req, res, uploadId) {
   setCorsHeaders(res);
-  
+
   if (req.method === 'OPTIONS') {
     handleOptions(res);
     return;
@@ -122,6 +142,25 @@ async function handleUpdateUserUpload(req, res, uploadId) {
   }
 
   try {
+    // Check admin authorization
+    const authHeader = req.headers.authorization;
+    let currentUser = null;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      const jwt = require('jsonwebtoken');
+      try {
+        currentUser = jwt.verify(token, require('../config/index.js').config.jwt.secret);
+      } catch (error) {
+        // Token invalid
+      }
+    }
+
+    // Check if user has admin/coadmin role
+    if (!currentUser || !['admin', 'coadmin'].includes(currentUser.role)) {
+      res.statusCode = 403;
+      res.end(JSON.stringify({ success: false, error: 'Admin access required' }));
+      return;
+    }
     const { status, topic, type } = req.body;
     
     if (isSupabaseConfigured()) {
@@ -129,6 +168,8 @@ async function handleUpdateUserUpload(req, res, uploadId) {
       
       const updateData = {};
       if (status) updateData.status = status;
+      if (status === 'approved') updateData.approved = true;
+      if (status === 'rejected') updateData.approved = false;
       if (topic) updateData.topic = topic;
       if (type) updateData.type = type;
       updateData.reviewed_at = new Date().toISOString();

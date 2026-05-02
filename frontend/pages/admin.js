@@ -631,7 +631,7 @@ return `
 </div>
 <div class="source-tag">
 <strong>File:</strong> ${upload.filename}<br>
-<strong>Status:</strong> <span style="color: ${upload.status === 'approved' ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">${upload.status}</span><br>
+                <strong>Status:</strong> <span style="color: ${upload.approved ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">${upload.approved ? 'Approved' : upload.status === 'rejected' ? 'Rejected' : 'Pending'}</span><br>
 <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}
 </div>
 <div class="actions">
@@ -790,16 +790,33 @@ method: 'PUT',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({ status: 'approved' })
 });
+
+if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`HTTP ${response.status}: ${errorText}`);
+}
+
 const result = await response.json();
 if (result.success) {
 alert('Upload approved successfully!');
+
+// Reload uploads and trigger real-time updates
 loadUserUploadsForAdmin();
+
+// Notify other pages of the update
+if (window.parent && window.parent !== window) {
+    // If in iframe, notify parent
+    window.parent.postMessage({ type: 'upload-approved', uploadId: id }, '*');
 } else {
-alert('Failed to approve: ' + result.error);
+    // Trigger local updates
+    localStorage.setItem('lastUploadUpdate', Date.now().toString());
+}
+} else {
+alert('Failed to approve upload: ' + (result.error || 'Unknown error'));
 }
 } catch (error) {
 console.error('Error approving upload:', error);
-alert('Failed to approve upload');
+alert('Failed to approve upload: ' + error.message);
 }
 }
 
@@ -811,16 +828,22 @@ method: 'PUT',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({ status: 'rejected' })
 });
+
+if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`HTTP ${response.status}: ${errorText}`);
+}
+
 const result = await response.json();
 if (result.success) {
 alert('Upload rejected!');
 loadUserUploadsForAdmin();
 } else {
-alert('Failed to reject: ' + result.error);
+alert('Failed to reject: ' + (result.error || 'Unknown error'));
 }
 } catch (error) {
 console.error('Error rejecting upload:', error);
-alert('Failed to reject upload');
+alert('Failed to reject upload: ' + error.message);
 }
 }
 
@@ -1503,6 +1526,20 @@ loadUsers().then(() => {
 if (DEBUG) console.log('DEBUG: User tables refreshed (section unchanged)');
 isReloadingUsers = false;
 });
+}
+});
+
+// Real-time updates for user uploads (poll every 30 seconds)
+setInterval(() => {
+if (document.getElementById('user-uploaded-articles')) {
+    loadUserUploadsForAdmin();
+}
+}, 30000);
+
+// Listen for upload approval notifications
+window.addEventListener('message', function(e) {
+if (e.data && e.data.type === 'upload-approved') {
+    loadUserUploadsForAdmin();
 }
 });
 

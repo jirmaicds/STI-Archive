@@ -974,16 +974,29 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'approved' })
                 });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
                 const result = await response.json();
                 if (result.success) {
                     alert('Upload approved successfully!');
                     loadUserUploadsForAdmin();
+
+                    // Notify other pages of the update
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({ type: 'upload-approved', uploadId: id }, '*');
+                    } else {
+                        localStorage.setItem('lastUploadUpdate', Date.now().toString());
+                    }
                 } else {
-                    alert('Failed to approve: ' + result.error);
+                    alert('Failed to approve: ' + (result.error || 'Unknown error'));
                 }
             } catch (error) {
                 console.error('Error approving upload:', error);
-                alert('Failed to approve upload');
+                alert('Failed to approve upload: ' + error.message);
             }
         }
 
@@ -2111,6 +2124,20 @@
 
             // Setup dashboard card navigation
             setupDashboardCardNavigation();
+
+            // Real-time updates for user uploads (poll every 30 seconds)
+            setInterval(() => {
+                if (document.getElementById('user-uploaded-articles')) {
+                    loadUserUploadsForAdmin();
+                }
+            }, 30000);
+
+            // Listen for upload approval notifications
+            window.addEventListener('message', function(e) {
+                if (e.data && e.data.type === 'upload-approved') {
+                    loadUserUploadsForAdmin();
+                }
+            });
 
             // Set up sidebar toggle
             const toggleBtn = document.getElementById('toggle-btn');

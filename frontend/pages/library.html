@@ -2631,17 +2631,17 @@
       articleDiv.setAttribute('data-year', article.year);
       articleDiv.setAttribute('data-topic', article.topic || '');
       articleDiv.setAttribute('data-type', article.type || article.qualitativeQuantitative || '');
-      
+
       // Store PDF ID for Couchbase retrieval
       if (article.pdfId) {
         articleDiv.setAttribute('data-pdf-id', article.pdfId);
       }
-      
+
       // Store PDF path for Studies folder PDFs
       if (article.pdfPath || article.pdf_path) {
         articleDiv.setAttribute('data-pdf-path', article.pdfPath || article.pdf_path);
       }
-      
+
       // Set type based on grade level
       let articleType = article.type || '';
       if (article.program === 'Grade 11') {
@@ -2655,8 +2655,8 @@
 
       // Add PDF indicator if article has PDF (pdfId for Couchbase, pdfPath/pdf_path for Studies)
       const hasPDF = article.pdfId || article.pdfPath || article.pdf_path;
-      const pdfIndicator = hasPDF ? 
-        `<span style="color: #dc3545; margin-left: 10px;" title="PDF available"><i class="fas fa-file-pdf"></i></span>` : 
+      const pdfIndicator = hasPDF ?
+        `<span style="color: #dc3545; margin-left: 10px;" title="PDF available"><i class="fas fa-file-pdf"></i></span>` :
         '';
 
       // Build URL parameters for myspace
@@ -2668,8 +2668,8 @@
       }
 
       // Add visual indicator for articles with PDF - clicking opens in myspace
-      const pdfNote = hasPDF ? 
-        `<span style="color: #28a745; font-size: 11px; margin-left: 10px;">Click to view PDF</span>` : 
+      const pdfNote = hasPDF ?
+        `<span style="color: #28a745; font-size: 11px; margin-left: 10px;">Click to view PDF</span>` :
         '';
 
       articleDiv.innerHTML = `
@@ -2686,10 +2686,82 @@
       `;
 
       allArticles.push(articleDiv);
-      
+
       // Note: Articles are now rendered via renderPage() which uses #articles-container
       // Don't append directly to .main container to avoid duplicate display
     });
+  }
+
+  // Load approved user uploads and display as cards
+  async function loadApprovedUserUploads() {
+    try {
+      const response = await fetch('/api/uploads/approved');
+      const result = await response.json();
+
+      if (result.success && result.uploads && result.uploads.length > 0) {
+        result.uploads.forEach(upload => {
+          const articleDiv = document.createElement('div');
+          articleDiv.className = 'article user-upload';
+          articleDiv.setAttribute('data-category', upload.category || 'user-upload');
+          articleDiv.setAttribute('data-level', upload.level || 'unknown');
+          articleDiv.setAttribute('data-program', upload.program || 'unknown');
+          articleDiv.setAttribute('data-year', new Date(upload.created_at || upload.uploadedAt).getFullYear().toString());
+          articleDiv.setAttribute('data-topic', upload.topic || '');
+          articleDiv.setAttribute('data-type', upload.type || '');
+
+          // Store upload info
+          articleDiv.setAttribute('data-upload-id', upload.id);
+          if (upload.file_path) {
+            articleDiv.setAttribute('data-pdf-path', upload.file_path);
+          }
+
+          const hasPDF = upload.file_path && upload.filename.toLowerCase().endsWith('.pdf');
+          const pdfIndicator = hasPDF ?
+            `<span style="color: #dc3545; margin-left: 10px;" title="PDF available"><i class="fas fa-file-pdf"></i></span>` :
+            '';
+
+          // Create a unique study ID for the upload
+          const studyId = 'upload_' + upload.id;
+
+          // Build URL parameters for viewing the upload
+          let viewUrl = '#';
+          if (hasPDF) {
+            viewUrl = upload.file_path; // Direct link to PDF
+          }
+
+          // Meta information
+          const metaInfo = [
+            upload.userName || 'Unknown Author',
+            upload.category || 'User Upload',
+            upload.level || 'Unknown Level',
+            upload.year || new Date(upload.created_at || upload.uploadedAt).getFullYear()
+          ].filter(Boolean).join(' • ');
+
+          articleDiv.innerHTML = `
+            <h3>
+              ${hasPDF ?
+                `<a href="${viewUrl}" target="_blank" style="text-decoration: none; color: inherit;" title="Click to view PDF">${upload.title}${pdfIndicator}</a>` :
+                `${upload.title}${pdfIndicator}`
+              }
+              <span style="color: #28a745; font-size: 11px; margin-left: 10px;">User Upload</span>
+            </h3>
+            <div class="meta">${metaInfo}</div>
+            <div class="summary">${upload.abstract || upload.description || 'No description available.'}</div>
+            <div class="actions">
+              <span onclick="saveArticle(this)">★ Save</span>
+              <span class="cited-counter" data-article-title="${upload.title.replace(/"/g, '&quot;')}">
+                <span>cited</span>
+                <span class="counter-value">0</span>
+              </span>
+            </div>
+          `;
+
+          allArticles.push(articleDiv);
+        });
+      }
+    } catch (error) {
+      console.error('Error loading approved user uploads:', error);
+    }
   }
 
   let currentPage = 1;
@@ -3372,7 +3444,18 @@
   document.addEventListener('DOMContentLoaded', async () => {
     await initializeArticles();
     loadUploadedArticles(); // Create DOM elements from localStorage
+    await loadApprovedUserUploads(); // Load approved user uploads
     showDefaultResearchView(); // Move them to .main
+
+    // Real-time updates for approved user uploads (poll every 30 seconds)
+    setInterval(async () => {
+      await loadApprovedUserUploads();
+      // Re-filter and re-render if needed
+      if (currentFilters && Object.keys(currentFilters).length > 0) {
+        filterArticles();
+      }
+    }, 30000);
+  });
 
     // Apply saved topic filter from localStorage (backup logic)
     const urlParams = new URLSearchParams(window.location.search);

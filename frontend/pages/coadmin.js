@@ -427,6 +427,17 @@
 
             const revenueEl = document.getElementById('revenue-count');
             if (revenueEl) revenueEl.textContent = totalUploads;
+
+            // Calculate recent uploads (last 7 days)
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+            const recentUploads = allArticles.filter(a => {
+                const uploadDate = new Date(a.created_at || a.uploaded_at || a.date);
+                return uploadDate >= sevenDaysAgo;
+            }).length;
+
+            const recentUploadEl = document.getElementById('recent-upload-count');
+            if (recentUploadEl) recentUploadEl.textContent = recentUploads;
         }
 
         async function loadUsers() {

@@ -1761,10 +1761,12 @@ document.querySelector('.admin-name').innerHTML = `<span class="a-prefix">${init
 document.querySelector('.profile-avatar').textContent = initial;
 }
 
-// Store section templates and remove from DOM
+// Store section templates and hide non-dashboard sections
 document.querySelectorAll('.content-section').forEach(section => {
 sectionTemplates[section.id] = section.innerHTML;
-section.remove();
+if (section.id !== 'dashboard') {
+section.style.display = 'none';
+}
 });
 
 // Show initial dashboard
@@ -2316,6 +2318,17 @@ window.users = filteredUsers; // Or assign to global users
                     user.Sec_Degr = (user.Sec_Degr && user.Sec_Degr !== '-') ? user.Sec_Degr : 'N/A';
                 }
   });
+
+// Update dashboard counts
+const verifiedCount = filteredUsers.filter(u => u.verified && !u.banned).length;
+const adminCount = filteredUsers.filter(u => {
+  const roleLower = (u.role || '').toLowerCase();
+  return roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || u.fullname === 'admin2' || u.fullname === 'Admin2' || u.fullname === 'admin3' || u.fullname === 'Admin3';
+}).length;
+const signingUpCount = filteredUsers.filter(u => getUserStatus(u) === 'pending').length;
+document.getElementById('verified-users-count').textContent = verifiedCount;
+document.getElementById('admin-users-count').textContent = adminCount;
+document.getElementById('signing-up-users-count').textContent = signingUpCount;
 
 // Check if users section is active
 if (!document.getElementById('verified-users-tbody')) {
@@ -2943,28 +2956,8 @@ function showSection(sectionId) {
 if (DEBUG) console.log('DEBUG: showSection called with:', sectionId);
 
 try {
-const mainContent = document.getElementById('main-content');
-if (!mainContent) {
-console.error('Main content not found');
-return;
-}
-
-let sectionHTML = sectionTemplates[sectionId];
-if (!sectionHTML) {
-    // Fallback: try to find the section in the DOM
-    const sectionEl = document.getElementById(sectionId);
-    if (sectionEl) {
-        sectionHTML = sectionEl.innerHTML;
-        sectionEl.remove(); // remove it from DOM
-        sectionTemplates[sectionId] = sectionHTML; // store for future use
-    } else {
-        console.error('Section template not found:', sectionId);
-        return;
-    }
-}
-
-// Inject the section's HTML into main-content
-mainContent.innerHTML = sectionHTML;
+document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+document.getElementById(sectionId).style.display = 'block';
 
 // Special handling for notifications section
 if (sectionId === 'notifications') {

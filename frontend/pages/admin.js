@@ -631,7 +631,7 @@ return `
 </div>
 <div class="source-tag">
 <strong>File:</strong> ${upload.filename}<br>
-                <strong>Status:</strong> <span style="color: ${upload.approved ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">${upload.approved ? 'Approved' : upload.status === 'rejected' ? 'Rejected' : 'Pending'}</span><br>
+                <strong>Status:</strong> <span style="color: ${upload.status === 'approved' ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">${upload.status.charAt(0).toUpperCase() + upload.status.slice(1)}</span><br>
 <strong>Uploaded:</strong> ${new Date(upload.uploadedAt).toLocaleString()}
 </div>
 <div class="actions">

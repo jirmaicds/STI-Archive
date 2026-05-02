@@ -40,13 +40,16 @@ async function handleGetApprovedUploads(req, res) {
       const { data: uploads, error } = await supabase
         .from('user_uploads')
         .select('*')
-        .eq('approved', true)
+        .eq('status', 'approved')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database query error:', error);
+        throw error;
+      }
 
       res.statusCode = 200;
-      res.end(JSON.stringify({ success: true, uploads: uploads || [] }));
+      res.end(JSON.stringify({ success: true, uploads: uploads }));
     } else {
       res.statusCode = 200;
       res.end(JSON.stringify({ success: true, uploads: [] }));

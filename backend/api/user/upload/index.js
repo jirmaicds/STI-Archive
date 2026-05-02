@@ -175,8 +175,7 @@ async function handleUserUpload(req, res) {
       filename: filename,
       file_path: filePath,
       file_size: fileSize,
-      approved: false,
-      status: 'pending', // Keep for backward compatibility
+      status: 'pending',
       uploaded_at: new Date().toISOString()
     };
 

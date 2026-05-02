@@ -4119,36 +4119,40 @@
         }
 
         function createUploadBox(file, customTitle = null, customAuthor = null, customDescription = null) {
-            const upldContent = document.querySelector('.upld-content');
-            const uploadDropZone = upldContent.querySelector('.drop-zone');
+            // Don't create any local upld-boxes - uploads are only visible after admin approval
+            // Show a brief notification instead
+            showUploadNotification('Upload submitted for admin approval');
 
-            // Create new upload box
-            const newBox = document.createElement('div');
-            newBox.className = 'upld-boxes';
+            // Note: Actual upld-boxes are only created by loadApprovedUploads() after admin approval
+        }
 
-            // Use custom metadata if provided, otherwise use defaults
-            const title = customTitle || file.name.replace(/\.[^/.]+$/, "");
-            const author = customAuthor || "Unknown";
-            const description = customDescription || `${file.type} • ${(file.size / 1024).toFixed(2)} KB`;
+        function showUploadNotification(message) {
+            // Create a temporary notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #0057b8;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-size: 14px;
+                max-width: 300px;
+            `;
+            notification.textContent = message;
 
-            // Handle different file types
-            if (file.type.startsWith('image/')) {
-                // For images, show the image
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    newBox.innerHTML = `
-                        <img src="${e.target.result}" style="width: calc(100% - 20px); height: calc(70% - 40px); max-width: calc(100% - 20px); max-height: calc(70% - 40px); object-fit: contain;">
-                        <div class="upld-dscrpt">
-                            <strong>${title}</strong><br>
-                            <small>by ${author}</small><br>
-                            <small class="description-text">${description}</small>
-                        </div>
-                    `;
-                    // Insert before the upload drop zone
-                    upldContent.insertBefore(newBox, uploadDropZone);
-                };
-                reader.readAsDataURL(file);
-            } else if (file.type === 'application/pdf') {
+            document.body.appendChild(notification);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
                 // For PDFs, show the first page as canvas
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -6605,7 +6609,7 @@
         existingBoxes.forEach(box => box.remove());
 
         // Filter only approved uploads
-        const approvedUploads = uploads.filter(upload => upload.approved === true);
+        const approvedUploads = uploads.filter(upload => upload.status === 'approved');
 
         if (approvedUploads.length === 0) {
             // No approved uploads, just show the upload zone
@@ -6709,11 +6713,20 @@
     
     // Initialize user uploads and approved uploads on page load
     document.addEventListener('DOMContentLoaded', function() {
+        // Clear any existing upld-boxes first
+        const upldContent = document.querySelector('.upld-content');
+        if (upldContent) {
+            const existingBoxes = upldContent.querySelectorAll('.upld-boxes');
+            existingBoxes.forEach(box => box.remove());
+        }
+
         loadUserUploads();
         loadApprovedUploads();
 
         // Set up real-time updates for approved uploads (poll every 30 seconds)
-        setInterval(loadApprovedUploads, 30000);
+        setInterval(() => {
+            loadApprovedUploads();
+        }, 30000);
     });
     </script>
     

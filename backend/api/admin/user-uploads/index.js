@@ -59,7 +59,7 @@ async function handleGetUserUploads(req, res) {
       const { data: uploads, error } = await supabase
         .from('user_uploads')
         .select('*')
-        .eq('approved', false)
+        .or('approved.is.null,approved.eq.false')
         .order('created_at', { ascending: false });
       
       if (error) throw error;
@@ -168,10 +168,8 @@ async function handleUpdateUserUpload(req, res, uploadId) {
       
       const updateData = {};
       if (status) updateData.status = status;
-      if (status === 'approved') updateData.approved = true;
-      if (status === 'rejected') updateData.approved = false;
-      if (topic) updateData.topic = topic;
-      if (type) updateData.type = type;
+      if (topic !== undefined) updateData.topic = topic;
+      if (type !== undefined) updateData.type = type;
       updateData.reviewed_at = new Date().toISOString();
       
       const { data, error } = await supabase
@@ -215,29 +213,17 @@ async function handleDeleteUserUpload(req, res, uploadId) {
     if (isSupabaseConfigured()) {
       const supabase = getServiceSupabase();
 
-      // First get the upload record to get the file path
-      const { data: upload, error: fetchError } = await supabase
+      // Get uploads with user info (show pending/unapproved for review)
+      const { data: uploads, error } = await supabase
         .from('user_uploads')
-        .select('file_path')
-        .eq('upload_id', uploadId)
-        .single();
+        .select('*')
+        .neq('status', 'approved')
+        .order('created_at', { ascending: false });
 
-      if (fetchError) throw fetchError;
-
-      // Delete from storage if file exists
-      if (upload && upload.file_path) {
-        await supabase.storage
-          .from('user-uploads')
-          .remove([upload.file_path]);
+      if (error) {
+        console.error('Database query error:', error);
+        throw error;
       }
-
-      // Delete from database
-      const { error } = await supabase
-        .from('user_uploads')
-        .delete()
-        .eq('upload_id', uploadId);
-
-      if (error) throw error;
 
       res.statusCode = 200;
       res.end(JSON.stringify({ success: true }));

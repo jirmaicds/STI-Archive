@@ -2270,16 +2270,7 @@ return 'pending';
 
 async function loadUsers() {
 if (DEBUG) console.log('DEBUG: loadUsers called');
-
-// Save checkbox states before re-rendering
-const savedCheckboxStates = {};
-document.querySelectorAll('.user-checkbox').forEach(cb => {
-const userId = cb.getAttribute('data-user-id');
-if (userId) {
-savedCheckboxStates[userId] = cb.checked;
-}
-});
-
+ 
 try {
 users = await getUsers();
 if (DEBUG) console.log('DEBUG: getUsers returned:', users);
@@ -2324,7 +2315,22 @@ window.users = filteredUsers; // Or assign to global users
                 if (user.role === 'Educator') {
                     user.Sec_Degr = (user.Sec_Degr && user.Sec_Degr !== '-') ? user.Sec_Degr : 'N/A';
                 }
- });
+  });
+
+// Check if users section is active
+if (!document.getElementById('verified-users-tbody')) {
+return;
+}
+
+// Save checkbox states before re-rendering
+const savedCheckboxStates = {};
+document.querySelectorAll('.user-checkbox').forEach(cb => {
+const userId = cb.getAttribute('data-user-id');
+if (userId) {
+savedCheckboxStates[userId] = cb.checked;
+}
+});
+
 // Clear all tbodys
 document.querySelectorAll('#users tbody').forEach(tbody => tbody.innerHTML = '');
 let signingUpUsers = [];

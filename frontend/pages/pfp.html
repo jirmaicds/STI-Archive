@@ -1095,9 +1095,10 @@
         /* Desktop styles */
         @media (min-width: 1024px) {
             .full-name {
-
-                top: 120px;
-                left: 40%;
+                position:absolute;
+                top: 100px;
+                
+                left: 100%;
 
                 color: white;
                 padding: 8px 20px;
@@ -1105,43 +1106,60 @@
                 font-size: 3.2rem;
                 font-weight: bold;
             }
+                .pfp-container {
+                    position: absolute;
+                    top: 1px;
+                    left: 20%;
+                    transform: translateX(-50%);
+                }
         
-            .pfp-container {
-                position: absolute;
-                top: 15px;
-                left: 20%;
-                transform: translateX(-50%);
-            }
+            
         }
         /* Tablet responsiveness */
-        @media (min-width: 701px) and (max-width: 1023px) {
-            .pfp-container {
-                width: 200px;
-                height: 200px;
-                left: -8%;
+        @media (min-width: 770px) and (max-width: 1023px) {
+            .background-image-container {
+                display: flex;
+                justify-content: space-between;
                 
             }
-            .pfp-container .full-name {
-                font-size:xx-large;
-                
+            .pfp-container {
+                position: absolute;
+                top: 1px;
+                left: 30%;
+                transform: translateX(-50%);
+
+            }
+            .full-name {
+                position:absolute;
+                top: 100px;
+                left: 100%;
+               
+                color: white;
+                padding: 8px 20px;
+                border-radius: 20px;
+                font-size: 3rem;
+                font-weight: bold;
             }
         }
 
         /* Phone responsiveness */
-        @media (max-width: 700px) {
+        @media (max-width: 769px) {
             .pfp-container {
                 width: 200px!important;
                 height: 200px!important;
             }
             .pfp-container .full-name {
-                font-size: 1rem;
-                bottom: -20px;
+                font-size: 2rem;
+                
             }
             .pfp-container {
                 position: absolute !important; top: 5px!important; 
             }
             .full-name {
-                position: relative !important; top: 110px!important;
+                position: relative !important;
+                left: 50%;
+                transform: translateX(-50%);
+                text-align: center;
             }
         }
         
@@ -1192,6 +1210,7 @@
             cursor: default;
             transition: all 0.3s ease;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            right:30px;
         }
 
         .background-image-container:hover {
@@ -1227,6 +1246,58 @@
 
         .edit-icon:hover {
             background: rgba(0,0,0,0.7);
+        }
+
+        .burger-icon {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            padding: 6px;
+            border-radius: 50%;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: transparent;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+            display: none;
+        }
+
+        .burger-icon:hover {
+            background: transparent;
+        }
+
+        .edit-profile-container {
+            display: none;
+            padding: 10px;
+        }
+
+        .edit-profile-btn {
+            width: 100%;
+            padding: 10px;
+            background: #0057b8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .edit-profile-btn:hover {
+            background: #003f8a;
+        }
+
+        .dark-mode .edit-profile-btn {
+            background: #ffd700;
+            color: #232f41;
+        }
+
+        .dark-mode .edit-profile-btn:hover {
+            background: #e6c300;
         }
 
         .content-container {
@@ -1669,6 +1740,18 @@
             line-height: 1.2;
         }
 
+        .dark-mode .upld-boxes {
+            background-color: #374151;
+        }
+
+        .dark-mode .upld-boxes .upld-dscrpt strong {
+            color: #ffd700;
+        }
+
+        .dark-mode .upld-boxes .upld-dscrpt small {
+            color: #bbb;
+        }
+
         .upload-drop-zone {
             border: 2px dashed #ccc;
             background-color: #fafafa;
@@ -1679,6 +1762,24 @@
         .upload-drop-zone:hover {
             border-color: #0057b8;
             background-color: #f0f8ff;
+        }
+
+        .dark-mode .upload-drop-zone {
+            background-color: #232f41;
+            border-color: #4b5563;
+        }
+
+        .dark-mode .upload-drop-zone:hover {
+            border-color: #ffd700;
+            background-color: #374151;
+        }
+
+        .dark-mode .upload-text p {
+            color: #e2e8f0;
+        }
+
+        .dark-mode .upload-icon {
+            color: #ffd700;
         }
 
         .upload-drop-zone.drag-over {
@@ -2073,13 +2174,9 @@
             color: #fff;
         }
 
-        /* Fix footer positioning */
+        /* Footer positioning */
         .site-footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 999;
+            position: static;
         }
 
         /* Show tabs-burger on large screens */
@@ -2140,7 +2237,7 @@
                 display: block;
             }
         
-
+        
         .left-sidebar-tabs-burger {
             position: absolute;
             margin-top: 40px;
@@ -2328,6 +2425,13 @@
             object-fit: cover;
         }
 
+        @media (max-width: 700px) {
+            .pic-option img {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
         #saveProfilePicBtn {
             background: #0057b8;
             color: white;
@@ -2500,20 +2604,26 @@
           top: 50px;
         }
         .left-sidebar {
-            position: fixed;
-            left: 0;
+            
+            position:fixed;
+            background:transparent;
             top: 50px;
             width: 60px;
-            height: calc(100vh - 50px);
+            height: 70px;
             background: #fff;
             border-right:1px solid #ddd;
-            transition: width 0.3s;
-            overflow: hidden;
+            height: calc(100vh);
             z-index: 900;
             box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+            
+            transition: width 0.3s;
+            
+            
+            
         }
         .left-sidebar.expanded {
             width: 300px;
+            
         }
 
         .tabs-left-sidebar {
@@ -2565,6 +2675,36 @@
                 display: block;
             }
         }
+
+        @media (max-width: 1023px) {
+            .edit-icon {
+                display: none;
+            }
+            .left-sidebar.expanded .edit-profile-container {
+                display: block;
+            }
+        }
+
+        @media (max-width: 414px) {
+            .sdbr1 {
+                display: none;
+            }
+            .burger-icon {
+                display: flex;
+            }
+            .left-sidebar {
+                display:none;
+            }
+            .main-content{
+                margin-left:0;
+            }
+            .background-image-container{
+                right:0px;
+            }
+            .fullname{
+                font-size: 2rem;
+            }
+        }
         .content{
             margin-top:20px;
         }
@@ -2601,7 +2741,10 @@
             <button class="tab-btn" onclick="showCited('cited', event)">Cited</button>
             <button class="tab-btn" onclick="showSavedArticles('saved-articles', event)">Saved Studies</button>
         </div>
-        
+
+        <div class="edit-profile-container">
+            <button class="edit-profile-btn" onclick="closeSidebarAndShowModal()">Edit Profile</button>
+        </div>
 
        
     </div>
@@ -2622,6 +2765,7 @@
             <div class="profile-container">
                 <div class="background-image-container" id="backgroundContainer" style="background-image: url('/frontend/assets/images/dbgc.png'); background-size: cover; background-position: center;">
                     <div class="edit-icon" onclick="showProfilePicModal()">✏️</div>
+                    <div class="burger-icon" onclick="showSidebarExpanded()">&#9776;</div>
                     <input type="file" id="backgroundUpload" accept="image/*" onchange="changeBackground(event)" style="display: none;">
                     <div class="pfp-container" >
                         <label for="pfp-profileUpload">
@@ -2636,7 +2780,7 @@
                         <!-- My Uploads Container -->
                     <div id="myuploads-list-container" style="display: block;">
                         <div id="uploaded-files-container" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
-                            <div class="upload-form-content">
+                            <div class="upload-form-content upld-content">
                             <div class="drop-zone" id="myuploads-drop-zone" onclick="showUploadModal([])">
                                 <div class="upload-icon">
                                     <i class="fas fa-cloud-upload-alt"></i>
@@ -3976,7 +4120,7 @@
 
         function createUploadBox(file, customTitle = null, customAuthor = null, customDescription = null) {
             const upldContent = document.querySelector('.upld-content');
-            const uploadDropZone = upldContent.querySelector('.upload-drop-zone');
+            const uploadDropZone = upldContent.querySelector('.drop-zone');
 
             // Create new upload box
             const newBox = document.createElement('div');
@@ -3993,12 +4137,6 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     newBox.innerHTML = `
-                        <button class="box-options-btn" onclick="toggleBoxOptions(this)">⋮</button>
-                        <div class="box-options-menu">
-                            <div onclick="editBox(this)">✏️ Edit</div>
-                            <div onclick="deleteBox(this)">🗑️ Delete</div>
-                        </div>
-                        <button class="delete-btn" onclick="confirmDelete(this)">×</button>
                         <img src="${e.target.result}" style="width: calc(100% - 20px); height: calc(70% - 40px); max-width: calc(100% - 20px); max-height: calc(70% - 40px); object-fit: contain;">
                         <div class="upld-dscrpt">
                             <strong>${title}</strong><br>
@@ -4039,12 +4177,6 @@
                             page.render(renderContext).promise.then(function() {
                                 // Create the box HTML with the rendered canvas
                                 newBox.innerHTML = `
-                                    <button class="box-options-btn" onclick="toggleBoxOptions(this)">⋮</button>
-                                    <div class="box-options-menu">
-                                        <div onclick="editBox(this)">✏️ Edit</div>
-                                        <div onclick="deleteBox(this)">🗑️ Delete</div>
-                                    </div>
-                                    <button class="delete-btn" onclick="confirmDelete(this)">×</button>
                                     <div style="width: calc(100% - 20px); height: calc(70% - 40px); display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px;">
                                         ${canvas.outerHTML}
                                     </div>
@@ -4063,12 +4195,6 @@
                                 const fileIcon = 'fa-file-pdf';
                                 const fileColor = '#dc3545';
                                 newBox.innerHTML = `
-                                    <button class="box-options-btn" onclick="toggleBoxOptions(this)">⋮</button>
-                                    <div class="box-options-menu">
-                                        <div onclick="editBox(this)">✏️ Edit</div>
-                                        <div onclick="deleteBox(this)">🗑️ Delete</div>
-                                    </div>
-                                    <button class="delete-btn" onclick="confirmDelete(this)">×</button>
                                     <div style="width: calc(100% - 20px); height: calc(70% - 40px); max-width: calc(100% - 20px); max-height: calc(100% - 40px); display: flex; align-items: center; justify-content: center;">
                                         <i class="fas ${fileIcon}" style="font-size: min(48px, calc(100% - 20px)); color: ${fileColor};"></i>
                                     </div>
@@ -4087,12 +4213,6 @@
                         const fileIcon = 'fa-file-pdf';
                         const fileColor = '#dc3545';
                         newBox.innerHTML = `
-                            <button class="box-options-btn" onclick="toggleBoxOptions(this)">⋮</button>
-                            <div class="box-options-menu">
-                                <div onclick="editBox(this)">✏️ Edit</div>
-                                <div onclick="deleteBox(this)">🗑️ Delete</div>
-                            </div>
-                            <button class="delete-btn" onclick="confirmDelete(this)">×</button>
                             <div style="width: calc(100% - 20px); height: calc(70% - 40px); max-width: calc(100% - 20px); max-height: calc(100% - 40px); display: flex; align-items: center; justify-content: center;">
                                 <i class="fas ${fileIcon}" style="font-size: min(48px, calc(100% - 20px)); color: ${fileColor};"></i>
                             </div>
@@ -4112,12 +4232,6 @@
                 const fileColor = '#6c757d';
 
                 newBox.innerHTML = `
-                    <button class="box-options-btn" onclick="toggleBoxOptions(this)">⋮</button>
-                    <div class="box-options-menu">
-                        <div onclick="editBox(this)">✏️ Edit</div>
-                        <div onclick="deleteBox(this)">🗑️ Delete</div>
-                    </div>
-                    <button class="delete-btn" onclick="confirmDelete(this)">×</button>
                     <div style="width: calc(100% - 20px); height: calc(70% - 40px); max-width: calc(100% - 20px); max-height: calc(100% - 40px); display: flex; align-items: center; justify-content: center;">
                         <i class="fas ${fileIcon}" style="font-size: min(48px, calc(100% - 20px)); color: ${fileColor};"></i>
                     </div>
@@ -5461,6 +5575,21 @@
             menu.classList.toggle('show');
         }
 
+        // Show sidebar expanded for mobile
+        function showSidebarExpanded() {
+            const sidebar = document.querySelector('.left-sidebar');
+            sidebar.style.display = 'block';
+            sidebar.classList.add('expanded');
+        }
+
+        // Close sidebar and show modal
+        function closeSidebarAndShowModal() {
+            const sidebar = document.querySelector('.left-sidebar');
+            sidebar.style.display = 'none';
+            sidebar.classList.remove('expanded');
+            showProfilePicModal();
+        }
+
         // Delete box functionality
         function deleteBox(element) {
             const box = element.closest('.upld-boxes');
@@ -6191,6 +6320,8 @@
             tabs.forEach(tab => tab.classList.remove('active'));
 
             if (tabName === 'myuploads') {
+                const uploadedContainer = document.getElementById('uploaded-files-container');
+                if (uploadedContainer) uploadedContainer.style.display = 'block';
                 if (myUploadsList) myUploadsList.style.display = 'block';
                 tabs[0].classList.add('active');
             } else if (tabName === 'upload') {
@@ -6226,6 +6357,10 @@
             const existingSaved = mainContent.querySelector('.saved-studies-container');
             if (existingSaved) existingSaved.remove();
 
+            // Hide uploaded files container
+            const uploadedContainer = document.getElementById('uploaded-files-container');
+            if (uploadedContainer) uploadedContainer.style.display = 'none';
+
             // Remove active from all tabs
             tabs.forEach(tab => tab.classList.remove('active'));
 
@@ -6254,6 +6389,10 @@
             if (existingCited) existingCited.remove();
             const existingSaved = mainContent.querySelector('.saved-studies-container');
             if (existingSaved) existingSaved.remove();
+
+            // Hide uploaded files container
+            const uploadedContainer = document.getElementById('uploaded-files-container');
+            if (uploadedContainer) uploadedContainer.style.display = 'none';
 
             // Remove active from all tabs
             tabs.forEach(tab => tab.classList.remove('active'));
@@ -6341,7 +6480,16 @@
     function toggleLeftSidebar() {
         const sidebar = document.getElementById('left-sidebar');
         if (sidebar) {
-            sidebar.classList.toggle('expanded');
+            if (window.innerWidth <= 414) {
+                if (sidebar.classList.contains('expanded')) {
+                    sidebar.style.display = 'none';
+                    sidebar.classList.remove('expanded');
+                } else {
+                    sidebar.classList.add('expanded');
+                }
+            } else {
+                sidebar.classList.toggle('expanded');
+            }
         }
     }
 

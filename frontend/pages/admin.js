@@ -2321,14 +2321,14 @@ window.users = filteredUsers; // Or assign to global users
 
 // Update dashboard counts
 const verifiedCount = filteredUsers.filter(u => u.verified && !u.banned).length;
-const adminCount = filteredUsers.filter(u => {
+const adminCountData = filteredUsers.filter(u => {
   const roleLower = (u.role || '').toLowerCase();
   return roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || u.fullname === 'admin2' || u.fullname === 'Admin2' || u.fullname === 'admin3' || u.fullname === 'Admin3';
 }).length;
-const signingUpCount = filteredUsers.filter(u => getUserStatus(u) === 'pending').length;
+const signingUpCountData = filteredUsers.filter(u => getUserStatus(u) === 'pending').length;
 document.getElementById('verified-users-count').textContent = verifiedCount;
-document.getElementById('admin-users-count').textContent = adminCount;
-document.getElementById('signing-up-users-count').textContent = signingUpCount;
+document.getElementById('admin-users-count').textContent = adminCountData;
+document.getElementById('signing-up-users-count').textContent = signingUpCountData;
 
 // Check if users section is active
 if (!document.getElementById('verified-users-tbody')) {
@@ -2958,6 +2958,13 @@ if (DEBUG) console.log('DEBUG: showSection called with:', sectionId);
 try {
 document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
 document.getElementById(sectionId).style.display = 'block';
+
+// Update sidebar active state
+document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
+const activeLink = document.querySelector(`.sidebar ul li a[data-section="${sectionId}"]`);
+if (activeLink) {
+activeLink.closest('li').classList.add('active');
+}
 
 // Special handling for notifications section
 if (sectionId === 'notifications') {
@@ -4345,6 +4352,7 @@ document.getElementById('edit-user-modal').style.display = 'none';
 
 
 // Edit user form submission
+if (document.getElementById('edit-user-form')) {
 document.getElementById('edit-user-form').addEventListener('submit', function(e) {
 e.preventDefault();
 const oldUserId = document.getElementById('edit-user-id').getAttribute('data-old-id') || document.getElementById('edit-user-id').value;
@@ -4415,6 +4423,7 @@ console.error('Error updating user:', error);
 alert('Failed to update user. Please check your connection.');
 });
 });
+}
 
 // Create Admin Modal Functions
 // Create Admin Modal Functions

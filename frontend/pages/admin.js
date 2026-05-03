@@ -2329,6 +2329,7 @@ const signingUpCountData = filteredUsers.filter(u => getUserStatus(u) === 'pendi
 document.getElementById('verified-users-count').textContent = verifiedCount;
 document.getElementById('admin-users-count').textContent = adminCountData;
 document.getElementById('signing-up-users-count').textContent = signingUpCountData;
+document.getElementById('banned-users-count').textContent = bannedCount;
 
 // Check if users section is active
 if (!document.getElementById('verified-users-tbody')) {
@@ -2562,10 +2563,15 @@ const adminCount = adminTbody ? adminTbody.querySelectorAll('tr').length : 0;
 const filteredForCount = users.filter(u => !removedUsers.includes(u.user_id || u.id));
 const signingUpCount = filteredForCount.filter(u => getUserStatus(u) === 'pending').length;
 
-if (DEBUG) console.log('DEBUG: Table row counts - Users:', usersCount, 'Admin:', adminCount, 'Signing up:', signingUpCount);
+// Count banned users
+const bannedTbody = document.getElementById('banned-users-tbody');
+const bannedCount = bannedTbody ? bannedTbody.querySelectorAll('tr').length : 0;
+
+if (DEBUG) console.log('DEBUG: Table row counts - Users:', usersCount, 'Admin:', adminCount, 'Signing up:', signingUpCount, 'Banned:', bannedCount);
 document.getElementById('verified-users-count').textContent = usersCount;
 document.getElementById('admin-users-count').textContent = adminCount;
 document.getElementById('signing-up-users-count').textContent = signingUpCount;
+document.getElementById('banned-users-count').textContent = bannedCount;
 
 
 
@@ -2822,11 +2828,11 @@ const overlay = document.getElementById('sidebar-overlay');
 const mainContent = document.getElementById('main-content');
 const header = document.querySelector('.header');
 const body = document.body;
-// Check if mobile view
-if (window.innerWidth <= 767) {
-// Mobile: toggle overlay and sidebar
-sidebar.classList.toggle('open');
-overlay.classList.toggle('show');
+// Check if mobile/tablet view
+if (window.innerWidth <= 1024) {
+    // Mobile/tablet: toggle overlay and sidebar
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
 } else {
 // Desktop/tablet: collapse sidebar
 sidebar.classList.toggle('collapsed');
@@ -2852,7 +2858,7 @@ const overlay = document.getElementById('sidebar-overlay');
 
 if (overlay) {
 overlay.addEventListener('click', function() {
-if (window.innerWidth <= 767) {
+if (window.innerWidth <= 1024) {
 sidebar.classList.remove('open');
 overlay.classList.remove('show');
 }
@@ -2956,8 +2962,8 @@ function showSection(sectionId) {
 if (DEBUG) console.log('DEBUG: showSection called with:', sectionId);
 
 try {
-document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
-document.getElementById(sectionId).style.display = 'block';
+document.querySelectorAll('.content-section').forEach(s => { s.classList.remove('active'); s.style.display = ''; });
+document.getElementById(sectionId).classList.add('active');
 
 // Update sidebar active state
 document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
@@ -2978,7 +2984,7 @@ alert('Error switching section: ' + e.message);
 document.getElementById('page-title').textContent =
 sectionId === 'dashboard' ? 'Dashboard' :
 sectionId === 'upload' ? 'Upload' :
-sectionId === 'users' ? 'Users Management' :
+sectionId === 'users' ? 'Users' :
 sectionId === 'profile' ? 'Profile' :
 sectionId === 'settings' ? 'Settings' :
 'Notifications';
@@ -4162,8 +4168,8 @@ if (activeBtn) activeBtn.classList.add('active');
 // Load data for specific sections
 if (section === 'admins') {
 loadAdmins();
-} else if (section === 'verified') {
-// Ensure verified users table is populated
+} else if (section === 'verified' || section === 'signing-up' || section === 'banned') {
+// Ensure users table is populated
 loadUsers();
 } else if (section === 'activity') {
 loadActivityLogs();

@@ -332,6 +332,121 @@
             }
         }
 
+        // Chart rendering functions
+        function renderUserStatsChart() {
+            const ctx = document.getElementById('usr-chart');
+            if (!ctx) return;
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const verified = users.filter(u => u.verified).length;
+            const pending = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
+            const banned = users.filter(u => u.banned || u.rejected).length;
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Verified', 'Pending', 'Banned/Rejected'],
+                    datasets: [{
+                        data: [verified, pending, banned],
+                        backgroundColor: ['#28a745', '#ffc107', '#dc3545']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function renderSignupsChart() {
+            const ctx = document.getElementById('sgn-chart');
+            if (!ctx) return;
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const monthlyData = {};
+
+            users.forEach(user => {
+                const date = new Date(user.created_at || user.verified_at);
+                const month = date.toLocaleString('default', { month: 'short' });
+                monthlyData[month] = (monthlyData[month] || 0) + 1;
+            });
+
+            const labels = Object.keys(monthlyData);
+            const data = Object.values(monthlyData);
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Sign-ups',
+                        data: data,
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0,123,255,0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function renderUploadsChart() {
+            const ctx = document.getElementById('upld-chart');
+            if (!ctx) return;
+
+            const articles = JSON.parse(localStorage.getItem('allArticles')) || [];
+            const research = articles.filter(a => a.category === 'research').length;
+            const capstone = articles.filter(a => a.category === 'capstone').length;
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Research', 'Capstone'],
+                    datasets: [{
+                        data: [research, capstone],
+                        backgroundColor: ['#17a2b8', '#6f42c1']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function renderGaugeChart(canvasId, label, value, color) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return;
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [label, ''],
+                    datasets: [{
+                        data: [value, 10 - value],
+                        backgroundColor: [color, '#e9ecef']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    rotation: -90,
+                    circumference: 180,
+                    cutout: '60%'
+                }
+            });
+        }
+
+        function renderDashboardCharts() {
+            renderUserStatsChart();
+            renderSignupsChart();
+            renderUploadsChart();
+            renderGaugeChart('avg-chart', 'Average Session Duration', 5.0, '#007bff');
+        }
+
         // === GLOBAL FUNCTIONS ===
 
         // Moved outside DOMContentLoaded to ensure availability on page load
@@ -1640,6 +1755,10 @@
                         if (sectionId === 'notifications') {
                             loadAllNotifications();
                         }
+                        // Re-setup navigation for newly injected content
+                        setTimeout(() => {
+                            setupNavigation();
+                        }, 100);
                     }
                 });
             });
@@ -1738,7 +1857,7 @@
         function toggleNotificationModal() {
             const modal = document.getElementById('notification-modal');
             if (!modal) return;
-            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+            modal.classList.toggle('show');
             if (DEBUG) console.log('toggleNotificationModal called');
             if (DEBUG) console.log('generateNotifications defined:', typeof generateNotifications);
             if (DEBUG) console.log('localStorage users:', localStorage.getItem('users') ? 'exists' : 'null');
@@ -1863,7 +1982,7 @@
             const badge = document.querySelector('.notification-badge');
             if (badge) {
                 badge.textContent = unreadCount;
-                badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+                badge.style.display = 'flex';
             }
 
             // Show/hide mark all read button based on unread count
@@ -2386,6 +2505,9 @@
 
             // Update notification badge on page load
             updateNotificationBadge();
+
+            // Render dashboard charts
+            renderDashboardCharts();
 
             // Set up navigation
             setupNavigation();

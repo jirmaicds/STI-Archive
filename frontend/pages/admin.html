@@ -3397,7 +3397,7 @@
             <h1 id="page-title">Dashboard</h1>
         </div>
         <div class="header-right">
-            <button class="notification-bell" title="Notifications" onclick="showSection('notifications')">
+            <button class="notification-bell" title="Notifications" onclick="toggleNotificationModal()">
                 <i class="fas fa-bell"></i>
                 <span class="notification-badge">0</span>
             </button>
@@ -3973,6 +3973,7 @@
                     <button id="mark-selected-read" class="btn btn-info">Mark as Read</button>
                     <button id="delete-selected" class="btn btn-danger">Delete</button>
                 </div>
+                <div id="notification-debug" style="background: #ffebee; border: 1px solid #f44336; color: #c62828; padding: 10px; margin-bottom: 10px; display: none;"></div>
                 <div id="all-notifications-list" class="notification-list-section"></div>
                 <div id="pagination-controls" class="pagination-controls" style="display: none; margin-top: 20px; text-align: center;">
                     <div id="page-numbers" style="display: flex; gap: 5px; justify-content: center;"></div>

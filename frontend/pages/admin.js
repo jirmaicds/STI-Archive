@@ -2961,9 +2961,21 @@ showSection(section);
 function showSection(sectionId) {
 if (DEBUG) console.log('DEBUG: showSection called with:', sectionId);
 
+// Close notification modal if open
+const modal = document.getElementById('notification-modal');
+if (modal) modal.style.display = 'none';
+
 try {
 document.querySelectorAll('.content-section').forEach(s => { s.classList.remove('active'); s.style.display = ''; });
-document.getElementById(sectionId).classList.add('active');
+const section = document.getElementById(sectionId);
+if (section) {
+    section.classList.add('active');
+    if (DEBUG) console.log('Section activated:', sectionId);
+} else {
+    console.error('Section not found:', sectionId);
+    alert('Section not found: ' + sectionId);
+    return;
+}
 
 // Update sidebar active state
 document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
@@ -2974,7 +2986,16 @@ activeLink.closest('li').classList.add('active');
 
 // Special handling for notifications section
 if (sectionId === 'notifications') {
-loadAllNotifications();
+    try {
+        loadAllNotifications();
+    } catch (error) {
+        console.error('Error in showSection for notifications:', error);
+        const debugDiv = document.getElementById('notification-debug');
+        if (debugDiv) {
+            debugDiv.innerHTML = 'Error showing notifications section: ' + error.message;
+            debugDiv.style.display = 'block';
+        }
+    }
 }
 } catch (e) {
 console.error('DEBUG: Error in showSection:', e);
@@ -3152,21 +3173,33 @@ updateNotificationBadge(freshNotifications);
 window.toggleNotificationModal = toggleNotificationModal;
 
 function loadAllNotifications() {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const notifications = generateNotifications(users);
-    const allNotificationsContainer = document.getElementById('all-notifications-list');
-    const paginationControls = document.getElementById('pagination-controls');
-    const pageNumbers = document.getElementById('page-numbers');
+    const debugDiv = document.getElementById('notification-debug');
+    if (debugDiv) debugDiv.style.display = 'none';
 
-    if (!allNotificationsContainer) return;
+    try {
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        if (DEBUG) console.log('Users loaded for notifications:', users.length);
+        const notifications = generateNotifications(users);
+        if (DEBUG) console.log('Notifications generated:', notifications.length);
+        const allNotificationsContainer = document.getElementById('all-notifications-list');
+        const paginationControls = document.getElementById('pagination-controls');
+        const pageNumbers = document.getElementById('page-numbers');
 
-    allNotificationsContainer.innerHTML = '';
+        if (!allNotificationsContainer) {
+            if (debugDiv) {
+                debugDiv.innerHTML = 'Error: all-notifications-list element not found';
+                debugDiv.style.display = 'block';
+            }
+            return;
+        }
 
-    if (notifications.length === 0) {
-        allNotificationsContainer.innerHTML = '<div class="notification-placeholder">No notifications available.</div>';
-        if (paginationControls) paginationControls.style.display = 'none';
-        return;
-    }
+        allNotificationsContainer.innerHTML = '';
+
+        if (notifications.length === 0) {
+            allNotificationsContainer.innerHTML = '<div class="notification-placeholder">No notifications available.</div>';
+            if (paginationControls) paginationControls.style.display = 'none';
+            return;
+        }
 
     // Setup pagination
     const itemsPerPage = 10;
@@ -3236,6 +3269,13 @@ function loadAllNotifications() {
 
     if (paginationControls) {
         paginationControls.style.display = totalPages > 1 ? 'block' : 'none';
+    }
+    } catch (error) {
+        console.error('Error loading notifications:', error);
+        if (debugDiv) {
+            debugDiv.innerHTML = 'Error loading notifications: ' + error.message + '<br>Stack: ' + error.stack;
+            debugDiv.style.display = 'block';
+        }
     }
 }
 

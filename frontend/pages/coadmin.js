@@ -1977,10 +1977,70 @@
             hideConfirm();
         }
 
+        function handleSidebarClick(event, section) {
+            event.preventDefault();
+            if (DEBUG) console.log('DEBUG: handleSidebarClick called with:', section);
+
+            // Remove active class from all sidebar links
+            document.querySelectorAll('.sidebar ul li').forEach(li => {
+                li.classList.remove('active');
+            });
+
+            // Add active class to clicked link's parent li
+            event.target.closest('li').classList.add('active');
+
+            showSection(section);
+        }
+
+        function showSection(sectionId) {
+            if (DEBUG) console.log('DEBUG: showSection called with:', sectionId);
+
+            // Close notification modal if open
+            const modal = document.getElementById('notification-modal');
+            if (modal) modal.style.display = 'none';
+
+            try {
+                document.querySelectorAll('.content-section').forEach(s => { s.classList.remove('active'); s.style.display = ''; });
+                document.getElementById(sectionId).classList.add('active');
+
+                // Update sidebar active state
+                document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
+                const activeLink = document.querySelector(`.sidebar ul li a[data-section="${sectionId}"]`);
+                if (activeLink) {
+                    activeLink.closest('li').classList.add('active');
+                }
+
+                // Special handling for notifications section
+                if (sectionId === 'notifications') {
+                    loadAllNotifications();
+                }
+            } catch (e) {
+                console.error('DEBUG: Error in showSection:', e);
+                alert('Error switching section: ' + e.message);
+            }
+
+            document.getElementById('page-title').textContent =
+                sectionId === 'dashboard' ? 'Dashboard' :
+                sectionId === 'upload' ? 'Upload' :
+                sectionId === 'users' ? 'Users' :
+                sectionId === 'profile' ? 'Profile' :
+                sectionId === 'settings' ? 'Settings' :
+                'Notifications';
+            // Reset upload section to default (PDF Upload) when navigating to upload
+            if (sectionId === 'upload') {
+                // Reset to PDF Upload form (default)
+                document.querySelectorAll('.upload-subsection').forEach(sub => sub.classList.remove('active'));
+                document.getElementById('upload-form-section').classList.add('active');
+                // Reset buttons to PDF Upload as active
+                document.querySelectorAll('.upload-nav .nav-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('btn-pdf-upload').classList.add('active');
+            }
+        }
+
         function toggleNotificationModal() {
             const modal = document.getElementById('notification-modal');
             if (!modal) return;
-            modal.classList.toggle('show');
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
             if (DEBUG) console.log('toggleNotificationModal called');
             if (DEBUG) console.log('generateNotifications defined:', typeof generateNotifications);
 if (DEBUG) console.log('localStorage users:', localStorage.getItem('users') ? 'exists' : 'null');

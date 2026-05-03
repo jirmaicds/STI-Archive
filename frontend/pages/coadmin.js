@@ -334,7 +334,7 @@
 
         // Chart rendering functions
         function renderUserStatsChart() {
-            const ctx = document.getElementById('usr-chart');
+            const ctx = document.getElementById('user-chart');
             if (!ctx) return;
 
             const users = JSON.parse(localStorage.getItem('users')) || [];
@@ -359,7 +359,7 @@
         }
 
         function renderSignupsChart() {
-            const ctx = document.getElementById('sgn-chart');
+            const ctx = document.getElementById('signing-up-chart');
             if (!ctx) return;
 
             const users = JSON.parse(localStorage.getItem('users')) || [];
@@ -394,7 +394,7 @@
         }
 
         function renderUploadsChart() {
-            const ctx = document.getElementById('upld-chart');
+            const ctx = document.getElementById('dashboard-uploadsChart');
             if (!ctx) return;
 
             const articles = JSON.parse(localStorage.getItem('allArticles')) || [];
@@ -444,7 +444,7 @@
             renderUserStatsChart();
             renderSignupsChart();
             renderUploadsChart();
-            renderGaugeChart('avg-chart', 'Average Session Duration', 5.0, '#007bff');
+            renderGaugeChart('session-duration-gauge', 'Average Session Duration', 5.0, '#007bff');
         }
 
         // === GLOBAL FUNCTIONS ===
@@ -1746,19 +1746,27 @@
                     // Add active class to clicked item
                     this.parentElement.classList.add('active');
 
-                    // Inject selected section
+                    // Switch to selected section
                     const sectionId = this.getAttribute('data-section');
                     const mainContent = document.getElementById('main-content');
-                    if (mainContent && sectionTemplates[sectionId]) {
+                    if (sectionTemplates[sectionId]) {
+                        // Dynamic section
                         mainContent.innerHTML = sectionTemplates[sectionId];
-                        // Special handling for notifications section
-                        if (sectionId === 'notifications') {
-                            loadAllNotifications();
-                        }
                         // Re-setup navigation for newly injected content
                         setTimeout(() => {
                             setupNavigation();
                         }, 100);
+                    } else {
+                        // Static section
+                        document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+                        const targetSection = document.getElementById(sectionId);
+                        if (targetSection) {
+                            targetSection.classList.add('active');
+                        }
+                    }
+                    // Special handling for notifications section
+                    if (sectionId === 'notifications') {
+                        loadAllNotifications();
                     }
                 });
             });
@@ -2506,8 +2514,10 @@
             // Update notification badge on page load
             updateNotificationBadge();
 
-            // Render dashboard charts
-            renderDashboardCharts();
+            // Render dashboard charts after a short delay to ensure DOM is ready
+            setTimeout(() => {
+                renderDashboardCharts();
+            }, 100);
 
             // Set up navigation
             setupNavigation();

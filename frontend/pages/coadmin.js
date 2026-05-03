@@ -447,6 +447,19 @@
             renderGaugeChart('session-duration-gauge', 'Average Session Duration', 5.0, '#007bff');
         }
 
+        function closeSidebarOnOutsideClick() {
+            const overlay = document.getElementById('sidebar-overlay');
+            const sidebar = document.querySelector('.sidebar');
+            if (overlay) {
+                overlay.addEventListener('click', () => {
+                    if (window.innerWidth <= 767) {
+                        sidebar.classList.remove('open');
+                        overlay.style.display = 'none';
+                    }
+                });
+            }
+        }
+
         // === GLOBAL FUNCTIONS ===
 
         // Moved outside DOMContentLoaded to ensure availability on page load
@@ -1740,6 +1753,7 @@
             sidebarLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
+                    e.stopPropagation();
 
                     // Remove active class from all sidebar items
                     document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
@@ -1767,6 +1781,14 @@
                     // Special handling for notifications section
                     if (sectionId === 'notifications') {
                         loadAllNotifications();
+                    }
+
+                    // Close sidebar on mobile after switching section
+                    if (window.innerWidth <= 767) {
+                        const sidebar = document.querySelector('.sidebar');
+                        const overlay = document.getElementById('sidebar-overlay');
+                        sidebar.classList.remove('open');
+                        overlay.style.display = 'none';
                     }
                 });
             });

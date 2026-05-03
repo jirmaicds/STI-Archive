@@ -1772,10 +1772,10 @@
                         }, 100);
                     } else {
                         // Static section
-                        document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+                        document.querySelectorAll('.content-section').forEach(sec => sec.style.display = 'none');
                         const targetSection = document.getElementById(sectionId);
                         if (targetSection) {
-                            targetSection.classList.add('active');
+                            targetSection.style.display = 'block';
                         }
                     }
                     // Special handling for notifications section

@@ -59,7 +59,7 @@ async function handleGetUserUploads(req, res) {
       const { data: uploads, error } = await supabase
         .from('user_uploads')
         .select('*')
-        .or('approved.is.null,approved.eq.false')
+        .neq('status', 'approved')
         .order('created_at', { ascending: false });
       
       if (error) throw error;

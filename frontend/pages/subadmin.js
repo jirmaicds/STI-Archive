@@ -1083,12 +1083,18 @@
             document.querySelectorAll('.settings-subsection').forEach(sub => sub.classList.remove('active'));
             document.getElementById(section + '-settings').classList.add('active');
 
-            // Update sidebar active color
-            const sections = ['account', 'terms-conditions', 'privacy-policy'];
-            const index = sections.indexOf(section);
-            document.querySelectorAll('.settings-sidebar li').forEach((li, i) => {
-            li.style.color = i === index ? '#007bff' : '';
+            // Update tab active state
+            document.querySelectorAll('.settings-tab').forEach(tab => {
+                tab.classList.remove('active');
+                tab.style.borderBottomColor = 'transparent';
+                tab.style.color = '#666';
             });
+            const activeTab = document.querySelector(`.settings-tab[onclick*="${section}"]`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.style.borderBottomColor = '#007bff';
+                activeTab.style.color = '#007bff';
+            }
         }
 
         // === SIDEBAR FUNCTIONS ===

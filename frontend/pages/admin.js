@@ -3470,6 +3470,10 @@ if (section === 'pdf-form') {
 document.getElementById('upload-form-section').classList.add('active');
 } else if (section === 'image-form') {
 document.getElementById('image-form-section').classList.add('active');
+} else if (section === 'uploaded-studies') {
+document.getElementById('uploaded-studies-section').classList.add('active');
+// Load uploaded studies (admin articles + approved user uploads)
+loadUploadedStudies();
 } else if (section === 'admin') {
 document.getElementById('admin-uploads-section').classList.add('active');
 // Force re-render of admin uploads section to ensure articles display correctly
@@ -3491,6 +3495,8 @@ document.querySelectorAll('.upload-nav .nav-btn').forEach(btn => btn.classList.r
 // Add active to the correct button based on section
 if (section === 'pdf-form') {
 document.getElementById('btn-pdf-upload').classList.add('active');
+} else if (section === 'uploaded-studies') {
+document.getElementById('btn-uploaded-studies').classList.add('active');
 } else if (section === 'admin') {
 document.getElementById('btn-admin-uploads').classList.add('active');
 } else if (section === 'users') {
@@ -3533,6 +3539,62 @@ document.getElementById('admin-uploaded-articles').innerHTML = '<p class="empty-
 });
 }
 
+// Load uploaded studies (admin articles + approved user uploads)
+function loadUploadedStudies() {
+const container = document.getElementById('uploaded-studies-articles');
+if (!container) return;
+
+container.innerHTML = '<p>Loading uploaded studies...</p>';
+
+// Fetch admin articles and approved user uploads in parallel
+Promise.all([
+fetch('/api/articles').then(r => r.json()),
+fetch('/api/uploads/approved').then(r => r.json())
+])
+.then(([articlesData, uploadsData]) => {
+let allStudies = [];
+
+// Add admin articles
+if ((articlesData.status === 'success' || articlesData.success === true) && articlesData.articles) {
+allStudies = allStudies.concat(articlesData.articles.map(article => ({
+...article,
+source: 'admin',
+type: 'article'
+})));
+}
+
+// Add approved user uploads
+if (uploadsData.success && uploadsData.uploads) {
+allStudies = allStudies.concat(uploadsData.uploads.map(upload => ({
+id: upload.id,
+title: upload.title,
+authors: upload.authors || upload.description || 'N/A',
+abstract: upload.abstract || upload.description || 'N/A',
+category: upload.category,
+topic: upload.topic,
+type: upload.type,
+level: upload.level || upload.category,
+year: upload.year || new Date(upload.created_at).getFullYear().toString(),
+filename: upload.filename,
+filePath: upload.file_path,
+pdfUrl: upload.file_path,
+url: upload.file_path,
+source: 'user',
+uploadType: 'upload'
+})));
+}
+
+// Sort by creation date (most recent first)
+allStudies.sort((a, b) => new Date(b.created_at || b.uploaded_at) - new Date(a.created_at || a.uploaded_at));
+
+renderUploadedStudies(allStudies);
+})
+.catch(error => {
+console.error('Error loading uploaded studies:', error);
+container.innerHTML = '<p class="empty-state">Error loading uploaded studies</p>';
+});
+}
+
 // Render articles in admin uploads section
 function renderAdminUploadsFromServer(articles) {
 const container = document.getElementById('admin-uploaded-articles');
@@ -3549,6 +3611,39 @@ articles.forEach(article => {
 const articleElement = createArticleTemplate(article);
 container.appendChild(articleElement);
 });
+}
+
+// Render uploaded studies (admin articles + approved user uploads)
+function renderUploadedStudies(studies) {
+const container = document.getElementById('uploaded-studies-articles');
+if (!container) return;
+
+if (!studies || studies.length === 0) {
+container.innerHTML = '<p class="empty-state">No uploaded studies yet.</p>';
+return;
+}
+
+container.innerHTML = studies.map(study => {
+const sourceBadge = study.source === 'admin' ?
+'<span style="background: #007bff; color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px;">Admin</span>' :
+'<span style="background: #28a745; color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px;">User</span>';
+
+return `
+<div class="article" data-id="${study.id}" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 8px;">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+<h3 style="margin: 0; color: #0057b8;">${study.title}</h3>
+${sourceBadge}
+</div>
+<div class="meta" style="color: #666; font-size: 14px; margin-bottom: 10px;">
+Authors: ${study.authors || 'N/A'} |
+Category: ${study.category || 'N/A'} |
+Year: ${study.year || 'N/A'}
+</div>
+<div class="summary" style="color: #333;">${study.abstract || study.summary || 'No description available.'}</div>
+${study.filePath ? `<div style="margin-top: 10px;"><a href="${study.filePath}" target="_blank" style="color: #007bff;">View PDF</a></div>` : ''}
+</div>
+`;
+}).join('');
 }
 
 function viewAdminArticle(id) {

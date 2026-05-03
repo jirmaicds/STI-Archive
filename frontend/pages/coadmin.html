@@ -131,6 +131,12 @@
         .sidebar.collapsed {
             transform: translateX(-250px);
         }
+        /* Only expand on hover on desktop screens */
+        @media (min-width: 768px) {
+            .sidebar.collapsed:hover {
+                transform: translateX(0);
+            }
+        }
         .sidebar.collapsed  #user-chart {
             padding-left:100px;
         }
@@ -271,13 +277,7 @@
             background: #9e9e9e;
             color: white;
         }
-        body.dark-mode .settings-sidebar {
-            background: #2d2d2d !important;
-        }
-        body.dark-mode .settings-sidebar li {
-            background: #2d2d2d;
-            color: #e2e8f0;
-        }
+
         .uploads-dropdown.open .arrow,
         .notifications-dropdown.open .arrow,
         .terms-dropdown.open .arrow {
@@ -1755,9 +1755,12 @@
                 height: 100%;
                 background-color: rgba(0,0,0,0.5);
                 z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s ease;
             }
             .sidebar-overlay.show {
                 display: block;
+                opacity: 1;
             }
             /* Resize specific charts for phones */
             #usr-grph {
@@ -3456,8 +3459,8 @@
                     <button id="btn-pdf-upload" class="nav-btn active" data-section="pdf-form">
                         <i class="fas fa-file-pdf" style="margin-right: 8px;"></i>PDF Upload
                     </button>
-                    <button id="btn-admin-uploads" class="nav-btn" data-section="admin">
-                        <i class="fas fa-user-tie" style="margin-right: 8px;"></i>Admin Uploads
+                    <button id="btn-uploaded-studies" class="nav-btn" data-section="uploaded-studies">
+                        <i class="fas fa-book" style="margin-right: 8px;"></i>Uploaded Studies
                     </button>
                     <button id="btn-user-uploads" class="nav-btn" data-section="users">
                         <i class="fas fa-users" style="margin-right: 8px;"></i>User Uploads
@@ -3544,13 +3547,13 @@
                             </form>
                         </div>
                     </div>
-                    <div id="admin-uploads-section" class="upload-subsection">
-                    <h3 style="color: #0057b8; margin: 20px 0;">Uploaded Articles by Admin</h3>
-                    <div id="admin-uploaded-articles" style="max-width: 800px;">
-                        <p class="empty-state">No articles uploaded by admin yet.</p>
+                    <div id="uploaded-studies-section" class="upload-subsection">
+                    <h3 style="color: #0057b8; margin: 20px 0;">Uploaded Studies</h3>
+                    <div id="uploaded-studies-articles" style="max-width: 800px;">
+                        <p class="empty-state">No uploaded studies yet.</p>
                     </div>
-                    <div id="admin-pagination" class="pagination">
-                        <span id="admin-page-numbers" style="display: flex; gap: 5px; visibility: visible;"></span>
+                    <div id="uploaded-studies-pagination" class="pagination">
+                        <span id="uploaded-studies-page-numbers" style="display: flex; gap: 5px; visibility: visible;"></span>
                     </div>
                 </div>
                 <div id="user-uploads-section" class="upload-subsection">
@@ -3814,13 +3817,7 @@
         </div>
         <div id="settings" class="content-section">
             <div class="settings-section">
-                <div style="display: flex;">
-                    <div class="settings-sidebar" style="width: 200px; padding: 20px; background-color: #f8f9fa; border-right: 1px solid #ddd;">
-                        <ul style="list-style: none; padding: 0;">
-                            <li style="padding: 10px 0; cursor: pointer;" onclick="showSettingsSection('account')">Account</li>
-                        </ul>
-                    </div>
-                    <div class="settings-content" style="flex: 1; padding: 20px; min-height: calc(100vh - 200px);">
+                <div class="settings-content" style="padding: 20px; min-height: calc(100vh - 200px);">
 
                         <div id="account-settings" class="settings-subsection active">
                             <h2>Account Settings</h2>

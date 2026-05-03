@@ -245,12 +245,17 @@
             background: #9e9e9e;
             color: white;
         }
-        body.dark-mode .settings-sidebar {
-            background: #2d2d2d !important;
+        .settings-tab {
+            transition: all 0.2s ease;
         }
-        body.dark-mode .settings-sidebar li {
-            background: #2d2d2d;
+        .settings-tab:hover {
+            color: #007bff !important;
+        }
+        body.dark-mode .settings-tab {
             color: #e2e8f0;
+        }
+        body.dark-mode .settings-tab.active {
+            color: #007bff;
         }
         .notifications-dropdown.open .arrow,
         .terms-dropdown.open .arrow {
@@ -3231,15 +3236,12 @@
         </div>
         <div id="settings" class="content-section">
             <div class="settings-section">
-                <div style="display: flex;">
-                    <div class="settings-sidebar" style="width: 200px; padding: 20px; background-color: #f8f9fa; border-right: 1px solid #ddd;">
-                        <ul style="list-style: none; padding: 0;">
-                            <li style="padding: 10px 0; cursor: pointer; color: #007bff;" onclick="showSettingsSection('account')">Account</li>
-                            <li onclick="showSettingsSection('terms-conditions')" style="cursor: pointer; padding-top: 10px; padding-bottom: 10px;">Terms & Conditions</li>
-                            <li onclick="showSettingsSection('privacy-policy')" style="cursor: pointer; padding-top: 10px;">Privacy Policy</li>
-                        </ul>
-                    </div>
-                    <div class="settings-content" style="flex: 1; padding: 20px; min-height: calc(100vh - 200px);">
+                <div class="settings-tabs" style="display: flex; border-bottom: 1px solid #ddd; margin-bottom: 20px;">
+                    <button class="settings-tab active" onclick="showSettingsSection('account')" style="padding: 10px 20px; background: none; border: none; border-bottom: 2px solid #007bff; cursor: pointer; color: #007bff;">Account</button>
+                    <button class="settings-tab" onclick="showSettingsSection('terms-conditions')" style="padding: 10px 20px; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; color: #666;">Terms & Conditions</button>
+                    <button class="settings-tab" onclick="showSettingsSection('privacy-policy')" style="padding: 10px 20px; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; color: #666;">Privacy Policy</button>
+                </div>
+                <div class="settings-content" style="padding: 20px; min-height: calc(100vh - 200px);">
 
                         <div id="account-settings" class="settings-subsection active">
                             <h2>Account Settings</h2>

@@ -1804,6 +1804,18 @@
                             targetSection.style.setProperty('display', 'block', 'important');
                         }
                     }
+
+                    // Update page title
+                    const pageTitle = document.getElementById('page-title');
+                    if (pageTitle) {
+                        pageTitle.textContent = sectionId === 'dashboard' ? 'Dashboard' :
+                                               sectionId === 'users' ? 'Users' :
+                                               sectionId === 'upload' ? 'Upload' :
+                                               sectionId === 'notifications' ? 'Notifications' :
+                                               sectionId === 'settings' ? 'Settings' :
+                                               sectionId === 'profile' ? 'Profile' : 'Dashboard';
+                    }
+
                     // Special handling for notifications section
                     if (sectionId === 'notifications') {
                         loadAllNotifications();
@@ -1876,6 +1888,18 @@
                             targetSection.style.setProperty('display', 'block', 'important');
                         }
                     }
+
+                    // Update page title
+                    const pageTitle = document.getElementById('page-title');
+                    if (pageTitle) {
+                        pageTitle.textContent = sectionId === 'dashboard' ? 'Dashboard' :
+                                               sectionId === 'users' ? 'Users' :
+                                               sectionId === 'upload' ? 'Upload' :
+                                               sectionId === 'notifications' ? 'Notifications' :
+                                               sectionId === 'settings' ? 'Settings' :
+                                               sectionId === 'profile' ? 'Profile' : 'Dashboard';
+                    }
+
                     // Special handling for notifications section
                     if (sectionId === 'notifications') {
                         loadAllNotifications();
@@ -1959,9 +1983,9 @@
             modal.classList.toggle('show');
             if (DEBUG) console.log('toggleNotificationModal called');
             if (DEBUG) console.log('generateNotifications defined:', typeof generateNotifications);
-            if (DEBUG) console.log('localStorage users:', localStorage.getItem('users') ? 'exists' : 'null');
-            // Refresh notifications when opening modal
-            if (modal.style.display === 'block') {
+if (DEBUG) console.log('localStorage users:', localStorage.getItem('users') ? 'exists' : 'null');
+// Refresh notifications when opening modal
+if (modal.classList.contains('show')) {
                 const users = JSON.parse(localStorage.getItem('users')) || [];
                 if (DEBUG) console.log('Users count for notifications:', users.length);
                 if (typeof generateNotifications === 'function') {
@@ -2181,20 +2205,18 @@
 
         function showNotificationsFromModal() {
             // Navigate to notifications section and load all notifications
+            const mainContent = document.getElementById('main-content');
+            if (sectionTemplates['notifications']) {
+                mainContent.innerHTML = sectionTemplates['notifications'];
+                loadAllNotifications();
+                setTimeout(() => {
+                    setupNavigationForDynamicContent();
+                }, 100);
+            }
             document.querySelectorAll('.sidebar ul li').forEach(function(li){li.classList.remove('active')});
             var notifLink = document.querySelector('.sidebar ul li a[data-section="notifications"]');
             if(notifLink){
                 notifLink.parentElement.classList.add('active');
-            }
-            document.querySelectorAll('.content-section').forEach(s => {
-                s.classList.remove('active');
-                s.style.display = 'none';
-            });
-            const notificationsSection = document.getElementById('notifications');
-            if (notificationsSection) {
-                notificationsSection.classList.add('active');
-                notificationsSection.style.display = 'block';
-                loadAllNotifications();
             }
             toggleNotificationModal();
         }

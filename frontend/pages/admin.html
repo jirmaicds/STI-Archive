@@ -1488,15 +1488,10 @@
                 margin-left: 0px;
             }
             .header {
-                padding-left:0;
+                padding-left:0px;
             }
         }
-        @media (min-width: 1025px) and (max-width: 1199px) {
-            .sidebar {
-                width: 200px;
-            }
-            
-        }
+
         @media (min-width: 1200px) {
             .sidebar {
                 width: 200px;
@@ -1588,22 +1583,23 @@
                 transform: translateX(0);
             }
             .main-content {
-                margin-left: 0;
+                margin-left: 0px;
                 margin-top: 70px;
-                padding: 20px 15px 0 10px;
+                padding: 20px 15px 0px 10px;
             }
             .header {
                 position: fixed;
                 left: 0;
                 width: 100%;
                 margin-left: 0;
-                padding: 20px 20px 20px 10px;
+                padding: 20px 20px 20px 0;
+                padding-left:0px;
             }
             .sidebar.open {
                 transform: translateX(0);
             }
             .main-content {
-                
+                margin-left:0px !important;
                 margin-top: 70px;
                 padding: 20px 15px;
             }
@@ -1612,9 +1608,10 @@
                 left: 0;
                 width: 100%;
                 margin-left: 0;
+                padding-left:0px!important;
             }
             .header-right{
-                left:0;
+                left:0px;
             }
             /* Overlay for sidebar */
             .sidebar-overlay {
@@ -3397,7 +3394,7 @@
     <div class="header">
         <div style="display: flex; align-items: center;">
             <button class="toggle-btn" id="toggle-btn">☰</button>
-            <h1 id="page-title"></h1>
+            <h1 id="page-title">Dashboard</h1>
         </div>
         <div class="header-right">
             <button class="notification-bell" title="Notifications" onclick="showSection('notifications')">

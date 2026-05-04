@@ -2525,11 +2525,72 @@ const row = `<tr>
 document.getElementById('signing-up-users-tbody').innerHTML += row;
 });
 
+// Populate all-users-tbody
+if (document.getElementById('all-users-tbody')) {
+filteredUsers.forEach(user => {
+const roleLower = (user.role || '').toLowerCase();
+const isAdminByName = user.fullname && user.fullname.toLowerCase().includes('admin');
+const isAdmin = roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || isAdminByName;
+const userId = user.user_id || user.id;
+let actions = '';
+let status = getStatus(user);
+let date = formatDate(user.verified_at || user.created_at);
+let emailToUse = user.personal_email || user.email;
+let grade = user.grade;
+let secDegr = user.Sec_Degr;
+let roleDisplay = formatRole(user.role);
+if (isAdmin) {
+    let badgeClass;
+    let permissions;
+    if (user.fullname === 'admin2' || user.fullname === 'Admin2') {
+        badgeClass = 'badge-coadmin';
+        permissions = 'Limited Access - User & File Management';
+        roleDisplay = 'Co-Admin';
+    } else if (user.fullname === 'admin3' || user.fullname === 'Admin3') {
+        badgeClass = 'badge-subadmin';
+        permissions = 'User Approver - Accept/Reject Registrations';
+        roleDisplay = 'Sub-Admin';
+    } else {
+        badgeClass = roleLower === 'coadmin' ? 'badge-coadmin' : roleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
+        permissions = user.permissions || (roleLower === 'admin' ? 'Full Access - All Features' : roleLower === 'coadmin' ? 'Limited Access - User & File Management' : roleLower === 'subadmin' ? 'User Approver - Accept/Reject Registrations' : 'Full Access');
+        roleDisplay = (roleLower === 'coadmin' ? 'Co-Admin' : roleLower === 'subadmin' ? 'Sub-Admin' : 'Admin');
+    }
+    actions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button><button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${getUserName(user)}')">Remove</button></div>`;
+    grade = 'N/A';
+    secDegr = permissions;
+    date = formatDate(user.created_at);
+} else {
+    if (user.verified && !user.banned) {
+        actions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button><button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button></div>`;
+    } else if (user.banned) {
+        actions = `<button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button><button class="btn btn-warning btn-sm" onclick="updateUserStatus('${userId}', 'reject')">Reject</button>`;
+    } else {
+        actions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-success btn-sm" onclick="updateUserStatus('${userId}', 'accept')">Accept</button><button class="btn btn-warning btn-sm" onclick="openRejectModal('${userId}')">Reject</button><button class="btn btn-danger btn-sm" onclick="updateUserStatus('${userId}', 'ban')">Ban</button></div>`;
+    }
+}
+const row = `<tr>
+<td><input type="checkbox" class="user-checkbox" data-user-id="${userId}"></td>
+<td>${userId}</td>
+<td>${getUserName(user)}</td>
+<td>${emailToUse || 'N/A'}</td>
+<td>${isAdmin ? `<span class="badge ${badgeClass}">${roleDisplay}</span>` : roleDisplay}</td>
+<td>${grade}</td>
+<td>${secDegr}</td>
+<td>${status}</td>
+<td>${date}</td>
+<td><div style="display: flex; align-items: center; gap: 5px;"><span>${user.raf_path || ''} ${user.educator_id || ''}</span><button class="btn btn-sm btn-info" onclick="previewUserDocs('${userId}')">Preview</button></div></td>
+<td>${actions}</td>
+</tr>`;
+document.getElementById('all-users-tbody').innerHTML += row;
+});
+}
+
 // Paginate tables
 paginateTable('admins-tbody', 10);
 paginateTable('verified-users-tbody', 10);
 paginateTable('signing-up-users-tbody', 10);
 paginateTable('banned-users-tbody', 10);
+paginateTable('all-users-tbody', 10);
 
 // Reapply current filters after reload
 for (const section in currentFilters) {
@@ -4208,7 +4269,7 @@ if (activeBtn) activeBtn.classList.add('active');
 // Load data for specific sections
 if (section === 'admins') {
 loadAdmins();
-} else if (section === 'verified' || section === 'signing-up' || section === 'banned') {
+} else if (section === 'verified' || section === 'signing-up' || section === 'banned' || section === 'all') {
 // Ensure users table is populated
 loadUsers();
 } else if (section === 'activity') {

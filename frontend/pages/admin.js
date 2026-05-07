@@ -2326,6 +2326,7 @@ const adminCountData = filteredUsers.filter(u => {
   return roleLower === 'admin' || roleLower === 'coadmin' || roleLower === 'subadmin' || u.fullname === 'admin2' || u.fullname === 'Admin2' || u.fullname === 'admin3' || u.fullname === 'Admin3';
 }).length;
 const signingUpCountData = filteredUsers.filter(u => getUserStatus(u) === 'pending').length;
+let bannedCount = filteredUsers.filter(u => u.banned).length;
 document.getElementById('verified-users-count').textContent = verifiedCount;
 document.getElementById('admin-users-count').textContent = adminCountData;
 document.getElementById('signing-up-users-count').textContent = signingUpCountData;
@@ -2626,7 +2627,7 @@ const signingUpCount = filteredForCount.filter(u => getUserStatus(u) === 'pendin
 
 // Count banned users
 const bannedTbody = document.getElementById('banned-users-tbody');
-const bannedCount = bannedTbody ? bannedTbody.querySelectorAll('tr').length : 0;
+bannedCount = bannedTbody ? bannedTbody.querySelectorAll('tr').length : 0;
 
 if (DEBUG) console.log('DEBUG: Table row counts - Users:', usersCount, 'Admin:', adminCount, 'Signing up:', signingUpCount, 'Banned:', bannedCount);
 document.getElementById('verified-users-count').textContent = usersCount;
@@ -2895,14 +2896,14 @@ if (window.innerWidth <= 1024) {
     sidebar.classList.toggle('open');
     overlay.classList.toggle('show');
 } else {
-// Desktop/tablet: collapse sidebar
-sidebar.classList.toggle('collapsed');
-const isCollapsed = sidebar.classList.contains('collapsed');
-const marginValue = window.innerWidth >= 1025 ? '200px' : window.innerWidth >= 769 ? '220px' : window.innerWidth >= 768 ? '160px' : '0';
-const paddingValue = isCollapsed ? '20px' : marginValue;
-if (isCollapsed) {
-mainContent.style.marginLeft = '0';
-header.style.paddingLeft = paddingValue;
+ // Desktop/tablet: collapse sidebar
+    sidebar.classList.toggle('collapsed');
+    const isCollapsed = sidebar.classList.contains('collapsed');
+    const marginValue = window.innerWidth >= 1025 ? '200px' : window.innerWidth >= 769 ? '220px' : window.innerWidth >= 768 ? '160px' : '0';
+    const paddingValue = isCollapsed ? '70px' : marginValue;
+    if (isCollapsed) {
+        mainContent.style.marginLeft = '50px';
+        header.style.paddingLeft = paddingValue;
 body.classList.add('sidebar-collapsed');
 } else {
 mainContent.style.marginLeft = marginValue;
@@ -3031,6 +3032,7 @@ document.querySelectorAll('.content-section').forEach(s => { s.classList.remove(
 const section = document.getElementById(sectionId);
 if (section) {
     section.classList.add('active');
+    section.style.display = 'block'; // Ensure visibility
     if (DEBUG) console.log('Section activated:', sectionId);
 } else {
     console.error('Section not found:', sectionId);
@@ -3988,12 +3990,19 @@ tbody.innerHTML += row;
 }
 
 function navigateToUploads(type) {
-try {
-if (DEBUG) console.log('navigateToUploads called with type:', type);
-// First show the upload section
-document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-document.getElementById('upload').classList.add('active');
-document.getElementById('page-title').textContent = 'Upload';
+    try {
+    if (DEBUG) console.log('navigateToUploads called with type:', type);
+    // First show the upload section
+    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('upload').classList.add('active');
+    document.getElementById('page-title').textContent = 'Upload';
+
+    // Update sidebar active state
+    document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
+    const uploadLink = document.querySelector('.sidebar ul li a[data-section="upload"]');
+    if (uploadLink) {
+        uploadLink.closest('li').classList.add('active');
+    }
 
 // Hide all upload subsections
 document.querySelectorAll('.upload-subsection').forEach(sub => sub.classList.remove('active'));
@@ -4257,24 +4266,24 @@ document.removeEventListener('click', closeUploadsDropdownOnOutsideClick);
 
 // Users Navigation Functions
 function showUserSection(section) {
-// Hide all user subsections
-document.querySelectorAll('.user-subsection').forEach(sub => sub.style.display = 'none');
-// Show the selected section
-document.getElementById(section + '-section').style.display = 'block';
-// Update nav button active state
-document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-const activeBtn = document.querySelector(`.nav-btn[data-section="${section}"]`);
-if (activeBtn) activeBtn.classList.add('active');
+    // Hide all user subsections
+    document.querySelectorAll('.user-subsection').forEach(sub => sub.style.display = 'none');
+    // Show the selected section
+    document.getElementById(section + '-section').style.display = 'block';
+    // Update nav button active state
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.querySelector(`.nav-btn[data-section="${section}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
 
-// Load data for specific sections
-if (section === 'admins') {
-loadAdmins();
-} else if (section === 'verified' || section === 'signing-up' || section === 'banned' || section === 'all') {
-// Ensure users table is populated
-loadUsers();
-} else if (section === 'activity') {
-loadActivityLogs();
-}
+    // Load data for specific sections
+    if (section === 'admins') {
+        loadAdmins();
+    } else if (section === 'verified' || section === 'signing-up' || section === 'banned' || section === 'all') {
+        // Ensure users table is populated
+        loadUsers();
+    } else if (section === 'activity') {
+        loadActivityLogs();
+    }
 }
 
 // Add event listeners for user cards

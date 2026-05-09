@@ -288,10 +288,6 @@ class PDFViewer {
 // Function to display article PDF in a modal for MySpace
 function displayArticlePDF(pdfPath, title) {
 
-    // Check if dark mode is active
-    const isDarkMode = document.body.classList.contains('dark-mode') ||
-                        document.documentElement.classList.contains('dark-mode');
-
     // Get existing modal
     let modal = document.getElementById('pdf-viewer-modal');
     if (!modal) {
@@ -299,43 +295,30 @@ function displayArticlePDF(pdfPath, title) {
         return;
     }
 
-    // Apply dark mode styling to modal if needed
+    // Ensure modal is properly styled based on current dark mode state
+    // The CSS handles the styling, but we need to ensure the modal reflects current state
+    const isDarkMode = document.body.classList.contains('dark-mode');
     if (isDarkMode) {
-        modal.style.background = 'rgba(0, 0, 0, 0.95)';
-        const innerDiv = modal.querySelector('> div');
-        if (innerDiv) {
-            innerDiv.style.background = '#2d2d2d';
+        // Force dark mode styles to ensure they're applied
+        modal.style.setProperty('background', 'rgba(0, 0, 0, 0.95)', 'important');
+        const innerDiv = modal.firstElementChild;
+        if (innerDiv && innerDiv.tagName === 'DIV') {
+            innerDiv.style.setProperty('background', '#2d2d2d', 'important');
         }
         const container = modal.querySelector('#pdf-viewer-container');
         if (container) {
-            container.style.background = '#1a1a1a';
-        }
-        const titleElement = modal.querySelector('#pdf-modal-title');
-        if (titleElement) {
-            titleElement.style.color = '#ffd700';
-        }
-        const closeBtn = modal.querySelector('button[onclick*="closePDFModal"]');
-        if (closeBtn) {
-            closeBtn.style.color = '#ffd700';
+            container.style.setProperty('background', '#1a1a1a', 'important');
         }
     } else {
-        // Light mode styling
-        modal.style.background = 'rgba(0, 0, 0, 0.9)';
-        const innerDiv = modal.querySelector('> div');
-        if (innerDiv) {
-            innerDiv.style.background = '#ffffff';
+        // Reset to light mode styles
+        modal.style.setProperty('background', 'rgba(0, 0, 0, 0.9)', 'important');
+        const innerDiv = modal.firstElementChild;
+        if (innerDiv && innerDiv.tagName === 'DIV') {
+            innerDiv.style.setProperty('background', '#ffffff', 'important');
         }
         const container = modal.querySelector('#pdf-viewer-container');
         if (container) {
-            container.style.background = '#f5f5f5';
-        }
-        const titleElement = modal.querySelector('#pdf-modal-title');
-        if (titleElement) {
-            titleElement.style.color = '#1a1a1a';
-        }
-        const closeBtn = modal.querySelector('button[onclick*="closePDFModal"]');
-        if (closeBtn) {
-            closeBtn.style.color = '#1a1a1a';
+            container.style.setProperty('background', '#f5f5f5', 'important');
         }
     }
 

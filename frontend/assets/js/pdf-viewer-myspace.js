@@ -357,7 +357,7 @@ function displayArticlePDF(pdfPath, title) {
         return;
     }
 
-    console.log('Loading PDF with URL:', pdfUrl, 'into container:', container);
+
 
     // Use PDF.js to render PDF pages as canvas with search toolbar
     loadPDFWithPDFJS(pdfUrl, container, title);
@@ -368,7 +368,7 @@ function displayArticlePDF(pdfPath, title) {
 
 // Load PDF using PDF.js - plain viewer with search, zoom, and page navigation
 async function loadPDFWithPDFJS(pdfUrl, container, title) {
-    console.log('loadPDFWithPDFJS called with URL:', pdfUrl, 'options:', options);
+
     try {
         // Fetch the PDF
         const response = await fetch(pdfUrl);
@@ -438,7 +438,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         const pdfDoc = await window.pdfjsLib.getDocument(objectUrl).promise;
-        console.log('PDF loaded successfully, pages:', pdfDoc.numPages);
+
 
         const canvasContainer = container.querySelector('#pdf-viewer-canvas-container');
         console.log('Canvas container found:', canvasContainer);
@@ -521,7 +521,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                 }
 
                 canvasContainer.appendChild(fragment);
-                console.log('Rendered', pdfDoc.numPages, 'pages, canvasContainer children:', canvasContainer.children.length);
+
 
                 if (pageIndicator) {
                     const currentPage = getCurrentVisiblePage();

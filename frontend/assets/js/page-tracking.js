@@ -3,16 +3,24 @@
 // Excludes admin pages (admin.html, coadmin.html, subadmin.html)
 
 (function() {
-    // Check if current page is admin page
+    // Check if current page is admin page or not a tracked user page
     const currentPath = window.location.pathname.toLowerCase();
     const isAdminPage = currentPath.includes('admin.html') || currentPath.includes('coadmin.html') || currentPath.includes('subadmin.html');
-    if (isAdminPage) {
-        console.log('Page tracking skipped for admin page');
-        return; // Do not track admin pages
+    const isTrackedPage = currentPath.includes('homepage.html') || currentPath.includes('library.html') || currentPath.includes('myspace.html') || currentPath.includes('index.html'); // Include login if desired
+    if (isAdminPage || !isTrackedPage) {
+        console.log('Page tracking skipped for non-tracked page');
+        return; // Only track specific user pages
     }
 
-    // Get user ID if logged in (from localStorage)
+    // Get user ID and role if logged in (from localStorage)
     const userId = localStorage.getItem('user_id') || null;
+    const userRole = localStorage.getItem('user_role') || null;
+
+    // Skip tracking for admin users
+    if (userRole && ['admin', 'coadmin', 'subadmin'].includes(userRole.toLowerCase())) {
+        console.log('Page tracking skipped for admin user');
+        return;
+    }
 
     // Generate or retrieve session ID
     let sessionId = sessionStorage.getItem('userSessionId');

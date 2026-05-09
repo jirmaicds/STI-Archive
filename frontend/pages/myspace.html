@@ -234,7 +234,6 @@
     #pdf-viewer-modal {
       top: 50px !important;
       height: calc(100vh - 50px) !important;
-      z-index: 10000 !important;
     }
 
     #pdf-viewer-modal #pdf-viewer-container {
@@ -1496,8 +1495,15 @@ color: #ffd700;
     .editor.fullscreen .toolbar {
       background: #fff;
       border-bottom: 1px solid #ccc;
-      margin: -20px -20px 15px -20px;  /* Compensate for container padding */
-      padding: 20px;  /* Add back padding */
+      position: fixed;
+      top: 50px;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 20px;
+      margin: 0;
+      height: 70px;
+      overflow: hidden;
     }
 
     .editor.fullscreen .document-container {
@@ -1505,7 +1511,7 @@ color: #ffd700;
       border-radius: 12px;
       padding: 30px 50px;  /* More left/right padding */
       overflow: auto;
-      margin: 0 20px;  /* Add margins for spacing */
+      margin: 90px 20px 20px 20px;  /* Add margins for spacing, top margin for fixed toolbar */
       background: #fff;
       counter-reset: page 0;
     }
@@ -1606,6 +1612,15 @@ color: #ffd700;
     .dark-mode .editor.fullscreen .toolbar {
       background: #2d2d2d;
       border-bottom-color: #444;
+      position: fixed;
+      top: 50px;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 20px;
+      margin: 0;
+      height: 70px;
+      overflow: hidden;
     }
 
     .dark-mode .editor.fullscreen .document-container {
@@ -1674,21 +1689,15 @@ color: #ffd700;
     }
 
     /* Tablet and below responsive layout */
-    @media (max-width: 1023px) {
+    @media (max-width: 1024px) {
       /* Hide toggle-panel in tablet and mobile */
       .toggle-panel {
         display: none !important;
       }
 
-      /* Stack file-viewer and home-editor vertically, show one at a time */
+      /* Hide file-viewer on tablet and mobile */
       .file-viewer {
-        flex: 0 0 100% !important;
-        width: 100% !important;
-        position: absolute !important;
-        left: 0 !important;
-        top: 50px !important;
-        height: calc(100vh - 100px) !important;
-        display: flex !important;
+        display: none;
       }
       
       .home-editor {
@@ -2477,21 +2486,23 @@ color: #ffd700;
                 </div>
         
 
+                
+            </div>
                 <div class="document-container" id="documentContainer">
                     <div class="page active letter">
                         <div class="page-content" contenteditable="true" data-placeholder="Start Typing Your Document Here.."></div>
                         <div class="page-footer">i</div>
                     </div>
                 </div>
-                </div>
-
                 <!-- Footer inside editor -->
                 <div class="footer">
                     <div id="wordCounter">0 words</div>
                     <div id="pageIndicator">Page 1 of 1</div>
                 </div>
-            </div>
         </div>
+        </div>
+            
+        
                 
 
         <!-- toggle panel -->
@@ -3237,7 +3248,7 @@ color: #ffd700;
             const homeEditor = document.getElementById('homeEditor');
             
             // Check if editor is in fullscreen mode (from creating blank document)
-            const isEditorFullscreen = editor.classList.contains('fullscreen') || toggleState === 'editor';
+            const isEditorFullscreen = editor.classList.contains('fullscreen');
             
             if (isEditorFullscreen) {
                 // When editor is fullscreen and user clicks toggle, go back to half/half
@@ -4341,39 +4352,73 @@ color: #ffd700;
                console.log('homeEditor:', homeEditor);
                console.log('editor:', editor);
 
-               // Hide homeEditor when showing editor
-               if (homeEditor) {
-                   homeEditor.style.display = 'none';
-                   homeEditor.classList.remove('visible');
-               }
-               // Hide footer toggle when editor is shown
-               const footerToggle = document.querySelector('.footer-toggle-container');
-               if (footerToggle) {
-                   footerToggle.style.display = 'none';
-               }
-               if (editor) {
-                   editor.classList.add('fullscreen');
-                   editor.classList.add('visible');
-                   editor.style.display = 'flex';
-                   // Set editor to full width for creating blank document, positioned absolutely
-                   editor.style.position = 'absolute';
-                   editor.style.top = '50px';
-                   editor.style.left = '0';
-                   editor.style.width = '100%';
-                   editor.style.height = 'calc(100vh - 50px)';
-                   toggleState = 'editor';
+                // Hide homeEditor when showing editor
+                if (homeEditor) {
+                    homeEditor.style.setProperty('display', 'none', 'important');
+                    homeEditor.classList.remove('visible');
+                }
+                // Hide toggle-panel and mobile toggle when editor is shown
+                const togglePanel = document.querySelector('.toggle-panel');
+                if (togglePanel) {
+                    togglePanel.style.display = 'none';
+                }
+                const mobileToggle = document.getElementById('mobileFileViewerTogglePanel');
+                if (mobileToggle) {
+                    mobileToggle.style.display = 'none';
+                }
+
+                // On tablet/phone, make editor fullscreen and hide file-viewer
+                if (window.innerWidth <= 1024) {
+                    // Remove any conflicting classes
+                    editor.classList.remove('fullscreen', 'visible', 'collapsed');
+                    // Set styles manually to avoid CSS conflicts - fullscreen covering entire screen
+                    editor.style.setProperty('display', 'block', 'important');
+                    editor.style.setProperty('position', 'fixed', 'important'); // Use fixed to cover entire viewport
+                    editor.style.setProperty('top', '0', 'important');
+                    editor.style.setProperty('left', '0', 'important');
+                    editor.style.setProperty('width', '100vw', 'important');
+                    editor.style.setProperty('height', '100vh', 'important');
+                    editor.style.setProperty('z-index', '10000', 'important'); // High z-index to cover navbar and footer
+                    if (fileViewer) {
+                        fileViewer.style.setProperty('display', 'none', 'important');
+                    }
+                } else {
+                    // Desktop: add visible class
+                    editor.classList.add('visible');
+                    editor.classList.remove('fullscreen', 'collapsed');
+                    editor.style.setProperty('display', 'flex', 'important');
+                }
+                if (editor) {
+                    // Set display based on screen size with !important to override CSS
+                    if (window.innerWidth <= 1024) {
+                        editor.style.setProperty('display', 'block', 'important'); // For fullscreen on mobile/tablet
+                        console.log('Setting editor to block for mobile');
+                    } else {
+                        editor.style.setProperty('display', 'flex', 'important'); // For desktop
+                        console.log('Setting editor to flex for desktop');
+                    }
+                    console.log('Editor display set, classList:', editor.classList);
+                    toggleState = 'editor';
                    // Hide file-viewer when creating document
                    if (fileViewer) {
-                       fileViewer.style.display = 'none';
+                       fileViewer.style.setProperty('display', 'none', 'important');
                    }
                    // Hide home-editor
                    if (homeEditor) {
                        homeEditor.style.display = 'none';
                    }
-                   // Update toggle panel for fullscreen editor
-                   togglePanel.classList.add('left', 'no-left-space');
-                   togglePanel.classList.remove('right', 'no-right-space');
-                   togglePanel.style.display = 'flex';
+                    // Update footer toggle to show Word as active on mobile/tablet
+                    if (window.innerWidth <= 1024) {
+                        const pdfBtn = document.getElementById('footerPdfBtn');
+                        const wordBtn = document.getElementById('footerWordBtn');
+                        if (pdfBtn) pdfBtn.classList.remove('active');
+                        if (wordBtn) wordBtn.classList.add('active');
+                    } else {
+                        // Update toggle panel for fullscreen editor (only on desktop)
+                        togglePanel.classList.add('left', 'no-left-space');
+                        togglePanel.classList.remove('right', 'no-right-space');
+                        togglePanel.style.display = 'flex';
+                    }
                    toggleBtn.style.width = '15px';
                    rightBtn.querySelector('i').className = 'fa fa-chevron-right';
                    leftBtn.style.display = 'none';
@@ -4396,7 +4441,7 @@ color: #ffd700;
               console.log('closeEditor called');
               
               // Check if editor is in fullscreen mode
-              var isEditorFullscreen = editor && (editor.classList.contains('fullscreen') || toggleState === 'editor');
+              var isEditorFullscreen = editor && editor.classList.contains('fullscreen');
               
               if (editor) {
                   editor.classList.remove('visible', 'fullscreen');
@@ -4427,24 +4472,40 @@ color: #ffd700;
                           fileViewer.style.display = 'none';
                       }
                   } else {
-                      // Default: Show homeEditor at 50% with fileViewer
+                      // Default: Show homeEditor at 50% with fileViewer (100% on mobile)
                       toggleState = 'default';
                       homeEditor.style.display = 'flex';
-                      homeEditor.style.flex = '0 0 50%';
-                      homeEditor.style.width = '50%';
-                      homeEditor.style.position = 'absolute';
-                      homeEditor.style.right = '0';
-                      homeEditor.style.left = 'auto';
-                      homeEditor.style.top = '0';
+                      if (window.innerWidth <= 1024) {
+                          homeEditor.style.flex = '0 0 100%';
+                          homeEditor.style.width = '100%';
+                          homeEditor.style.position = 'relative';
+                      } else {
+                          homeEditor.style.flex = '0 0 50%';
+                          homeEditor.style.width = '50%';
+                          homeEditor.style.position = 'absolute';
+                          homeEditor.style.right = '0';
+                          homeEditor.style.left = 'auto';
+                          homeEditor.style.top = '0';
+                      }
                       
-                      // Show fileViewer at 50%
+                      // Show fileViewer at 50% (hide on mobile)
                       if (fileViewer) {
-                          fileViewer.style.display = 'flex';
-                          fileViewer.style.flex = '0 0 50%';
+                          if (window.innerWidth <= 1024) {
+                              fileViewer.style.display = 'none';
+                          } else {
+                              fileViewer.style.display = 'flex';
+                              fileViewer.style.flex = '0 0 50%';
+                          }
                       }
                   }
               }
-              
+
+              // Show toggle-panel when editor is closed (only on desktop)
+              const togglePanel = document.querySelector('.toggle-panel');
+              if (togglePanel && window.innerWidth > 1024) {
+                  togglePanel.style.display = 'flex';
+              }
+
               // Hide current document display
               if (currentDocDisplay) {
                   currentDocDisplay.style.display = 'none';

@@ -1,7 +1,10 @@
 // Debug flag for console logs
         const DEBUG = false;
 
-        // Initialize Supabase client
+        // Current section tracking
+        let currentSectionId = 'dashboard';
+
+// Initialize Supabase client
         const SUPABASE_URL = "https://eopbqatvianrjkdbypvk.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvcGJxYXR2aWFucmprZGJ5cHZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MzA4OTIsImV4cCI6MjA4OTEwNjg5Mn0.k9_xTbjwRdwAQJ9UgGGsosjLWywzxHuYOq-JbGeII8g";
         // Supabase script creates global supabase object, just initialize it
@@ -744,6 +747,164 @@
                 if (signingUpEl) signingUpEl.textContent = signingUpCount;
             }
         }
+
+        // Chart rendering functions
+        function renderUserStatsChart() {
+            const ctx = document.getElementById('user-chart');
+            if (!ctx) return;
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const exampleData = {
+                shs: users.filter(u => u.role === 'Senior High').length,
+                college: users.filter(u => u.role === 'College').length,
+                educator: users.filter(u => u.role === 'Educator').length,
+                admin: users.filter(u => u.role === 'Admin' || u.role === 'Co-Admin' || u.role === 'Sub-Admin').length
+            };
+
+            const barColors = [
+                '#008000', // SHS Emerald Green
+                '#00008B', // College Deep Blue
+                '#FFA500', // Teacher Warm Orange
+                '#8A2BE2'  // Admin Cool Purple
+            ];
+            const labels = ['SHS', 'COLLEGE', 'TEACHER', 'ADMIN'];
+
+            if (window.userChart) {
+                window.userChart.destroy();
+            }
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const textColor = isDarkMode ? '#ffffff' : '#000000';
+            window.userChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: [exampleData.shs, exampleData.college, exampleData.educator, exampleData.admin],
+                        backgroundColor: barColors,
+                        borderColor: barColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: textColor
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: 400,
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderSignupsChart() {
+            const ctx = document.getElementById('signing-up-chart');
+            if (!ctx) return;
+
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const monthlyData = {};
+
+            users.forEach(user => {
+                const date = new Date(user.created_at || user.verified_at);
+                const month = date.toLocaleString('default', { month: 'short' });
+                monthlyData[month] = (monthlyData[month] || 0) + 1;
+            });
+
+            const labels = Object.keys(monthlyData);
+            const data = Object.values(monthlyData);
+
+            if (window.signingUpChart) {
+                window.signingUpChart.destroy();
+            }
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const textColor = isDarkMode ? '#ffffff' : '#000000';
+            window.signingUpChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Sign-ups',
+                        data: data,
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0,123,255,0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: textColor
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: textColor
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderGaugeChart(canvasId, label, value, color) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return;
+
+            if (window[canvasId + 'Chart']) {
+                window[canvasId + 'Chart'].destroy();
+            }
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const bgColor = isDarkMode ? '#2d2d2d' : '#e9ecef';
+
+            window[canvasId + 'Chart'] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [label, ''],
+                    datasets: [{
+                        data: [value, 10 - value],
+                        backgroundColor: [color, bgColor]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderDashboardCharts() {
+            renderUserStatsChart();
+            renderSignupsChart();
+            renderGaugeChart('session-duration-gauge', 'Average Session Duration', 5.0, '#007bff');
+        }
         function formatDate(dateString) {
             if (!dateString || dateString === 'N/A') return 'N/A';
             const date = new Date(dateString);
@@ -1128,21 +1289,21 @@ if (modal.classList.contains('show')) {
 
         // === DASHBOARD NAVIGATION ===
         function setupDashboardCardNavigation() {
-            const dashboardCards = document.querySelectorAll('.dashboard .card');
+            const cards = document.querySelectorAll('.card[data-section]');
 
-            dashboardCards.forEach(card => {
+            cards.forEach(card => {
                 card.addEventListener('click', function(e) {
                     e.preventDefault();
                     const section = this.getAttribute('data-section');
-                    const cardId = this.id;
-
-                    handleDashboardCardClick(section, cardId);
+                    console.log('Card clicked:', section);
+                    handleDashboardCardClick(section, this.id);
                 });
             });
         }
 
         // Handle dashboard card clicks with role-based routing
         function handleDashboardCardClick(section, cardId) {
+            console.log('handleDashboardCardClick called with section:', section);
             // Role-based access control
             const userRole = 'subadmin'; // Subadmin page
 
@@ -1159,17 +1320,21 @@ if (modal.classList.contains('show')) {
             }
 
             if (targetSection) {
+                console.log('Navigating to section:', targetSection, 'subsection:', targetSubsection);
                 navigateToSection(targetSection, targetSubsection);
             }
         }
 
-        // Navigate to section with optional subsection scrolling
+        // Navigate to section with optional subsection
         function navigateToSection(sectionId, subsectionId = null) {
-            // If we're already on the dashboard and clicking a card, navigate to the section
-            const currentSection = document.querySelector('.content-section.active');
-            if (currentSection && currentSection.id === 'dashboard') {
+            console.log('navigateToSection called with sectionId:', sectionId, 'subsectionId:', subsectionId);
+            // If we're on the dashboard, navigate to the section
+            if (currentSectionId === 'dashboard') {
+                console.log('On dashboard, navigating to:', sectionId);
                 // Navigate to the target section (subadmin style)
                 const sidebarLink = document.querySelector(`.sidebar a[data-section="${sectionId}"]`);
+                console.log('Sidebar link found:', !!sidebarLink);
+                console.log('Section template exists:', !!sectionTemplates[sectionId]);
                 if (sidebarLink && sectionTemplates[sectionId]) {
                     // Remove active class from all sidebar items
                     document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
@@ -1179,19 +1344,82 @@ if (modal.classList.contains('show')) {
                     // Inject selected section
                     const mainContent = document.getElementById('main-content');
                     mainContent.innerHTML = sectionTemplates[sectionId];
+                    currentSectionId = sectionId;
+                    console.log('Injected section into main-content');
 
-                    // After navigation, scroll to subsection if specified
+                    // Update page title
+                    updatePageTitle(sectionId);
+
+                    // Setup navigation for the newly injected section
+                    setupSectionNavigation(sectionId);
+
+                    // After navigation, activate subsection if specified
                     if (subsectionId) {
-                        setTimeout(() => {
-                            scrollToSubsection(subsectionId);
-                        }, 100);
+                        console.log('Activating subsection:', subsectionId.replace('-section', ''));
+                        activateUserSubsection(subsectionId.replace('-section', ''));
                     }
                 }
+
             } else {
-                // Already in a section, just scroll within current section
+                // Already in a section, just activate subsection
                 if (subsectionId) {
-                    scrollToSubsection(subsectionId);
+                    activateUserSubsection(subsectionId.replace('-section', ''));
                 }
+            }
+        }
+
+        // Setup navigation for a specific section
+        function setupSectionNavigation(sectionId) {
+            if (sectionId === 'users') {
+                // Set up users subsection navigation for the newly injected section
+                const userNavButtons = document.querySelectorAll('.users-nav .nav-btn');
+                const userSubsections = document.querySelectorAll('.user-subsection');
+
+                userNavButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        // Remove active class from all user nav buttons
+                        userNavButtons.forEach(btn => btn.classList.remove('active'));
+                        // Add active class to clicked button
+                        this.classList.add('active');
+
+                        // Hide all user subsections
+                        userSubsections.forEach(section => section.style.display = 'none');
+
+                        // Show selected subsection
+                        const sectionId = this.getAttribute('data-section') + '-section';
+                        const targetSection = document.getElementById(sectionId);
+                        if (targetSection) {
+                            targetSection.style.display = 'block';
+                        }
+                    });
+                });
+            }
+        }
+
+        // Activate a specific user subsection
+        function activateUserSubsection(subsection) {
+            console.log('activateUserSubsection called with subsection:', subsection);
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.users-nav .nav-btn').forEach(btn => btn.classList.remove('active'));
+
+            // Add active class to target nav button
+            const navButton = document.querySelector(`.users-nav .nav-btn[data-section="${subsection}"]`);
+            console.log('Nav button found:', !!navButton);
+            if (navButton) {
+                navButton.classList.add('active');
+            }
+
+            // Hide all user subsections
+            document.querySelectorAll('.user-subsection').forEach(section => section.style.display = 'none');
+
+            // Show target subsection
+            const targetSection = document.getElementById(`${subsection}-section`);
+            console.log('Target section found:', !!targetSection);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+                // Scroll to the subsection
+                scrollToSubsection(`${subsection}-section`);
+                console.log('Activated subsection:', subsection);
             }
         }
 
@@ -1204,6 +1432,21 @@ if (modal.classList.contains('show')) {
                     block: 'start'
                 });
             }
+        }
+
+        // Update page title based on active section
+        function updatePageTitle(sectionId) {
+            const pageTitleElement = document.getElementById('page-title');
+            if (!pageTitleElement) return;
+
+            const sectionTitles = {
+                'dashboard': 'Dashboard',
+                'users': 'User Management',
+                'notifications': 'Notifications',
+                'settings': 'Settings'
+            };
+
+            pageTitleElement.textContent = sectionTitles[sectionId] || 'Sub-Admin Panel';
         }
 
         // === INIT ===
@@ -1226,11 +1469,13 @@ if (modal.classList.contains('show')) {
             await loadUsers();
             await updateDashboardCounts();
 
+            // Render dashboard charts after a short delay to ensure DOM is ready
+            setTimeout(() => {
+                renderDashboardCharts();
+            }, 100);
+
             // Set up navigation
             setupNavigation();
-
-            // Setup dashboard card navigation
-            setupDashboardCardNavigation();
 
             // Set up sidebar toggle
             const toggleBtn = document.getElementById('toggle-btn');
@@ -1252,6 +1497,10 @@ if (modal.classList.contains('show')) {
                         darkModeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
                         darkModeIcon.style.color = isDark ? '#FFD700' : '#777';
                     }
+                    // Re-render charts with new color scheme
+                    setTimeout(() => {
+                        renderDashboardCharts();
+                    }, 50);
                 });
             }
 
@@ -1337,36 +1586,28 @@ if (modal.classList.contains('show')) {
                     const mainContent = document.getElementById('main-content');
                     if (mainContent && sectionTemplates[sectionId]) {
                         mainContent.innerHTML = sectionTemplates[sectionId];
+                        currentSectionId = sectionId;
+                        // Update page title
+                        updatePageTitle(sectionId);
+                        // Setup navigation for the section
+                        setupSectionNavigation(sectionId);
                         // Special handling for notifications section
                         if (sectionId === 'notifications') {
                             loadAllNotifications();
+                        }
+                        // Render charts and setup card navigation for dashboard
+                        if (sectionId === 'dashboard') {
+                            setTimeout(() => {
+                                renderDashboardCharts();
+                                setupDashboardCardNavigation();
+                            }, 100);
                         }
                     }
                 });
             });
 
-            // Set up users subsection navigation
-            const userNavButtons = document.querySelectorAll('.users-nav .nav-btn');
-            const userSubsections = document.querySelectorAll('.user-subsection');
-
-            userNavButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    // Remove active class from all user nav buttons
-                    userNavButtons.forEach(btn => btn.classList.remove('active'));
-                    // Add active class to clicked button
-                    this.classList.add('active');
-
-                    // Hide all user subsections
-                    userSubsections.forEach(section => section.style.display = 'none');
-
-                    // Show selected subsection
-                    const sectionId = this.getAttribute('data-section') + '-section';
-                    const targetSection = document.getElementById(sectionId);
-                    if (targetSection) {
-                        targetSection.style.display = 'block';
-                    }
-                });
-            });
+            // Set up users subsection navigation for initial load
+            setupSectionNavigation('users');
 
             // Store section templates
             document.querySelectorAll('.content-section').forEach(section => {
@@ -1378,5 +1619,11 @@ if (modal.classList.contains('show')) {
             const mainContent = document.getElementById('main-content');
             if (mainContent) {
                 mainContent.innerHTML = sectionTemplates['dashboard'];
+                // Set initial page title
+                updatePageTitle('dashboard');
+                // Setup dashboard card navigation after dashboard is shown
+                setTimeout(() => {
+                    setupDashboardCardNavigation();
+                }, 50);
             }
         }

@@ -370,23 +370,58 @@
             const ctx = document.getElementById('user-chart');
             if (!ctx) return;
 
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            const verified = users.filter(u => u.verified).length;
-            const pending = users.filter(u => !u.verified && !u.rejected && !u.banned).length;
-            const banned = users.filter(u => u.banned || u.rejected).length;
+            // Example data for demonstration, matching admin.html
+            const exampleData = {
+                shs: 150,
+                college: 80,
+                educator: 25,
+                admin: 5
+            };
+            const barColors = [
+                '#008000', // SHS Emerald Green
+                '#00008B', // College Deep Blue
+                '#FFA500', // Teacher Warm Orange
+                '#8A2BE2'  // Admin Cool Purple
+            ];
+            const labels = ['SHS', 'COLLEGE', 'TEACHER', 'ADMIN'];
 
-            new Chart(ctx, {
-                type: 'pie',
+            if (window.userChart) {
+                window.userChart.destroy();
+            }
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const textColor = isDarkMode ? '#ffffff' : '#000000';
+            window.userChart = new Chart(ctx, {
+                type: 'bar',
                 data: {
-                    labels: ['Verified', 'Pending', 'Banned/Rejected'],
+                    labels: labels,
                     datasets: [{
-                        data: [verified, pending, banned],
-                        backgroundColor: ['#28a745', '#ffc107', '#dc3545']
+                        data: [exampleData.shs, exampleData.college, exampleData.educator, exampleData.admin],
+                        backgroundColor: barColors,
+                        borderColor: barColors,
+                        borderWidth: 1
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: textColor
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: 400,
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    }
                 }
             });
         }

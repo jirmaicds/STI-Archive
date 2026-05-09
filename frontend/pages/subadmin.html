@@ -652,7 +652,6 @@
             max-width: 766px;
             transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
-            user-select: none;
         }
         .card:hover {
             transform: translateY(-5px);
@@ -742,6 +741,10 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        /* Hide signing-up section by default */
+        #signing-up-section {
+            display: none;
         }
         .notifications-section {
             height: auto;
@@ -2953,7 +2956,7 @@
         <div id="dashboard" class="content-section active">
             <div class="dashboard">
                 <div class="card user-card" data-section="verified">
-                    <h3>Users</h3>
+                    <h3>Total Users</h3>
                     <p id="verified-users-count">0</p>
                 </div>
                 <div class="card user-card" data-section="signing-up">

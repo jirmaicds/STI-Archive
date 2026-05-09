@@ -305,12 +305,6 @@ function displayArticlePDF(pdfPath, title) {
         if (innerDiv && innerDiv.tagName === 'DIV') {
             innerDiv.style.setProperty('background', '#2d2d2d', 'important');
         }
-        // Set header background to yellow for dark mode
-        const headerDiv = modal.querySelector('div > div');
-        if (headerDiv) {
-            headerDiv.style.setProperty('background', '#ffd700', 'important');
-            headerDiv.style.setProperty('color', '#1a1a1a', 'important');
-        }
         const container = modal.querySelector('#pdf-viewer-container');
         if (container) {
             container.style.setProperty('background', '#1a1a1a', 'important');
@@ -321,12 +315,6 @@ function displayArticlePDF(pdfPath, title) {
         const innerDiv = modal.firstElementChild;
         if (innerDiv && innerDiv.tagName === 'DIV') {
             innerDiv.style.setProperty('background', '#ffffff', 'important');
-        }
-        // Set header background to blue for light mode
-        const headerDiv = modal.querySelector('div > div');
-        if (headerDiv) {
-            headerDiv.style.setProperty('background', '#0057b8', 'important');
-            headerDiv.style.setProperty('color', '#ffffff', 'important');
         }
         const container = modal.querySelector('#pdf-viewer-container');
         if (container) {

@@ -4153,7 +4153,7 @@
                 }
             }, 3000);
         }
-                // For PDFs, show the first page as canvas
+                /* // For PDFs, show the first page as canvas
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     pdfjsLib.getDocument({data: e.target.result}).promise.then(function(pdf) {
@@ -4249,7 +4249,7 @@
                 upldContent.insertBefore(newBox, uploadDropZone);
             }
         }
-
+ */
         function showUploadModal(files) {
             const existingModal = document.querySelector('.upload-modal');
             if (existingModal) {

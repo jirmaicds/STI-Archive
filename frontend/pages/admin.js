@@ -2699,13 +2699,14 @@ ticks: {
 color: textColor
 }
 },
-y: {
-beginAtZero: true,
-max: 400,
-ticks: {
-color: textColor
-}
-}
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        color: textColor,
+                        stepSize: 10
+                    }
+                }
 }
 }
 });

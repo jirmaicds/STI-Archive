@@ -416,9 +416,10 @@
                         },
                         y: {
                             beginAtZero: true,
-                            max: 400,
+                            max: 100,
                             ticks: {
-                                color: textColor
+                                color: textColor,
+                                stepSize: 10
                             }
                         }
                     }

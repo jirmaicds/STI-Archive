@@ -357,6 +357,8 @@ function displayArticlePDF(pdfPath, title) {
         return;
     }
 
+    console.log('Loading PDF with URL:', pdfUrl, 'into container:', container);
+
     // Use PDF.js to render PDF pages as canvas (no browser toolbar)
     loadPDFWithPDFJS(pdfUrl, container, title, { skipToolbar: true });
 
@@ -366,6 +368,7 @@ function displayArticlePDF(pdfPath, title) {
 
 // Load PDF using PDF.js - plain viewer with search, zoom, and page navigation
 async function loadPDFWithPDFJS(pdfUrl, container, title, options = {}) {
+    console.log('loadPDFWithPDFJS called with URL:', pdfUrl, 'options:', options);
     try {
         // Fetch the PDF
         const response = await fetch(pdfUrl);
@@ -419,11 +422,18 @@ async function loadPDFWithPDFJS(pdfUrl, container, title, options = {}) {
                     <span id="pdf-page-indicator" style="font-size:13px;color:${countColor};min-width:80px;text-align:center;">Page 1 of 1</span>
                 </div>`;
 
-        container.innerHTML = `
-            <div style="display:flex;flex-direction:column;height:100%;">
-                ${toolbarHtml}
-                <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${canvasBg};text-align:center;padding:20px;"></div>
-            </div>`;
+        // Set up container content
+        if (options.skipToolbar) {
+            // Simple structure without toolbar
+            container.innerHTML = `<div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="width:100%;height:100%;overflow:auto;background:${canvasBg};text-align:center;padding:20px;"></div>`;
+        } else {
+            // Full structure with toolbar
+            container.innerHTML = `
+                <div style="display:flex;flex-direction:column;height:100%;width:100%;">
+                    ${toolbarHtml}
+                    <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${canvasBg};text-align:center;padding:20px;width:100%;"></div>
+                </div>`;
+        }
 
         // Load PDF.js
         const script = document.createElement('script');
@@ -434,19 +444,16 @@ async function loadPDFWithPDFJS(pdfUrl, container, title, options = {}) {
         window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         const pdfDoc = await window.pdfjsLib.getDocument(objectUrl).promise;
+        console.log('PDF loaded successfully, pages:', pdfDoc.numPages);
+
         const canvasContainer = container.querySelector('#pdf-viewer-canvas-container');
+        console.log('Canvas container found:', canvasContainer);
         const searchInput = container.querySelector('#pdf-search-input');
         const searchBtn = container.querySelector('#pdf-search-btn');
         const searchCount = container.querySelector('#pdf-search-count');
         const pageIndicator = container.querySelector('#pdf-page-indicator');
 
-        // Skip search functionality if toolbar was not created
-        if (!searchInput || !searchBtn || !searchCount) {
-            console.log('PDF toolbar not available, skipping search functionality');
-            return;
-        }
-
-        // Store page data and canvases for search
+        // Store page data and canvases for search (only if toolbar exists)
         const pageData = [];
         const containerWidth = container.clientWidth - 40;
 
@@ -458,6 +465,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title, options = {}) {
 
         // Function to render all pages with current scale (with lock + fragment)
         async function renderAllPages() {
+            console.log('renderAllPages called, pdfDoc.numPages:', pdfDoc.numPages);
             if (renderAllPagesLock) {
                 renderAllPagesPending = true;
                 return;
@@ -519,6 +527,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title, options = {}) {
                 }
 
                 canvasContainer.appendChild(fragment);
+                console.log('Rendered', pdfDoc.numPages, 'pages, canvasContainer children:', canvasContainer.children.length);
 
                 if (pageIndicator) {
                     const currentPage = getCurrentVisiblePage();

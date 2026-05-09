@@ -649,7 +649,7 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 766px;
+            
             transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
         }
@@ -673,8 +673,8 @@
             color: #333;
         }
         .graph-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
+            
             gap: 20px;
         }
         body.sidebar-collapsed .graph-container {
@@ -692,9 +692,9 @@
         }
         .chart-container {
             position: relative;
-            height: 300px;
+            height: 370px;
             width: 100%;
-            max-width: 600px;
+            max-width: 700px;
         }
         .charts-container {
             display: flex;
@@ -709,24 +709,24 @@
         
         /*USER STATISTIC EACH CONTAINER & CHARTS*/
         #usr-grph{
-            height:400px;
+            height:440px;
             width: 100%;
             max-width: 950px;
         }
         #usr-chart{
-
+            height: 370px !important;
             width: 100%;
-            max-width: 550px;
+
         }
         #sgn-grph{
-            height:400px;
+            height:440px;
             width: 100%;
-            max-width: 550px;
+            
         }
         #sgn-chart{
-            height:350px;
+            height: 370px;
             width: 100%;
-            max-width: 550px;
+            
         }
         
         
@@ -1365,7 +1365,10 @@
             }
             .graph-item {
                 flex: 1 1 50%;
-                max-width: 50%;
+                
+            }
+            #usr-chart {
+                height: 370px !important;
             }
         }
         /* Show admin info in sidebar on all screen sizes */
@@ -1442,9 +1445,7 @@
             .graph-item {
                 width: 100%;
             }
-            .chart-container {
-                height: 250px;
-            }
+            
             .dashboard {
                 gap: 15px;
             }
@@ -1460,10 +1461,7 @@
                 height: 400px;
                 width: 100%;
             }
-            #sgst-grph {
-                height: 350px;
-                width: 100%;
-            }
+            
         }
         /* Phone responsiveness (max-width: 767px) */
         @media (max-width: 767px) {
@@ -1511,8 +1509,9 @@
                 font-size: 20px;
             }
             .graph-container {
-                display: grid;
-                grid-template-columns: 1fr;
+                display: flex;
+                flex-wrap: wrap;
+                
                 gap: 15px;
             }
             .graph-item {
@@ -3207,6 +3206,11 @@
                         <input type="text" placeholder="Search..." onkeyup="filterTable(this.value, 'signing-up', document.getElementById('search-filter-signing-up').value)" style="flex: 1; max-width: 270px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
 
                     </div>
+                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
+                        <input type="checkbox" id="select-all-signing-up-main" onclick="toggleSelectAll('signing-up')">
+                        <button class="btn btn-success" onclick="bulkAction('signing-up', 'accept')">Accept</button>
+                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'reject')">Reject</button>
+                    </div>
                     <div style="overflow-x: auto;">
                         <table id="signing-up-users-table">
                             <thead><tr><th><input type="checkbox" id="select-all-signing-up" onclick="toggleSelectAll('signing-up')"></th><th>Full Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Sec_Degr</th><th>Date Signed Up</th><th>Raf/Edu_ID</th><th>Actions</th></tr></thead>
@@ -3214,12 +3218,7 @@
                         </table>
                         <div id="signing-up-users-pagination" class="pagination-controls" style="margin-top: 10px; text-align: center;"></div>
                     </div>
-                    <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-                        <input type="checkbox" id="select-all-signing-up-main" onclick="toggleSelectAll('signing-up')">
-                        <button class="btn btn-success" onclick="bulkAction('signing-up', 'accept')">Accept</button>
-                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'ban')">Ban</button>
-                        <button class="btn btn-danger" onclick="bulkAction('signing-up', 'reject')">Reject</button>
-                    </div>
+                    
                 </div>
 
 

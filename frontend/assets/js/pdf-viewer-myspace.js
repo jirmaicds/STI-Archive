@@ -292,98 +292,61 @@ function displayArticlePDF(pdfPath, title) {
     const isDarkMode = document.body.classList.contains('dark-mode') ||
                         document.documentElement.classList.contains('dark-mode');
 
-    // Create modal if not exists
+    // Get existing modal
     let modal = document.getElementById('pdf-viewer-modal');
     if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'pdf-viewer-modal';
-        modal.style.cssText = `
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: ${isDarkMode ? 'rgba(0, 0, 0, 0.95)' : 'rgba(0, 0, 0, 0.9)'};
-            z-index: 10001;
-            overflow: hidden;
-        `;
+        console.error('PDF viewer modal not found');
+        return;
+    }
 
-        const containerBg = isDarkMode ? '#1a1a1a' : '#f5f5f5';
-        const headerBg = isDarkMode ? '#ffd700' : '#0057b8';
-        const headerText = isDarkMode ? '#1a1a1a' : '#ffffff';
-        const innerBg = isDarkMode ? '#2d2d2d' : '#ffffff';
-
-        modal.innerHTML = `
-            <div style="
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: ${innerBg};
-                overflow: hidden;
-                display: flex;
-                flex-direction: column;
-            ">
-                <div style="
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 10px 15px;
-                    background: ${headerBg};
-                    color: ${headerText};
-                    flex-shrink: 0;
-                ">
-                    <h3 id="pdf-modal-title" style="margin: 0; font-size: 16px; color: ${headerText};">Document Viewer</h3>
-                    <button onclick="closePDFModal()" style="
-                        background: none;
-                        border: none;
-                        color: ${headerText};
-                        font-size: 24px;
-                        cursor: pointer;
-                        padding: 0;
-                        width: 30px;
-                        height: 30px;
-                    ">×</button>
-                </div>
-                <div id="pdf-viewer-container" style="
-                    flex: 1;
-                    overflow: auto;
-                    background: ${containerBg};
-                    height: auto;
-                "></div>
-            </div>
-        `;
-
-        // Append to file-viewer
-        const fileViewer = document.querySelector('.file-viewer');
-        if (fileViewer) {
-            fileViewer.appendChild(modal);
-        } else {
-            // Fallback to body if file-viewer not found
-            document.body.appendChild(modal);
+    // Apply dark mode styling to modal if needed
+    if (isDarkMode) {
+        modal.style.background = 'rgba(0, 0, 0, 0.95)';
+        const innerDiv = modal.querySelector('> div');
+        if (innerDiv) {
+            innerDiv.style.background = '#2d2d2d';
         }
-
-        // Close on background click
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closePDFModal();
-            }
-        });
+        const container = modal.querySelector('#pdf-viewer-container');
+        if (container) {
+            container.style.background = '#1a1a1a';
+        }
+        const titleElement = modal.querySelector('#pdf-modal-title');
+        if (titleElement) {
+            titleElement.style.color = '#ffd700';
+        }
+        const closeBtn = modal.querySelector('button[onclick*="closePDFModal"]');
+        if (closeBtn) {
+            closeBtn.style.color = '#ffd700';
+        }
     } else {
-        // Ensure existing modal is positioned correctly
-        modal.style.top = '0';
-        modal.style.left = '0';
-        modal.style.width = '100%';
-        modal.style.height = '100%';
+        // Light mode styling
+        modal.style.background = 'rgba(0, 0, 0, 0.9)';
+        const innerDiv = modal.querySelector('> div');
+        if (innerDiv) {
+            innerDiv.style.background = '#ffffff';
+        }
+        const container = modal.querySelector('#pdf-viewer-container');
+        if (container) {
+            container.style.background = '#f5f5f5';
+        }
+        const titleElement = modal.querySelector('#pdf-modal-title');
+        if (titleElement) {
+            titleElement.style.color = '#1a1a1a';
+        }
+        const closeBtn = modal.querySelector('button[onclick*="closePDFModal"]');
+        if (closeBtn) {
+            closeBtn.style.color = '#1a1a1a';
+        }
     }
 
     // Show modal
     modal.style.display = 'block';
 
     // Set title
-    document.getElementById('pdf-modal-title').textContent = title || 'Document Viewer';
+    const titleElement = document.getElementById('pdf-modal-title');
+    if (titleElement) {
+        titleElement.textContent = title || 'Document Viewer';
+    }
 
     // Convert pdfPath to API URL
     let pdfUrl = pdfPath;
@@ -404,15 +367,22 @@ function displayArticlePDF(pdfPath, title) {
         pdfUrl = '/api/studies-pdf?path=' + encodeURIComponent(relativePath);
     }
 
+    // Get the container
+    const container = document.getElementById('pdf-viewer-container');
+    if (!container) {
+        console.error('PDF viewer container not found');
+        return;
+    }
+
     // Use PDF.js to render PDF pages as canvas (no browser toolbar)
-    loadPDFWithPDFJS(pdfUrl, container, title);
+    loadPDFWithPDFJS(pdfUrl, container, title, { skipToolbar: true });
 
     // Store viewer instance for cleanup
     modal._pdfViewer = { close: function() { } };
 }
 
 // Load PDF using PDF.js - plain viewer with search, zoom, and page navigation
-async function loadPDFWithPDFJS(pdfUrl, container, title) {
+async function loadPDFWithPDFJS(pdfUrl, container, title, options = {}) {
     try {
         // Fetch the PDF
         const response = await fetch(pdfUrl);
@@ -445,10 +415,9 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         const countColor = isDarkMode ? '#aaa' : '#333';
 
         // Container with search bar, zoom controls, and page navigation - dark mode support
-        container.innerHTML = `
-            <div style="display:flex;flex-direction:column;height:100%;">
+        const toolbarHtml = options.skipToolbar ? '' : `
                 <div style="padding:8px 12px;background:${toolbarBg};border-bottom:1px solid ${toolbarBorder};display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
-                    <input type="text" id="pdf-search-input" placeholder="Search (Ctrl+F)..." 
+                    <input type="text" id="pdf-search-input" placeholder="Search (Ctrl+F)..."
                            style="padding:6px 10px;border:1px solid ${inputBorder};border-radius:4px;width:200px;font-size:14px;background:${inputBg};color:${inputColor};">
                     <button id="pdf-search-btn" style="padding:6px 12px;background:${btnBg};color:${btnColor};border:none;border-radius:4px;cursor:pointer;">
                         <i class="fas fa-search"></i>
@@ -465,7 +434,11 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     <span id="pdf-search-count" style="font-size:13px;color:${countColor};"></span>
                     <span style="color:${countColor};margin-left:10px;">|</span>
                     <span id="pdf-page-indicator" style="font-size:13px;color:${countColor};min-width:80px;text-align:center;">Page 1 of 1</span>
-                </div>
+                </div>`;
+
+        container.innerHTML = `
+            <div style="display:flex;flex-direction:column;height:100%;">
+                ${toolbarHtml}
                 <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${canvasBg};text-align:center;padding:20px;"></div>
             </div>`;
 
@@ -483,6 +456,12 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         const searchBtn = container.querySelector('#pdf-search-btn');
         const searchCount = container.querySelector('#pdf-search-count');
         const pageIndicator = container.querySelector('#pdf-page-indicator');
+
+        // Skip search functionality if toolbar was not created
+        if (!searchInput || !searchBtn || !searchCount) {
+            console.log('PDF toolbar not available, skipping search functionality');
+            return;
+        }
 
         // Store page data and canvases for search
         const pageData = [];
@@ -558,8 +537,10 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
 
                 canvasContainer.appendChild(fragment);
 
-                const currentPage = getCurrentVisiblePage();
-                pageIndicator.textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
+                if (pageIndicator) {
+                    const currentPage = getCurrentVisiblePage();
+                    pageIndicator.textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
+                }
             } finally {
                 renderAllPagesLock = false;
                 if (renderAllPagesPending) {
@@ -620,11 +601,13 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
             if (pageDataItem) {
                 pageDataItem.canvasWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 // Update page indicator immediately and after scroll
-                pageIndicator.textContent = `Page ${pageNum} of ${pdfDoc.numPages}`;
-                // Also update after scroll completes
-                setTimeout(() => {
+                if (pageIndicator) {
                     pageIndicator.textContent = `Page ${pageNum} of ${pdfDoc.numPages}`;
-                }, 500);
+                    // Also update after scroll completes
+                    setTimeout(() => {
+                        pageIndicator.textContent = `Page ${pageNum} of ${pdfDoc.numPages}`;
+                    }, 500);
+                }
             }
         }
 
@@ -633,76 +616,143 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         canvasContainer.addEventListener('scroll', () => {
             clearTimeout(scrollTimeout);
             scrollTimeout = setTimeout(() => {
-                const currentPage = getCurrentVisiblePage();
-                pageIndicator.textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
+                if (pageIndicator) {
+                    const currentPage = getCurrentVisiblePage();
+                    pageIndicator.textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
+                }
             }, 100);
         });
 
-        // Store all highlights for navigation
-        let allHighlights = [];
-        let currentHighlightIndex = -1;
+        // Search functionality (only if toolbar exists)
+        if (searchInput && searchBtn && searchCount) {
+            // Store all highlights for navigation
+            let allHighlights = [];
+            let currentHighlightIndex = -1;
 
-        // Search function
-        function performSearch(query) {
-            // Clear previous highlights
-            document.querySelectorAll('.pdf-search-highlight').forEach(el => el.remove());
-            allHighlights = [];
-            currentHighlightIndex = -1;
+            // Search function
+            function performSearch(query) {
+                // Clear previous highlights
+                document.querySelectorAll('.pdf-search-highlight').forEach(el => el.remove());
+                allHighlights = [];
+                currentHighlightIndex = -1;
 
-            if (!query || !query.trim()) {
-                searchCount.textContent = '';
-                return;
-            }
+                if (!query || !query.trim()) {
+                    searchCount.textContent = '';
+                    return;
+                }
 
-            const searchTerm = query.toLowerCase();
-            let totalMatches = 0;
+                const searchTerm = query.toLowerCase();
+                let totalMatches = 0;
 
-            pageData.forEach(page => {
-                page.items.forEach(item => {
-                    if (item.str.toLowerCase().includes(searchTerm)) {
-                        totalMatches++;
+                pageData.forEach(page => {
+                    page.items.forEach(item => {
+                        if (item.str.toLowerCase().includes(searchTerm)) {
+                            totalMatches++;
 
-                        // Create highlight - border only, no background
-                        const transform = item.transform;
-                        // transform[4] = x from left, transform[5] = y from bottom
-                        // Convert to canvas coords (top-left origin)
-                        const x = transform[4] * page.scale;
-                        const y = (page.viewport.height - transform[5] - (item.height || 0)) * page.scale;
-                        const width = (item.width || item.str.length * 6) * page.scale;
-                        const height = ((item.height || 12) + 2) * page.scale;
+                            // Create highlight - border only, no background
+                            const transform = item.transform;
+                            // transform[4] = x from left, transform[5] = y from bottom
+                            // Convert to canvas coords (top-left origin)
+                            const x = transform[4] * page.scale;
+                            const y = (page.viewport.height - transform[5] - (item.height || 0)) * page.scale;
+                            const width = (item.width || item.str.length * 6) * page.scale;
+                            const height = ((item.height || 12) + 2) * page.scale;
 
-                        const highlight = document.createElement('div');
-                        highlight.className = 'pdf-search-highlight';
-                        highlight.style.cssText = `
-                            position: absolute;
-                            left: ${x}px;
-                            top: ${y}px;
-                            width: ${Math.max(width, 10)}px;
-                            height: ${Math.max(height, 10)}px;
-                            border: 2px solid #ff6b00;
-                            cursor: pointer;
-                            z-index: 5;
-                        `;
-                        highlight.title = item.str;
-                        highlight.dataset.index = totalMatches - 1;
+                            const highlight = document.createElement('div');
+                            highlight.className = 'pdf-search-highlight';
+                            highlight.style.cssText = `
+                                position: absolute;
+                                left: ${x}px;
+                                top: ${y}px;
+                                width: ${Math.max(width, 10)}px;
+                                height: ${Math.max(height, 10)}px;
+                                border: 2px solid #ff6b00;
+                                cursor: pointer;
+                                z-index: 5;
+                            `;
+                            highlight.title = item.str;
+                            highlight.dataset.index = totalMatches - 1;
 
-                        highlight.onclick = () => {
-                            highlightMatch(parseInt(highlight.dataset.index));
-                        };
+                            highlight.onclick = () => {
+                                highlightMatch(parseInt(highlight.dataset.index));
+                            };
 
-                        page.canvasWrapper.appendChild(highlight);
-                        allHighlights.push(highlight);
-                    }
+                            page.canvasWrapper.appendChild(highlight);
+                            allHighlights.push(highlight);
+                        }
+                    });
                 });
-            });
 
-            if (totalMatches > 0) {
-                currentHighlightIndex = 0;
-                highlightMatch(0);
-                searchCount.textContent = `1 of ${totalMatches}`;
-            } else {
-                searchCount.textContent = 'No matches';
+                if (totalMatches > 0) {
+                    currentHighlightIndex = 0;
+                    highlightMatch(0);
+                    searchCount.textContent = `1 of ${totalMatches}`;
+                } else {
+                    searchCount.textContent = 'No matches';
+                }
             }
+
+            function highlightMatch(index) {
+                if (index < 0 || index >= allHighlights.length) return;
+
+                // Reset all highlights
+                allHighlights.forEach(h => h.style.border = '2px solid #ff6b00');
+
+                // Highlight current
+                currentHighlightIndex = index;
+                allHighlights[index].style.border = '3px solid #ff0000';
+
+                // Scroll to highlight
+                allHighlights[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                searchCount.textContent = `${index + 1} of ${allHighlights.length}`;
+            }
+
+            function clearSearch() {
+                searchInput.value = '';
+                document.querySelectorAll('.pdf-search-highlight').forEach(el => el.remove());
+                allHighlights = [];
+                currentHighlightIndex = -1;
+                searchCount.textContent = '';
+            }
+
+            function goToNextMatch() {
+                if (allHighlights.length === 0) return;
+                currentHighlightIndex = (currentHighlightIndex + 1) % allHighlights.length;
+                highlightMatch(currentHighlightIndex);
+            }
+
+            function goToPrevMatch() {
+                if (allHighlights.length === 0) return;
+                currentHighlightIndex = (currentHighlightIndex - 1 + allHighlights.length) % allHighlights.length;
+                highlightMatch(currentHighlightIndex);
+            }
+
+            // Search button click
+            searchBtn.onclick = () => performSearch(searchInput.value);
+
+            // Clear button click
+            document.getElementById('pdf-search-clear').onclick = clearSearch;
+
+            // Previous button
+            document.getElementById('pdf-search-prev').onclick = goToPrevMatch;
+
+            // Next button
+            document.getElementById('pdf-search-next').onclick = goToNextMatch;
+
+            // Enter key to search
+            searchInput.onkeypress = (e) => {
+                if (e.key === 'Enter') performSearch(searchInput.value);
+            };
+
+            // Ctrl+F to focus search
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    searchInput.focus();
+                    searchInput.select();
+                }
+            });
         }
 
         function highlightMatch(index) {

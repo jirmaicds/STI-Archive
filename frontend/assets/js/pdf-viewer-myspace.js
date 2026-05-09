@@ -615,8 +615,8 @@ async function loadPDFWithPDFJS(pdfUrl, container, title, options = {}) {
             }, 100);
         });
 
-        // Search functionality (only if toolbar exists)
-        if (searchInput && searchBtn && searchCount) {
+        // Search functionality (only if toolbar exists and not skipped)
+        if (!options.skipToolbar && searchInput && searchBtn && searchCount) {
             // Store all highlights for navigation
             let allHighlights = [];
             let currentHighlightIndex = -1;
@@ -786,30 +786,35 @@ async function loadPDFWithPDFJS(pdfUrl, container, title, options = {}) {
         }
 
         // Search button click
-        searchBtn.onclick = () => performSearch(searchInput.value);
+        if (searchBtn) searchBtn.onclick = () => performSearch(searchInput.value);
 
         // Clear button click
-        document.getElementById('pdf-search-clear').onclick = clearSearch;
+        const clearBtn = document.getElementById('pdf-search-clear');
+        if (clearBtn) clearBtn.onclick = clearSearch;
 
         // Previous button
-        document.getElementById('pdf-search-prev').onclick = goToPrevMatch;
+        const prevBtn = document.getElementById('pdf-search-prev');
+        if (prevBtn) prevBtn.onclick = goToPrevMatch;
 
         // Next button
-        document.getElementById('pdf-search-next').onclick = goToNextMatch;
+        const nextBtn = document.getElementById('pdf-search-next');
+        if (nextBtn) nextBtn.onclick = goToNextMatch;
 
         // Enter key to search
-        searchInput.onkeypress = (e) => {
-            if (e.key === 'Enter') performSearch(searchInput.value);
-        };
+        if (searchInput) {
+            searchInput.onkeypress = (e) => {
+                if (e.key === 'Enter') performSearch(searchInput.value);
+            };
 
-        // Ctrl+F to focus search
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'f') {
-                e.preventDefault();
-                searchInput.focus();
-                searchInput.select();
-            }
-        });
+            // Ctrl+F to focus search
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    searchInput.focus();
+                    searchInput.select();
+                }
+            });
+        }
 
     } catch (error) {
         console.error('Error loading PDF:', error);

@@ -359,15 +359,15 @@ function displayArticlePDF(pdfPath, title) {
 
     console.log('Loading PDF with URL:', pdfUrl, 'into container:', container);
 
-    // Use PDF.js to render PDF pages as canvas (no browser toolbar)
-    loadPDFWithPDFJS(pdfUrl, container, title, { skipToolbar: true });
+    // Use PDF.js to render PDF pages as canvas with search toolbar
+    loadPDFWithPDFJS(pdfUrl, container, title);
 
     // Store viewer instance for cleanup
     modal._pdfViewer = { close: function() { } };
 }
 
 // Load PDF using PDF.js - plain viewer with search, zoom, and page navigation
-async function loadPDFWithPDFJS(pdfUrl, container, title, options = {}) {
+async function loadPDFWithPDFJS(pdfUrl, container, title) {
     console.log('loadPDFWithPDFJS called with URL:', pdfUrl, 'options:', options);
     try {
         // Fetch the PDF
@@ -401,7 +401,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title, options = {}) {
         const countColor = isDarkMode ? '#aaa' : '#333';
 
         // Container with search bar, zoom controls, and page navigation - dark mode support
-        const toolbarHtml = options.skipToolbar ? '' : `
+        const toolbarHtml = `
                 <div style="padding:8px 12px;background:${toolbarBg};border-bottom:1px solid ${toolbarBorder};display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
                     <input type="text" id="pdf-search-input" placeholder="Search (Ctrl+F)..."
                            style="padding:6px 10px;border:1px solid ${inputBorder};border-radius:4px;width:200px;font-size:14px;background:${inputBg};color:${inputColor};">
@@ -422,18 +422,12 @@ async function loadPDFWithPDFJS(pdfUrl, container, title, options = {}) {
                     <span id="pdf-page-indicator" style="font-size:13px;color:${countColor};min-width:80px;text-align:center;">Page 1 of 1</span>
                 </div>`;
 
-        // Set up container content
-        if (options.skipToolbar) {
-            // Simple structure without toolbar
-            container.innerHTML = `<div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="width:100%;height:100%;overflow:auto;background:${canvasBg};text-align:center;padding:20px;"></div>`;
-        } else {
-            // Full structure with toolbar
-            container.innerHTML = `
-                <div style="display:flex;flex-direction:column;height:100%;width:100%;">
-                    ${toolbarHtml}
-                    <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${canvasBg};text-align:center;padding:20px;width:100%;"></div>
-                </div>`;
-        }
+        // Always include search toolbar
+        container.innerHTML = `
+            <div style="display:flex;flex-direction:column;height:100%;width:100%;">
+                ${toolbarHtml}
+                <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${canvasBg};text-align:center;padding:20px;width:100%;"></div>
+            </div>`;
 
         // Load PDF.js
         const script = document.createElement('script');
@@ -615,8 +609,8 @@ async function loadPDFWithPDFJS(pdfUrl, container, title, options = {}) {
             }, 100);
         });
 
-        // Search functionality (only if toolbar exists and not skipped)
-        if (!options.skipToolbar && searchInput && searchBtn && searchCount) {
+        // Search functionality (always enabled since toolbar is always included)
+        if (searchInput && searchBtn && searchCount) {
             // Store all highlights for navigation
             let allHighlights = [];
             let currentHighlightIndex = -1;

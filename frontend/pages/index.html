@@ -1697,16 +1697,16 @@ window.supabaseHelpers = {
             
             @media (max-width: 480px) {
                 #adsContentContainer {
-                    /* Ensure the ads/content container is actually visible/in-flow on very small screens */
+                    /* Center the ads/content container on very small screens */
                     display: flex !important;
-                    position: relative !important;
-                    left: auto !important;
+                    position: absolute !important;
+                    left: 50% !important;
+                    top: 50% !important;
                     right: auto !important;
-                    top: auto !important;
-                    transform: none !important;
-                    
+                    transform: translate(-50%, -50%) !important;
+
                     width: 95vw !important;
-                    max-width: 95vw !important;
+                    max-width: 480px !important;
                     height: 340px;
                     padding: 10px;
                 }
@@ -1714,9 +1714,19 @@ window.supabaseHelpers = {
                     max-height: 250px;
                 }
                 
-                /* Undo the negative offset applied at <=768px which can push content off-screen at <=480px */
+                /* Ensure the container can center relative to the viewport area */
                 .main-content {
                     top: 0 !important;
+                    min-height: 100vh !important;
+                }
+
+                /* Keep user icon visible on small screens */
+                #userIcon {
+                    display: block !important;
+                    width: 32px !important;
+                    height: 32px !important;
+                    border-radius: 50% !important;
+                    object-fit: cover !important;
                 }
             }
             
@@ -1814,6 +1824,7 @@ window.supabaseHelpers = {
             <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode" style="margin-right: 10px; background: transparent; border: none; cursor: pointer;">
                 <i class="fa fa-moon"></i>
             </button>
+            <img id="userIcon" src="/frontend/assets/images/Screenshot 2025-09-10 204105.png" alt="Profile" style="cursor:pointer; width:32px; height:32px; border-radius:50%; object-fit:cover;">
         </div>
     </nav>
     <script>

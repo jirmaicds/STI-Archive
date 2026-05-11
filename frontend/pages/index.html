@@ -1697,13 +1697,26 @@ window.supabaseHelpers = {
             
             @media (max-width: 480px) {
                 #adsContentContainer {
-                    width: 95vw;
+                    /* Ensure the ads/content container is actually visible/in-flow on very small screens */
+                    display: flex !important;
+                    position: relative !important;
+                    left: auto !important;
+                    right: auto !important;
+                    top: auto !important;
+                    transform: none !important;
+                    
+                    width: 95vw !important;
+                    max-width: 95vw !important;
                     height: 340px;
                     padding: 10px;
-                    right: auto !important;
                 }
                 #adsContentContainer img {
                     max-height: 250px;
+                }
+                
+                /* Undo the negative offset applied at <=768px which can push content off-screen at <=480px */
+                .main-content {
+                    top: 0 !important;
                 }
             }
             

@@ -1982,13 +1982,23 @@ color: #ffd700;
     /* Tablet and mobile layout */
     @media (max-width: 1023px) {
       .main-content {
-        padding-top: 0 !important;
+        /* Keep content below the fixed header on tablet/phone */
+        padding-top: 50px !important;
       }
       .file-viewer {
         flex: 0 0 100% !important;
         width: 100% !important;
-        height: calc(100vh - 50px) !important;
-        top: 50px !important;
+        height: calc(100vh - 50px - 80px) !important; /* header + footer toggle */
+        position: relative !important;
+        top: 0 !important;
+      }
+      .editor {
+        width: 100% !important;
+        left: 0 !important;
+        right: auto !important;
+        top: 0 !important;
+        height: calc(100vh - 50px - 80px) !important; /* header + footer toggle */
+        position: relative !important;
       }
       .home-editor {
         display: none !important;
@@ -5543,18 +5553,11 @@ color: #ffd700;
         });
 
         function toggleSidebar() {
-            console.log('toggleSidebar called');
             const sidebar = document.getElementById('sidebar');
-            console.log('sidebar element:', sidebar);
             if (sidebar) {
-                console.log('sidebar classes before toggle:', sidebar.className);
-                const isOpen = sidebar.classList.toggle('open');
-                console.log('sidebar classes after toggle:', sidebar.className);
-                console.log('isOpen:', isOpen);
-                sidebar.style.right = isOpen ? '0' : '-260px';
-                console.log('sidebar style.right set to:', sidebar.style.right);
-            } else {
-                console.log('sidebar not found');
+                sidebar.classList.toggle('open');
+                // Let CSS control positioning; avoid inline right overrides.
+                sidebar.style.right = '';
             }
         }
 
@@ -5986,23 +5989,17 @@ color: #ffd700;
         } else {
             pdfBtn.classList.remove('active');
             wordBtn.classList.add('active');
-            // Show homeEditor, hide file-viewer and editor
-            console.log('Showing homeEditor on mobile for word');
+            // Show editor (Word view), hide file-viewer and homeEditor
             const homeEditor = document.getElementById('homeEditor');
             const editor = document.getElementById('editor');
             const fileViewer = document.querySelector('.file-viewer');
             if (homeEditor) {
-                homeEditor.classList.add('visible');
-                homeEditor.style.display = 'flex';
-                // On mobile, make homeEditor full width
-                homeEditor.style.width = '100%';
-                homeEditor.style.left = '0';
-                homeEditor.style.position = 'relative';
-                homeEditor.style.right = 'auto';
+                homeEditor.classList.remove('visible');
+                homeEditor.style.display = 'none';
             }
             if (editor) {
-                editor.style.display = 'none';
                 editor.classList.remove('fullscreen');
+                editor.style.display = 'flex';
             }
             if (fileViewer) {
                 fileViewer.style.display = 'none';

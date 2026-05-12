@@ -183,6 +183,7 @@
         
     .file-viewer {
     flex: 0 0 50%;
+    min-height: calc(100vh - 50px);
     background: #fff;
     border-right: 1px solid #ccc;
     display: flex;
@@ -398,121 +399,10 @@
       color: white !important;
     }
 
-    /* Ensure home-editor has proper z-index to not be covered by footer-toggle */
-    .home-editor {
-      z-index: 1000;
-      text-align: center;
-    }
 
-    /* Footer toggle should not cover home-editor content */
-    .footer-toggle-container {
-      pointer-events: auto;
-    }
-
-    /* Make sure home-editor is visible and interactive */
-    .home-editor.visible {
-      z-index: 1001 !important;
-    }
 
     
 
-
-        
-        /* HomeEditor styles */
-        .home-editor button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
-        }
-        
-        
-        
-        .home-editor {
-            animation: fadeIn 0.5s ease-in-out;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        
-        .home-editor.hidden {
-            display: none !important;
-            opacity: 0;
-        }
-        
-        /* Dark mode for HomeEditor */
-        .dark-mode .home-editor {
-            background: #2d2d2d !important;
-        }
-        
-        .dark-mode .home-editor h1 {
-            color: white !important;
-            text-shadow: none !important;
-        }
-        
-        .dark-mode .home-editor h2 {
-            color: white !important;
-        }
-        
-        .dark-mode .home-editor p {
-            color: white !important;
-        }
-        
-
-        
-        .dark-mode .home-editor .recent-doc-item h4 {
-            color: white !important;
-        }
-        
-        .dark-mode .home-editor .recent-doc-item p {
-            color: white !important;
-        }
-        
-        .dark-mode .home-editor #currentDocDisplay {
-            background: rgba(255,255,255,0.1) !important;
-            border: 1px solid rgba(255,255,255,0.3) !important;
-        }
-        
-        .dark-mode .home-editor #currentDocDisplay p {
-            color: white !important;
-        }
-        
-        .dark-mode .home-editor #currentDocDisplay h3 {
-            color: white !important;
-        }
-        
-        .dark-mode .home-editor button {
-            background: #ffd700 !important;
-            color: #333 !important;
-        }
-        
-        .dark-mode .home-editor .template-item {
-            background: #333 !important;
-        }
-        
-        .dark-mode .home-editor .template-item p {
-            color: white !important;
-        }
-        
-        .dark-mode .home-editor .template-item i {
-            color: #ffd700 !important;
-        }
-        
-        /* Dark mode for Templates section in home-editor */
-        .dark-mode .home-editor > div:nth-last-child(2) .fas.fa-graduation-cap {
-            color: #ffd700 !important;
-        }
-        
-        .dark-mode .home-editor > div:nth-last-child(2) p {
-            color: white !important;
-        }
-        
-        .dark-mode .home-editor > div:nth-last-child(2) div[onclick*="selectTemplate"] {
-            background: #333 !important;
-            border-color: #555 !important;
-        }
-        
-
-        
-
-        
-        
         
 
         
@@ -788,37 +678,17 @@
       color: #aaa;
     }
 
-    /* Desktop layout for home-editor on left side */
+
     @media (min-width: 1024px) {
-      .home-editor {
-        position: relative;
-        display: none;
-        flex: 0 0 50%;
-        order: -1;
-        background: #fff;
-        overflow-y: auto;
-      }
-
-      .home-editor.visible {
-        display: flex;
-      }
-
-      .home-editor.visible ~ .file-viewer {
-        display: none;
-      }
-
-      .home-editor.visible ~ .editor {
-        flex: 0 0 100%;
-      }
-
       .file-viewer {
-        width: 100%;
-        left: 0;
-        right: auto;
+        flex: 0 0 50%;
       }
 
-      .dark-mode .home-editor {
-        background: #2d2d2d;
+      .editor {
+        flex: 0 0 50%;
+        display: flex;
+        order: 1;
+        padding: 20px 20px 0 20px;
       }
     }
 
@@ -1009,10 +879,12 @@ color: #ffd700;
 
     .editor {
         flex: 0 0 50%;
+        min-height: calc(100vh - 50px);
         display: none;  /* Changed from flex to none - JS will handle showing */
         flex-direction: column;
         padding: 20px 20px 0 20px;
-        background: #fff;
+        background: #f0f0f0;
+        border: 1px solid #ccc;
         transition: opacity 0.3s ease, transform 0.3s ease;
       }
       
@@ -1699,21 +1571,7 @@ color: #ffd700;
       .file-viewer {
         display: none;
       }
-      
-      .home-editor {
-        flex: 0 0 100% !important;
-        width: 100% !important;
-        position: absolute !important;
-        left: 0 !important;
-        top: 50px !important;
-        height: calc(100vh - 100px) !important;
-        display: none !important;
-      }
-      
-      .home-editor.visible {
-        display: flex !important;
-      }
-      
+
       .editor {
         flex: 0 0 100% !important;
         width: 100% !important;
@@ -2000,12 +1858,6 @@ color: #ffd700;
         height: calc(100vh - 50px - 80px) !important; /* header + footer toggle */
         position: relative !important;
       }
-      .home-editor {
-        display: none !important;
-      }
-      .home-editor.visible {
-        display: flex !important;
-      }
       .toggle-panel {
         display: none !important;
       }
@@ -2122,23 +1974,19 @@ color: #ffd700;
         display: flex;
       }
       
-      .file-viewer {
-        width: 100% !important;
-        flex: 1 !important;
-        height: auto !important;
-        min-height: 0 !important;
-        position: relative !important;
-        top: auto !important;
-        left: auto !important;
-        overflow: auto;
-        display: flex !important;
-      }
-      
-      .home-editor {
-        display: none !important;
-      }
-      
-      .footer-toggle-container {
+       .file-viewer {
+         width: 100% !important;
+         flex: 1 !important;
+         height: auto !important;
+         min-height: 0 !important;
+         position: relative !important;
+         top: auto !important;
+         left: auto !important;
+         overflow: auto;
+         display: flex !important;
+       }
+
+       .footer-toggle-container {
         bottom: 0;
         height: 50px;
         flex-shrink: 0;
@@ -2164,28 +2012,20 @@ color: #ffd700;
         display: flex;
       }
       
-      .file-viewer {
-        width: 100% !important;
-        flex: 1 !important;
-        height: auto !important;
-        min-height: 0 !important;
-        position: relative !important;
-        top: auto !important;
-        left: auto !important;
-        right: auto !important;
-        overflow: auto;
-        display: flex !important;
-      }
-      
-      .home-editor {
-        display: none !important;
-      }
-      
-      .home-editor h1, .home-editor h2 {
-        font-size: 1.2rem;
-      }
-      
-      .footer-toggle-container {
+       .file-viewer {
+         width: 100% !important;
+         flex: 1 !important;
+         height: auto !important;
+         min-height: 0 !important;
+         position: relative !important;
+         top: auto !important;
+         left: auto !important;
+         right: auto !important;
+         overflow: auto;
+         display: flex !important;
+       }
+
+       .footer-toggle-container {
         bottom: 0;
         height: 45px;
         width: 100%;
@@ -2218,24 +2058,20 @@ color: #ffd700;
         display: flex;
       }
       
-      .file-viewer {
-        width: 100% !important;
-        flex: 1 !important;
-        height: auto !important;
-        min-height: 0 !important;
-        position: relative !important;
-        top: auto !important;
-        left: auto !important;
-        right: auto !important;
-        overflow: auto;
-        display: flex !important;
-      }
-      
-      .home-editor {
-        display: none !important;
-      }
-      
-      .footer-toggle-container {
+       .file-viewer {
+         width: 100% !important;
+         flex: 1 !important;
+         height: auto !important;
+         min-height: 0 !important;
+         position: relative !important;
+         top: auto !important;
+         left: auto !important;
+         right: auto !important;
+         overflow: auto;
+         display: flex !important;
+       }
+
+       .footer-toggle-container {
         bottom: 0;
         height: 45px;
         width: 100%;
@@ -2254,18 +2090,6 @@ color: #ffd700;
     
     /* Small phones (below 480px) */
     @media (max-width: 480px) {
-      .home-editor h1 {
-        font-size: 1rem;
-      }
-
-      .home-editor h2 {
-        font-size: 0.9rem;
-      }
-
-      .home-editor p {
-        font-size: 0.85rem;
-      }
-
       .footer-toggle-container .toggle-btn-mobile {
         padding: 6px 8px;
         font-size: 11px;
@@ -2283,7 +2107,7 @@ color: #ffd700;
         display: flex;
       }
 
-      .file-viewer, .home-editor {
+      .file-viewer {
         width: 100% !important;
         flex: 1 !important;
         height: auto !important;
@@ -2312,16 +2136,6 @@ color: #ffd700;
 
     /* Desktop screens (1024px and above) */
     @media (min-width: 1024px) {
-      .home-editor {
-        display: flex !important;
-        position: absolute !important;
-        right: 0 !important;
-        top: 50px !important;
-        width: 50% !important;
-        height: calc(100vh - 50px) !important;
-        z-index: 1007 !important; /* Higher than toggle panel */
-      }
-
       .file-viewer {
         flex: 0 0 50% !important;
         display: flex !important;
@@ -2409,130 +2223,8 @@ color: #ffd700;
        </div>
    </div>
     <div class="main-content">
-        <!-- HomeEditor - Default view when no document is open -->
-        <div id="homeEditor" class="home-editor visible" style="display: flex; flex: 0 0 50%; width: 50%; flex-direction: column; align-items: center; justify-content: center; align-content: center; padding: 40px 20px; height: 100%; overflow-y: auto; background: white; position: absolute; right: 0; top: 0;">
 
-            <h1 style="color: #333; font-size: 2.5rem; margin-bottom: 40px; text-shadow: none; font-family: 'Segoe UI', Arial, sans-serif;">STI Archives Word</h1>
-            <!-- Create Document Button -->
-            <button onclick="showEditor(); resetDocument(); console.log('Button clicked');" style="padding: 20px 40px; font-size: 1.2rem; background: #667eea; color: white; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: transform 0.3s, box-shadow 0.3s; display: flex; align-items: center; gap: 10px; margin-bottom: 40px;">
-            <i class="fas fa-plus-circle" style="font-size: 1.5rem;"></i>
-                Create a blank document
-            </button>
-
-            <!-- Templates Section -->
-            <div style="width: 100%; max-width: 600px;">
-                <h2 style="color: #333; font-size: 1.3rem; margin-bottom: 15px;">Templates</h2>
-            <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
-                <div onclick="showSTITemplateModal()" class="template-item" style="background: white; padding: 20px; border-radius: 10px; cursor: pointer; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); transition: transform 0.3s; width: 120px; border: 1px solid #ddd;">
-                    <i class="fas fa-graduation-cap" style="font-size: 2rem; color: #667eea; margin-bottom: 10px;"></i>
-                    <p style="margin: 0; color: #333; font-size: 0.9rem;">STI Template</p>
-                </div>
-            </div>
-            <!-- STI Template Modal - Under Construction -->
-            <div id="stiTemplateModal" class="modal" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
-                <div class="modal-content" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; width: 80%; max-width: 500px; border-radius: 15px; position: relative; text-align: center; margin: auto; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                    <span class="close" onclick="closeSTITemplateModal()" style="color: white; float: right; font-size: 32px; font-weight: bold; cursor: pointer; position: absolute; top: 10px; right: 20px;">&times;</span>
-                    <i class="fas fa-hard-hat" style="font-size: 4rem; color: white; margin-bottom: 20px;"></i>
-                    <h2 style="color: white; margin: 20px 0; font-size: 2rem;">Under Construction</h2>
-                    <p style="color: rgba(255,255,255,0.9); font-size: 1.2rem;">The STI Template feature is currently being developed.</p>
-                    <p style="color: rgba(255,255,255,0.7); font-size: 1rem; margin-top: 20px;">Stay tuned for updates!</p>
-                </div>
-            </div>
-        </div>
         <!-- Editor   -->
-        <div class="editor" id="editor" style="display:none ;">
-
-            <div class="mobile-toggle-back" style="display: none;">
-                <button onclick="toggleEditorOnMobile()" title="Toggle File Viewer"><i class="fa fa-eye"></i></button>
-            </div>
-
-            <button id="showToolbarBtn" onclick="toggleToolbar()" style="display:none; position:absolute; top:5px; left:50%; transform:translateX(-50%); z-index:100; background:#2c2c2c; border:none; border-radius:8px; width:50px; height:30px; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.3); cursor:pointer; color:white;"><i class="fa fa-chevron-down"></i></button>
-
-            <div class="toolbar">
-                <button onclick="closeEditor()" title="Close Editor" style="background: #dc3545; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer; margin-right: 10px;">
-                    <i class="fas fa-times"></i>
-                </button>
-                <select onchange="format('fontName', this.value)">
-                    <option value="Arial">Arial</option>
-                    <option value="Georgia">Georgia</option>
-                    <option value="Times New Roman">Times New Roman</option>
-                    <option value="Courier New">Courier New</option>
-                </select>
-
-                <button onclick="adjustFontSize(1)">A+</button>
-                <button onclick="adjustFontSize(-1)">A−</button>
-
-                <button onclick="format('bold')"><b>B</b></button>
-                <button onclick="format('italic')"><i>I</i></button>
-
-                <button onclick="format('underline')" title="Underline" class="underline-btn"><u>U</u></button>
-
-                <input type="color" onchange="format('foreColor', this.value)" title="Text Color" />
-
-                <button onclick="format('justifyLeft')" title="Align Left"><i class="fas fa-align-left"></i></button>
-                <button onclick="format('justifyCenter')" title="Align Center"><i class="fas fa-align-center"></i></button>
-                <button onclick="format('justifyRight')" title="Align Right"><i class="fas fa-align-right"></i></button>
-                <button onclick="format('justifyFull')" title="Justify"><i class="fas fa-align-justify"></i></button>
-
-                <button onclick="setLineHeight('1.5')" title="Line Spacing" class="line-spacing-btn"><i class="fas fa-list"></i></button>
-
-                <select id="paperSizeSelect" onchange="setPaperSize(this.value)">
-                    <option value="letter">Letter</option>
-                    <option value="a4">A4</option>
-                    <option value="a5">A5</option>
-                    <option value="legal">Legal</option>
-                </select>
-
-                <input type="text" id="docTitle" placeholder="Untitled document" class="doc-title-input" style="padding: 6px 10px; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9; margin-right: 10px; width: 200px; color: #333;" />
-
-                <button onclick="downloadDocument()" title="Download Document"><i class="fas fa-download"></i></button>
-                <button onclick="addNewPage()" title="Add New Page"><i class="fas fa-plus"></i> New Page</button>
-                <button onclick="removeCurrentPage()" title="Remove Current Page"><i class="fas fa-minus"></i> Remove Page</button>
-
-                <div class="toolbar-toggle-panel" id="toolbarTogglePanel" onclick="toggleToolbar()" title="Toggle Toolbar">
-                    <div class="toolbar-toggle-btn">
-                        <i class="fa fa-chevron-up" id="toolbarToggleIcon"></i>
-                    </div>
-                </div>
-        
-
-                
-            </div>
-                <div class="document-container" id="documentContainer">
-                    <div class="page active letter">
-                        <div class="page-content" contenteditable="true" data-placeholder="Start Typing Your Document Here.."></div>
-                        <div class="page-footer">i</div>
-                    </div>
-                </div>
-                <!-- Footer inside editor -->
-                <div class="footer">
-                    <div id="wordCounter">0 words</div>
-                    <div id="pageIndicator">Page 1 of 1</div>
-                </div>
-        </div>
-        </div>
-            
-        
-                
-
-        <!-- toggle panel -->
-        <div class="toggle-panel">
-            <div class="toggle-btn">
-                <div class="toggle-half toggle-editor" onclick="toggleHomeEditor()" title="Expand HomeEditor">
-                    <i class="fa fa-chevron-left"></i>
-                </div>
-                <div class="toggle-half toggle-file-viewer" onclick="toggleFileViewer()" title="Toggle File-Viewer">
-                    <i class="fa fa-chevron-right"></i>
-                </div>
-            </div>
-        </div>
-        <!-- Footer toggle container with PDF and Word buttons - shown only on tablet and mobile -->
-        <div class="mobile-file-viewer-toggle-panel" id="mobileFileViewerTogglePanel" onclick="toggleEditorOnMobile()" title="Toggle File Viewer" style="display: none;">
-            <div class="mobile-file-viewer-toggle-btn">
-                <i class="fa fa-chevron-right"></i>
-            </div>
-        </div>
-        <!-- toggle panel end -->
         <div class="file-viewer">
             <div class="mobile-editor-toggle" style="display: none;">
             <button onclick="toggleEditorOnMobile()" title="Toggle Editor"><i class="fa fa-chevron-left"></i></button>
@@ -2641,7 +2333,99 @@ color: #ffd700;
         </div>
 
     </div>
-    
+        </div>
+            
+        
+                
+
+        <!-- toggle panel -->
+        <div class="toggle-panel">
+            <div class="toggle-btn">
+                <div class="toggle-half toggle-editor" onclick="toggleHomeEditor()" title="Expand HomeEditor">
+                    <i class="fa fa-chevron-left"></i>
+                </div>
+                <div class="toggle-half toggle-file-viewer" onclick="toggleFileViewer()" title="Toggle File-Viewer">
+                    <i class="fa fa-chevron-right"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Footer toggle container with PDF and Word buttons - shown only on tablet and mobile -->
+        <div class="mobile-file-viewer-toggle-panel" id="mobileFileViewerTogglePanel" onclick="toggleEditorOnMobile()" title="Toggle File Viewer" style="display: none;">
+            <div class="mobile-file-viewer-toggle-btn">
+                <i class="fa fa-chevron-right"></i>
+            </div>
+        </div>
+        <!-- toggle panel end -->
+        <div class="editor" id="editor" style="display:none ;">
+
+            <div class="mobile-toggle-back" style="display: none;">
+                <button onclick="toggleEditorOnMobile()" title="Toggle File Viewer"><i class="fa fa-eye"></i></button>
+            </div>
+
+            <button id="showToolbarBtn" onclick="toggleToolbar()" style="display:none; position:absolute; top:5px; left:50%; transform:translateX(-50%); z-index:100; background:#2c2c2c; border:none; border-radius:8px; width:50px; height:30px; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.3); cursor:pointer; color:white;"><i class="fa fa-chevron-down"></i></button>
+
+            <div class="toolbar">
+                <button onclick="closeEditor()" title="Close Editor" style="background: #dc3545; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer; margin-right: 10px;">
+                    <i class="fas fa-times"></i>
+                </button>
+                <select onchange="format('fontName', this.value)">
+                    <option value="Arial">Arial</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Courier New">Courier New</option>
+                </select>
+
+                <button onclick="adjustFontSize(1)">A+</button>
+                <button onclick="adjustFontSize(-1)">A−</button>
+
+                <button onclick="format('bold')"><b>B</b></button>
+                <button onclick="format('italic')"><i>I</i></button>
+
+                <button onclick="format('underline')" title="Underline" class="underline-btn"><u>U</u></button>
+
+                <input type="color" onchange="format('foreColor', this.value)" title="Text Color" />
+
+                <button onclick="format('justifyLeft')" title="Align Left"><i class="fas fa-align-left"></i></button>
+                <button onclick="format('justifyCenter')" title="Align Center"><i class="fas fa-align-center"></i></button>
+                <button onclick="format('justifyRight')" title="Align Right"><i class="fas fa-align-right"></i></button>
+                <button onclick="format('justifyFull')" title="Justify"><i class="fas fa-align-justify"></i></button>
+
+                <button onclick="setLineHeight('1.5')" title="Line Spacing" class="line-spacing-btn"><i class="fas fa-list"></i></button>
+
+                <select id="paperSizeSelect" onchange="setPaperSize(this.value)">
+                    <option value="letter">Letter</option>
+                    <option value="a4">A4</option>
+                    <option value="a5">A5</option>
+                    <option value="legal">Legal</option>
+                </select>
+
+                <input type="text" id="docTitle" placeholder="Untitled document" class="doc-title-input" style="padding: 6px 10px; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9; margin-right: 10px; width: 200px; color: #333;" />
+
+                <button onclick="downloadDocument()" title="Download Document"><i class="fas fa-download"></i></button>
+                <button onclick="addNewPage()" title="Add New Page"><i class="fas fa-plus"></i> New Page</button>
+                <button onclick="removeCurrentPage()" title="Remove Current Page"><i class="fas fa-minus"></i> Remove Page</button>
+
+                <div class="toolbar-toggle-panel" id="toolbarTogglePanel" onclick="toggleToolbar()" title="Toggle Toolbar">
+                    <div class="toolbar-toggle-btn">
+                        <i class="fa fa-chevron-up" id="toolbarToggleIcon"></i>
+                    </div>
+                </div>
+        
+
+                
+            </div>
+                <div class="document-container" id="documentContainer">
+                    <div class="page active letter">
+                        <div class="page-content" contenteditable="true" data-placeholder="Start Typing Your Document Here.."></div>
+                        <div class="page-footer">i</div>
+                    </div>
+                </div>
+                <!-- Footer inside editor -->
+                <div class="footer">
+                    <div id="wordCounter">0 words</div>
+                    <div id="pageIndicator">Page 1 of 1</div>
+                </div>
+        </div>
 
     <script src="/frontend/assets/js/script.js"></script>
     
@@ -3255,16 +3039,14 @@ color: #ffd700;
 
         // Toggle file-viewer: implements the new toggle behavior
         function toggleFileViewer() {
-            const homeEditor = document.getElementById('homeEditor');
-            
             // Check if editor is in fullscreen mode (from creating blank document)
             const isEditorFullscreen = editor.classList.contains('fullscreen');
-            
+
             if (isEditorFullscreen) {
                 // When editor is fullscreen and user clicks toggle, go back to half/half
                 // Requirement: file viewer on left, editor on right
                 toggleState = 'default';
-                
+
                 // Reset editor from fullscreen to 50% width (right side)
                 editor.classList.remove('fullscreen');
                 editor.classList.add('visible');
@@ -3274,40 +3056,29 @@ color: #ffd700;
                 editor.style.position = 'absolute';
                 editor.style.right = '0';
                 editor.style.left = 'auto';
-                
+
                 // Show file-viewer at 50% width (left side)
                 fileViewer.style.display = 'flex';
                 fileViewer.style.flex = '0 0 50%';
-                
-                // Hide homeEditor when editor is visible
-                if (homeEditor) {
-                    homeEditor.style.display = 'none';
-                    homeEditor.classList.remove('visible');
-                }
-                
+
                 // Reset toggle panel
                 togglePanel.classList.remove('left', 'no-left-space', 'right', 'no-right-space');
                 toggleBtn.style.width = '30px';
                 leftBtn.querySelector('i').className = 'fa fa-chevron-left';
                 rightBtn.querySelector('i').className = 'fa fa-chevron-right';
-                leftBtn.onclick = () => toggleHomeEditor();
                 rightBtn.onclick = () => toggleFileViewer();
                 leftBtn.style.display = 'flex';
                 rightBtn.style.display = 'flex';
-                
+
                 return;
             }
-            
+
             if (toggleState === 'default') {
                 // Go to fileViewer toggled
                 toggleState = 'fileViewer';
                 // Expand file-viewer to 100%, hide editor
                 fileViewer.classList.add('expanded');
                 editor.classList.add('collapsed');
-                if (homeEditor) {
-                    homeEditor.style.display = 'none';
-                    homeEditor.classList.remove('visible');
-                }
                 // Move panel to right and show it
                 togglePanel.classList.add('right', 'no-right-space');
                 togglePanel.classList.remove('left', 'no-left-space');
@@ -3326,237 +3097,63 @@ color: #ffd700;
                 // Reset
                 fileViewer.classList.remove('expanded');
                 editor.classList.remove('collapsed');
-                
-                // Show homeEditor (already declared at top of function)
-                if (homeEditor) {
-                    homeEditor.style.display = 'flex';
-                    homeEditor.classList.add('visible');
-                    // Load recent documents when homeEditor is shown
-                    if (typeof loadRecentDocuments === 'function') {
-                        loadRecentDocuments();
-                    }
-                }
-                
+
                 togglePanel.classList.remove('right', 'no-right-space');
                 // Reset button width
                 toggleBtn.style.width = '30px';
                 // Reset icons
                 leftBtn.querySelector('i').className = 'fa fa-chevron-left';
                 rightBtn.querySelector('i').className = 'fa fa-chevron-right';
-                leftBtn.onclick = () => toggleHomeEditor();
                 rightBtn.onclick = () => toggleFileViewer();
                 // Show the left button
                 leftBtn.style.display = 'flex';
             }
         }
 
-        // Toggle HomeEditor: show/hide HomeEditor, toggle with file-viewer
-        function toggleHomeEditor() {
-            const homeEditor = document.getElementById('homeEditor');
-            const editor = document.getElementById('editor');
-            console.log('toggleHomeEditor called, current toggleState:', toggleState);
-            
-            // Check if editor is active (visible, fullscreen, or not hidden)
-            const isEditorActive = editor && (editor.style.display !== 'none' || editor.classList.contains('fullscreen') || editor.classList.contains('visible'));
-            
-            if (isEditorActive) {
-                // Editor is active - make it fullscreen
-                console.log('Expanding Editor to 100%');
-                toggleState = 'editor';
-                
-                editor.classList.add('fullscreen');
-                editor.style.flex = '0 0 100%';
-                editor.style.width = '100%';
-                editor.style.position = 'absolute';
-                editor.style.left = '0';
-                editor.style.right = 'auto';
-                
-                // Hide file-viewer
-                fileViewer.style.display = 'none';
-                
-                // Hide homeEditor
-                if (homeEditor) {
-                    homeEditor.style.display = 'none';
-                    homeEditor.classList.remove('visible');
-                }
-                
-                // Position toggle panel on LEFT side
-                togglePanel.classList.add('left', 'no-left-space');
-                togglePanel.classList.remove('right', 'no-right-space');
-                togglePanel.style.display = 'flex';
-                
-                // Show only right button with chevron-right icon (to collapse back to split)
-                toggleBtn.style.width = '15px';
-                rightBtn.querySelector('i').className = 'fa fa-chevron-right';
-                leftBtn.style.display = 'none';
-                rightBtn.style.display = 'flex';
-                rightBtn.onclick = () => toggleFileViewer();
-                
-            } else if (toggleState === 'default') {
-                console.log('Expanding HomeEditor to 100%');
-                // Expand HomeEditor to 100%, hide file-viewer
-                toggleState = 'homeEditorExpanded';
-                
-                if (homeEditor) {
-                    homeEditor.style.display = 'flex';
-                    homeEditor.classList.add('visible');
-                    homeEditor.style.flex = '0 0 100%';
-                    homeEditor.style.width = '100%';
-                    homeEditor.style.position = 'absolute';
-                    homeEditor.style.left = '0';
-                    homeEditor.style.right = 'auto';
-                    // Load recent documents when homeEditor is shown
-                    if (typeof loadRecentDocuments === 'function') {
-                        loadRecentDocuments();
-                    }
-                }
-                
-                fileViewer.style.display = 'none';
-                
-                // Position toggle panel on LEFT side
-                togglePanel.classList.add('left', 'no-left-space');
-                togglePanel.classList.remove('right', 'no-right-space');
-                togglePanel.style.display = 'flex';
-                
-                // Show only left button with chevron-right icon
-                toggleBtn.style.width = '15px';
-                leftBtn.querySelector('i').className = 'fa fa-chevron-right';
-                rightBtn.style.display = 'none';
-                leftBtn.style.display = 'flex';
-                
-            } else if (toggleState === 'homeEditorExpanded') {
-                console.log('Collapsing HomeEditor to default');
-                // Collapse HomeEditor back to default (50% width)
-                toggleState = 'default';
-                
-                if (homeEditor) {
-                    homeEditor.style.display = 'flex';
-                    homeEditor.classList.add('visible');
-                    homeEditor.style.flex = '0 0 50%';
-                    homeEditor.style.width = '50%';
-                    homeEditor.style.position = 'absolute';
-                    homeEditor.style.right = '0';
-                    homeEditor.style.left = 'auto';
-                    // Load recent documents when homeEditor is shown
-                    if (typeof loadRecentDocuments === 'function') {
-                        loadRecentDocuments();
-                    }
-                }
-                
-                fileViewer.style.display = 'flex';
-                
-                // Reset toggle panel to center
-                togglePanel.classList.remove('left', 'no-left-space', 'right', 'no-right-space');
-                toggleBtn.style.width = '30px';
-                
-                // Show both buttons
-                leftBtn.querySelector('i').className = 'fa fa-chevron-left';
-                rightBtn.querySelector('i').className = 'fa fa-chevron-right';
-                leftBtn.style.display = 'flex';
-                rightBtn.style.display = 'flex';
-            } else if (toggleState === 'editor') {
-                // Editor is in fullscreen, collapse to default (50% file-viewer, 50% editor)
-                console.log('Collapsing Editor to default');
-                toggleState = 'default';
-                
-                // Show editor (not homeEditor)
-                editor.classList.remove('fullscreen');
-                editor.classList.add('visible');
-                editor.style.display = 'flex';
-                editor.style.flex = '0 0 50%';
-                editor.style.width = '50%';
-                editor.style.position = 'absolute';
-                editor.style.right = '0';
-                editor.style.left = 'auto';
-                
-                // Hide homeEditor
-                if (homeEditor) {
-                    homeEditor.style.display = 'none';
-                    homeEditor.classList.remove('visible');
-                }
-                
-                // Show fileViewer
-                fileViewer.style.display = 'flex';
-                fileViewer.style.flex = '0 0 50%';
-                
-                // Reset toggle panel to center
-                togglePanel.classList.remove('left', 'no-left-space', 'right', 'no-right-space');
-                toggleBtn.style.width = '30px';
-                
-                // Show both buttons
-                leftBtn.querySelector('i').className = 'fa fa-chevron-left';
-                rightBtn.querySelector('i').className = 'fa fa-chevron-right';
-                leftBtn.style.display = 'flex';
-                rightBtn.style.display = 'flex';
-                leftBtn.onclick = () => toggleHomeEditor();
-                rightBtn.onclick = () => toggleFileViewer();
-            }
-        }
+
         
-        // Toggle mobile view: toggle between homeeditor (100%) and file-viewer
+        // Toggle mobile view: toggle between file-viewer and select-article
         function toggleMobileView() {
-            const homeEditor = document.getElementById('homeEditor');
             const fileViewer = document.querySelector('.file-viewer');
             const toggleBtnMobile = document.getElementById('toggleBtnMobile');
             const selectArticle = document.getElementById('selectArticle');
-            
+
             console.log('toggleMobileView called, current toggleState:', toggleState);
-            
+
             if (toggleState === 'default' || toggleState === 'fileViewer') {
-                // Show homeeditor at 100%
-                console.log('Showing HomeEditor at 100%');
-                toggleState = 'homeEditorExpanded';
-                
-                if (homeEditor) {
-                    homeEditor.style.display = 'flex';
-                    homeEditor.classList.add('visible');
-                    homeEditor.style.flex = '0 0 100%';
-                    homeEditor.style.width = '100%';
-                    homeEditor.style.position = 'absolute';
-                    homeEditor.style.left = '0';
-                    homeEditor.style.right = 'auto';
-                    homeEditor.style.top = '60px';
-                    homeEditor.style.height = 'calc(100% - 60px)';
-                    // Load recent documents when homeEditor is shown
-                    if (typeof loadRecentDocuments === 'function') {
-                        loadRecentDocuments();
-                    }
-                }
-                
+                // Hide file-viewer and show select-article
+                console.log('Showing Select Article');
+                toggleState = 'selectArticle';
+
                 if (fileViewer) {
                     fileViewer.style.display = 'none';
                 }
-                
-                // Hide select-article when homeeditor is showing
+
+                // Show select-article
                 if (selectArticle) {
-                    selectArticle.style.display = 'none';
+                    selectArticle.style.display = 'flex';
                 }
-                
+
                 // Change icon to chevron-right to indicate going back
                 if (toggleBtnMobile) {
                     toggleBtnMobile.querySelector('i').className = 'fa fa-chevron-right';
                 }
-                
-            } else if (toggleState === 'homeEditorExpanded') {
+
+            } else if (toggleState === 'selectArticle') {
                 // Go back to showing file-viewer
                 console.log('Showing FileViewer');
                 toggleState = 'default';
-                
-                if (homeEditor) {
-                    homeEditor.style.display = 'none';
-                    homeEditor.classList.remove('visible');
-                }
-                
+
                 if (fileViewer) {
                     fileViewer.style.display = 'flex';
                 }
-                
-                // Show select-article when going back to file-viewer
+
+                // Hide select-article
                 if (selectArticle) {
-                    selectArticle.style.display = 'flex';
+                    selectArticle.style.display = 'none';
                 }
-                
-                // Change icon to chevron-left to indicate going to homeeditor
+
+                // Change icon to chevron-left
                 if (toggleBtnMobile) {
                     toggleBtnMobile.querySelector('i').className = 'fa fa-chevron-left';
                 }
@@ -3565,19 +3162,14 @@ color: #ffd700;
 
         // Toggle editor: implements the new toggle behavior
         function toggleEditor() {
-            const homeEditor = document.getElementById('homeEditor');
             console.log('toggleEditor called, current toggleState:', toggleState);
             if (toggleState === 'default') {
                 console.log('Going to editor state');
                 // Go to editor toggled
                 toggleState = 'editor';
-                // Expand editor to 100%, hide file-viewer and home-editor
+                // Expand editor to 100%, hide file-viewer
                 editor.classList.add('fullscreen');
                 fileViewer.style.display = 'none';
-                if (homeEditor) {
-                    homeEditor.style.display = 'none';
-                    homeEditor.classList.remove('visible');
-                }
                 // Position toggle panel on left with no space and change icon, adjust button width and hide right button
                 togglePanel.classList.add('left', 'no-left-space');
                 togglePanel.classList.remove('right', 'no-right-space');
@@ -3587,31 +3179,6 @@ color: #ffd700;
                 // Hide right button, show left button for mobile toggle back
                 rightBtn.style.display = 'none';
                 leftBtn.style.display = 'flex';
-                console.log('Icon set to fa-chevron-right');
-            } else if (toggleState === 'editor') {
-                console.log('Restoring to default state');
-                // Restore default
-                toggleState = 'default';
-                // Reset
-                editor.classList.remove('fullscreen');
-                editor.style.display = 'none';
-                fileViewer.style.display = 'flex';
-                
-                // Show homeEditor (already declared at top of function)
-                if (homeEditor) {
-                    homeEditor.style.display = 'flex';
-                    homeEditor.classList.add('visible');
-                }
-                
-                togglePanel.classList.remove('left', 'no-left-space');
-                // Reset button width and show right button
-                toggleBtn.style.width = '30px';
-                leftBtn.querySelector('i').className = 'fa fa-chevron-left';
-                rightBtn.querySelector('i').className = 'fa fa-chevron-right';
-                // Show both buttons in default state
-                leftBtn.style.display = 'flex';
-                rightBtn.style.display = 'flex';
-                console.log('Icon set to fa-chevron-left');
             }
         }
 
@@ -3888,58 +3455,63 @@ color: #ffd700;
                document.head.appendChild(script);
            }
            
-           // Setup UI for PDF viewer
-           function setupPdfViewerUI() {
-               // Keep file-viewer at 50% width (left side) - don't expand
-               // The PDF modal will display inside the file-viewer on the left
-               const fileViewer = document.querySelector('.file-viewer');
-               const editor = document.getElementById('editor');
-               const togglePanel = document.querySelector('.toggle-panel');
-               const leftBtn = document.querySelector('.toggle-half.toggle-editor');
-               const rightBtn = document.querySelector('.toggle-half.toggle-file-viewer');
-               
-               // Reset toggle state to default (both visible)
-               window.toggleState = 'default';
-               
-               // Ensure file-viewer is visible and at normal width (50%)
-               if (fileViewer) {
-                   fileViewer.classList.remove('expanded');
-                   fileViewer.style.display = 'flex';
-               }
-               // Hide the document editor and show HomeEditor instead
-               if (editor) {
-                   editor.classList.remove('fullscreen');
-                   editor.style.display = 'none';
-               }
-               // Show HomeEditor on the right side
-               var homeEditor = document.getElementById('homeEditor');
-               if (homeEditor) {
-                   homeEditor.style.display = 'flex';
-                   homeEditor.style.flex = '0 0 50%';
-                   homeEditor.style.position = 'absolute';
-                   homeEditor.style.right = '0';
-               }
-               
-               // Show and reset toggle panel
-               if (togglePanel) {
-                   togglePanel.classList.remove('left', 'right', 'no-left-space', 'no-right-space');
-                   togglePanel.style.display = 'flex';
-               }
-               if (leftBtn) {
-                   leftBtn.style.display = 'flex';
-                   leftBtn.querySelector('i').className = 'fa fa-chevron-left';
-               }
-               if (rightBtn) {
-                   rightBtn.style.display = 'flex';
-                   rightBtn.querySelector('i').className = 'fa fa-chevron-right';
-               }
-               
-               // Hide select article, show doc preview
-               const selectArticle = document.getElementById('selectArticle');
-               const docPreview = document.getElementById('docPreview');
-               if (selectArticle) selectArticle.style.display = 'none';
-               if (docPreview) docPreview.style.display = 'block';
-           }
+            // Setup UI for PDF viewer
+            function setupPdfViewerUI() {
+                // Keep file-viewer at 50% width (left side) - don't expand
+                // The PDF modal will display inside the file-viewer on the left
+                const fileViewer = document.querySelector('.file-viewer');
+                const editor = document.getElementById('editor');
+                const togglePanel = document.querySelector('.toggle-panel');
+                const leftBtn = document.querySelector('.toggle-half.toggle-editor');
+                const rightBtn = document.querySelector('.toggle-half.toggle-file-viewer');
+
+                const isDesktop = window.innerWidth > 1024;
+
+                if (isDesktop) {
+                    // Desktop: keep editor visible, file-viewer at 50%
+                    window.toggleState = 'default';
+                    if (fileViewer) {
+                        fileViewer.classList.remove('expanded');
+                        fileViewer.style.display = 'flex';
+                        fileViewer.style.flex = '0 0 50%';
+                    }
+                    if (editor) {
+                        editor.classList.remove('fullscreen');
+                        editor.style.display = 'flex';
+                    }
+                } else {
+                    // Mobile/Tablet: hide editor
+                    window.toggleState = 'default';
+                    if (fileViewer) {
+                        fileViewer.classList.remove('expanded');
+                        fileViewer.style.display = 'flex';
+                    }
+                    if (editor) {
+                        editor.classList.remove('fullscreen');
+                        editor.style.display = 'none';
+                    }
+                }
+
+                // Show and reset toggle panel
+                if (togglePanel) {
+                    togglePanel.classList.remove('left', 'right', 'no-left-space', 'no-right-space');
+                    togglePanel.style.display = 'flex';
+                }
+                if (leftBtn) {
+                    leftBtn.style.display = 'flex';
+                    leftBtn.querySelector('i').className = 'fa fa-chevron-left';
+                }
+                if (rightBtn) {
+                    rightBtn.style.display = 'flex';
+                    rightBtn.querySelector('i').className = 'fa fa-chevron-right';
+                }
+
+                // Hide select article, show doc preview
+                const selectArticle = document.getElementById('selectArticle');
+                const docPreview = document.getElementById('docPreview');
+                if (selectArticle) selectArticle.style.display = 'none';
+                if (docPreview) docPreview.style.display = 'block';
+            }
 
          function loadDocumentView(study) {
              // Make sure doc preview is visible
@@ -4354,19 +3926,12 @@ color: #ffd700;
           const rightBtn = document.querySelector('.toggle-half.toggle-file-viewer');
            // HomeEditor functions - attached to window for global access
            window.showEditor = function() {
-               var homeEditor = document.getElementById('homeEditor');
-               var editor = document.getElementById('editor');
-               var fileViewer = document.querySelector('.file-viewer');
+                var editor = document.getElementById('editor');
+                var fileViewer = document.querySelector('.file-viewer');
 
-               console.log('showEditor called');
-               console.log('homeEditor:', homeEditor);
-               console.log('editor:', editor);
+                console.log('showEditor called');
+                console.log('editor:', editor);
 
-                // Hide homeEditor when showing editor
-                if (homeEditor) {
-                    homeEditor.style.setProperty('display', 'none', 'important');
-                    homeEditor.classList.remove('visible');
-                }
                 // Hide toggle-panel and mobile toggle when editor is shown
                 const togglePanel = document.querySelector('.toggle-panel');
                 if (togglePanel) {
@@ -4413,10 +3978,6 @@ color: #ffd700;
                    if (fileViewer) {
                        fileViewer.style.setProperty('display', 'none', 'important');
                    }
-                   // Hide home-editor
-                   if (homeEditor) {
-                       homeEditor.style.display = 'none';
-                   }
                     // Update footer toggle to show Word as active on mobile/tablet
                     if (window.innerWidth <= 1024) {
                         const pdfBtn = document.getElementById('footerPdfBtn');
@@ -4440,162 +4001,164 @@ color: #ffd700;
                        resetDocument();
                    }
               }
-          };
+           };
           
-          window.closeEditor = function() {
-              var homeEditor = document.getElementById('homeEditor');
-              var editor = document.getElementById('editor');
-              var fileViewer = document.querySelector('.file-viewer');
-              var currentDocDisplay = document.getElementById('currentDocDisplay');
-              
-              console.log('closeEditor called');
-              
-              // Check if editor is in fullscreen mode
-              var isEditorFullscreen = editor && editor.classList.contains('fullscreen');
-              
-              if (editor) {
-                  editor.classList.remove('visible', 'fullscreen');
-                  editor.style.display = 'none';
-                  editor.style.flex = '0 0 50%';
-                  editor.style.width = '50%';
-                  editor.style.position = 'relative';
-                  editor.style.left = 'auto';
-                  editor.style.right = 'auto';
-              }
-              
-              if (homeEditor) {
-                  homeEditor.classList.remove('hidden');
-                  
-                  if (isEditorFullscreen) {
-                      // Requirement #5: Show homeEditor in fullscreen (not half-half)
-                      toggleState = 'homeEditorExpanded';
-                      homeEditor.style.display = 'flex';
-                      homeEditor.style.flex = '0 0 100%';
-                      homeEditor.style.width = '100%';
-                      homeEditor.style.position = 'absolute';
-                      homeEditor.style.left = '0';
-                      homeEditor.style.right = 'auto';
-                      homeEditor.style.top = '0';
-                      
-                      // Hide file-viewer when homeEditor is fullscreen
-                      if (fileViewer) {
-                          fileViewer.style.display = 'none';
-                      }
-                  } else {
-                      // Default: Show homeEditor at 50% with fileViewer (100% on mobile)
-                      toggleState = 'default';
-                      homeEditor.style.display = 'flex';
-                      if (window.innerWidth <= 1024) {
-                          homeEditor.style.flex = '0 0 100%';
-                          homeEditor.style.width = '100%';
-                          homeEditor.style.position = 'relative';
-                      } else {
-                          homeEditor.style.flex = '0 0 50%';
-                          homeEditor.style.width = '50%';
-                          homeEditor.style.position = 'absolute';
-                          homeEditor.style.right = '0';
-                          homeEditor.style.left = 'auto';
-                          homeEditor.style.top = '0';
-                      }
-                      
-                      // Show fileViewer at 50% (hide on mobile)
-                      if (fileViewer) {
-                          if (window.innerWidth <= 1024) {
-                              fileViewer.style.display = 'none';
-                          } else {
-                              fileViewer.style.display = 'flex';
-                              fileViewer.style.flex = '0 0 50%';
-                          }
-                      }
-                  }
-              }
+           window.closeEditor = function() {
+               var editor = document.getElementById('editor');
+               var fileViewer = document.querySelector('.file-viewer');
+               var currentDocDisplay = document.getElementById('currentDocDisplay');
 
-              // Show toggle-panel when editor is closed (only on desktop)
-              const togglePanel = document.querySelector('.toggle-panel');
-              if (togglePanel && window.innerWidth > 1024) {
-                  togglePanel.style.display = 'flex';
-              }
+               console.log('closeEditor called');
 
-              // Hide current document display
-              if (currentDocDisplay) {
-                  currentDocDisplay.style.display = 'none';
-              }
-              
-              // Refresh recent documents
-              loadRecentDocuments();
-          };
+               // Check if editor is in fullscreen mode
+               var isEditorFullscreen = editor && editor.classList.contains('fullscreen');
+
+               if (editor) {
+                   editor.classList.remove('visible', 'fullscreen');
+                   editor.style.display = 'none';
+                   editor.style.flex = '0 0 50%';
+                   editor.style.width = '50%';
+                   editor.style.position = 'relative';
+                   editor.style.left = 'auto';
+                   editor.style.right = 'auto';
+               }
+
+               // Show file-viewer
+               toggleState = 'default';
+               if (fileViewer) {
+                   fileViewer.style.display = 'flex';
+                   if (window.innerWidth <= 1024) {
+                       fileViewer.style.flex = '0 0 100%';
+                       fileViewer.style.width = '100%';
+                   } else {
+                       fileViewer.style.flex = '0 0 100%';
+                       fileViewer.style.width = '100%';
+                   }
+               }
+
+               // Show toggle-panel when editor is closed (only on desktop)
+               const togglePanel = document.querySelector('.toggle-panel');
+               if (togglePanel && window.innerWidth > 1024) {
+                   togglePanel.style.display = 'flex';
+               }
+
+               // Hide current document display
+               if (currentDocDisplay) {
+                   currentDocDisplay.style.display = 'none';
+               }
+           };
           
-          // Initialize on page load
-          document.addEventListener('DOMContentLoaded', function() {
-              // Show HomeEditor by default, hide editor
-              var homeEditor = document.getElementById('homeEditor');
-              var editor = document.getElementById('editor');
-              var fileViewer = document.querySelector('.file-viewer');
-              
-              // Ensure file-viewer is visible on left side
-              if (fileViewer) {
-                  fileViewer.style.display = 'flex';
-                  fileViewer.style.flex = '0 0 50%';
-              }
-              
-              if (homeEditor) {
-                  homeEditor.classList.remove('hidden');
-                  homeEditor.style.display = 'flex';
-                  homeEditor.style.flex = '0 0 50%';
-                  homeEditor.style.position = 'absolute';
-                  homeEditor.style.right = '0';
-                  homeEditor.style.top = '0';
-              }
-              if (editor) {
-                  editor.classList.remove('visible');
-                  editor.style.display = 'none';
-              }
-              
-              // Load recent documents - add small delay to ensure everything is ready
-              setTimeout(function() {
-                  loadRecentDocuments();
-              }, 100);
-              
-              // Force hide editor after a short delay to ensure it works
-              setTimeout(function() {
-                  if (editor) {
-                      editor.style.display = 'none';
-                      editor.classList.remove('visible');
-                  }
-                  if (homeEditor) {
-                      homeEditor.style.display = 'flex';
-                      homeEditor.style.flex = '0 0 50%';
-                      homeEditor.style.position = 'absolute';
-                      homeEditor.style.right = '0';
-                  }
-                  if (fileViewer) {
-                      fileViewer.style.display = 'flex';
-                      fileViewer.style.flex = '0 0 50%';
-                  }
-              }, 200);
-          });
+           // Initialize on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                // Conditionally show file-viewer and editor based on screen size
+                var editor = document.getElementById('editor');
+                var fileViewer = document.querySelector('.file-viewer');
+
+                if (window.innerWidth > 1024) {
+                    // Desktop: show both at 50%
+                    if (fileViewer) {
+                        fileViewer.style.display = 'flex';
+                        fileViewer.style.flex = '0 0 50%';
+                    }
+                    if (editor) {
+                        editor.classList.add('visible');
+                        editor.style.display = 'flex';
+                        editor.style.flex = '0 0 50%';
+                    }
+                } else {
+                    // Mobile: show file-viewer full, hide editor
+                    if (fileViewer) {
+                        fileViewer.style.display = 'flex';
+                        fileViewer.style.flex = '0 0 100%';
+                    }
+                    if (editor) {
+                        editor.classList.remove('visible');
+                        editor.style.display = 'none';
+                    }
+                }
+
+                // Force apply styles after a short delay to ensure it works
+                setTimeout(function() {
+                    if (window.innerWidth > 1024) {
+                        // Desktop: show both at 50%
+                        if (fileViewer) {
+                            fileViewer.style.display = 'flex';
+                            fileViewer.style.flex = '0 0 50%';
+                        }
+                        if (editor) {
+                            editor.classList.add('visible');
+                            editor.style.display = 'flex';
+                            editor.style.flex = '0 0 50%';
+                        }
+                    } else {
+                        // Mobile: show file-viewer full, hide editor
+                        if (editor) {
+                            editor.style.display = 'none';
+                            editor.classList.remove('visible');
+                        }
+                        if (fileViewer) {
+                            fileViewer.style.display = 'flex';
+                            fileViewer.style.flex = '0 0 100%';
+                        }
+                    }
+                }, 200);
+            });
           
-          // Final safety check after window loads
-          window.addEventListener('load', function() {
-              var homeEditor = document.getElementById('homeEditor');
-              var editor = document.getElementById('editor');
-              var fileViewer = document.querySelector('.file-viewer');
-              
-              // Make sure HomeEditor is shown and editor is hidden
-              if (homeEditor) {
-                  homeEditor.style.display = 'flex';
-                  homeEditor.style.flex = '0 0 50%';
-                  homeEditor.style.position = 'absolute';
-                  homeEditor.style.right = '0';
-              }
-              if (editor) {
-                  editor.style.display = 'none';
-              }
-              if (fileViewer) {
-                  fileViewer.style.display = 'flex';
-                  fileViewer.style.flex = '0 0 50%';
-              }
-          });
+            // Final safety check after window loads
+             window.addEventListener('load', function() {
+                 // Conditionally show file-viewer and editor based on screen size
+                 var editor = document.getElementById('editor');
+                 var fileViewer = document.querySelector('.file-viewer');
+
+                 if (window.innerWidth > 1024) {
+                     // Desktop: show both at 50%
+                     if (fileViewer) {
+                         fileViewer.style.display = 'flex';
+                         fileViewer.style.flex = '0 0 50%';
+                     }
+                     if (editor) {
+                         editor.classList.add('visible');
+                         editor.style.display = 'flex';
+                         editor.style.flex = '0 0 50%';
+                     }
+                 } else {
+                     // Mobile: show file-viewer full, hide editor
+                     if (fileViewer) {
+                         fileViewer.style.display = 'flex';
+                         fileViewer.style.flex = '0 0 100%';
+                     }
+                     if (editor) {
+                         editor.classList.remove('visible');
+                         editor.style.display = 'none';
+                     }
+                 }
+
+                 // Force apply styles after a short delay to ensure it works
+                 setTimeout(function() {
+                     if (window.innerWidth > 1024) {
+                         // Desktop: show both at 50%
+                         if (fileViewer) {
+                             fileViewer.style.display = 'flex';
+                             fileViewer.style.flex = '0 0 50%';
+                         }
+                         if (editor) {
+                             editor.classList.add('visible');
+                             editor.style.display = 'flex';
+                             editor.style.flex = '0 0 50%';
+                         }
+                     } else {
+                         // Mobile: show file-viewer full, hide editor
+                         if (editor) {
+                             editor.style.display = 'none';
+                             editor.classList.remove('visible');
+                         }
+                         if (fileViewer) {
+                             fileViewer.style.display = 'flex';
+                             fileViewer.style.flex = '0 0 100%';
+                         }
+                     }
+                 }, 200);
+             });
           
           // Also use MutationObserver to catch all changes to page-content
           function initMutationObserver() {
@@ -5069,58 +4632,34 @@ color: #ffd700;
              }
          }
 
-         function toggleEditorOnMobile() {
-             const editor = document.getElementById('editor');
-             const fileViewer = document.querySelector('.file-viewer');
-             const homeEditor = document.getElementById('homeEditor');
-             
-             // Get current state from CSS
-             const fileViewerDisplay = fileViewer.style.display;
-             const homeEditorDisplay = homeEditor && (homeEditor.style.display !== 'none') ? 'flex' : 'none';
-             
-             if (editor.classList.contains('fullscreen')) {
-                 // Currently editor fullscreen, switch to home-editor
-                 editor.classList.remove('fullscreen');
-                 editor.style.display = 'none';
-                 
-                 if (homeEditor) {
-                     homeEditor.style.display = 'flex';
-                     homeEditor.classList.add('visible');
-                 }
-                 
-                 document.getElementById('mobileFileViewerTogglePanel').style.display = 'none';
-                 document.querySelector('.mobile-toggle-back').style.display = 'none';
-             } else if (homeEditor && homeEditor.style.display !== 'none') {
-                 // Currently home-editor, switch to file-viewer
-                 if (homeEditor) {
-                     homeEditor.style.display = 'none';
-                     homeEditor.classList.remove('visible');
-                 }
-                 
-                 fileViewer.style.display = 'flex';
-                 fileViewer.style.flex = '0 0 100%';
-                 
-                 document.getElementById('mobileFileViewerTogglePanel').style.display = 'none';
-                 document.querySelector('.mobile-toggle-back').style.display = 'none';
-             } else {
-                 // Currently file-viewer, switch to editor
-                 fileViewer.style.display = 'none';
-                 
-                 if (homeEditor) {
-                     homeEditor.style.display = 'none';
-                     homeEditor.classList.remove('visible');
-                 }
-                 
-                  editor.style.display = 'flex';
-                  editor.classList.add('fullscreen');
-                  
-                  // Only show mobile toggle panel on larger screens (not tablet/mobile)
-                  if (window.innerWidth > 1024) {
-                      document.getElementById('mobileFileViewerTogglePanel').style.display = 'block';
-                  }
+          function toggleEditorOnMobile() {
+              const editor = document.getElementById('editor');
+              const fileViewer = document.querySelector('.file-viewer');
+
+              if (editor.classList.contains('fullscreen')) {
+                  // Currently editor fullscreen, switch to file-viewer
+                  editor.classList.remove('fullscreen');
+                  editor.style.display = 'none';
+
+                  fileViewer.style.display = 'flex';
+                  fileViewer.style.flex = '0 0 100%';
+
+                  document.getElementById('mobileFileViewerTogglePanel').style.display = 'none';
                   document.querySelector('.mobile-toggle-back').style.display = 'none';
-             }
-         }
+              } else {
+                  // Currently file-viewer, switch to editor
+                  fileViewer.style.display = 'none';
+
+                   editor.style.display = 'flex';
+                   editor.classList.add('fullscreen');
+
+                   // Only show mobile toggle panel on larger screens (not tablet/mobile)
+                   if (window.innerWidth > 1024) {
+                       document.getElementById('mobileFileViewerTogglePanel').style.display = 'block';
+                   }
+                   document.querySelector('.mobile-toggle-back').style.display = 'none';
+              }
+          }
  
 
         // Load document from pfp saved documents
@@ -5233,7 +4772,7 @@ color: #ffd700;
                     updateWordCounter();
                     updatePageNumbers();
                 }, 100);
-                // Editor content loaded but not shown - homeEditor remains visible
+
             }
 
             const urlParams = new URLSearchParams(window.location.search);
@@ -5274,20 +4813,14 @@ color: #ffd700;
                     localStorage.removeItem('selectedDocument'); // Clean up
                 }
             } else {
-                // No URL params - show HomeEditor
-                // Make sure HomeEditor is visible
-                const homeEditor = document.getElementById('homeEditor');
+                // No URL params - show file-viewer
                 const editor = document.getElementById('editor');
-                if (homeEditor) {
-                    homeEditor.style.display = 'flex';
-                    homeEditor.classList.add('visible');
-                    // Load recent documents
-                    if (typeof loadRecentDocuments === 'function') {
-                        loadRecentDocuments();
-                    }
-                }
+                const fileViewer = document.querySelector('.file-viewer');
                 if (editor) {
                     editor.style.display = 'none';
+                }
+                if (fileViewer) {
+                    fileViewer.style.display = 'flex';
                 }
             }
         });
@@ -5941,21 +5474,21 @@ color: #ffd700;
     <!-- Footer Toggle Button for PDF/Word - shown in tablet and mobile -->
     <div class="footer-toggle-container" id="footerToggleContainer">
       <div class="toggle-buttons-row">
-        <button class="toggle-btn-mobile pdf-btn active" id="footerPdfBtn" onclick="selectFooterDocType('pdf')">
+        <button class="toggle-btn-mobile pdf-btn active" id="footerPdfBtn" onclick="toggleView('pdf')">
           <i class="fas fa-book" style="color: #333;"></i> PDF
         </button>
-        <button class="toggle-btn-mobile word-btn" id="footerWordBtn" onclick="selectFooterDocType('word')">
+        <button class="toggle-btn-mobile word-btn" id="footerWordBtn" onclick="toggleView('word')">
           <i class="fas fa-file-word" style="color: #333;"></i> Word
         </button>
       </div>
     </div>
     
     <script>
-    // === FOOTER PDF/WORD TOGGLE FUNCTION ===
+    // === toggleView FUNCTION ===
     // Track current view state: 'pdf' or 'word'
     let footerCurrentDocView = 'pdf';
 
-    window.selectFooterDocType = function(type) {
+    window.toggleView = function(type) {
         const pdfBtn = document.getElementById('footerPdfBtn');
         const wordBtn = document.getElementById('footerWordBtn');
 
@@ -5971,14 +5504,9 @@ color: #ffd700;
         if (type === 'pdf') {
             pdfBtn.classList.add('active');
             wordBtn.classList.remove('active');
-            // Show file-viewer, hide homeEditor and editor
-            const homeEditor = document.getElementById('homeEditor');
+            // Show file-viewer, hide editor
             const editor = document.getElementById('editor');
             const fileViewer = document.querySelector('.file-viewer');
-            if (homeEditor) {
-                homeEditor.classList.remove('visible');
-                homeEditor.style.display = 'none';
-            }
             if (editor) {
                 editor.style.display = 'none';
                 editor.classList.remove('fullscreen');
@@ -5989,19 +5517,32 @@ color: #ffd700;
         } else {
             pdfBtn.classList.remove('active');
             wordBtn.classList.add('active');
-            // Show editor (Word view), hide file-viewer and homeEditor
-            const homeEditor = document.getElementById('homeEditor');
+            // Show editor (Word view), hide file-viewer
             const editor = document.getElementById('editor');
             const fileViewer = document.querySelector('.file-viewer');
-            if (homeEditor) {
-                homeEditor.classList.remove('visible');
-                homeEditor.style.display = 'none';
-            }
             if (editor) {
-                editor.classList.remove('fullscreen');
-                editor.style.display = 'flex';
+                // On tablet/phone, make editor fullscreen and hide file-viewer
+                if (window.innerWidth <= 1024) {
+                    // Remove any conflicting classes
+                    editor.classList.remove('fullscreen', 'visible', 'collapsed');
+                    // Set styles manually to avoid CSS conflicts - fullscreen covering entire screen
+                    editor.style.setProperty('display', 'block', 'important');
+                    editor.style.setProperty('position', 'fixed', 'important'); // Use fixed to cover entire viewport
+                    editor.style.setProperty('top', '50px', 'important');
+                    editor.style.setProperty('left', '0', 'important');
+                    editor.style.setProperty('width', '100vw', 'important');
+                    editor.style.setProperty('height', 'calc(100vh - 100px)', 'important');
+                    editor.style.setProperty('z-index', '10000', 'important'); // High z-index to cover navbar and footer
+                    if (fileViewer) {
+                        fileViewer.style.setProperty('display', 'none', 'important');
+                    }
+                } else {
+                    // Desktop: add fullscreen class
+                    editor.classList.add('fullscreen');
+                    editor.style.display = 'flex';
+                }
             }
-            if (fileViewer) {
+            if (fileViewer && window.innerWidth > 1024) {
                 fileViewer.style.display = 'none';
             }
         }
@@ -6093,24 +5634,12 @@ color: #ffd700;
                 pdfModal.style.display = 'none';
             }
 
-            // On desktop screens (>=1024px), always show homeEditor alongside file-viewer
+            // On desktop screens (>=1024px), show file-viewer
             if (window.innerWidth >= 1024) {
-                console.log('Showing homeEditor on desktop');
-                const homeEditor = document.getElementById('homeEditor');
-                if (homeEditor) {
-                    homeEditor.classList.add('visible');
-                    homeEditor.style.display = 'flex';
-                    homeEditor.style.position = 'absolute';
-                    homeEditor.style.right = '0';
-                    homeEditor.style.width = '50%';
-                    homeEditor.style.top = '50px';
-                    homeEditor.style.height = 'calc(100vh - 50px)';
-                    homeEditor.style.zIndex = '1003';
-                }
                 const fileViewer = document.querySelector('.file-viewer');
                 if (fileViewer) {
                     fileViewer.style.display = 'flex';
-                    fileViewer.style.flex = '0 0 50%';
+                    fileViewer.style.flex = '0 0 100%';
                 }
             } else {
                 // On mobile/tablet, use the toggle preference

@@ -27,9 +27,10 @@
 
     .main-content {
         display: flex;
-        min-height: 100vh;
-        height: auto;
-        padding-top: 50px;
+        position: relative;
+        top: 50px;
+        height: calc(100vh - 50px);
+        padding-top: 0;
       }
 
     .toggle-panel {
@@ -880,7 +881,7 @@ color: #ffd700;
     .editor {
         flex: 0 0 50%;
         min-height: calc(100vh - 50px);
-        display: none;  /* Changed from flex to none - JS will handle showing */
+        /* display: none; */  /* Changed from flex to none - JS will handle showing */
         flex-direction: column;
         padding: 20px 20px 0 20px;
         background: #f0f0f0;
@@ -4077,9 +4078,9 @@ color: #ffd700;
                     }
                 }
 
-                // Force apply styles after a short delay to ensure it works
-                setTimeout(function() {
-                    if (window.innerWidth > 1024) {
+                  // Force apply styles after a short delay to ensure it works
+                  setTimeout(function() {
+                      if (window.innerWidth >= 1024) {
                         // Desktop: show both at 50%
                         if (fileViewer) {
                             fileViewer.style.display = 'flex';
@@ -4104,13 +4105,13 @@ color: #ffd700;
                 }, 200);
             });
           
-            // Final safety check after window loads
-             window.addEventListener('load', function() {
-                 // Conditionally show file-viewer and editor based on screen size
-                 var editor = document.getElementById('editor');
-                 var fileViewer = document.querySelector('.file-viewer');
+             // Final safety check after window loads
+              window.addEventListener('load', function() {
+                  // Conditionally show file-viewer and editor based on screen size
+                  var editor = document.getElementById('editor');
+                  var fileViewer = document.querySelector('.file-viewer');
 
-                 if (window.innerWidth > 1024) {
+                  if (window.innerWidth >= 1024) {
                      // Desktop: show both at 50%
                      if (fileViewer) {
                          fileViewer.style.display = 'flex';
@@ -5531,8 +5532,9 @@ color: #ffd700;
                     editor.style.setProperty('top', '50px', 'important');
                     editor.style.setProperty('left', '0', 'important');
                     editor.style.setProperty('width', '100vw', 'important');
-                    editor.style.setProperty('height', 'calc(100vh - 100px)', 'important');
-                    editor.style.setProperty('z-index', '10000', 'important'); // High z-index to cover navbar and footer
+                    editor.style.setProperty('bottom', '50px', 'important');
+                    editor.style.setProperty('height', 'auto', 'important');
+                    editor.style.setProperty('z-index', '99', 'important'); // High z-index to cover navbar and footer
                     if (fileViewer) {
                         fileViewer.style.setProperty('display', 'none', 'important');
                     }

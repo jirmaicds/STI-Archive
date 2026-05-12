@@ -1697,36 +1697,13 @@ window.supabaseHelpers = {
             
             @media (max-width: 480px) {
                 #adsContentContainer {
-                    /* Center the ads/content container on very small screens */
-                    display: flex !important;
-                    position: absolute !important;
-                    left: 50% !important;
-                    top: 50% !important;
-                    right: auto !important;
-                    transform: translate(-50%, -50%) !important;
-
-                    width: 95vw !important;
-                    max-width: 480px !important;
+                    width: 95vw;
                     height: 340px;
                     padding: 10px;
+                    right: auto !important;
                 }
                 #adsContentContainer img {
                     max-height: 250px;
-                }
-                
-                /* Ensure the container can center relative to the viewport area */
-                .main-content {
-                    top: 0 !important;
-                    min-height: 100vh !important;
-                }
-
-                /* Keep user icon visible on small screens */
-                #userIcon {
-                    display: block !important;
-                    width: 32px !important;
-                    height: 32px !important;
-                    border-radius: 50% !important;
-                    object-fit: cover !important;
                 }
             }
             

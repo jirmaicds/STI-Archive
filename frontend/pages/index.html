@@ -645,6 +645,7 @@ window.supabaseHelpers = {
                 }
                 .main-content {
                     top: 0 !important;
+                    justify-content: center !important;
                 }
                 .auth-container {
                     width: 95vw;
@@ -1679,6 +1680,7 @@ window.supabaseHelpers = {
                 .main-content {
                     top: 0 !important;
                     padding: 0 16.9px !important;
+                    justify-content: center !important;
                 }
                 #loginNavBtnMobile {
                     margin: 10px 5%;
@@ -4176,7 +4178,7 @@ window.supabaseHelpers = {
 
         // Load site settings from server and apply to page
         document.addEventListener('DOMContentLoaded', function() {
-            loadSiteSettings();
+            // loadSiteSettings(); // Commented out to remove error
 
             // Reset login form state on page load (for back navigation)
             resetLoginFormState();

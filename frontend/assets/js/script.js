@@ -58,8 +58,8 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('click', function(e) {
             if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== userIcon) {
                 sidebar.classList.remove('open');
-    }
-  });
+            }
+        });
 
   // Window load event listener for desktop screens
   window.addEventListener('load', function() {
@@ -362,7 +362,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
     });
-
+    }
+ 
 // Admin login validation and authentication for auth-container2
 document.addEventListener('DOMContentLoaded', function () {
     // Password show/hide for admin form (fix: use data-target attribute)
@@ -544,5 +545,5 @@ document.addEventListener('DOMContentLoaded', function () {
             document.body.style.overflow = 'hidden';
         });
     }
-});
-    }
+})
+}})

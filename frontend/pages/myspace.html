@@ -680,15 +680,18 @@
     }
 
 
-    @media (min-width: 1024px) {
+    @media (min-width: 768px) {
+      .main-content {
+        flex-direction: row !important;
+      }
       .file-viewer {
-        flex: 0 0 50%;
+        flex: 0 0 50% !important;
+        display: flex !important;
       }
 
       .editor {
-        flex: 0 0 50%;
-        display: flex;
-        order: 1;
+        flex: 0 0 50% !important;
+        display: flex !important;
         padding: 20px 20px 0 20px;
       }
     }
@@ -1562,7 +1565,7 @@ color: #ffd700;
     }
 
     /* Tablet and below responsive layout */
-    @media (max-width: 1024px) {
+    @media (max-width: 767px) {
       /* Hide toggle-panel in tablet and mobile */
       .toggle-panel {
         display: none !important;
@@ -1810,7 +1813,7 @@ color: #ffd700;
     }
 
     /* Show footer toggle only on tablet and phone */
-    @media (max-width: 1023px) {
+    @media (max-width: 767px) {
 
       .footer-toggle-container {
         display: block !important;
@@ -1839,7 +1842,7 @@ color: #ffd700;
     }
 
     /* Tablet and mobile layout */
-    @media (max-width: 1023px) {
+    @media (max-width: 767px) {
       .main-content {
         /* Keep content below the fixed header on tablet/phone */
         padding-top: 50px !important;
@@ -1905,7 +1908,7 @@ color: #ffd700;
     }
     
     /* PDF Canvas Responsive Styles for Tablet and Mobile */
-    @media (max-width: 1023px) {
+    @media (max-width: 767px) {
       .pdf-modal-content {
         width: 95% !important;
         height: 85% !important;
@@ -1964,8 +1967,8 @@ color: #ffd700;
     
     /* === COMPREHENSIVE RESPONSIVE STYLES FOR TABLET AND PHONE === */
     
-    /* Tablet (764px - 1023px) */
-    @media (min-width: 764px) and (max-width: 1023px) {
+    /* Tablet and below */
+    @media (max-width: 767px) {
       .main-content {
         padding-top: 50px;
         padding-bottom: 0 !important;
@@ -2002,8 +2005,8 @@ color: #ffd700;
       }
     }
     
-    /* Phone (below 764px) */
-    @media (max-width: 763px) {
+    /* Phone (below 768px) */
+    @media (max-width: 767px) {
       .main-content {
         padding-top: 50px;
         padding-bottom: 0 !important;
@@ -2048,8 +2051,8 @@ color: #ffd700;
       }
     }
     
-    /* Small tablets/large phones (724px and below) */
-    @media (max-width: 724px) {
+    /* Small tablets/large phones (767px and below) */
+    @media (max-width: 767px) {
       .main-content {
         padding-top: 50px;
         padding-bottom: 0 !important;
@@ -4057,15 +4060,19 @@ color: #ffd700;
 
                 if (window.innerWidth > 1024) {
                     // Desktop: show both at 50%
-                    if (fileViewer) {
-                        fileViewer.style.display = 'flex';
-                        fileViewer.style.flex = '0 0 50%';
-                    }
-                    if (editor) {
-                        editor.classList.add('visible');
-                        editor.style.display = 'flex';
-                        editor.style.flex = '0 0 50%';
-                    }
+                      if (fileViewer) {
+                          fileViewer.style.display = 'flex';
+                          fileViewer.style.setProperty('width', '50%', 'important');
+                          fileViewer.style.setProperty('maxWidth', '50%', 'important');
+                          fileViewer.style.setProperty('flex', '0 0 50%', 'important');
+                      }
+                      if (editor) {
+                          editor.classList.add('visible');
+                          editor.style.display = 'flex';
+                          editor.style.setProperty('width', '50%', 'important');
+                          editor.style.setProperty('maxWidth', '50%', 'important');
+                          editor.style.setProperty('flex', '0 0 50%', 'important');
+                      }
                 } else {
                     // Mobile: show file-viewer full, hide editor
                     if (fileViewer) {
@@ -4080,17 +4087,21 @@ color: #ffd700;
 
                   // Force apply styles after a short delay to ensure it works
                   setTimeout(function() {
-                      if (window.innerWidth >= 1024) {
-                        // Desktop: show both at 50%
-                        if (fileViewer) {
-                            fileViewer.style.display = 'flex';
-                            fileViewer.style.flex = '0 0 50%';
-                        }
-                        if (editor) {
-                            editor.classList.add('visible');
-                            editor.style.display = 'flex';
-                            editor.style.flex = '0 0 50%';
-                        }
+                  if (window.innerWidth >= 1024) {
+                     // Desktop: show both at 50%
+                     if (fileViewer) {
+                         fileViewer.style.display = 'flex';
+                         fileViewer.style.setProperty('width', '50%', 'important');
+                         fileViewer.style.setProperty('maxWidth', '50%', 'important');
+                         fileViewer.style.setProperty('flex', '0 0 50%', 'important');
+                     }
+                     if (editor) {
+                         editor.classList.add('visible');
+                         editor.style.display = 'flex';
+                         editor.style.setProperty('width', '50%', 'important');
+                         editor.style.setProperty('maxWidth', '50%', 'important');
+                         editor.style.setProperty('flex', '0 0 50%', 'important');
+                     }
                     } else {
                         // Mobile: show file-viewer full, hide editor
                         if (editor) {
@@ -4116,11 +4127,13 @@ color: #ffd700;
                      if (fileViewer) {
                          fileViewer.style.display = 'flex';
                          fileViewer.style.flex = '0 0 50%';
+                         fileViewer.style.maxWidth = '50%';
                      }
                      if (editor) {
                          editor.classList.add('visible');
                          editor.style.display = 'flex';
                          editor.style.flex = '0 0 50%';
+                         editor.style.maxWidth = '50%';
                      }
                  } else {
                      // Mobile: show file-viewer full, hide editor
@@ -4135,18 +4148,29 @@ color: #ffd700;
                  }
 
                  // Force apply styles after a short delay to ensure it works
-                 setTimeout(function() {
-                     if (window.innerWidth > 1024) {
-                         // Desktop: show both at 50%
-                         if (fileViewer) {
-                             fileViewer.style.display = 'flex';
-                             fileViewer.style.flex = '0 0 50%';
-                         }
-                         if (editor) {
-                             editor.classList.add('visible');
-                             editor.style.display = 'flex';
-                             editor.style.flex = '0 0 50%';
-                         }
+                  setTimeout(function() {
+                      if (window.innerWidth > 1024) {
+                          // Desktop: show both at 50%
+                          if (fileViewer) {
+                              fileViewer.style.display = 'flex';
+                              fileViewer.style.setProperty('width', '50%', 'important');
+                              fileViewer.style.setProperty('maxWidth', '50%', 'important');
+                              fileViewer.style.setProperty('flex', '0 0 50%', 'important');
+                          }
+                          if (editor) {
+                              editor.classList.add('visible');
+                              editor.style.display = 'flex';
+                              editor.style.setProperty('width', '50%', 'important');
+                              editor.style.setProperty('maxWidth', '50%', 'important');
+                              editor.style.setProperty('flex', '0 0 50%', 'important');
+                          }
+                          if (editor) {
+                              editor.classList.add('visible');
+                              editor.style.display = 'flex';
+                              editor.style.setProperty('width', '50%', 'important');
+                              editor.style.setProperty('maxWidth', '50%', 'important');
+                              editor.style.setProperty('flex', '0 0 50%', 'important');
+                          }
                      } else {
                          // Mobile: show file-viewer full, hide editor
                          if (editor) {
@@ -5535,6 +5559,7 @@ color: #ffd700;
                     editor.style.setProperty('bottom', '50px', 'important');
                     editor.style.setProperty('height', 'auto', 'important');
                     editor.style.setProperty('z-index', '99', 'important'); // High z-index to cover navbar and footer
+                    editor.style.setProperty('overflow', 'auto', 'important');
                     if (fileViewer) {
                         fileViewer.style.setProperty('display', 'none', 'important');
                     }

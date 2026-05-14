@@ -587,8 +587,8 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                         text-align: center;
                         padding: 5px;
                         font-size: 12px;
-                        color: ${isDarkMode ? '#aaa' : '#666'};
-                        background: ${isDarkMode ? '#2d2d2d' : '#f0f0f0'};
+                        color: ${checkDarkMode() ? '#aaa' : '#666'};
+                        background: ${checkDarkMode() ? '#2d2d2d' : '#f0f0f0'};
                         border-radius: 4px 4px 0 0;
                         margin-bottom: 2px;
                     `;
@@ -597,7 +597,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     const canvas = document.createElement('canvas');
                     canvas.style.display = 'block';
                     canvas.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
-                    canvas.style.background = isDarkMode ? '#2d2d2d' : 'white';
+                    canvas.style.background = checkDarkMode() ? '#2d2d2d' : 'white';
                     canvas.height = viewport.height;
                     canvas.width = viewport.width;
                     canvas.dataset.pageNum = i;

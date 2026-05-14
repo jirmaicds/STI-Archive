@@ -403,7 +403,9 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         // Container with page navigation - dark mode support
         const toolbarHtml = `
                 <div style="padding:8px 12px;background:${toolbarBg};border-bottom:1px solid ${toolbarBorder};display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
+                    <button id="pdf-zoom-out" style="padding:4px 8px;background:${btnBg};color:${btnColor};border:none;border-radius:3px;cursor:pointer;font-size:14px;font-weight:bold;" title="Zoom Out">−</button>
                     <span id="pdf-page-indicator" style="font-size:13px;color:${countColor};min-width:80px;text-align:center;">Page 1 of 1</span>
+                    <button id="pdf-zoom-in" style="padding:4px 8px;background:${btnBg};color:${btnColor};border:none;border-radius:3px;cursor:pointer;font-size:14px;font-weight:bold;" title="Zoom In">+</button>
                 </div>`;
 
         // Always include search toolbar
@@ -519,6 +521,24 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
 
         // Initial render with default scale
         await renderAllPages();
+
+        // Add zoom button event listeners
+        const zoomInBtn = container.querySelector('#pdf-zoom-in');
+        const zoomOutBtn = container.querySelector('#pdf-zoom-out');
+
+        if (zoomInBtn) {
+            zoomInBtn.onclick = () => {
+                currentScale *= 1.2;
+                renderAllPages();
+            };
+        }
+
+        if (zoomOutBtn) {
+            zoomOutBtn.onclick = () => {
+                currentScale /= 1.2;
+                renderAllPages();
+            };
+        }
 
         // Handle window resize for responsive layout
         let resizeTimeout;

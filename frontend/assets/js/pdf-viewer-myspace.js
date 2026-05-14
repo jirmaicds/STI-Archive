@@ -334,20 +334,20 @@ function displayArticlePDF(pdfPath, title) {
             @media (max-width: 768px) {
                 #pdf-viewer-modal {
                     position: fixed !important;
-                    top: 0 !important;
+                    top: 65px !important; /* Account for navbar height */
                     left: 0 !important;
                     width: 100vw !important;
-                    height: 100vh !important;
+                    height: calc(100vh - 65px - 80px) !important; /* Account for navbar + footer */
                     z-index: 10001 !important;
                 }
                 #pdf-viewer-modal > div {
                     position: relative !important;
                     width: 100% !important;
-                    height: 100vh !important;
+                    height: 100% !important;
                 }
                 #pdf-viewer-container {
                     flex: 1 !important;
-                    height: calc(100vh - 60px) !important;
+                    height: 100% !important;
                     overflow: auto !important;
                     -webkit-overflow-scrolling: touch !important;
                 }

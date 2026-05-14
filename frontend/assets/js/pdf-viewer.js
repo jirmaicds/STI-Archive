@@ -510,6 +510,12 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     zoomOutBtn.style.color = colors.btnColor;
                 }
             }
+
+            // Update canvas container background
+            const canvasContainer = container.querySelector('#pdf-viewer-canvas-container');
+            if (canvasContainer) {
+                canvasContainer.style.background = colors.canvasBg;
+            }
         }
         
         // Get current color scheme

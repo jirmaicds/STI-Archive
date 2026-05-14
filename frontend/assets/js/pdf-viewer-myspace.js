@@ -427,6 +427,12 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     zoomOutBtn.style.color = colors.btnColor;
                 }
             }
+
+            // Update canvas container background
+            const canvasContainer = container.querySelector('#pdf-viewer-canvas-container');
+            if (canvasContainer) {
+                canvasContainer.style.background = colors.canvasBg;
+            }
         }
 
         // Get current color scheme
@@ -444,7 +450,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         container.innerHTML = `
             <div style="display:flex;flex-direction:column;height:100%;width:100%;">
                 ${toolbarHtml}
-                <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${canvasBg};text-align:center;padding:20px;width:100%;"></div>
+                <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${colors.canvasBg};text-align:center;padding:20px;width:100%;"></div>
             </div>`;
 
         // Load PDF.js

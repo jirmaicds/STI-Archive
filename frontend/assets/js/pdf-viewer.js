@@ -464,34 +464,66 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         
         // Function to check dark mode dynamically
         function checkDarkMode() {
-            return document.body.classList.contains('dark-mode') || 
+            return document.body.classList.contains('dark-mode') ||
                    !!document.querySelector('.dark-mode') ||
                    document.body.style.backgroundColor === 'rgb(33, 37, 41)' ||
                    document.body.style.backgroundColor === '#212529';
         }
+
+        // Function to get current color scheme
+        function getColorScheme() {
+            const isDarkMode = checkDarkMode();
+            return {
+                toolbarBg: isDarkMode ? '#1a1a1a' : '#f0f0f0',
+                toolbarBorder: isDarkMode ? '#444' : '#ccc',
+                inputBg: isDarkMode ? '#2d2d2d' : '#fff',
+                inputBorder: isDarkMode ? '#555' : '#ccc',
+                inputColor: isDarkMode ? '#fff' : '#333',
+                btnBg: isDarkMode ? '#ffd700' : '#0057b8',
+                btnColor: isDarkMode ? '#1a1a1a' : '#fff',
+                canvasBg: isDarkMode ? '#121212' : '#525252',
+                countColor: isDarkMode ? '#aaa' : '#333'
+            };
+        }
+
+        // Function to update toolbar colors dynamically
+        function updateToolbarColors() {
+            const colors = getColorScheme();
+            const toolbar = container.querySelector('#pdf-page-indicator')?.parentElement;
+            if (toolbar) {
+                toolbar.style.background = colors.toolbarBg;
+                toolbar.style.borderBottom = `1px solid ${colors.toolbarBorder}`;
+
+                const pageIndicator = container.querySelector('#pdf-page-indicator');
+                if (pageIndicator) {
+                    pageIndicator.style.color = colors.countColor;
+                }
+
+                const zoomInBtn = container.querySelector('#pdf-zoom-in');
+                const zoomOutBtn = container.querySelector('#pdf-zoom-out');
+                if (zoomInBtn) {
+                    zoomInBtn.style.background = colors.btnBg;
+                    zoomInBtn.style.color = colors.btnColor;
+                }
+                if (zoomOutBtn) {
+                    zoomOutBtn.style.background = colors.btnBg;
+                    zoomOutBtn.style.color = colors.btnColor;
+                }
+            }
+        }
         
-        // Detect dark mode
-        const isDarkMode = checkDarkMode();
-        
-        const toolbarBg = isDarkMode ? '#1a1a1a' : '#f0f0f0';
-        const toolbarBorder = isDarkMode ? '#444' : '#ccc';
-        const inputBg = isDarkMode ? '#2d2d2d' : '#fff';
-        const inputBorder = isDarkMode ? '#555' : '#ccc';
-        const inputColor = isDarkMode ? '#fff' : '#333';
-        const btnBg = isDarkMode ? '#ffd700' : '#0057b8';
-        const btnColor = isDarkMode ? '#1a1a1a' : '#fff';
-        const canvasBg = isDarkMode ? '#121212' : '#525252';
-        const countColor = isDarkMode ? '#aaa' : '#333';
-        
+        // Get current color scheme
+        const colors = getColorScheme();
+
         // Container with page navigation - dark mode support
         container.innerHTML = `
             <div style="display:flex;flex-direction:column;height:100%;">
-                <div style="padding:8px 12px;background:${toolbarBg};border-bottom:1px solid ${toolbarBorder};display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
-                    <button id="pdf-zoom-out" style="padding:4px 8px;background:${btnBg};color:${btnColor};border:none;border-radius:3px;cursor:pointer;font-size:14px;font-weight:bold;" title="Zoom Out">−</button>
-                    <span id="pdf-page-indicator" style="font-size:13px;color:${countColor};min-width:80px;text-align:center;">Page 1 of 1</span>
-                    <button id="pdf-zoom-in" style="padding:4px 8px;background:${btnBg};color:${btnColor};border:none;border-radius:3px;cursor:pointer;font-size:14px;font-weight:bold;" title="Zoom In">+</button>
+                <div style="padding:8px 12px;background:${colors.toolbarBg};border-bottom:1px solid ${colors.toolbarBorder};display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
+                    <button id="pdf-zoom-out" style="padding:4px 8px;background:${colors.btnBg};color:${colors.btnColor};border:none;border-radius:3px;cursor:pointer;font-size:14px;font-weight:bold;" title="Zoom Out">−</button>
+                    <span id="pdf-page-indicator" style="font-size:13px;color:${colors.countColor};min-width:80px;text-align:center;">Page 1 of 1</span>
+                    <button id="pdf-zoom-in" style="padding:4px 8px;background:${colors.btnBg};color:${colors.btnColor};border:none;border-radius:3px;cursor:pointer;font-size:14px;font-weight:bold;" title="Zoom In">+</button>
                 </div>
-                <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${canvasBg};text-align:center;padding:20px;"></div>
+                <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${colors.canvasBg};text-align:center;padding:20px;"></div>
             </div>`;
         
         // Load PDF.js
@@ -611,6 +643,19 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                 renderAllPages();
             };
         }
+
+        // Initial color update
+        updateToolbarColors();
+
+        // Watch for dark mode changes and update colors
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    updateToolbarColors();
+                }
+            });
+        });
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
         
         // Handle window resize for responsive layout
         let resizeTimeout;

@@ -823,16 +823,7 @@
             width: 100%;
             max-width: 550px;
         }
-        #avg-grph{
-            height:400px;
-            width: 100%;
-            max-width: 600px;
-        }
-        #avg-chart{
-            height:350px;
-            width: 100%;
-            max-width: 550px;
-        }
+
         
         .content-section {
             display: none;
@@ -3463,12 +3454,7 @@
                             <canvas id="dashboard-uploadsChart" onclick="toggleDashboardUploadsChartType()" style="cursor: pointer;"></canvas>
                         </div>
                     </div>
-                    <div class="graph-item" id="avg-grph">
-                        <h4>Average Session Duration</h4>
-                        <div class="chart-container" id="avg-chart">
-                            <canvas id="session-duration-gauge"></canvas>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -3728,6 +3714,7 @@
                     <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
                         <input type="checkbox" id="select-all-admins-main" onclick="toggleSelectAll('admins')">
                         <button class="btn btn-danger" onclick="bulkAction('admins', 'remove')">Remove</button>
+                        <i class="fas fa-info-circle" onclick="showPermissionsModal()" style="cursor: pointer; color: #0057b8;"></i>
                     </div>
 
                     <div style="overflow-x: auto;">
@@ -3739,7 +3726,6 @@
                                 <th>Full Name</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                <th>Permissions</th>
                                 <th>Created At</th>
                                 <th>Actions</th>
                             </tr>
@@ -4076,6 +4062,40 @@
             </div>
         </div>
     </div>
+
+    <!-- Permissions Modal -->
+    <div id="permissions-modal" class="modal" onclick="closePermissionsModal()">
+        <div class="modal-content" style="padding: 30px;" onclick="event.stopPropagation()">
+            <h3>Role Permissions <span onclick="closePermissionsModal()" style="float: right; font-size: 24px; cursor: pointer; color: #333;">&times;</span></h3>
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin-bottom: 10px;">Admin</h4>
+                <ul style="padding-left: 20px;">
+                    <li>Full access to all user management features</li>
+                    <li>Can add, edit, and remove admins, co-admins, and sub-admins</li>
+                    <li>Access to all reports and analytics</li>
+                    <li>Can manage system settings</li>
+                </ul>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin-bottom: 10px;">CO-Admin</h4>
+                <ul style="padding-left: 20px;">
+                    <li>Can manage verified users</li>
+                    <li>Can ban or remove users</li>
+                    <li>Limited access to reports</li>
+                    <li>Cannot manage other admins</li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 10px;">Sub-Admin</h4>
+                <ul style="padding-left: 20px;">
+                    <li>Can view verified users</li>
+                    <li>No editing or removal permissions</li>
+                    <li>Basic access to user information</li>
+                    <li>Cannot perform bulk actions</li>
+                </ul>
+            </div>
+        </div>
+    </div>
     <!-- Send Update Modal -->
     <div id="send-update-modal" class="modal">
         <div class="modal-content">
@@ -4318,6 +4338,17 @@
     <!-- Retry build after rate limit failure -->
 
 
+    <script>
+        function showPermissionsModal() {
+            document.getElementById('permissions-modal').style.display = 'flex';
+        }
+        function closePermissionsModal() {
+            document.getElementById('permissions-modal').style.display = 'none';
+        }
+        function handleLogoutClick() {
+            window.location.href = 'index.html';
+        }
+    </script>
     <script src="/frontend/assets/js/pdf-viewer.js"></script>
     <script src="admin.js"></script>
 

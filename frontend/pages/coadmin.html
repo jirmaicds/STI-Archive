@@ -834,16 +834,7 @@
             width: 100%;
             max-width: 550px;
         }
-        #avg-grph{
-            height:400px;
-            width: 100%;
-            max-width: 600px;
-        }
-        #avg-chart{
-            height:350px;
-            width: 100%;
-            max-width: 550px;
-        }
+
         
         .content-section {
             display: none;
@@ -3443,12 +3434,7 @@
                             <canvas id="dashboard-uploadsChart" onclick="toggleDashboardUploadsChartType()" style="cursor: pointer;"></canvas>
                         </div>
                     </div>
-                    <div class="graph-item" id="avg-grph">
-                        <h4>Average Session Duration</h4>
-                        <div class="chart-container" id="avg-chart">
-                            <canvas id="session-duration-gauge"></canvas>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -3903,6 +3889,8 @@
             </div>
         </div>
     </div>
+
+
     <!-- Send Update Modal -->
     <div id="send-update-modal" class="modal">
         <div class="modal-content">
@@ -3966,6 +3954,11 @@
     <!-- Retry build after rate limit failure -->
     
 
+    <script>
+        function handleLogoutClick() {
+            window.location.href = 'index.html';
+        }
+    </script>
     <script src="/frontend/assets/js/pdf-viewer.js"></script>
     <script src="coadmin.js"></script>
 

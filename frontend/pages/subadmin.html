@@ -2977,12 +2977,7 @@
                                   <canvas id="signing-up-chart"></canvas>
                               </div>
                           </div>
-                     <div class="graph-item">
-                         <h4>Average Session Duration</h4>
-                         <div class="chart-container">
-                             <canvas id="session-duration-gauge"></canvas>
-                         </div>
-                     </div>
+
                 </div>
             </div>
         </div>
@@ -3098,7 +3093,6 @@
                         
                     </div>
                     <div class="bulk-actions" style="margin-bottom: 10px; display: flex; gap: 10px; align-items: center;">
-
                     </div>
                     <div style="overflow-x: auto;">
                         <table id="verified-users-table">
@@ -3326,6 +3320,8 @@
             </div>
         </div>
     </div>
+
+
     <!-- Send Update Modal -->
     <div id="send-update-modal" class="modal">
         <div class="modal-content">
@@ -3383,6 +3379,11 @@
         <button class="citation-copy-btn" onclick="copyCitation()">Copy Citation</button>
       </div>
     </div>
+    <script>
+        function handleLogoutClick() {
+            window.location.href = 'index.html';
+        }
+    </script>
     <script src="subadmin.js"></script>
 
     

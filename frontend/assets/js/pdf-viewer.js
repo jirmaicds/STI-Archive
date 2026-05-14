@@ -259,7 +259,7 @@ class PDFViewer {
                 text-align: center;
                 color: #666;
                 background: #f5f5f5;
-                border-radius: 8px;
+                border-radius: 0;
             ">
                 <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #dc3545; margin-bottom: 15px;"></i>
                 <p style="font-size: 16px;">${message}</p>
@@ -285,13 +285,71 @@ class PDFViewer {
     }
 }
 
+// Function to check dark mode dynamically
+function checkDarkMode() {
+    return document.body.classList.contains('dark-mode') ||
+           document.documentElement.classList.contains('dark-mode');
+}
+
+// Function to get modal color scheme
+function getModalColorScheme() {
+    const isDarkMode = checkDarkMode();
+    return {
+        modalBg: isDarkMode ? 'rgba(0, 0, 0, 0.95)' : 'rgba(0, 0, 0, 0.9)',
+        innerBg: isDarkMode ? '#2d2d2d' : '#ffffff',
+        headerBg: isDarkMode ? '#ffd700' : '#0057b8',
+        headerText: isDarkMode ? '#1a1a1a' : '#ffffff',
+        containerBg: isDarkMode ? '#1a1a1a' : '#f5f5f5'
+    };
+}
+
+// Function to update modal colors dynamically
+function updateModalColors() {
+    const modal = document.getElementById('pdf-viewer-modal');
+    if (!modal) return;
+
+    const colors = getModalColorScheme();
+
+    // Update modal background
+    modal.style.background = colors.modalBg;
+
+    // Update inner container background
+    const innerDiv = modal.firstElementChild;
+    if (innerDiv && innerDiv.tagName === 'DIV') {
+        innerDiv.style.background = colors.innerBg;
+        innerDiv.style.borderRadius = '0';
+    }
+
+    // Update header background and text
+    const headerDiv = innerDiv ? innerDiv.children[0] : null;
+    if (headerDiv) {
+        headerDiv.style.background = colors.headerBg;
+        headerDiv.style.color = colors.headerText;
+
+        const title = headerDiv.querySelector('#pdf-modal-title');
+        if (title) {
+            title.style.color = colors.headerText;
+        }
+
+        const closeBtn = headerDiv.querySelector('button');
+        if (closeBtn) {
+            closeBtn.style.color = colors.headerText;
+        }
+    }
+
+    // Update container background
+    const container = modal.querySelector('#pdf-viewer-container');
+    if (container) {
+        container.style.background = colors.containerBg;
+    }
+}
+
 // Function to display article PDF in a modal
 function displayArticlePDF(pdfPath, title) {
-    
-    // Check if dark mode is active
-    const isDarkMode = document.body.classList.contains('dark-mode') || 
-                       document.documentElement.classList.contains('dark-mode');
-    
+
+    // Get current color scheme
+    const colors = getModalColorScheme();
+
     // Create modal if not exists
     let modal = document.getElementById('pdf-viewer-modal');
     if (!modal) {
@@ -304,15 +362,10 @@ function displayArticlePDF(pdfPath, title) {
             left: 0;
             width: 100%;
             height: 100%;
-            background: ${isDarkMode ? 'rgba(0, 0, 0, 0.95)' : 'rgba(0, 0, 0, 0.9)'};
+            background: ${colors.modalBg};
             z-index: 10001;
             overflow: hidden;
         `;
-
-        const containerBg = isDarkMode ? '#1a1a1a' : '#f5f5f5';
-        const headerBg = isDarkMode ? '#ffd700' : '#0057b8';
-        const headerText = isDarkMode ? '#1a1a1a' : '#ffffff';
-        const innerBg = isDarkMode ? '#2d2d2d' : '#ffffff';
 
         modal.innerHTML = `
             <div style="
@@ -321,25 +374,26 @@ function displayArticlePDF(pdfPath, title) {
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background: ${innerBg};
+                background: ${colors.innerBg};
                 overflow: hidden;
                 display: flex;
                 flex-direction: column;
+                border-radius: 0;
             ">
                 <div style="
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
                     padding: 10px 15px;
-                    background: ${headerBg};
-                    color: ${headerText};
+                    background: ${colors.headerBg};
+                    color: ${colors.headerText};
                     flex-shrink: 0;
                 ">
-                    <h3 id="pdf-modal-title" style="margin: 0; font-size: 16px; color: ${headerText};">Document Viewer</h3>
+                    <h3 id="pdf-modal-title" style="margin: 0; font-size: 16px; color: ${colors.headerText};">Document Viewer</h3>
                     <button onclick="closePDFModal()" style="
                         background: none;
                         border: none;
-                        color: ${headerText};
+                        color: ${colors.headerText};
                         font-size: 24px;
                         cursor: pointer;
                         padding: 0;
@@ -350,7 +404,7 @@ function displayArticlePDF(pdfPath, title) {
                 <div id="pdf-viewer-container" style="
                     flex: 1;
                     overflow: auto;
-                    background: ${containerBg};
+                    background: ${colors.containerBg};
                     height: auto;
                 "></div>
             </div>
@@ -371,6 +425,16 @@ function displayArticlePDF(pdfPath, title) {
                 closePDFModal();
             }
         });
+
+        // Add dark mode change listener
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    updateModalColors();
+                }
+            });
+        });
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     } else {
         // Ensure existing modal is positioned correctly
         modal.style.top = '0';

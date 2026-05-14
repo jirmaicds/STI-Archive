@@ -259,7 +259,7 @@ class PDFViewer {
                 text-align: center;
                 color: #666;
                 background: #f5f5f5;
-                border-radius: 8px;
+                border-radius: 0;
             ">
                 <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #dc3545; margin-bottom: 15px;"></i>
                 <p style="font-size: 16px;">${message}</p>
@@ -285,6 +285,34 @@ class PDFViewer {
     }
 }
 
+// Function to update modal colors dynamically for MySpace
+function updateModalColorsMySpace() {
+    const modal = document.getElementById('pdf-viewer-modal');
+    if (!modal) return;
+
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    const colors = {
+        modalBg: isDarkMode ? 'rgba(0, 0, 0, 0.95)' : 'rgba(0, 0, 0, 0.9)',
+        innerBg: isDarkMode ? '#2d2d2d' : '#ffffff',
+        containerBg: isDarkMode ? '#1a1a1a' : '#f5f5f5'
+    };
+
+    // Update modal background
+    modal.style.setProperty('background', colors.modalBg, 'important');
+
+    // Update inner container background
+    const innerDiv = modal.firstElementChild;
+    if (innerDiv && innerDiv.tagName === 'DIV') {
+        innerDiv.style.setProperty('background', colors.innerBg, 'important');
+    }
+
+    // Update container background
+    const container = modal.querySelector('#pdf-viewer-container');
+    if (container) {
+        container.style.setProperty('background', colors.containerBg, 'important');
+    }
+}
+
 // Function to display article PDF in a modal for MySpace
 function displayArticlePDF(pdfPath, title) {
 
@@ -295,31 +323,20 @@ function displayArticlePDF(pdfPath, title) {
         return;
     }
 
-    // Ensure modal is properly styled based on current dark mode state
-    // The CSS handles the styling, but we need to ensure the modal reflects current state
-    const isDarkMode = document.body.classList.contains('dark-mode');
-    if (isDarkMode) {
-        // Force dark mode styles to ensure they're applied
-        modal.style.setProperty('background', 'rgba(0, 0, 0, 0.95)', 'important');
-        const innerDiv = modal.firstElementChild;
-        if (innerDiv && innerDiv.tagName === 'DIV') {
-            innerDiv.style.setProperty('background', '#2d2d2d', 'important');
-        }
-        const container = modal.querySelector('#pdf-viewer-container');
-        if (container) {
-            container.style.setProperty('background', '#1a1a1a', 'important');
-        }
-    } else {
-        // Reset to light mode styles
-        modal.style.setProperty('background', 'rgba(0, 0, 0, 0.9)', 'important');
-        const innerDiv = modal.firstElementChild;
-        if (innerDiv && innerDiv.tagName === 'DIV') {
-            innerDiv.style.setProperty('background', '#ffffff', 'important');
-        }
-        const container = modal.querySelector('#pdf-viewer-container');
-        if (container) {
-            container.style.setProperty('background', '#f5f5f5', 'important');
-        }
+    // Update modal colors based on current dark mode state
+    updateModalColorsMySpace();
+
+    // Add dark mode change listener if not already added
+    if (!modal._darkModeObserver) {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    updateModalColorsMySpace();
+                }
+            });
+        });
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        modal._darkModeObserver = observer;
     }
 
     // Show modal

@@ -458,26 +458,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     pageIndicator.style.color = colors.countColor;
                 }
 
-                const zoomInBtn = container.querySelector('#pdf-zoom-in');
-                const zoomOutBtn = container.querySelector('#pdf-zoom-out');
-                const fitWidthBtn = container.querySelector('#pdf-fit-width');
-                const zoomPercent = container.querySelector('#pdf-zoom-percent');
-
-                if (zoomInBtn) {
-                    zoomInBtn.style.background = colors.btnBg;
-                    zoomInBtn.style.color = colors.btnColor;
-                }
-                if (zoomOutBtn) {
-                    zoomOutBtn.style.background = colors.btnBg;
-                    zoomOutBtn.style.color = colors.btnColor;
-                }
-                if (fitWidthBtn) {
-                    fitWidthBtn.style.background = colors.btnBg;
-                    fitWidthBtn.style.color = colors.btnColor;
-                }
-                if (zoomPercent) {
-                    zoomPercent.style.color = colors.countColor;
-                }
+                // Only update the page indicator color
             }
 
             // Update canvas container background
@@ -492,13 +473,8 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
 
         // Container with page navigation - dark mode support
         const toolbarHtml = `
-                <div id="pdf-toolbar" style="padding:8px 12px;background:${colors.toolbarBg};border-bottom:1px solid ${colors.toolbarBorder};display:flex;gap:4px;align-items:center;justify-content:center;flex-wrap:wrap;">
-                    <button id="pdf-zoom-out" style="padding:4px 8px;background:${colors.btnBg};color:${colors.btnColor};border:none;border-radius:3px;cursor:pointer;font-size:14px;font-weight:bold;" title="Zoom Out">−</button>
-                    <button id="pdf-fit-width" style="padding:4px 8px;background:${colors.btnBg};color:${colors.btnColor};border:none;border-radius:3px;cursor:pointer;font-size:12px;" title="Fit to Width">↔</button>
-                    <button id="pdf-zoom-in" style="padding:4px 8px;background:${colors.btnBg};color:${colors.btnColor};border:none;border-radius:3px;cursor:pointer;font-size:14px;font-weight:bold;" title="Zoom In">+</button>
-                    <span id="pdf-zoom-percent" style="font-size:12px;color:${colors.countColor};min-width:35px;text-align:center;margin:0 2px;">100%</span>
-                    <span style="color:${colors.countColor};margin:0 4px;">|</span>
-                    <span id="pdf-page-indicator" style="font-size:13px;color:${colors.countColor};min-width:80px;text-align:center;">Page 1 of 1</span>
+                <div id="pdf-toolbar" style="padding:8px 12px;background:${colors.toolbarBg};border-bottom:1px solid ${colors.toolbarBorder};display:flex;align-items:center;justify-content:center;">
+                    <span id="pdf-page-indicator" style="font-size:13px;color:${colors.countColor};text-align:center;">Page 1 of 1</span>
                 </div>`;
 
         // Always include search toolbar
@@ -512,12 +488,30 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     }
                     #pdf-viewer-canvas-container {
                         padding: 10px !important;
+                        touch-action: manipulation !important;
+                        -webkit-overflow-scrolling: touch !important;
+                    }
+                    .pdf-canvas-container canvas {
+                        max-width: none !important;
+                        touch-action: manipulation !important;
+                    }
+                }
+                /* Enable natural zoom on tablets and phones */
+                @media (max-width: 1024px) {
+                    .pdf-canvas-container {
+                        touch-action: manipulation !important;
+                        -webkit-overflow-scrolling: touch !important;
+                    }
+                    .pdf-canvas-container canvas {
+                        touch-action: manipulation !important;
+                        max-width: 100% !important;
+                        height: auto !important;
                     }
                 }
             </style>
             <div style="display:flex;flex-direction:column;height:100%;width:100%;">
                 ${toolbarHtml}
-                <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${colors.canvasBg};text-align:center;padding:20px;width:100%;"></div>
+                <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${colors.canvasBg};text-align:center;padding:20px;width:100%;-webkit-overflow-scrolling:touch;"></div>
             </div>`;
 
         // Load PDF.js
@@ -539,30 +533,19 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         const pageData = [];
         const containerWidth = container.clientWidth - 40;
 
-        // Default scale (not fit to width)
-        let currentScale = 1.0;
-        let isFitToWidth = false;
+        // Default scale for natural viewing
+        const defaultScale = 1.0;
 
         let renderAllPagesLock = false;
         let renderAllPagesPending = false;
 
-        // Function to calculate fit-to-width scale
-        function calculateFitToWidthScale(page) {
-            const containerWidth = container.clientWidth - 60; // Account for padding
-            const viewport = page.getViewport({ scale: 1.0 });
-            return containerWidth / viewport.width;
+        // Function to render pages at default scale
+        function renderPagesAtDefaultScale() {
+            // Simple vertical layout at default scale
+            return defaultScale;
         }
 
-        // Function to update zoom percentage display
-        function updateZoomDisplay() {
-            const zoomPercent = container.querySelector('#pdf-zoom-percent');
-            if (zoomPercent) {
-                const percent = Math.round(currentScale * 100);
-                zoomPercent.textContent = percent + '%';
-            }
-        }
-
-        // Function to render all pages with current scale (with lock + fragment)
+        // Function to render all pages vertically at default scale
         async function renderAllPages() {
             console.log('renderAllPages called, pdfDoc.numPages:', pdfDoc.numPages);
             if (renderAllPagesLock) {
@@ -577,24 +560,11 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
 
                 const fragment = document.createDocumentFragment();
 
-                // If fit to width is enabled, calculate scale for first page
-                let actualScale = currentScale;
-                if (isFitToWidth && pdfDoc.numPages > 0) {
-                    const firstPage = await pdfDoc.getPage(1);
-                    actualScale = calculateFitToWidthScale(firstPage);
-                }
-
-                // Update zoom display
-                updateZoomDisplay();
-
-                // Render pages sequentially to maintain correct order
+                // Render pages sequentially in vertical layout
                 for (let i = 1; i <= pdfDoc.numPages; i++) {
                     const page = await pdfDoc.getPage(i);
                     const textContent = await page.getTextContent();
-
-                    // Use fit-to-width scale if enabled, otherwise use current scale
-                    const pageScale = isFitToWidth ? calculateFitToWidthScale(page) : actualScale;
-                    const viewport = page.getViewport({ scale: pageScale });
+                    const viewport = page.getViewport({ scale: defaultScale });
 
                     const canvasWrapper = document.createElement('div');
                     canvasWrapper.style.position = 'relative';
@@ -620,19 +590,16 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     canvas.style.display = 'block';
                     canvas.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
                     canvas.style.background = checkDarkMode() ? '#2d2d2d' : 'white';
+                    canvas.style.maxWidth = '100%';
+                    canvas.style.height = 'auto';
 
-                    // Ensure crisp rendering by setting proper canvas size
-                    const devicePixelRatio = window.devicePixelRatio || 1;
-                    const context = canvas.getContext('2d');
-                    canvas.width = viewport.width * devicePixelRatio;
-                    canvas.height = viewport.height * devicePixelRatio;
-                    canvas.style.width = viewport.width + 'px';
-                    canvas.style.height = viewport.height + 'px';
-                    context.scale(devicePixelRatio, devicePixelRatio);
+                    // Standard canvas sizing for natural zoom support
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
 
                     canvas.dataset.pageNum = i;
 
-                    await page.render({ canvasContext: context, viewport: viewport }).promise;
+                    await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
 
                     canvasWrapper.appendChild(canvas);
                     fragment.appendChild(canvasWrapper);
@@ -640,7 +607,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     pageData.push({
                         pageNum: i,
                         items: textContent.items,
-                        scale: pageScale,
+                        scale: defaultScale,
                         viewport: viewport,
                         canvasWrapper: canvasWrapper
                     });
@@ -662,42 +629,15 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
             }
         }
 
-        // Initial render with default scale
+        // Render pages vertically at default scale
         await renderAllPages();
 
-        // Initial zoom display update
-        updateZoomDisplay();
-
-        // Add zoom button event listeners
-        const zoomInBtn = container.querySelector('#pdf-zoom-in');
-        const zoomOutBtn = container.querySelector('#pdf-zoom-out');
-        const fitWidthBtn = container.querySelector('#pdf-fit-width');
-
-        if (zoomInBtn) {
-            zoomInBtn.onclick = () => {
-                isFitToWidth = false; // Disable fit-to-width when manually zooming
-                currentScale *= 1.2;
-                renderAllPages();
-            };
-        }
-
-        if (zoomOutBtn) {
-            zoomOutBtn.onclick = () => {
-                isFitToWidth = false; // Disable fit-to-width when manually zooming
-                currentScale /= 1.2;
-                renderAllPages();
-            };
-        }
-
-        if (fitWidthBtn) {
-            fitWidthBtn.onclick = () => {
-                isFitToWidth = !isFitToWidth;
-                if (isFitToWidth) {
-                    // When enabling fit-to-width, we don't change currentScale
-                    // The scale will be calculated in renderAllPages
-                }
-                renderAllPages();
-            };
+        // Enable natural touch zoom on mobile/tablet
+        const canvasContainer = container.querySelector('#pdf-viewer-canvas-container');
+        if (canvasContainer) {
+            // Allow natural pinch-to-zoom on touch devices
+            canvasContainer.style.touchAction = 'manipulation';
+            canvasContainer.style.webkitOverflowScrolling = 'touch';
         }
 
         // Initial color update

@@ -2354,13 +2354,7 @@ color: #ffd700;
             </div>
         </div>
 
-    </div>
-        </div>
-            
-        
-                
-
-        <!-- toggle panel -->
+        <!-- toggle panel (inside main-content) -->
         <div class="toggle-panel">
             <div class="toggle-btn">
                 <div class="toggle-half toggle-editor" onclick="toggleHomeEditor()" title="Expand HomeEditor">
@@ -2371,13 +2365,8 @@ color: #ffd700;
                 </div>
             </div>
         </div>
-        <!-- Footer toggle container with PDF and Word buttons - shown only on tablet and mobile -->
-        <div class="mobile-file-viewer-toggle-panel" id="mobileFileViewerTogglePanel" onclick="toggleEditorOnMobile()" title="Toggle File Viewer" style="display: none;">
-            <div class="mobile-file-viewer-toggle-btn">
-                <i class="fa fa-chevron-right"></i>
-            </div>
-        </div>
-        <!-- toggle panel end -->
+
+        <!-- Editor (inside main-content) -->
         <div class="editor" id="editor">
 
             <div class="mobile-toggle-back" style="display: none;">
@@ -2448,6 +2437,14 @@ color: #ffd700;
                     <div id="pageIndicator">Page 1 of 1</div>
                 </div>
         </div>
+    </div>
+
+    <!-- Footer toggle container with PDF and Word buttons - shown only on tablet and mobile -->
+    <div class="mobile-file-viewer-toggle-panel" id="mobileFileViewerTogglePanel" onclick="toggleEditorOnMobile()" title="Toggle File Viewer" style="display: none;">
+        <div class="mobile-file-viewer-toggle-btn">
+            <i class="fa fa-chevron-right"></i>
+        </div>
+    </div>
 
     <script src="/frontend/assets/js/script.js"></script>
     

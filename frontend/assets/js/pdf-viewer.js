@@ -745,7 +745,6 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         await renderAllPages();
 
         // Enable natural touch zoom on mobile/tablet
-        const canvasContainer = container.querySelector('#pdf-viewer-canvas-container');
         if (canvasContainer) {
             // Allow natural pinch-to-zoom on touch devices
             canvasContainer.style.touchAction = 'manipulation';

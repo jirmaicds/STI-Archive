@@ -27,14 +27,11 @@
 
     .main-content {
         display: flex;
-        flex-direction: row;
         position: relative;
         top: 0;
-        height: calc(100vh - 50px);
+        height: 100vh;
         padding-top: 0;
-        margin-top: 0;
       }
-      
 
     .toggle-panel {
       position: fixed;
@@ -187,7 +184,7 @@
         
     .file-viewer {
     flex: 0 0 50%;
-    height: calc(100vh - 50px);
+    min-height: calc(100vh - 50px);
     background: #fff;
     border-right: 1px solid #ccc;
     display: flex;
@@ -885,7 +882,7 @@ color: #ffd700;
 
     .editor {
         flex: 0 0 50%;
-        height: calc(100vh - 50px);
+        min-height: calc(100vh - 50px);
         display: flex;
         flex-direction: column;
         padding: 20px 20px 0 20px;
@@ -2057,7 +2054,7 @@ color: #ffd700;
     /* Small tablets/large phones (767px and below) */
     @media (max-width: 767px) {
       .main-content {
-        padding-top: 0;
+        padding-top: 50px;
         padding-bottom: 0 !important;
         min-height: calc(100vh - 50px);
         height: auto;
@@ -2143,24 +2140,9 @@ color: #ffd700;
 
     /* Desktop screens (1024px and above) */
     @media (min-width: 1024px) {
-      .main-content {
-        flex-direction: row !important;
-        height: calc(100vh - 50px) !important;
-        padding-top: 0 !important;
-      }
-
       .file-viewer {
         flex: 0 0 50% !important;
         display: flex !important;
-        height: calc(100vh - 50px) !important;
-        min-height: calc(100vh - 50px) !important;
-      }
-
-      .editor {
-        flex: 0 0 50% !important;
-        display: flex !important;
-        height: calc(100vh - 50px) !important;
-        min-height: calc(100vh - 50px) !important;
       }
 
       .toggle-panel {
@@ -2365,7 +2347,6 @@ color: #ffd700;
                 </div>
             </div>
         </div>
-
         <!-- Editor (inside main-content) -->
         <div class="editor" id="editor">
 

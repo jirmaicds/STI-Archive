@@ -28,8 +28,8 @@
     .main-content {
         display: flex;
         position: relative;
-        top: 50px;
-        height: calc(100vh - 50px);
+        top: 0;
+        height: 100vh;
         padding-top: 0;
       }
 
@@ -701,11 +701,10 @@
   text-align: center;
   font-family: 'Times New Roman', serif;
   position: absolute;
-  top: 60px;
+  top: 0;
   left: 0;
   width: 100%;
-  height: 60vh;
-  min-height: calc(100% - 60vh);
+  height: 100%;
   margin: 0;
   padding: 0;
 }
@@ -1614,6 +1613,7 @@ color: #ffd700;
     @media (max-width: 546px) {
       .file-viewer {
         flex:0 0 100%;
+        top: 0 !important;
       }
       .doc-preview{
             height:0 ;
@@ -1891,7 +1891,7 @@ color: #ffd700;
         flex: 0 0 100% !important;
         width: auto !important;
         height: 80vh!important;
-        top: 50px !important;
+        top: 0 !important;
       }
     }
 
@@ -1970,9 +1970,9 @@ color: #ffd700;
     /* Tablet and below */
     @media (max-width: 767px) {
       .main-content {
-        padding-top: 50px;
+        padding-top: 0;
         padding-bottom: 0 !important;
-        min-height: calc(100vh - 50px);
+        min-height: 100vh;
         height: auto;
         flex-direction: column;
         display: flex;

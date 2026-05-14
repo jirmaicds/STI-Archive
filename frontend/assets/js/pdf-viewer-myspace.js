@@ -840,6 +840,16 @@ function closePDFModal() {
         document.querySelectorAll('.article').forEach(article => {
             article.style.display = '';
         });
+
+        // Show the select article when PDF modal is closed
+        const selectArticle = document.getElementById('selectArticle');
+        if (selectArticle) {
+            selectArticle.style.display = 'flex';
+        }
+        const docPreview = document.getElementById('docPreview');
+        if (docPreview) {
+            docPreview.style.display = 'none';
+        }
     }
     // Just close the modal - don't redirect
 }

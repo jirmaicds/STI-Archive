@@ -627,22 +627,57 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     return;
                 }
 
-                const searchTerm = query.toLowerCase();
+                const searchTerm = query.toLowerCase().trim();
                 let totalMatches = 0;
 
+                // Escape regex special characters
+                const escapedQuery = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp('\\b' + escapedQuery + '\\b', 'gi');
+
                 pageData.forEach(page => {
-                    page.items.forEach(item => {
-                        if (item.str.toLowerCase().includes(searchTerm)) {
+                    const pageText = page.items.map(item => item.str).join(' ');
+                    let match;
+
+                    while ((match = regex.exec(pageText)) !== null) {
+                        const matchText = match[0];
+                        const matchIndex = match.index;
+                        const matchLength = matchText.length;
+
+                        // Find which text item contains this match
+                        let charCount = 0;
+                        let foundItem = null;
+                        let itemStartIndex = -1;
+
+                        for (let i = 0; i < page.items.length; i++) {
+                            const item = page.items[i];
+                            const itemLength = item.str.length;
+
+                            if (matchIndex >= charCount && matchIndex < charCount + itemLength) {
+                                foundItem = item;
+                                itemStartIndex = matchIndex - charCount;
+                                break;
+                            }
+
+                            charCount += itemLength + 1; // +1 for space between items
+                        }
+
+                        if (foundItem) {
                             totalMatches++;
 
-                            // Create highlight - border only, no background
-                            const transform = item.transform;
-                            // transform[4] = x from left, transform[5] = y from bottom
-                            // Convert to canvas coords (top-left origin)
-                            const x = transform[4] * page.scale;
-                            const y = (page.viewport.height - transform[5] - (item.height || 0)) * page.scale;
-                            const width = (item.width || item.str.length * 6) * page.scale;
-                            const height = ((item.height || 12) + 2) * page.scale;
+                            // Calculate position of the matched word within the text item
+                            const transform = foundItem.transform;
+                            const fontSize = foundItem.height || 12;
+                            const charWidth = (foundItem.width || foundItem.str.length * 6) / foundItem.str.length;
+
+                            // Position of the match within the item
+                            const matchStartX = itemStartIndex * charWidth;
+                            const matchWidth = matchLength * charWidth;
+
+                            // Convert to canvas coordinates (top-left origin)
+                            const x = (transform[4] + matchStartX) * page.scale;
+                            const y = (page.viewport.height - transform[5] - fontSize) * page.scale;
+                            const width = matchWidth * page.scale;
+                            const height = (fontSize + 2) * page.scale;
 
                             const highlight = document.createElement('div');
                             highlight.className = 'pdf-search-highlight';
@@ -655,8 +690,9 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                                 border: 2px solid #ff6b00;
                                 cursor: pointer;
                                 z-index: 5;
+                                background: rgba(255, 107, 0, 0.1);
                             `;
-                            highlight.title = item.str;
+                            highlight.title = matchText;
                             highlight.dataset.index = totalMatches - 1;
 
                             highlight.onclick = () => {
@@ -666,7 +702,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                             page.canvasWrapper.appendChild(highlight);
                             allHighlights.push(highlight);
                         }
-                    });
+                    }
                 });
 
                 if (totalMatches > 0) {

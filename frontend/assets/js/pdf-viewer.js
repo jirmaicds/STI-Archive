@@ -376,22 +376,30 @@ function displayArticlePDF(pdfPath, title) {
                         left: 0 !important;
                         width: 100vw !important;
                         height: 100vh !important;
+                        z-index: 10001 !important;
                     }
                     #pdf-viewer-modal > div {
+                        position: relative !important;
+                        width: 100% !important;
                         height: 100vh !important;
                     }
                     #pdf-viewer-container {
+                        flex: 1 !important;
                         height: calc(100vh - 60px) !important;
                         overflow: auto !important;
+                        -webkit-overflow-scrolling: touch !important;
                     }
+                }
+                /* Ensure header is always visible */
+                #pdf-viewer-modal > div > div:first-child {
+                    position: relative !important;
+                    z-index: 10002 !important;
                 }
             </style>
             <div style="
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
+                position: relative;
+                width: 100%;
+                height: 100%;
                 background: ${colors.innerBg};
                 overflow: hidden;
                 display: flex;
@@ -406,6 +414,8 @@ function displayArticlePDF(pdfPath, title) {
                     background: ${colors.headerBg};
                     color: ${colors.headerText};
                     flex-shrink: 0;
+                    position: relative;
+                    z-index: 10002;
                 ">
                     <h3 id="pdf-modal-title" style="margin: 0; font-size: 16px; color: ${colors.headerText};">Document Viewer</h3>
                     <button onclick="closePDFModal()" style="
@@ -424,6 +434,7 @@ function displayArticlePDF(pdfPath, title) {
                     overflow: auto;
                     background: ${colors.containerBg};
                     height: auto;
+                    -webkit-overflow-scrolling: touch;
                 "></div>
             </div>
         `;
@@ -604,9 +615,10 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                         align-items: center !important;
                     }
                     #pdf-viewer-canvas-container {
-                        padding: 10px !important;
+                        padding: 0 !important;
                         touch-action: manipulation !important;
                         -webkit-overflow-scrolling: touch !important;
+                        margin: 0 !important;
                     }
                     .pdf-canvas-container canvas {
                         max-width: none !important;
@@ -618,6 +630,8 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     .pdf-canvas-container {
                         touch-action: manipulation !important;
                         -webkit-overflow-scrolling: touch !important;
+                        padding: 0 !important;
+                        margin: 0 !important;
                     }
                     .pdf-canvas-container canvas {
                         touch-action: manipulation !important;
@@ -630,7 +644,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                 <div id="pdf-toolbar" style="padding:8px 12px;background:${colors.toolbarBg};border-bottom:1px solid ${colors.toolbarBorder};display:flex;align-items:center;justify-content:center;">
                     <span id="pdf-page-indicator" style="font-size:13px;color:${colors.countColor};text-align:center;">Page 1 of 1</span>
                 </div>
-                <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${colors.canvasBg};text-align:center;padding:20px;-webkit-overflow-scrolling:touch;"></div>
+                <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${colors.canvasBg};text-align:center;padding:20px;-webkit-overflow-scrolling:touch;width:100%;"></div>
             </div>`;
         
         // Load PDF.js

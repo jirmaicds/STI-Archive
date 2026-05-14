@@ -338,14 +338,24 @@ function displayArticlePDF(pdfPath, title) {
                     left: 0 !important;
                     width: 100vw !important;
                     height: 100vh !important;
+                    z-index: 10001 !important;
                 }
                 #pdf-viewer-modal > div {
+                    position: relative !important;
+                    width: 100% !important;
                     height: 100vh !important;
                 }
                 #pdf-viewer-container {
+                    flex: 1 !important;
                     height: calc(100vh - 60px) !important;
                     overflow: auto !important;
+                    -webkit-overflow-scrolling: touch !important;
                 }
+            }
+            /* Ensure header is always visible */
+            #pdf-viewer-modal > div > div:first-child {
+                position: relative !important;
+                z-index: 10002 !important;
             }
         `;
         document.head.appendChild(style);
@@ -487,9 +497,10 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                         align-items: center !important;
                     }
                     #pdf-viewer-canvas-container {
-                        padding: 10px !important;
+                        padding: 0 !important;
                         touch-action: manipulation !important;
                         -webkit-overflow-scrolling: touch !important;
+                        margin: 0 !important;
                     }
                     .pdf-canvas-container canvas {
                         max-width: none !important;
@@ -501,6 +512,8 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     .pdf-canvas-container {
                         touch-action: manipulation !important;
                         -webkit-overflow-scrolling: touch !important;
+                        padding: 0 !important;
+                        margin: 0 !important;
                     }
                     .pdf-canvas-container canvas {
                         touch-action: manipulation !important;

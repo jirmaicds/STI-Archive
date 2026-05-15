@@ -236,7 +236,6 @@
         }
 
         function previewUserDocs(userId) {
-            // Find the user by ID
             const users = JSON.parse(localStorage.getItem("users")) || [];
             const user = users.find(u => (u.user_id || u.id) === userId);
             if (!user) {
@@ -244,7 +243,6 @@
                 return;
             }
 
-            // Check if modal exists, create if not
             let modal = document.getElementById("user-docs-preview-modal");
             if (!modal) {
                 modal = document.createElement("div");
@@ -264,34 +262,59 @@
             }
             modal.style.display = "flex";
             const content = document.getElementById("user-docs-preview-content");
-            let html = `<p><strong>User:</strong> ${user.name}</p>`;
+            let html = `<p><strong>User:</strong> ${user.name || user.fullname || 'Unknown'}</p>`;
+            const effectiveId = user.user_id || user.id;
+            let renderedAny = false;
 
-            // Display RAF document
-            if (user.raf_path) {
-                const rafUrl = "https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/Raf-edu_id/" + user.raf_path;
-                const rafExt = user.raf_path.split(".").pop().toLowerCase();
-                html += `<h4>RAF Document</h4>`;
-                if (["jpg", "jpeg", "png"].includes(rafExt)) {
-                    html += `<img src="${rafUrl}" alt="RAF Document" style="max-width: 100%; max-height: 400px;">`;
-                } else if (rafExt === "pdf") {
-                    html += `<embed src="${rafUrl}" type="application/pdf" width="100%" height="400px">`;
+            function renderDoc(title, url, ext, localData) {
+                html += `<h4>${title}</h4>`;
+                renderedAny = true;
+                if (localData) {
+                    if (localData.startsWith('data:application/pdf')) {
+                        html += `<embed src="${localData}" type="application/pdf" width="100%" height="400px">`;
+                    } else if (localData.startsWith('data:image/')) {
+                        html += `<img src="${localData}" alt="${title}" style="max-width: 100%; max-height: 400px;">`;
+                    } else {
+                        html += `<a href="${localData}" target="_blank" download>Download ${title}</a>`;
+                    }
+                    return;
+                }
+                if (!url) {
+                    html += `<p>No document available.</p>`;
+                    return;
+                }
+                const extension = ext || url.split('.').pop().toLowerCase();
+                if (['jpg', 'jpeg', 'png'].includes(extension)) {
+                    html += `<img src="${url}" alt="${title}" style="max-width: 100%; max-height: 400px;">`;
+                } else if (extension === 'pdf') {
+                    html += `<embed src="${url}" type="application/pdf" width="100%" height="400px">`;
                 } else {
-                    html += `<a href="${rafUrl}" target="_blank">Download RAF Document</a>`;
+                    html += `<a href="${url}" target="_blank">Download ${title}</a>`;
                 }
             }
 
-            // Display Educator ID document
-            if (user.educator_id) {
-                const eduUrl = "https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/Raf-edu_id/" + user.educator_id;
-                const eduExt = user.educator_id.split(".").pop().toLowerCase();
-                html += `<h4>Educator ID</h4>`;
-                if (["jpg", "jpeg", "png"].includes(eduExt)) {
-                    html += `<img src="${eduUrl}" alt="Educator ID" style="max-width: 100%; max-height: 400px;">`;
-                } else if (eduExt === "pdf") {
-                    html += `<embed src="${eduUrl}" type="application/pdf" width="100%" height="400px">`;
+            if (user.raf_path) {
+                if (String(user.raf_path).startsWith('local:')) {
+                    const localData = localStorage.getItem(`${effectiveId}_raf`);
+                    renderDoc('RAF Document', null, null, localData);
                 } else {
-                    html += `<a href="${eduUrl}" target="_blank">Download Educator ID</a>`;
+                    const rafUrl = user.raf_path.startsWith('http') ? user.raf_path : `https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/Raf-edu_id/${user.raf_path}`;
+                    renderDoc('RAF Document', rafUrl, user.raf_path.split('.').pop().toLowerCase());
                 }
+            }
+
+            if (user.educator_id) {
+                if (String(user.educator_id).startsWith('local:')) {
+                    const localData = localStorage.getItem(`${effectiveId}_educator_id`);
+                    renderDoc('Educator ID', null, null, localData);
+                } else {
+                    const eduUrl = user.educator_id.startsWith('http') ? user.educator_id : `https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/Raf-edu_id/${user.educator_id}`;
+                    renderDoc('Educator ID', eduUrl, user.educator_id.split('.').pop().toLowerCase());
+                }
+            }
+
+            if (!renderedAny) {
+                html += '<p>No uploaded documents found.</p>';
             }
 
             content.innerHTML = html;
@@ -876,9 +899,14 @@ const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
 
 currentPage = page;
 const adminArticles = getAdminArticles();
-const container = document.getElementById('admin-uploaded-articles');
-const pagination = document.getElementById('admin-pagination');
-const pageNumbers = document.getElementById('admin-page-numbers');
+const container = document.getElementById('admin-uploaded-articles') || document.getElementById('uploaded-studies-articles');
+const pagination = document.getElementById('admin-pagination') || document.getElementById('uploaded-studies-pagination');
+const pageNumbers = document.getElementById('admin-page-numbers') || document.getElementById('uploaded-studies-page-numbers');
+
+if (!container) {
+    console.warn('renderAdminArticles: target container not found');
+    return;
+}
 
 // Clear existing articles
 container.innerHTML = '';
@@ -2291,7 +2319,8 @@ window.users = filteredUsers; // Or assign to global users
  // Map fields for display - handle all field variations
  filteredUsers.forEach(user => {
  // Handle grade field variations
- user.grade = (user.grade && user.grade !== 'null' && user.grade !== 'undefined') ? user.grade : (user.Grade || user.year_level || '-');
+ const gradeValue = user.grade || user.Grade || user.year_level || user.level || user.grade_level || user.gradeName || '';
+ user.grade = (gradeValue && gradeValue !== 'null' && gradeValue !== 'undefined') ? gradeValue : '-';
 
   // Sec_Degr contains:
   // - For SHS: strand values (ABM, ITMAWD, STEM)
@@ -2311,11 +2340,12 @@ window.users = filteredUsers; // Or assign to global users
                 else if (user.role === 'user' || !user.role) user.role = user.user_type || 'User';
 
                 // Set appropriate display values based on resolved role (Fixed case-sensitivity mismatch)
-                if (user.role !== 'Senior High' && user.role !== 'College') {
-                    user.grade = (user.grade && user.grade !== '-') ? user.grade : 'N/A';
+                // Use '-' for missing values, but keep real grade/section values when present.
+                if (!user.grade || user.grade === 'N/A') {
+                    user.grade = '-';
                 }
-                if (user.role === 'Educator') {
-                    user.Sec_Degr = (user.Sec_Degr && user.Sec_Degr !== '-') ? user.Sec_Degr : 'N/A';
+                if (!user.Sec_Degr || user.Sec_Degr === 'N/A') {
+                    user.Sec_Degr = '-';
                 }
   });
 
@@ -3585,11 +3615,11 @@ document.getElementById('uploaded-studies-section').classList.add('active');
 // Load uploaded studies (admin articles + approved user uploads)
 loadUploadedStudies();
 } else if (section === 'admin') {
-document.getElementById('admin-uploads-section').classList.add('active');
+const adminSection = document.getElementById('admin-uploads-section');
+if (adminSection) {
+    adminSection.classList.add('active');
+}
 // Force re-render of admin uploads section to ensure articles display correctly
-const adminContainer = document.getElementById('admin-uploaded-articles');
-const currentContent = adminContainer.innerHTML;
-// Temporarily clear and re-fetch articles
 loadArticlesFromServerForAdmin();
 } else if (section === 'users') {
 document.getElementById('user-uploads-section').classList.add('active');
@@ -3608,7 +3638,10 @@ document.getElementById('btn-pdf-upload').classList.add('active');
 } else if (section === 'uploaded-studies') {
 document.getElementById('btn-uploaded-studies').classList.add('active');
 } else if (section === 'admin') {
-document.getElementById('btn-admin-uploads').classList.add('active');
+const adminBtn = document.getElementById('btn-admin-uploads');
+if (adminBtn) {
+    adminBtn.classList.add('active');
+}
 } else if (section === 'users') {
 document.getElementById('btn-user-uploads').classList.add('active');
 } else if (section === 'carousel') {
@@ -3640,12 +3673,18 @@ localStorage.setItem('adminArticles', JSON.stringify(articles));
 renderAdminUploadsFromServer(articles);
 } else {
 console.error('âœ— Failed to load articles:', data.error || 'Unknown error');
-document.getElementById('admin-uploaded-articles').innerHTML = '<p class="empty-state">Failed to load articles</p>';
+const adminContainer = document.getElementById('admin-uploaded-articles') || document.getElementById('uploaded-studies-articles');
+if (adminContainer) {
+    adminContainer.innerHTML = '<p class="empty-state">Failed to load articles</p>';
+}
 }
 })
 .catch(error => {
 console.error('Error loading articles:', error);
-document.getElementById('admin-uploaded-articles').innerHTML = '<p class="empty-state">Error loading articles</p>';
+const adminContainer = document.getElementById('admin-uploaded-articles') || document.getElementById('uploaded-studies-articles');
+if (adminContainer) {
+    adminContainer.innerHTML = '<p class="empty-state">Error loading articles</p>';
+}
 });
 }
 
@@ -3707,7 +3746,11 @@ container.innerHTML = '<p class="empty-state">Error loading uploaded studies</p>
 
 // Render articles in admin uploads section
 function renderAdminUploadsFromServer(articles) {
-const container = document.getElementById('admin-uploaded-articles');
+const container = document.getElementById('admin-uploaded-articles') || document.getElementById('uploaded-studies-articles');
+if (!container) {
+    console.warn('renderAdminUploadsFromServer: target container not found');
+    return;
+}
 if (!articles || articles.length === 0) {
 container.innerHTML = '<p class="empty-state">No articles found.</p>';
 return;
@@ -3733,27 +3776,30 @@ container.innerHTML = '<p class="empty-state">No uploaded studies yet.</p>';
 return;
 }
 
-container.innerHTML = studies.map(study => {
-const sourceBadge = study.source === 'admin' ?
-'<span style="background: #007bff; color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px;">Admin</span>' :
-'<span style="background: #28a745; color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px;">User</span>';
-
-return `
+container.innerHTML = '';
+studies.forEach(study => {
+    if (study.source === 'admin') {
+        const articleElement = createArticleTemplate(study);
+        container.appendChild(articleElement);
+        return;
+    }
+    const sourceBadge = '<span style="background: #28a745; color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px;">User</span>';
+    container.innerHTML += `
 <div class="article" data-id="${study.id}" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 8px;">
-<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-<h3 style="margin: 0; color: #0057b8;">${study.title}</h3>
-${sourceBadge}
-</div>
-<div class="meta" style="color: #666; font-size: 14px; margin-bottom: 10px;">
-Authors: ${study.authors || 'N/A'} |
-Category: ${study.category || 'N/A'} |
-Year: ${study.year || 'N/A'}
-</div>
-<div class="summary" style="color: #333;">${study.abstract || study.summary || 'No description available.'}</div>
-${study.filePath ? `<div style="margin-top: 10px;"><a href="${study.filePath}" target="_blank" style="color: #007bff;">View PDF</a></div>` : ''}
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+        <h3 style="margin: 0; color: #0057b8;">${study.title}</h3>
+        ${sourceBadge}
+    </div>
+    <div class="meta" style="color: #666; font-size: 14px; margin-bottom: 10px;">
+        Authors: ${study.authors || 'N/A'} |
+        Category: ${study.category || 'N/A'} |
+        Year: ${study.year || 'N/A'}
+    </div>
+    <div class="summary" style="color: #333;">${study.abstract || study.summary || 'No description available.'}</div>
+    ${study.filePath ? `<div style="margin-top: 10px;"><a href="${study.filePath}" target="_blank" style="color: #007bff;">View PDF</a></div>` : ''}
 </div>
 `;
-}).join('');
+});
 }
 
 function viewAdminArticle(id) {

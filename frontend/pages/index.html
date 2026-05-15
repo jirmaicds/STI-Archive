@@ -3349,31 +3349,19 @@ window.supabaseHelpers = {
                 rejected: false,
                 banned: false,
                 status: 'signing-up',
-                raf_path: requiredFile ? 'local:' + userId : null
+                raf_path: role !== 'educator' && requiredFile ? 'local:' + userId : null,
+                educator_id: role === 'educator' && requiredFile ? 'local:' + userId : null
             };
 
            // Store document in local storage for preview
            if (requiredFile) {
                const reader = new FileReader();
                reader.onload = function(e) {
-                   localStorage.setItem(newUser.id + '_raf', e.target.result);
+                   const storageKey = role === 'educator' ? newUser.id + '_educator_id' : newUser.id + '_raf';
+                   localStorage.setItem(storageKey, e.target.result);
                };
                reader.readAsDataURL(requiredFile);
            }
-
-            // Store user in localStorage (client-side only)
-            let users = [];
-            try {
-                const usersData = localStorage.getItem('users');
-                if (usersData) {
-                    users = JSON.parse(usersData);
-                    if (!Array.isArray(users)) {
-                        users = [];
-                    }
-                }
-            } catch (e) {
-                users = [];
-            }
            const existingUserIndex = users.findIndex(u => u.email === email);
            if (existingUserIndex >= 0) {
              users[existingUserIndex] = { ...users[existingUserIndex], ...newUser };

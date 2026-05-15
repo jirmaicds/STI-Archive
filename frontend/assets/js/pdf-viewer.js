@@ -357,14 +357,18 @@ function displayArticlePDF(pdfPath, title) {
         modal.id = 'pdf-viewer-modal';
         modal.style.cssText = `
             display: none;
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background: ${colors.modalBg};
             z-index: 10001;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         `;
 
         modal.innerHTML = `
@@ -398,13 +402,15 @@ function displayArticlePDF(pdfPath, title) {
             </style>
             <div style="
                 position: relative;
-                width: 100%;
-                height: 100%;
+                width: min(1200px, 100%);
+                max-width: 100%;
+                height: min(850px, 100%);
                 background: ${colors.innerBg};
                 overflow: hidden;
                 display: flex;
                 flex-direction: column;
-                border-radius: 0;
+                border-radius: 16px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.25);
             ">
                 <div style="
                     display: flex;
@@ -433,7 +439,7 @@ function displayArticlePDF(pdfPath, title) {
                     flex: 1;
                     overflow: auto;
                     background: ${colors.containerBg};
-                    height: auto;
+                    min-height: 0;
                     -webkit-overflow-scrolling: touch;
                 "></div>
             </div>
@@ -612,7 +618,11 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                     #pdf-toolbar {
                         flex-direction: column !important;
                         gap: 8px !important;
-                        align-items: center !important;
+                        align-items: stretch !important;
+                    }
+                    #pdf-search-controls {
+                        flex-direction: column !important;
+                        align-items: stretch !important;
                     }
                     #pdf-viewer-canvas-container {
                         padding: 0 !important;
@@ -641,10 +651,17 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                 }
             </style>
             <div style="display:flex;flex-direction:column;height:100%;">
-                <div id="pdf-toolbar" style="padding:8px 12px;background:${colors.toolbarBg};border-bottom:1px solid ${colors.toolbarBorder};display:flex;align-items:center;justify-content:center;">
-                    <span id="pdf-page-indicator" style="font-size:13px;color:${colors.countColor};text-align:center;">Page 1 of 1</span>
+                <div id="pdf-toolbar" style="padding:8px 12px;background:${colors.toolbarBg};border-bottom:1px solid ${colors.toolbarBorder};display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+                    <div id="pdf-search-controls" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;flex-wrap:wrap;">
+                        <input id="pdf-search-input" type="text" placeholder="Search text..." style="flex:1;min-width:180px;padding:8px 10px;border:1px solid ${colors.inputBorder};border-radius:4px;background:${colors.inputBg};color:${colors.inputColor};outline:none;" />
+                        <button id="pdf-search-btn" style="padding:8px 12px;border:none;border-radius:4px;background:${colors.btnBg};color:${colors.btnColor};cursor:pointer;">Search</button>
+                        <button id="pdf-search-clear" style="padding:8px 12px;border:none;border-radius:4px;background:${colors.btnBg};color:${colors.btnColor};cursor:pointer;">Clear</button>
+                        <button id="pdf-search-prev" title="Previous match" style="padding:8px 10px;border:none;border-radius:4px;background:${colors.btnBg};color:${colors.btnColor};cursor:pointer;">◀</button>
+                        <button id="pdf-search-next" title="Next match" style="padding:8px 10px;border:none;border-radius:4px;background:${colors.btnBg};color:${colors.btnColor};cursor:pointer;">▶</button>
+                    </div>
+                    <span id="pdf-search-count" style="font-size:13px;color:${colors.countColor};min-width:110px;text-align:right;">&nbsp;</span>
                 </div>
-                <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${colors.canvasBg};text-align:center;padding:20px;-webkit-overflow-scrolling:touch;width:100%;"></div>
+                <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${colors.canvasBg};text-align:center;padding:20px;-webkit-overflow-scrolling:touch;width:100%;min-height:0;"></div>
             </div>`;
         
         // Load PDF.js
@@ -668,6 +685,8 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         
         let renderAllPagesLock = false;
         let renderAllPagesPending = false;
+        let allHighlights = [];
+        let currentHighlightIndex = -1;
 
         // Function to render pages at default scale
         function renderPagesAtDefaultScale() {
@@ -951,17 +970,50 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
             highlightMatch(currentHighlightIndex);
         }
         
+        const searchInput = container.querySelector('#pdf-search-input');
+        const searchBtn = container.querySelector('#pdf-search-btn');
+        const searchCount = container.querySelector('#pdf-search-count');
+
         // Search button click
-        searchBtn.onclick = () => performSearch(searchInput.value);
+        if (searchBtn && searchInput) {
+            searchBtn.onclick = () => performSearch(searchInput.value);
+        }
         
         // Clear button click
-        document.getElementById('pdf-search-clear').onclick = clearSearch;
+        const clearBtn = container.querySelector('#pdf-search-clear');
+        if (clearBtn) {
+            clearBtn.onclick = clearSearch;
+        }
         
         // Previous button
-        document.getElementById('pdf-search-prev').onclick = goToPrevMatch;
+        const prevBtn = container.querySelector('#pdf-search-prev');
+        if (prevBtn) {
+            prevBtn.onclick = goToPrevMatch;
+        }
         
         // Next button
-        document.getElementById('pdf-search-next').onclick = goToNextMatch;
+        const nextBtn = container.querySelector('#pdf-search-next');
+        if (nextBtn) {
+            nextBtn.onclick = goToNextMatch;
+        }
+
+        // Enter key to search
+        if (searchInput) {
+            searchInput.onkeypress = (e) => {
+                if (e.key === 'Enter') performSearch(searchInput.value);
+            };
+        }
+        
+        // Ctrl+F to focus search
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                if (searchInput) {
+                    searchInput.focus();
+                    searchInput.select();
+                }
+            }
+        });
         
         // Enter key to search
         searchInput.onkeypress = (e) => {

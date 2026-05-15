@@ -459,6 +459,9 @@ userData._offset = usersData.offset || offset;
 }
 // Save to localStorage for offline use
 localStorage.setItem('users', JSON.stringify(userData));
+if (typeof generateNotifications === 'function') {
+    updateNotificationBadge(generateNotifications(userData));
+}
 isLoadingUsers = false;
 return userData;
 } else {
@@ -469,6 +472,9 @@ if (DEBUG) console.log('DEBUG: Could not load from server, error:', e.message, '
 }
 let localUsers = JSON.parse(localStorage.getItem('users')) || [];
 localStorage.setItem('users', JSON.stringify(localUsers)); // Save users
+if (typeof generateNotifications === 'function') {
+    updateNotificationBadge(generateNotifications(localUsers));
+}
 if (DEBUG) console.log('DEBUG: Loaded users from localStorage, count:', localUsers.length);
 isLoadingUsers = false;
 return localUsers;
@@ -3096,13 +3102,19 @@ console.error('DEBUG: Error in showSection:', e);
 alert('Error switching section: ' + e.message);
 }
 
-document.getElementById('page-title').textContent =
-sectionId === 'dashboard' ? 'Dashboard' :
-sectionId === 'upload' ? 'Upload' :
-sectionId === 'users' ? 'Users' :
-sectionId === 'profile' ? 'Profile' :
-sectionId === 'settings' ? 'Settings' :
-'Notifications';
+const pageTitles = {
+    dashboard: 'Dashboard',
+    upload: 'Upload',
+    users: 'Users',
+    profile: 'Profile',
+    settings: 'Settings',
+    notifications: 'Notifications'
+};
+document.getElementById('page-title').textContent = pageTitles[sectionId] || 'Dashboard';
+
+if (sectionId === 'settings') {
+    showSettingsSection('account');
+}
 // Reset upload section to default (PDF Upload) when navigating to upload
 if (sectionId === 'upload') {
 // Reset to PDF Upload form (default)
@@ -3135,6 +3147,11 @@ handleSidebarClick(event, section);
 
 // Setup dashboard card navigation
 setupDashboardCardNavigation();
+
+const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+if (typeof generateNotifications === 'function') {
+    updateNotificationBadge(generateNotifications(storedUsers));
+}
 });
 
 // Add event listener for profile avatar

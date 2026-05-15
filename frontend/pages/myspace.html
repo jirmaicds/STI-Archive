@@ -627,9 +627,11 @@
        align-items: center;
        font-size: 14px;
        height: 50px;
-       margin-top: 10px;
+       margin-top: auto;
        margin-bottom: 0;
        flex-shrink: 0;
+       position: relative;
+       z-index: 1001;
      }
 
      .dark-mode .footer {
@@ -928,6 +930,7 @@ color: #ffd700;
         border: 1px solid #ccc;
         transition: opacity 0.3s ease, transform 0.3s ease;
         position: relative;
+        overflow: hidden;
       }
       
       .editor.visible {
@@ -968,6 +971,7 @@ color: #ffd700;
        border: 1px solid #ccc;
        padding: 10px;
        position: relative;
+       z-index: 1001;
      }
 
     .toolbar select, .toolbar button, .toolbar input[type="color"] {
@@ -996,6 +1000,7 @@ color: #ffd700;
        background: #fff;
        counter-reset: page 0;
        position: relative;
+       margin-bottom: 10px;
      }
 
     .page {
@@ -1628,7 +1633,9 @@ color: #ffd700;
         position: absolute !important;
         left: 0 !important;
         top: 50px !important;
-        height: calc(100vh - 100px) !important;
+        height: calc(100vh - 50px - 80px) !important; /* Subtract header (50px) and footer toggle (80px) */
+        padding-bottom: 0 !important;
+        overflow: hidden !important;
       }
       
       .editor.fullscreen {
@@ -1654,6 +1661,20 @@ color: #ffd700;
       .mobile-file-viewer-toggle-panel,
       .mobile-toggle-back {
         display: none !important;
+      }
+      
+      /* Ensure toolbar is visible and not covered by navbar */
+      .editor .toolbar {
+        position: relative !important;
+        top: auto !important;
+        margin-top: 10px !important;
+        margin-bottom: 10px !important;
+      }
+      
+      /* Ensure footer inside editor is visible */
+      .editor .footer {
+        margin-top: auto !important;
+        margin-bottom: 10px !important;
       }
     }
 
@@ -1905,9 +1926,35 @@ color: #ffd700;
         width: 100% !important;
         left: 0 !important;
         right: auto !important;
-        top: 0 !important;
+        top: 50px !important;
         height: calc(100vh - 50px - 80px) !important; /* header + footer toggle */
+        position: absolute !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+      }
+      
+      /* Ensure toolbar is visible on mobile */
+      .editor .toolbar {
         position: relative !important;
+        top: auto !important;
+        margin-top: 0 !important;
+        margin-bottom: 5px !important;
+        flex-shrink: 0 !important;
+      }
+      
+      /* Ensure document container has space for footer */
+      .editor .document-container {
+        flex: 1 1 auto !important;
+        overflow: auto !important;
+        margin-bottom: 5px !important;
+      }
+      
+      /* Ensure footer inside editor is visible on mobile */
+      .editor .footer {
+        margin-top: auto !important;
+        margin-bottom: 0 !important;
+        flex-shrink: 0 !important;
       }
       .toggle-panel {
         display: none !important;
@@ -1958,6 +2005,7 @@ color: #ffd700;
         flex: 1 1 auto !important;
         min-height: 0 !important;
         overflow: auto !important;
+        margin-bottom: 10px !important;
       }
 
       .editor.fullscreen .toolbar {
@@ -1970,8 +2018,15 @@ color: #ffd700;
         height: auto !important;
       }
 
+      /* Ensure footer inside editor is visible in fullscreen mode on mobile */
+      .editor.fullscreen .footer {
+        margin-top: auto !important;
+        margin-bottom: 10px !important;
+        flex-shrink: 0 !important;
+      }
+
       .editor.fullscreen .document-container {
-        margin: 0 0 20px 0 !important;
+        margin: 0 0 10px 0 !important;
         padding: 20px !important;
       }
 

@@ -283,11 +283,11 @@ window.supabaseHelpers = {
                     justify-content: center !important;
                     align-items: center !important;
                     width: 90% !important;
-                    position: relative !important;
-                    left: auto !important;
-                    right: auto !important;
-                    margin: 0 auto !important;
-                    bottom: auto !important;
+                    position: absolute !important;
+                    left: 50% !important;
+                    transform: translateX(-50%) !important;
+                    bottom: -100px !important;
+                    margin: 0 !important;
                     padding: 10px !important;
                     user-select: none;
                 }
@@ -504,11 +504,9 @@ window.supabaseHelpers = {
                     height: auto !important;
                     overflow: visible !important;
                     padding: 20px 5vw 80px 5vw !important;
-                    display: flex !important;
-                    flex-direction: column !important;
-                    align-items: center !important;
-                    justify-content: flex-start !important;
+                    display: block !important;
                     position: static !important;
+                    margin-top: 150px;
                 }
                 /* Hide navbar login button on mobile */
                 #loginNavBtn {
@@ -1662,19 +1660,23 @@ window.supabaseHelpers = {
                     display: flex !important;
                     flex-direction: column !important;
                     align-items: center !important;
-                    justify-content: center !important;
+                    justify-content: flex-start !important;
+                    position: relative !important;
+                    width: 100%;
+                    height: auto;
                 }
                 #adsContentContainer {
                     width: 90vw;
                     max-width: 480px;
                     height: auto;
                     padding: 5px;
-                    margin: 20px auto !important;
-                    position: static !important;
-                    left: auto !important;
+                    position: absolute !important;
+                    left: 50% !important;
+                    transform: translateX(-50%) !important;
+                    bottom: -100px !important;
                     right: auto !important;
                     top: auto !important;
-                    transform: none !important;
+                    margin: 0 !important;
                 }
                 #adsContentContainer .image-slider {
                     height: 280px !important;
@@ -1684,17 +1686,11 @@ window.supabaseHelpers = {
                 }
                 .main-content {
                     position: static !important;
-                    top: auto !important;
-                    left: auto !important;
-                    right: auto !important;
                     width: 100% !important;
                     height: auto !important;
                     padding: 20px 0 !important;
-                    display: flex !important;
-                    flex-direction: column !important;
-                    align-items: center !important;
-                    justify-content: flex-start !important;
-                    box-sizing: border-box !important;
+                    display: block !important;
+                    margin-top: 150px;
                 }
                 #loginNavBtnMobile {
                     margin: 10px 5%;
@@ -1716,7 +1712,10 @@ window.supabaseHelpers = {
                     width: 95vw;
                     height: auto;
                     padding: 10px;
-                    right: auto !important;
+                    position: absolute !important;
+                    left: 50% !important;
+                    transform: translateX(-50%) !important;
+                    bottom: -80px !important;
                 }
                 #adsContentContainer img {
                     max-height: 250px;

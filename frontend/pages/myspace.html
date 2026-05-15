@@ -4741,15 +4741,30 @@ color: #ffd700;
         document.addEventListener('DOMContentLoaded', async function() {
             // Load editor if there is saved state
             var editor = document.getElementById('editor');
-            if (editor) {
-                editor.style.display = 'none';
-            }
-            if (editor) {
-                editor.style.display = 'none';
-            }
-            if (fileViewer) {
-                fileViewer.style.display = 'flex';
-                fileViewer.style.flex = '0 0 50%';
+            // Set default layout based on screen size
+            if (window.innerWidth > 1024) {
+                // Desktop: both visible
+                if (editor) {
+                    editor.style.display = 'flex';
+                    editor.style.flex = '0 0 50%';
+                    editor.style.maxWidth = '50%';
+                    editor.classList.remove('fullscreen');
+                }
+                if (fileViewer) {
+                    fileViewer.style.display = 'flex';
+                    fileViewer.style.flex = '0 0 50%';
+                    fileViewer.style.maxWidth = '50%';
+                }
+            } else {
+                // Mobile/tablet: file-viewer full, editor hidden
+                if (editor) {
+                    editor.style.display = 'none';
+                    editor.classList.remove('fullscreen');
+                }
+                if (fileViewer) {
+                    fileViewer.style.display = 'flex';
+                    fileViewer.style.flex = '0 0 100%';
+                }
             }
             
             // Load saved editor state from localStorage
@@ -4834,14 +4849,28 @@ color: #ffd700;
                     localStorage.removeItem('selectedDocument'); // Clean up
                 }
             } else {
-                // No URL params - show file-viewer
-                const editor = document.getElementById('editor');
-                const fileViewer = document.querySelector('.file-viewer');
-                if (editor) {
-                    editor.style.display = 'none';
-                }
-                if (fileViewer) {
-                    fileViewer.style.display = 'flex';
+                // No URL params - set default layout based on screen size
+                if (window.innerWidth > 1024) {
+                    if (editor) {
+                        editor.style.display = 'flex';
+                        editor.style.flex = '0 0 50%';
+                        editor.style.maxWidth = '50%';
+                        editor.classList.remove('fullscreen');
+                    }
+                    if (fileViewer) {
+                        fileViewer.style.display = 'flex';
+                        fileViewer.style.flex = '0 0 50%';
+                        fileViewer.style.maxWidth = '50%';
+                    }
+                } else {
+                    if (editor) {
+                        editor.style.display = 'none';
+                        editor.classList.remove('fullscreen');
+                    }
+                    if (fileViewer) {
+                        fileViewer.style.display = 'flex';
+                        fileViewer.style.flex = '0 0 100%';
+                    }
                 }
             }
         });
@@ -5541,26 +5570,12 @@ color: #ffd700;
             // Show editor (Word view), hide file-viewer
             const editor = document.getElementById('editor');
             const fileViewer = document.querySelector('.file-viewer');
+            if (fileViewer) fileViewer.style.display = 'none';
             if (editor) {
-                // On tablet/phone, make editor fullscreen and hide file-viewer
                 if (window.innerWidth <= 1024) {
-                    // Remove any conflicting classes
-                    editor.classList.remove('fullscreen', 'visible', 'collapsed');
-                    // Set styles manually to avoid CSS conflicts - fullscreen covering entire screen
-                    editor.style.setProperty('display', 'block', 'important');
-                    editor.style.setProperty('position', 'fixed', 'important'); // Use fixed to cover entire viewport
-                    editor.style.setProperty('top', '50px', 'important');
-                    editor.style.setProperty('left', '0', 'important');
-                    editor.style.setProperty('width', '100vw', 'important');
-                    editor.style.setProperty('bottom', '50px', 'important');
-                    editor.style.setProperty('height', 'auto', 'important');
-                    editor.style.setProperty('z-index', '99', 'important'); // High z-index to cover navbar and footer
-                    editor.style.setProperty('overflow', 'auto', 'important');
-                    if (fileViewer) {
-                        fileViewer.style.setProperty('display', 'none', 'important');
-                    }
+                    editor.classList.add('fullscreen');
+                    editor.classList.remove('collapsed');
                 } else {
-                    // Desktop: add fullscreen class
                     editor.classList.add('fullscreen');
                     editor.style.display = 'flex';
                 }
@@ -5657,16 +5672,22 @@ color: #ffd700;
                 pdfModal.style.display = 'none';
             }
 
-            // On desktop screens (>=1024px), show file-viewer
+            // On desktop screens (>=1024px), show both panels
             if (window.innerWidth >= 1024) {
                 const fileViewer = document.querySelector('.file-viewer');
+                const editor = document.getElementById('editor');
                 if (fileViewer) {
                     fileViewer.style.display = 'flex';
-                    fileViewer.style.flex = '0 0 100%';
+                    fileViewer.style.flex = '0 0 50%';
+                }
+                if (editor) {
+                    editor.style.display = 'flex';
+                    editor.style.flex = '0 0 50%';
+                    editor.classList.remove('fullscreen');
                 }
             } else {
                 // On mobile/tablet, use the toggle preference
-                selectFooterDocType(footerCurrentDocView);
+                toggleView(footerCurrentDocView);
             }
         });
     });

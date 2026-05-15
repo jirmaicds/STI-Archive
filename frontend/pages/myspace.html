@@ -27,10 +27,13 @@
 
     .main-content {
         display: flex;
+        flex-wrap: nowrap;
         position: relative;
         top: 0;
-        height: 100vh;
-        padding-top: 0;
+        margin-top: 50px;
+        min-height: calc(100vh - 50px);
+        width: 100%;
+        overflow: hidden;
       }
 
     .toggle-panel {
@@ -184,6 +187,8 @@
         
     .file-viewer {
     flex: 0 0 50%;
+    width: 50%;
+    max-width: 50%;
     min-height: calc(100vh - 50px);
     background: #fff;
     border-right: 1px solid #ccc;
@@ -234,8 +239,19 @@
       overflow: auto;
     }
     #pdf-viewer-modal {
-      top: 50px !important;
-      height: calc(100vh - 50px) !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      display: none;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 10001;
+    }
+    .pdf-modal-header {
+      position: sticky;
+      top: 0;
+      z-index: 10002;
     }
 
     #pdf-viewer-modal #pdf-viewer-container {
@@ -248,7 +264,7 @@
     /* PDF Viewer Darkmode Styles */
     /* Light mode PDF viewer modal background */
     #pdf-viewer-modal {
-      background: white;
+      background: rgba(0,0,0,0.5);
     }
 
     .dark-mode #pdf-viewer-modal {
@@ -613,6 +629,7 @@
        height: 50px;
        margin-top: 10px;
        margin-bottom: 0;
+       flex-shrink: 0;
      }
 
      .dark-mode .footer {
@@ -680,19 +697,38 @@
     }
 
 
-    @media (min-width: 768px) {
+    @media (min-width: 1024px) {
       .main-content {
         flex-direction: row !important;
       }
       .file-viewer {
         flex: 0 0 50% !important;
+        width: 50% !important;
         display: flex !important;
       }
 
       .editor {
         flex: 0 0 50% !important;
+        width: 50% !important;
+        max-width: 50% !important;
         display: flex !important;
         padding: 20px 20px 0 20px;
+      }
+    }
+
+    @media (max-width: 1023px) {
+      .main-content {
+        flex-direction: column !important;
+      }
+      .file-viewer {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .editor {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
       }
     }
 
@@ -882,6 +918,8 @@ color: #ffd700;
 
     .editor {
         flex: 0 0 50%;
+        width: 50%;
+        max-width: 50%;
         min-height: calc(100vh - 50px);
         display: flex;
         flex-direction: column;
@@ -889,6 +927,7 @@ color: #ffd700;
         background: #f0f0f0;
         border: 1px solid #ccc;
         transition: opacity 0.3s ease, transform 0.3s ease;
+        position: relative;
       }
       
       .editor.visible {
@@ -1286,6 +1325,14 @@ color: #ffd700;
       border: none !important;
       outline: none !important;
       box-sizing: border-box !important;
+    }
+
+    .editor.hidden {
+      display: none !important;
+    }
+
+    .file-viewer.hidden {
+      display: none !important;
     }
 
     .dark-mode .file-viewer.expanded,
@@ -1871,6 +1918,72 @@ color: #ffd700;
       }
     }
     @media (max-width: 1023px) {
+      .toggle-panel {
+        display: none !important;
+      }
+
+      .file-viewer {
+        display: flex !important;
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        min-height: 0 !important;
+      }
+
+      .select-article {
+        display: flex !important;
+      }
+
+      .editor,
+      .editor.fullscreen {
+        display: flex !important;
+        flex-direction: column !important;
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        position: relative !important;
+        left: auto !important;
+        right: auto !important;
+        top: auto !important;
+        min-height: calc(100vh - 50px - 80px) !important;
+        overflow: hidden !important;
+      }
+
+      .editor .document-container,
+      .editor.fullscreen .document-container {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        overflow: auto !important;
+      }
+
+      .editor.fullscreen .toolbar {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        width: auto !important;
+        margin-bottom: 10px !important;
+        height: auto !important;
+      }
+
+      .editor.fullscreen .document-container {
+        margin: 0 0 20px 0 !important;
+        padding: 20px !important;
+      }
+
+      .main-content {
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: calc(100vh - 50px) !important;
+        padding-top: 0 !important;
+        padding-bottom: 80px !important;
+        overflow: visible !important;
+      }
+
       .footer-toggle-container {
         display: flex !important;
         z-index: 1000 !important;
@@ -2008,7 +2121,7 @@ color: #ffd700;
     /* Phone (below 768px) */
     @media (max-width: 767px) {
       .main-content {
-        padding-top: 50px;
+        padding-top: 0;
         padding-bottom: 0 !important;
         min-height: calc(100vh - 50px);
         height: auto;
@@ -2054,7 +2167,7 @@ color: #ffd700;
     /* Small tablets/large phones (767px and below) */
     @media (max-width: 767px) {
       .main-content {
-        padding-top: 50px;
+        padding-top: 0;
         padding-bottom: 0 !important;
         min-height: calc(100vh - 50px);
         height: auto;
@@ -2103,7 +2216,7 @@ color: #ffd700;
         font-size: 12px;
       }
       .main-content {
-        padding-top: 50px;
+        padding-top: 0;
         padding-bottom: 0 !important;
         min-height: 100%;
         height: auto;
@@ -2335,7 +2448,7 @@ color: #ffd700;
                 <canvas id="pdfCanvas" style="width: 100%; height: 90%; border: 1px solid #ccc;"></canvas>
             </div>
         </div>
-
+        </div>
         <!-- toggle panel (inside main-content) -->
         <div class="toggle-panel">
             <div class="toggle-btn">
@@ -3053,13 +3166,21 @@ color: #ffd700;
                 editor.style.display = 'flex';
                 editor.style.flex = '0 0 50%';
                 editor.style.width = '50%';
-                editor.style.position = 'absolute';
-                editor.style.right = '0';
+                editor.style.maxWidth = '50%';
+                editor.style.position = 'relative';
+                editor.style.right = 'auto';
                 editor.style.left = 'auto';
+                editor.style.top = 'auto';
+                editor.style.height = 'auto';
 
                 // Show file-viewer at 50% width (left side)
                 fileViewer.style.display = 'flex';
                 fileViewer.style.flex = '0 0 50%';
+                fileViewer.style.width = '50%';
+                fileViewer.style.maxWidth = '50%';
+                fileViewer.style.position = 'relative';
+                fileViewer.style.top = 'auto';
+                fileViewer.style.height = 'auto';
 
                 // Reset toggle panel
                 togglePanel.classList.remove('left', 'no-left-space', 'right', 'no-right-space');
@@ -5551,27 +5672,32 @@ color: #ffd700;
         console.log('wordBtn:', wordBtn);
 
         // Update button states
+        const editor = document.getElementById('editor');
+        const fileViewer = document.querySelector('.file-viewer');
+
         if (type === 'pdf') {
             pdfBtn.classList.add('active');
             wordBtn.classList.remove('active');
             // Show file-viewer, hide editor
-            const editor = document.getElementById('editor');
-            const fileViewer = document.querySelector('.file-viewer');
             if (editor) {
                 editor.style.display = 'none';
+                editor.classList.add('hidden');
                 editor.classList.remove('fullscreen');
             }
             if (fileViewer) {
+                fileViewer.classList.remove('hidden');
                 fileViewer.style.display = 'flex';
             }
         } else {
             pdfBtn.classList.remove('active');
             wordBtn.classList.add('active');
             // Show editor (Word view), hide file-viewer
-            const editor = document.getElementById('editor');
-            const fileViewer = document.querySelector('.file-viewer');
-            if (fileViewer) fileViewer.style.display = 'none';
+            if (fileViewer) {
+                fileViewer.classList.add('hidden');
+                fileViewer.style.display = 'none';
+            }
             if (editor) {
+                editor.classList.remove('hidden');
                 if (window.innerWidth <= 1024) {
                     editor.classList.add('fullscreen');
                     editor.classList.remove('collapsed');
@@ -5679,11 +5805,13 @@ color: #ffd700;
                 if (fileViewer) {
                     fileViewer.style.display = 'flex';
                     fileViewer.style.flex = '0 0 50%';
+                    fileViewer.classList.remove('hidden');
                 }
                 if (editor) {
                     editor.style.display = 'flex';
                     editor.style.flex = '0 0 50%';
                     editor.classList.remove('fullscreen');
+                    editor.classList.remove('hidden');
                 }
             } else {
                 // On mobile/tablet, use the toggle preference

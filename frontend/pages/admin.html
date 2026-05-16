@@ -195,8 +195,12 @@
         .sidebar ul li.active {
             background-color: #0057b8;
         }
+        .sidebar ul li a,
+        .sidebar ul li a:visited,
+        .sidebar ul li a:focus,
+        .sidebar ul li a:hover,
         .sidebar ul li.active a {
-            color: white;
+            color: white !important;
         }
         .terms-dropdown a {
             text-decoration: none !important;
@@ -3981,9 +3985,9 @@
                 <div style="display: flex;">
                     <div class="settings-sidebar" style="width: 200px; padding: 20px; background-color: #f8f9fa; border-right: 1px solid #ddd;">
                         <ul style="list-style: none; padding: 0;">
-                            <li style="padding: 10px 0; cursor: pointer;" onclick="showSettingsSection('account')">Account</li>
-                            <li onclick="showSettingsSection('terms-conditions')" style="cursor: pointer; padding-top: 10px; padding-bottom: 10px;">Terms & Conditions</li>
-                            <li onclick="showSettingsSection('privacy-policy')" style="cursor: pointer; padding-top: 10px;">Privacy Policy</li>
+                            <li style="padding: 10px 0; cursor: pointer;" onclick="showSettingsSection('account', this)">Account</li>
+                            <li onclick="showSettingsSection('terms-conditions', this)" style="cursor: pointer; padding-top: 10px; padding-bottom: 10px;">Terms & Conditions</li>
+                            <li onclick="showSettingsSection('privacy-policy', this)" style="cursor: pointer; padding-top: 10px;">Privacy Policy</li>
                         </ul>
                     </div>
                     <div class="settings-content" style="flex: 1; padding: 20px; min-height: calc(100vh - 200px);">

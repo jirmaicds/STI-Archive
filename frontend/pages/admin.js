@@ -3131,13 +3131,17 @@ renderGaugeChart('session-duration-gauge', 'Average Session Duration', 2.5, '#00
 
 // Add event listeners for sidebar navigation
 document.addEventListener('DOMContentLoaded', function() {
-document.querySelectorAll('.sidebar a[data-section]').forEach(link => {
-link.addEventListener('click', function(event) {
-event.preventDefault();
-const section = this.getAttribute('data-section');
-handleSidebarClick(event, section);
-});
-});
+    document.querySelectorAll('.sidebar a[data-section]').forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            const section = this.getAttribute('data-section');
+            handleSidebarClick(event, section);
+        });
+    });
+
+    // Initialize notification badge on page load before the notifications section is opened
+    updateNotificationBadge();
+
 
 // Setup dashboard card navigation
 setupDashboardCardNavigation();
@@ -3424,24 +3428,41 @@ updateNotificationBadge();
 }
 
 function updateNotificationBadge(notifications) {
-if (!notifications) {
-// If no notifications passed, try to get from DOM
-const notificationItems = document.querySelectorAll('.notification-item');
-const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
-let unreadCount = 0;
+    const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
+    let unreadCount = 0;
 
-notificationItems.forEach(item => {
-const notificationId = item.getAttribute('data-id');
-if (!readNotifications.includes(notificationId)) {
-unreadCount++;
-}
-});
+    if (!notifications) {
+        const notificationItems = document.querySelectorAll('.notification-item');
+        if (notificationItems.length > 0) {
+            notificationItems.forEach(item => {
+                const notificationId = item.getAttribute('data-id');
+                if (notificationId && !readNotifications.includes(notificationId)) {
+                    unreadCount++;
+                }
+            });
+        } else {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            if (typeof generateNotifications === 'function') {
+                notifications = generateNotifications(users);
+            } else {
+                notifications = [];
+            }
+        }
+    }
 
-const badge = document.querySelector('.notification-badge');
-if (badge) {
-badge.textContent = unreadCount;
-badge.style.display = unreadCount > 0 ? 'flex' : 'none';
-}
+    if (notifications && notifications.length > 0) {
+        notifications.forEach(notif => {
+            if (notif.id && !readNotifications.includes(notif.id)) {
+                unreadCount++;
+            }
+        });
+    }
+
+    const badge = document.querySelector('.notification-badge');
+    if (badge) {
+        badge.textContent = unreadCount;
+        badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+    }
 
 // Show/hide mark all read button based on unread count
 const markAllBtn = document.querySelector('.mark-all-read-btn');
@@ -4475,11 +4496,22 @@ closePasswordChangeModal();
 alert('Invalid code!');
 }
 }
-function showSettingsSection(section) {
-document.querySelectorAll('.settings-subsection').forEach(sub => sub.classList.remove('active'));
-document.getElementById(section + '-settings').classList.add('active');
-document.querySelectorAll('.settings-sidebar li').forEach(li => li.style.color = 'black');
-event.target.style.color = '#007bff';
+function showSettingsSection(section, element) {
+    document.querySelectorAll('.settings-subsection').forEach(sub => sub.classList.remove('active'));
+    const targetSection = document.getElementById(section + '-settings');
+    if (targetSection) {
+        targetSection.classList.add('active');
+    }
+
+    document.querySelectorAll('.settings-sidebar li').forEach(li => li.classList.remove('active'));
+    if (element) {
+        element.classList.add('active');
+    } else {
+        const activeItem = document.querySelector(`.settings-sidebar li[onclick*="showSettingsSection('${section}')"]`);
+        if (activeItem) {
+            activeItem.classList.add('active');
+        }
+    }
 }
 function editContent(type) {
 const viewMode = document.querySelector(`#${type}-content .view-mode`);

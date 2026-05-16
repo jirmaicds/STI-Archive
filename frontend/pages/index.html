@@ -3251,7 +3251,7 @@ window.supabaseHelpers = {
             }
         }
 
-         function handleSignup() {
+          async function handleSignup() {
                 console.log('DEBUG: handleSignup called');
                 const roleSelect = document.getElementById('signup-role');
                 let valid = true;
@@ -3368,39 +3368,55 @@ window.supabaseHelpers = {
            } else {
              users.push(newUser);
            }
-           localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('users', JSON.stringify(users));
 
-              // Create JSON data for server with file as base64
-               const signupData = {
-                   fullname,
-                   email,
-                   password: document.getElementById('signup-password').value,
-                   role,
-                   user_id: userId,
-                   Sec_Degr: secDegrValue || null
-               };
-
-               // Only send grade and section_degree for student roles
-               if (role === 'senior_high' || role === 'college') {
-                   signupData.grade = grade || null;
-                   signupData.section_degree = section || null;
+        // Upload file to Supabase storage if present
+           let filePath = null;
+           if (requiredFile) {
+               try {
+                   // Define storage path: {role}/{userId}/{filename}
+                   const storagePath = `${role}/${userId}/${requiredFile.name}`;
+                   
+                   // Upload to Supabase storage
+                   const uploadResult = await window.supabaseHelpers.uploadFile(
+                       'user-documents', // bucket name - adjust as needed
+                       storagePath,
+                       requiredFile
+                   );
+                   
+                   filePath = storagePath; // Store the path for database reference
+                   console.log('File uploaded to Supabase:', uploadResult);
+               } catch (uploadError) {
+                   console.error('Error uploading file to Supabase:', uploadError);
+                   document.getElementById('signup-message').innerHTML = 
+                       '<span style="color: red;">File upload failed. Please try again.</span>';
+                   document.getElementById('signup-message').style.display = 'block';
+                   return;
                }
+           }
 
-             // Add file if present
-             if (requiredFile) {
-                 const reader = new FileReader();
-                 reader.onload = function(e) {
-                     signupData.file = e.target.result.split(',')[1]; // Remove data: URL prefix
-                     signupData.filename = requiredFile.name;
-                     signupData.mimetype = requiredFile.type;
-                     // Send the data after file is read
-                     sendSignupData(signupData);
-                 };
-                 reader.readAsDataURL(requiredFile);
-                 return; // Wait for file read
-             } else {
-                 sendSignupData(signupData);
-             }
+           // Create JSON data for server (without file binary data)
+           const signupData = {
+               fullname,
+               email,
+               password: document.getElementById('signup-password').value,
+               role,
+               user_id: userId,
+               Sec_Degr: secDegrValue || null,
+               // Add file path to send to backend
+               file_path: filePath,
+               filename: requiredFile ? requiredFile.name : null,
+               mimetype: requiredFile ? requiredFile.type : null
+           };
+
+           // Only send grade and section_degree for student roles
+           if (role === 'senior_high' || role === 'college') {
+               signupData.grade = grade || null;
+               signupData.section_degree = section || null;
+           }
+
+           // Send the data
+           sendSignupData(signupData);
             }
 
             function sendSignupData(data) {

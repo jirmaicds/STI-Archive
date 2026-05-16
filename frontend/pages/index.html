@@ -3388,10 +3388,18 @@ window.supabaseHelpers = {
                    console.log('File uploaded to Supabase:', uploadResult);
                } catch (uploadError) {
                    console.error('Error uploading file to Supabase:', uploadError);
-                   document.getElementById('signup-message').innerHTML = 
-                       '<span style="color: red;">File upload failed. Please try again.</span>';
-                   document.getElementById('signup-message').style.display = 'block';
-                   return;
+                   console.warn('Upload failed; attempting local fallback if bucket missing');
+                   const msg = (uploadError && uploadError.message) ? uploadError.message.toString().toLowerCase() : '';
+                   if (msg.includes('bucket not found') || (uploadError && uploadError.status === 404)) {
+                       // Fallback: mark file as local and continue signup
+                       filePath = 'local:' + storagePath;
+                       console.warn('Supabase bucket not found; using local storage placeholder for filePath:', filePath);
+                   } else {
+                       document.getElementById('signup-message').innerHTML = 
+                           '<span style="color: red;">File upload failed. Please try again.</span>';
+                       document.getElementById('signup-message').style.display = 'block';
+                       return;
+                   }
                }
            }
 

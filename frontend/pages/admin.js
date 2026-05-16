@@ -5364,6 +5364,35 @@ function bindSectionFilterSelectors() {
 }
 window.addEventListener('load', bindSectionFilterSelectors);
 
+// Add clear (x) buttons next to each search input used by filterTable
+function initSearchClearButtons() {
+    const sections = ['admins','all','verified','signing-up','banned'];
+    sections.forEach(section => {
+        const searchInput = document.querySelector(`#${section}-section input[onkeyup*="filterTable"]`);
+        if (!searchInput) return;
+        // Avoid duplicate button
+        if (searchInput.nextElementSibling && searchInput.nextElementSibling.classList && searchInput.nextElementSibling.classList.contains('search-clear-btn')) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'search-clear-btn';
+        btn.title = 'Clear search';
+        btn.textContent = '✕';
+        btn.style.marginLeft = '6px';
+        btn.style.padding = '6px 8px';
+        btn.style.border = '1px solid #ccc';
+        btn.style.background = '#fff';
+        btn.style.cursor = 'pointer';
+        btn.addEventListener('click', () => {
+            searchInput.value = '';
+            const filterTypeEl = document.getElementById(`search-filter-${section}`);
+            const filterType = filterTypeEl ? filterTypeEl.value : 'unified';
+            filterTable('', section, filterType);
+        });
+        searchInput.parentNode.insertBefore(btn, searchInput.nextSibling);
+    });
+}
+window.addEventListener('load', initSearchClearButtons);
+
 // Bulk actions functions
 function toggleSelectAll(status) {
 const selectAllCheckbox = document.getElementById(`select-all-${status}`);
@@ -6431,6 +6460,21 @@ const strandFilter = strandFilterEl ? strandFilterEl.value : '';
 const degreeFilter = degreeFilterEl ? degreeFilterEl.value : '';
 const deptFilter = deptFilterEl ? deptFilterEl.value : '';
 
+// Determine column indices by header text to make filtering resilient across table layouts
+const table = tbody.closest('table');
+let roleColIndex = 4; // defaults
+let gradeColIndex = 5;
+let secColIndex = 6;
+if (table) {
+    const headers = Array.from(table.querySelectorAll('th'));
+    headers.forEach((th, idx) => {
+        const text = (th.textContent || '').toLowerCase();
+        if (/role/.test(text)) roleColIndex = idx;
+        if (/grade/.test(text)) gradeColIndex = idx;
+        if (/sec|sec_degr|section|degree|sec_degr/.test(text)) secColIndex = idx;
+    });
+}
+
 currentFilters[tableType].search = query;
 currentFilters[tableType].filterType = filterType;
 
@@ -6443,9 +6487,9 @@ let found = false;
 
 // Check role filter first
 if (roleFilter) {
-const roleCell = cells[4]; // Role column for both admins and users
-if (roleCell) {
-const roleText = roleCell.textContent.trim().toLowerCase();
+    const roleCell = cells[roleColIndex];
+    if (roleCell) {
+        const roleText = roleCell.textContent.trim().toLowerCase();
 let normalizedRoleFilter = roleFilter.toLowerCase();
 if (normalizedRoleFilter === 'shs') normalizedRoleFilter = 'senior high';
 if (normalizedRoleFilter === 'shs') normalizedRoleFilter = 'senior_high';
@@ -6465,8 +6509,8 @@ continue;
 }
 
 if (gradeFilter) {
-const gradeCell = cells[5];
-const gradeText = gradeCell ? gradeCell.textContent.toLowerCase() : '';
+    const gradeCell = cells[gradeColIndex];
+    const gradeText = gradeCell ? gradeCell.textContent.toLowerCase() : '';
 if (!gradeText.includes(gradeFilter.toLowerCase())) {
 rows[i].style.display = 'none';
 continue;
@@ -6474,7 +6518,7 @@ continue;
 }
 
 if (strandFilter) {
-const sectionText = cells[6] ? cells[6].textContent.toLowerCase() : '';
+    const sectionText = cells[secColIndex] ? cells[secColIndex].textContent.toLowerCase() : '';
 if (!sectionText.includes(strandFilter.toLowerCase())) {
 rows[i].style.display = 'none';
 continue;
@@ -6482,7 +6526,7 @@ continue;
 }
 
 if (degreeFilter) {
-const sectionText = cells[6] ? cells[6].textContent.toLowerCase() : '';
+    const sectionText = cells[secColIndex] ? cells[secColIndex].textContent.toLowerCase() : '';
 if (!sectionText.includes(degreeFilter.toLowerCase())) {
 rows[i].style.display = 'none';
 continue;
@@ -6490,7 +6534,7 @@ continue;
 }
 
 if (deptFilter) {
-const sectionText = cells[6] ? cells[6].textContent.toLowerCase() : '';
+    const sectionText = cells[secColIndex] ? cells[secColIndex].textContent.toLowerCase() : '';
 const deptMatch = deptFilter === 'shs dept'
  ? sectionText.includes('shs')
  : deptFilter === 'college dept'

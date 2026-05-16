@@ -5335,13 +5335,15 @@ faviconLink.href = href;
 
 
 // Current filter states
-let currentFilters = {
-admins: { role: '', grade: '', strand: '', degree: '', dept: '', search: '', filterType: 'unified' },
-all: { role: '', grade: '', strand: '', degree: '', dept: '', search: '', filterType: 'unified' },
-verified: { role: '', grade: '', strand: '', degree: '', dept: '', search: '', filterType: 'unified' },
-'signing-up': { role: '', grade: '', strand: '', degree: '', dept: '', search: '', filterType: 'unified' },
-banned: { role: '', grade: '', strand: '', degree: '', dept: '', search: '', filterType: 'unified' }
+const defaultFilterState = { role: '', grade: '', strand: '', degree: '', dept: '', search: '', filterType: 'unified' };
+let currentFilters = window.currentFilters || {
+  admins: { ...defaultFilterState },
+  all: { ...defaultFilterState },
+  verified: { ...defaultFilterState },
+  'signing-up': { ...defaultFilterState },
+  banned: { ...defaultFilterState }
 };
+window.currentFilters = currentFilters;
 
 function bindSectionFilterSelectors() {
   const sections = ['admins', 'all', 'verified', 'signing-up', 'banned'];
@@ -6394,9 +6396,17 @@ currentFilters[section] = {
  search: query,
  filterType
 };
+window.currentFilters = currentFilters;
+}
+
+function ensureFilterState(tableType) {
+  if (!currentFilters[tableType]) {
+    currentFilters[tableType] = { ...defaultFilterState };
+  }
 }
 
 function filterTable(query, tableType, filterType = 'unified') {
+ensureFilterState(tableType);
 const tableId = tableType === 'admins' ? 'admins-tbody' : `${tableType}-users-tbody`;
 const tbody = document.getElementById(tableId);
 if (!tbody) return;

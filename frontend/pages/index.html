@@ -3362,13 +3362,13 @@ window.supabaseHelpers = {
                };
                reader.readAsDataURL(requiredFile);
            }
-           const existingUserIndex = users.findIndex(u => u.email === email);
+           const existingUserIndex = existingUsers.findIndex(u => u.email === email);
            if (existingUserIndex >= 0) {
-             users[existingUserIndex] = { ...users[existingUserIndex], ...newUser };
+             existingUsers[existingUserIndex] = { ...existingUsers[existingUserIndex], ...newUser };
            } else {
-             users.push(newUser);
+             existingUsers.push(newUser);
            }
-            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('users', JSON.stringify(existingUsers));
 
         // Upload file to Supabase storage if present
            let filePath = null;

@@ -3464,35 +3464,11 @@ function updateNotificationBadge(notifications) {
         badge.style.display = unreadCount > 0 ? 'flex' : 'none';
     }
 
-// Show/hide mark all read button based on unread count
-const markAllBtn = document.querySelector('.mark-all-read-btn');
-if (markAllBtn) {
-markAllBtn.style.display = unreadCount > 0 ? 'flex' : 'none';
-}
-return;
-}
-
-// If notifications passed, count unread
-const readNotifications = JSON.parse(localStorage.getItem('readNotifications')) || [];
-let unreadCount = 0;
-
-notifications.forEach(notif => {
-if (!readNotifications.includes(notif.id)) {
-unreadCount++;
-}
-});
-
-const badge = document.querySelector('.notification-badge');
-if (badge) {
-badge.textContent = unreadCount;
-badge.style.display = unreadCount > 0 ? 'flex' : 'none';
-}
-
-// Show/hide mark all read button based on unread count
-const markAllBtn = document.querySelector('.mark-all-read-btn');
-if (markAllBtn) {
-markAllBtn.style.display = unreadCount > 0 ? 'flex' : 'none';
-}
+    // Show/hide mark all read button based on unread count
+    const markAllBtn = document.querySelector('.mark-all-read-btn');
+    if (markAllBtn) {
+        markAllBtn.style.display = unreadCount > 0 ? 'flex' : 'none';
+    }
 }
 
 function updatePaginationControls() {

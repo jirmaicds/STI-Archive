@@ -1059,19 +1059,26 @@ document.getElementById('signing-up-users-tbody').innerHTML += row;
 
 
 function formatRole(role) {
-if (role === 'senior_high') return 'Senior High';
-if (role === 'college') return 'College';
-if (role === 'admin') return 'Admin';
-if (role === 'coadmin') return 'CO-Admin';
-if (role === 'subadmin') return 'SUB-Admin';
-if (role === 'tester') return 'Tester';
-if (role === 'educator') return 'Educator';
-if (role === 'rejected') return 'Rejected';
-if (role === 'banned') return 'Banned';
+if (!role) return 'User';
+const normalized = role.toString().toLowerCase();
+if (normalized === 'senior_high' || normalized === 'shs') return 'Senior High';
+if (normalized === 'college') return 'College';
+if (normalized === 'educator') return 'Educator';
+if (normalized === 'admin') return 'Admin';
+if (normalized === 'coadmin') return 'CO-Admin';
+if (normalized === 'subadmin') return 'SUB-Admin';
+if (normalized === 'tester') return 'Tester';
+if (normalized === 'rejected') return 'Rejected';
+if (normalized === 'banned') return 'Banned';
 return role; // Default to the original role if not matched
 }
+function getFormattedUserRole(user) {
+const roleValue = (user.role || user.user_type || '').toString().toLowerCase();
+const normalizedRole = roleValue === 'shs' ? 'senior_high' : roleValue;
+return formatRole(normalizedRole || 'User');
+}
 function getSectionDisplay(user) {
-return user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || '-';
+return user.Sec_Degr || user.sec_degr || user.strand || user.section || user.course || user.program || '-';
 }
 function getStrandDegree(user) {
 if (user.role === 'senior_high') {
@@ -3859,19 +3866,21 @@ async function loadStrandUsersForStatus(status, grade, strand) {
 const users = await getUsers();
 const tbody = document.getElementById(status + '-strand-users-tbody');
 tbody.innerHTML = '';
-const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
-status === 'banned' ? user.banned : false;
 users.forEach(user => {
-if (user.role === 'senior_high' && user.grade === 'Grade ' + grade && user.strand === strand && statusFilter) {
+const roleValue = (user.role || user.user_type || '').toString().toLowerCase();
+const normalizedRole = roleValue === 'shs' ? 'senior_high' : roleValue;
+const displayRole = formatRole(normalizedRole);
+const sectionValue = getSectionDisplay(user);
+const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned : status === 'banned' ? user.banned : false;
+if (normalizedRole === 'senior_high' && user.grade === 'Grade ' + grade && user.strand === strand && statusFilter) {
 const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
-const dateHeader = status === 'signing-up' ? 'Date Signed Up' : 'Date Banned';
 let emailToUse = user.personal_email || user.email;
 const row = `<tr>
 <td>${user.user_id || user.id}</td>
 <td>${user.name}</td>
 <td>${emailToUse}</td>
-<td>${user.role}</td>
-<td>${user.Sec_Degr || '-'}</td>
+<td>${displayRole}</td>
+<td>${sectionValue}</td>
 <td>${date}</td>
 <td>${getStatus(user)}</td>
 <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
@@ -3891,17 +3900,21 @@ async function loadDegreeUsersForStatus(status, degree) {
 const users = await getUsers();
 const tbody = document.getElementById(status + '-degree-users-tbody');
 tbody.innerHTML = '';
-const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
-status === 'banned' ? user.banned : false;
 users.forEach(user => {
-if (user.role === 'college' && user.section === degree.toUpperCase() && statusFilter) {
+const roleValue = (user.role || user.user_type || '').toString().toLowerCase();
+const normalizedRole = roleValue === 'shs' ? 'senior_high' : roleValue;
+const displayRole = formatRole(normalizedRole);
+const sectionValue = getSectionDisplay(user);
+const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned : status === 'banned' ? user.banned : false;
+if (normalizedRole === 'college' && user.section === degree.toUpperCase() && statusFilter) {
 const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
 let emailToUse = user.personal_email || user.email;
 const row = `<tr>
 <td>${user.user_id || user.id}</td>
 <td>${user.name}</td>
 <td>${emailToUse}</td>
-<td>${user.role}</td>
+<td>${displayRole}</td>
+<td>${sectionValue}</td>
 <td>${date}</td>
 <td><button class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
 <td>
@@ -3920,18 +3933,21 @@ async function loadDepartmentUsersForStatus(status, dept) {
 const users = await getUsers();
 const tbody = document.getElementById(status + '-department-users-tbody');
 tbody.innerHTML = '';
-const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned :
-status === 'banned' ? user.banned : false;
 users.forEach(user => {
-if (user.role === 'educator' && user.section === 'Department ' + dept.toUpperCase() && statusFilter) {
+const roleValue = (user.role || user.user_type || '').toString().toLowerCase();
+const normalizedRole = roleValue === 'shs' ? 'senior_high' : roleValue;
+const displayRole = formatRole(normalizedRole);
+const sectionValue = getSectionDisplay(user);
+const statusFilter = status === 'signing-up' ? !user.verified && !user.rejected && !user.banned : status === 'banned' ? user.banned : false;
+if (normalizedRole === 'educator' && user.section === 'Department ' + dept.toUpperCase() && statusFilter) {
 const date = formatDate(status === 'verified' ? user.verified_at : user.created_at);
 let emailToUse = user.personal_email || user.email;
 const row = `<tr>
 <td>${user.user_id || user.id}</td>
 <td>${user.name}</td>
 <td>${emailToUse}</td>
-<td>${user.role}</td>
-<td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
+<td>${displayRole}</td>
+<td>${sectionValue}</td>
 <td>
 <button type="button" class="btn btn-danger btn-sm" onclick="removeUser('${user.user_id || user.id}')">Remove</button>
 </td>
@@ -3971,14 +3987,18 @@ const users = await getUsers();
 const tbody = document.getElementById('strand-users-tbody');
 tbody.innerHTML = '';
 users.forEach(user => {
-if (user.role === 'senior_high' && user.grade === 'Grade ' + grade && user.strand === strand) {
+const roleValue = (user.role || user.user_type || '').toString().toLowerCase();
+const normalizedRole = roleValue === 'shs' ? 'senior_high' : roleValue;
+const displayRole = formatRole(normalizedRole);
+const sectionValue = getSectionDisplay(user);
+if (normalizedRole === 'senior_high' && user.grade === 'Grade ' + grade && user.strand === strand) {
 const date = formatDate(user.verified ? user.verified_at : user.created_at);
 const row = `<tr>
 <td>${user.user_id || user.id}</td>
 <td>${user.name}</td>
 <td>${user.email}</td>
-<td>${user.role}</td>
-<td>${user.Sec_Degr || '-'}</td>
+<td>${displayRole}</td>
+<td>${sectionValue}</td>
 <td>${date}</td>
 <td>${getStatus(user)}</td>
 <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
@@ -4000,14 +4020,18 @@ const users = await getUsers();
 const tbody = document.getElementById('degree-users-tbody');
 tbody.innerHTML = '';
 users.forEach(user => {
-if (user.role === 'college' && user.section === degree.toUpperCase()) {
+const roleValue = (user.role || user.user_type || '').toString().toLowerCase();
+const normalizedRole = roleValue === 'shs' ? 'senior_high' : roleValue;
+const displayRole = formatRole(normalizedRole);
+const sectionValue = getSectionDisplay(user);
+if (normalizedRole === 'college' && user.section === degree.toUpperCase()) {
 const date = formatDate(user.verified ? user.verified_at : user.created_at);
 const row = `<tr>
 <td>${user.user_id || user.id}</td>
 <td>${user.name}</td>
 <td>${user.email}</td>
-<td>${user.role}</td>
-<td>${user.Sec_Degr || '-'}</td>
+<td>${displayRole}</td>
+<td>${sectionValue}</td>
 <td>${date}</td>
 <td>${getStatus(user)}</td>
 <td>${user.raf_path || ''} / ${user.educator_id || ''}</td>
@@ -4024,13 +4048,18 @@ const users = await getUsers();
 const tbody = document.getElementById('department-users-tbody');
 tbody.innerHTML = '';
 users.forEach(user => {
-if (user.role === 'educator' && user.section === 'Department ' + dept.toUpperCase()) {
+const roleValue = (user.role || user.user_type || '').toString().toLowerCase();
+const normalizedRole = roleValue === 'shs' ? 'senior_high' : roleValue;
+const displayRole = formatRole(normalizedRole);
+const sectionValue = getSectionDisplay(user);
+if (normalizedRole === 'educator' && user.section === 'Department ' + dept.toUpperCase()) {
 const date = formatDate(user.verified ? user.verified_at : user.created_at);
 const row = `<tr>
 <td>${user.user_id || user.id}</td>
 <td>${user.name}</td>
 <td>${user.email}</td>
-<td>${user.role}</td>
+<td>${displayRole}</td>
+<td>${sectionValue}</td>
 <td>${date}</td>
 <td><button class="btn btn-sm" onclick="previewRaf('${user.raf_path || ''}')">Preview</button></td>
 <td>
@@ -5307,11 +5336,24 @@ faviconLink.href = href;
 
 // Current filter states
 let currentFilters = {
-admins: { role: '', search: '', filterType: 'unified' },
-verified: { role: '', search: '', filterType: 'unified' },
-'signing-up': { role: '', search: '', filterType: 'unified' },
-banned: { role: '', search: '', filterType: 'unified' }
+admins: { role: '', grade: '', strand: '', degree: '', dept: '', search: '', filterType: 'unified' },
+all: { role: '', grade: '', strand: '', degree: '', dept: '', search: '', filterType: 'unified' },
+verified: { role: '', grade: '', strand: '', degree: '', dept: '', search: '', filterType: 'unified' },
+'signing-up': { role: '', grade: '', strand: '', degree: '', dept: '', search: '', filterType: 'unified' },
+banned: { role: '', grade: '', strand: '', degree: '', dept: '', search: '', filterType: 'unified' }
 };
+
+function bindSectionFilterSelectors() {
+  const sections = ['admins', 'all', 'verified', 'signing-up', 'banned'];
+  const filterNames = ['grade', 'strand', 'degree', 'dept', 'search-filter'];
+  sections.forEach(section => {
+    filterNames.forEach(name => {
+      const el = document.getElementById(`${name}-filter-${section}`);
+      if (el) el.addEventListener('change', () => updateFilters(section));
+    });
+  });
+}
+window.addEventListener('load', bindSectionFilterSelectors);
 
 // Bulk actions functions
 function toggleSelectAll(status) {
@@ -6313,31 +6355,45 @@ const strandSelect = document.getElementById(`strand-filter-${section}`);
 const degreeSelect = document.getElementById(`degree-filter-${section}`);
 const deptSelect = document.getElementById(`dept-filter-${section}`);
 
-const selectedRole = roleSelect.value;
+const selectedRole = roleSelect ? roleSelect.value : '';
+const selectedGrade = gradeSelect ? gradeSelect.value : '';
+const selectedStrand = strandSelect ? strandSelect.value : '';
+const selectedDegree = degreeSelect ? degreeSelect.value : '';
+const selectedDept = deptSelect ? deptSelect.value : '';
 
 // Hide all dynamic selects first
-gradeSelect.style.display = 'none';
-strandSelect.style.display = 'none';
-degreeSelect.style.display = 'none';
-deptSelect.style.display = 'none';
+if (gradeSelect) gradeSelect.style.display = 'none';
+if (strandSelect) strandSelect.style.display = 'none';
+if (degreeSelect) degreeSelect.style.display = 'none';
+if (deptSelect) deptSelect.style.display = 'none';
 
 // Show relevant selects based on role
 if (selectedRole === 'shs') {
-gradeSelect.style.display = 'block';
-strandSelect.style.display = 'block';
+ if (gradeSelect) gradeSelect.style.display = 'block';
+ if (strandSelect) strandSelect.style.display = 'block';
 } else if (selectedRole === 'college') {
-degreeSelect.style.display = 'block';
+ if (degreeSelect) degreeSelect.style.display = 'block';
 } else if (selectedRole === 'educator') {
-deptSelect.style.display = 'block';
+ if (deptSelect) deptSelect.style.display = 'block';
 }
 
-// Apply role filter
+// Apply filters and search
 const searchInput = document.querySelector(`#${section}-section input[onkeyup*="filterTable"]`);
-const filterType = document.getElementById(`search-filter-${section}`).value;
-filterTable(searchInput ? searchInput.value : '', section, filterType);
+const filterTypeEl = document.getElementById(`search-filter-${section}`);
+const filterType = filterTypeEl ? filterTypeEl.value : 'unified';
+const query = searchInput ? searchInput.value : (currentFilters[section]?.search || '');
+filterTable(query, section, filterType);
 
 // Store current filter state
-currentFilters[section].role = selectedRole;
+currentFilters[section] = {
+ role: selectedRole,
+ grade: selectedGrade,
+ strand: selectedStrand,
+ degree: selectedDegree,
+ dept: selectedDept,
+ search: query,
+ filterType
+};
 }
 
 function filterTable(query, tableType, filterType = 'unified') {
@@ -6345,13 +6401,24 @@ const tableId = tableType === 'admins' ? 'admins-tbody' : `${tableType}-users-tb
 const tbody = document.getElementById(tableId);
 if (!tbody) return;
 
-// Store current filter state
+const searchFilterEl = document.getElementById(`search-filter-${tableType}`);
+const roleFilterEl = document.getElementById(`role-filter-${tableType}`);
+const gradeFilterEl = document.getElementById(`grade-filter-${tableType}`);
+const strandFilterEl = document.getElementById(`strand-filter-${tableType}`);
+const degreeFilterEl = document.getElementById(`degree-filter-${tableType}`);
+const deptFilterEl = document.getElementById(`dept-filter-${tableType}`);
+
+const roleFilter = roleFilterEl ? roleFilterEl.value : '';
+const gradeFilter = gradeFilterEl ? gradeFilterEl.value : '';
+const strandFilter = strandFilterEl ? strandFilterEl.value : '';
+const degreeFilter = degreeFilterEl ? degreeFilterEl.value : '';
+const deptFilter = deptFilterEl ? deptFilterEl.value : '';
+
 currentFilters[tableType].search = query;
 currentFilters[tableType].filterType = filterType;
 
 const rows = tbody.getElementsByTagName('tr');
 const filter = query.toLowerCase();
-const roleFilter = document.getElementById(`role-filter-${tableType}`).value;
 
 for (let i = 0; i < rows.length; i++) {
 const cells = rows[i].getElementsByTagName('td');
@@ -6361,20 +6428,60 @@ let found = false;
 if (roleFilter) {
 const roleCell = cells[4]; // Role column for both admins and users
 if (roleCell) {
-const roleText = roleCell.textContent.trim();
+const roleText = roleCell.textContent.trim().toLowerCase();
+let normalizedRoleFilter = roleFilter.toLowerCase();
+if (normalizedRoleFilter === 'shs') normalizedRoleFilter = 'senior high';
+if (normalizedRoleFilter === 'shs') normalizedRoleFilter = 'senior_high';
 if (tableType === 'admins') {
-const expectedText = roleFilter === 'admin' ? 'Admin' : roleFilter === 'co-admin' ? 'Co-Admin' : roleFilter === 'sub-admin' ? 'Sub-Admin' : '';
+const expectedText = roleFilter === 'admin' ? 'admin' : roleFilter === 'co-admin' ? 'co-admin' : roleFilter === 'sub-admin' ? 'sub-admin' : '';
 if (expectedText && roleText !== expectedText) {
 rows[i].style.display = 'none';
 continue;
 }
 } else {
-// For other tables, check if roleText includes the filter value
-if (!roleText.toLowerCase().includes(roleFilter.toLowerCase())) {
+if (!roleText.includes(normalizedRoleFilter)) {
 rows[i].style.display = 'none';
 continue;
 }
 }
+}
+}
+
+if (gradeFilter) {
+const gradeCell = cells[5];
+const gradeText = gradeCell ? gradeCell.textContent.toLowerCase() : '';
+if (!gradeText.includes(gradeFilter.toLowerCase())) {
+rows[i].style.display = 'none';
+continue;
+}
+}
+
+if (strandFilter) {
+const sectionText = cells[6] ? cells[6].textContent.toLowerCase() : '';
+if (!sectionText.includes(strandFilter.toLowerCase())) {
+rows[i].style.display = 'none';
+continue;
+}
+}
+
+if (degreeFilter) {
+const sectionText = cells[6] ? cells[6].textContent.toLowerCase() : '';
+if (!sectionText.includes(degreeFilter.toLowerCase())) {
+rows[i].style.display = 'none';
+continue;
+}
+}
+
+if (deptFilter) {
+const sectionText = cells[6] ? cells[6].textContent.toLowerCase() : '';
+const deptMatch = deptFilter === 'shs dept'
+ ? sectionText.includes('shs')
+ : deptFilter === 'college dept'
+ ? sectionText.includes('college')
+ : sectionText.includes(deptFilter.toLowerCase());
+if (!deptMatch) {
+rows[i].style.display = 'none';
+continue;
 }
 }
 
@@ -6387,17 +6494,14 @@ break;
 }
 }
 } else if (filterType === 'fullname' && cells.length > 2) {
-// Full Name column (index 2)
 if (cells[2].textContent.toLowerCase().includes(filter)) {
 found = true;
 }
 } else if (filterType === 'userid' && cells.length > 1) {
-// User ID column (index 1)
 if (cells[1].textContent.toLowerCase().includes(filter)) {
 found = true;
 }
 } else if (filterType === 'email' && cells.length > 3) {
-// Email column (index 3)
 if (cells[3].textContent.toLowerCase().includes(filter)) {
 found = true;
 }
@@ -6407,7 +6511,7 @@ rows[i].style.display = found ? '' : 'none';
 }
 
 // Reset pagination to page 1 and paginate
-const paginationDiv = document.getElementById(`${tableType === 'admins' ? 'admins' : tableType}-pagination`);
+const paginationDiv = document.getElementById(`${tableType === 'admins' ? 'admins' : tableType}-users-pagination`);
 if (paginationDiv) {
 paginationDiv.dataset.currentPage = 1;
 paginateTable(tableId, 10);

@@ -101,8 +101,8 @@ async function handleGetUsers(req, res) {
         }));
         return;
       }
-      const defaultSelectFields = 'id, email, fullname, role, user_type, verified, new_user, rejected, banned, created_at, updated_at, grade, Sec_Degr, strand, section';
-      const noMetaSelectFields = 'id, email, fullname, role, user_type, verified, new_user, rejected, banned, grade, Sec_Degr, strand, section';
+      const defaultSelectFields = 'id, email, fullname, role, user_type, verified, new_user, rejected, banned, created_at, updated_at, grade, Sec_degr, strand, section';
+      const noMetaSelectFields = 'id, email, fullname, role, user_type, verified, new_user, rejected, banned, grade, Sec_degr, strand, section';
       let query = supabase
         .from('users')
         .select(defaultSelectFields, { count: 'exact' });
@@ -354,10 +354,10 @@ async function handleUpdateUser(req, res) {
        if (new_user !== undefined) updateData.new_user = new_user;
        if (rejected !== undefined) updateData.rejected = rejected;
        if (banned !== undefined) updateData.banned = banned;
-       // Add grade and Sec_Degr fields for updates
+       // Add grade and sec_degr fields for updates
        if (req.body.grade !== undefined) updateData.grade = req.body.grade;
-       if (req.body.Sec_Degr !== undefined) updateData.Sec_Degr = req.body.Sec_Degr;
-       if (req.body.section_degree !== undefined) updateData.Sec_Degr = req.body.section_degree;
+       if (req.body.Sec_Degr !== undefined) updateData.sec_degr = req.body.Sec_Degr;
+       if (req.body.section_degree !== undefined) updateData.sec_degr = req.body.section_degree;
        if (req.body.section !== undefined) updateData.section = req.body.section;
        if (req.body.strand !== undefined) updateData.strand = req.body.strand;
 

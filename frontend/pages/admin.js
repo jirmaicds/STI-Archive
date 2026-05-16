@@ -5342,7 +5342,7 @@ faviconLink.href = href;
 
 
 // Current filter states
-const defaultFilterState = { role: '', grade: '', strand: '', degree: '', dept: '', search: '', filterType: 'unified' };
+const defaultFilterState = { role: '', grade: '', strand: '', degree: '', dept: '', status: '', search: '', filterType: 'unified' };
 let currentFilters = window.currentFilters || {
   admins: { ...defaultFilterState },
   all: { ...defaultFilterState },
@@ -5354,7 +5354,7 @@ window.currentFilters = currentFilters;
 
 function bindSectionFilterSelectors() {
   const sections = ['admins', 'all', 'verified', 'signing-up', 'banned'];
-  const filterNames = ['grade', 'strand', 'degree', 'dept', 'search-filter'];
+  const filterNames = ['role', 'grade', 'strand', 'degree', 'dept', 'status', 'search'];
   sections.forEach(section => {
     filterNames.forEach(name => {
       const el = document.getElementById(`${name}-filter-${section}`);
@@ -6392,12 +6392,14 @@ const gradeSelect = document.getElementById(`grade-filter-${section}`);
 const strandSelect = document.getElementById(`strand-filter-${section}`);
 const degreeSelect = document.getElementById(`degree-filter-${section}`);
 const deptSelect = document.getElementById(`dept-filter-${section}`);
+const statusSelect = document.getElementById(`status-filter-${section}`);
 
 const selectedRole = roleSelect ? roleSelect.value : '';
 const selectedGrade = gradeSelect ? gradeSelect.value : '';
 const selectedStrand = strandSelect ? strandSelect.value : '';
 const selectedDegree = degreeSelect ? degreeSelect.value : '';
 const selectedDept = deptSelect ? deptSelect.value : '';
+const selectedStatus = statusSelect ? statusSelect.value : '';
 
 // Hide all dynamic selects first
 if (gradeSelect) gradeSelect.style.display = 'none';
@@ -6429,6 +6431,7 @@ currentFilters[section] = {
  strand: selectedStrand,
  degree: selectedDegree,
  dept: selectedDept,
+ status: selectedStatus,
  search: query,
  filterType
 };
@@ -6448,23 +6451,27 @@ const tbody = document.getElementById(tableId);
 if (!tbody) return;
 
 const searchFilterEl = document.getElementById(`search-filter-${tableType}`);
+const searchFilterEl = document.getElementById(`search-filter-${tableType}`);
 const roleFilterEl = document.getElementById(`role-filter-${tableType}`);
 const gradeFilterEl = document.getElementById(`grade-filter-${tableType}`);
 const strandFilterEl = document.getElementById(`strand-filter-${tableType}`);
 const degreeFilterEl = document.getElementById(`degree-filter-${tableType}`);
 const deptFilterEl = document.getElementById(`dept-filter-${tableType}`);
+const statusFilterEl = document.getElementById(`status-filter-${tableType}`);
 
 const roleFilter = roleFilterEl ? roleFilterEl.value : '';
 const gradeFilter = gradeFilterEl ? gradeFilterEl.value : '';
 const strandFilter = strandFilterEl ? strandFilterEl.value : '';
 const degreeFilter = degreeFilterEl ? degreeFilterEl.value : '';
 const deptFilter = deptFilterEl ? deptFilterEl.value : '';
+const statusFilter = statusFilterEl ? statusFilterEl.value : '';
 
 // Determine column indices by header text to make filtering resilient across table layouts
 const table = tbody.closest('table');
 let roleColIndex = 4; // defaults
 let gradeColIndex = 5;
 let secColIndex = 6;
+let statusColIndex = 7;
 if (table) {
     const headers = Array.from(table.querySelectorAll('th'));
     headers.forEach((th, idx) => {
@@ -6472,11 +6479,13 @@ if (table) {
         if (/role/.test(text)) roleColIndex = idx;
         if (/grade/.test(text)) gradeColIndex = idx;
         if (/sec|sec_degr|section|degree|sec_degr/.test(text)) secColIndex = idx;
+        if (/status/.test(text)) statusColIndex = idx;
     });
 }
 
 currentFilters[tableType].search = query;
 currentFilters[tableType].filterType = filterType;
+currentFilters[tableType].status = statusFilter;
 
 const rows = tbody.getElementsByTagName('tr');
 const filter = query.toLowerCase();
@@ -6546,6 +6555,14 @@ continue;
 }
 }
 
+if (statusFilter) {
+    const statusText = cells[statusColIndex] ? cells[statusColIndex].textContent.toLowerCase() : '';
+    if (!statusText.includes(statusFilter.toLowerCase())) {
+        rows[i].style.display = 'none';
+        continue;
+    }
+}
+
 if (filterType === 'unified') {
 // Search in all relevant columns
 for (let j = 0; j < cells.length; j++) {
@@ -6584,7 +6601,8 @@ const tbody = document.getElementById(tbodyId);
 if (!tbody) return;
 
 const rows = Array.from(tbody.querySelectorAll('tr'));
-const totalPages = Math.ceil(rows.length / rowsPerPage);
+const visibleRows = rows.filter(row => row.style.display !== 'none');
+const totalPages = Math.ceil(visibleRows.length / rowsPerPage);
 const paginationDiv = document.getElementById(tbodyId.replace('-tbody', '-pagination'));
 if (!paginationDiv) return;
 
@@ -6593,10 +6611,16 @@ if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
 if (currentPage < 1) currentPage = 1;
 paginationDiv.dataset.currentPage = currentPage;
 
-// Show only current page rows
-rows.forEach((row, index) => {
-const page = Math.floor(index / rowsPerPage) + 1;
-row.style.display = page === currentPage ? '' : 'none';
+// Hide all rows first, then show only current page visible rows
+rows.forEach(row => {
+  row.style.display = 'none';
+});
+
+visibleRows.forEach((row, index) => {
+  const page = Math.floor(index / rowsPerPage) + 1;
+  if (page === currentPage) {
+    row.style.display = '';
+  }
 });
 
 // Generate pagination buttons (always visible)
@@ -6643,10 +6667,10 @@ const nextDisabledAttr = nextDisabled ? ' disabled' : '';
 buttons += `<button class="${nextClass}"${nextDisabledAttr} ${nextOnClick}>Next</button>`;
 
 // Add page info
-const startRecord = (currentPage - 1) * rowsPerPage + 1;
-const endRecord = Math.min(currentPage * rowsPerPage, rows.length);
+const startRecord = visibleRows.length > 0 ? (currentPage - 1) * rowsPerPage + 1 : 0;
+const endRecord = visibleRows.length > 0 ? Math.min(currentPage * rowsPerPage, visibleRows.length) : 0;
 const infoText = totalPages > 0 ?
-`Showing ${startRecord}-${endRecord} of ${rows.length} records` :
+`Showing ${startRecord}-${endRecord} of ${visibleRows.length} records` :
 'No records to display';
 
 buttons += `<span class="pagination-info" style="margin-left: 15px; font-size: 12px; color: #666;">${infoText}</span>`;

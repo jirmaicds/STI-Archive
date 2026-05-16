@@ -393,15 +393,19 @@ modal.style.display = 'none';
 
 // === SETTINGS FUNCTIONS ===
 function showSettingsSection(section) {
-document.querySelectorAll('.settings-subsection').forEach(sub => sub.classList.remove('active'));
-document.getElementById(section + '-settings').classList.add('active');
+    document.querySelectorAll('.settings-subsection').forEach(sub => sub.classList.remove('active'));
+    document.getElementById(section + '-settings').classList.add('active');
 
-// Update sidebar active color
-const sections = ['account', 'terms-conditions', 'privacy-policy'];
-const index = sections.indexOf(section);
-document.querySelectorAll('.settings-sidebar li').forEach((li, i) => {
-li.style.color = i === index ? '#007bff' : '';
-});
+    // Update settings sidebar active state
+    const sections = ['account', 'terms-conditions', 'privacy-policy'];
+    const index = sections.indexOf(section);
+    document.querySelectorAll('.settings-sidebar li').forEach((li, i) => {
+        if (i === index) {
+            li.classList.add('active');
+        } else {
+            li.classList.remove('active');
+        }
+    });
 }
 
 // === UTILS ===
@@ -2486,25 +2490,19 @@ roleDisplay = 'Sub-Admin';
 roleDisplay = (roleLower === 'coadmin' ? 'Co-Admin' : roleLower === 'subadmin' ? 'Sub-Admin' : 'Admin');
 }
 let badgeClass;
-let permissions;
 if (user.fullname === 'admin2' || user.fullname === 'Admin2') {
-badgeClass = 'badge-coadmin';
-permissions = 'Limited Access - User & File Management';
+    badgeClass = 'badge-coadmin';
 } else if (user.fullname === 'admin3' || user.fullname === 'Admin3') {
-badgeClass = 'badge-subadmin';
-permissions = 'User Approver - Accept/Reject Registrations';
+    badgeClass = 'badge-subadmin';
 } else {
-badgeClass = roleLower === 'coadmin' ? 'badge-coadmin' : roleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
-permissions = user.permissions || (roleLower === 'admin' ? 'Full Access - All Features' : roleLower === 'coadmin' ? 'Limited Access - User & File Management' : roleLower === 'subadmin' ? 'User Approver - Accept/Reject Registrations' : 'Full Access');
+    badgeClass = roleLower === 'coadmin' ? 'badge-coadmin' : roleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
 }
 const adminRow = `<tr>
 <td><input type="checkbox" class="user-checkbox" data-user-id="${user.id}"></td>
 <td>${user.user_id || user.id}</td>
 <td>${getUserName(user)}</td>
 <td>${user.email || 'N/A'}</td>
-
 <td><span class="badge ${badgeClass}">${roleDisplay}</span></td>
-<td>${permissions}</td>
 <td>${formatDate(user.created_at)}</td>
 <td>
 <div style="display: flex; flex-direction: column; gap: 4px;">
@@ -2578,23 +2576,19 @@ let secDegr = user.Sec_Degr;
 let roleDisplay = formatRole(user.role);
 if (isAdmin) {
     let badgeClass;
-    let permissions;
     if (user.fullname === 'admin2' || user.fullname === 'Admin2') {
         badgeClass = 'badge-coadmin';
-        permissions = 'Limited Access - User & File Management';
         roleDisplay = 'Co-Admin';
     } else if (user.fullname === 'admin3' || user.fullname === 'Admin3') {
         badgeClass = 'badge-subadmin';
-        permissions = 'User Approver - Accept/Reject Registrations';
         roleDisplay = 'Sub-Admin';
     } else {
         badgeClass = roleLower === 'coadmin' ? 'badge-coadmin' : roleLower === 'subadmin' ? 'badge-subadmin' : 'badge-admin';
-        permissions = user.permissions || (roleLower === 'admin' ? 'Full Access - All Features' : roleLower === 'coadmin' ? 'Limited Access - User & File Management' : roleLower === 'subadmin' ? 'User Approver - Accept/Reject Registrations' : 'Full Access');
         roleDisplay = (roleLower === 'coadmin' ? 'Co-Admin' : roleLower === 'subadmin' ? 'Sub-Admin' : 'Admin');
     }
     actions = `<div style="display: flex; flex-direction: column; gap: 4px;"><button class="btn btn-info btn-sm" onclick="openEditUserModal(this, '${userId}')">Edit</button><button class="btn btn-danger btn-sm" onclick="removeUser('${userId}', '${getUserName(user)}')">Remove</button></div>`;
-    grade = 'N/A';
-    secDegr = permissions;
+    grade = user.grade || 'N/A';
+    secDegr = user.Sec_Degr || 'N/A';
     date = formatDate(user.created_at);
 } else {
     if (user.verified && !user.banned) {
@@ -3065,7 +3059,7 @@ const modal = document.getElementById('notification-modal');
 if (modal) modal.style.display = 'none';
 
 try {
-document.querySelectorAll('.content-section').forEach(s => { s.classList.remove('active'); s.style.display = ''; });
+document.querySelectorAll('.content-section').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
 const section = document.getElementById(sectionId);
 if (section) {
     section.classList.add('active');
@@ -3292,6 +3286,7 @@ function loadAllNotifications() {
         if (DEBUG) console.log('Users loaded for notifications:', users.length);
         const notifications = generateNotifications(users);
         if (DEBUG) console.log('Notifications generated:', notifications.length);
+        updateNotificationBadge(notifications);
         const allNotificationsContainer = document.getElementById('all-notifications-list');
         const paginationControls = document.getElementById('pagination-controls');
         const pageNumbers = document.getElementById('page-numbers');

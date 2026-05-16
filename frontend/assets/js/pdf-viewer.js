@@ -402,17 +402,17 @@ function displayArticlePDF(pdfPath, title) {
             </style>
             <div style="
                 position: relative;
-                width: min(1200px, 100%);
+                width: min(1100px, 100%);
                 max-width: 100%;
-                height: min(850px, 100%);
-                background: ${colors.innerBg};
+                max-height: calc(100vh - 40px);
+                margin: auto;
                 overflow: hidden;
+                background: ${colors.innerBg};
                 display: flex;
                 flex-direction: column;
                 border-radius: 16px;
                 box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-            ">
-                <div style="
+            ">                <div style="
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
@@ -660,6 +660,7 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
                         <button id="pdf-search-next" title="Next match" style="padding:8px 10px;border:none;border-radius:4px;background:${colors.btnBg};color:${colors.btnColor};cursor:pointer;">▶</button>
                     </div>
                     <span id="pdf-search-count" style="font-size:13px;color:${colors.countColor};min-width:110px;text-align:right;">&nbsp;</span>
+                    <span id="pdf-page-indicator" style="font-size:13px;color:${colors.countColor};min-width:110px;text-align:right;">Page 1 of 1</span>
                 </div>
                 <div id="pdf-viewer-canvas-container" class="pdf-canvas-container" style="flex:1;overflow:auto;background:${colors.canvasBg};text-align:center;padding:20px;-webkit-overflow-scrolling:touch;width:100%;min-height:0;"></div>
             </div>`;

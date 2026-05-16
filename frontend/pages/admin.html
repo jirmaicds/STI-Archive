@@ -2308,6 +2308,17 @@
         .notifications-subsection.active {
             display: block;
         }
+        .settings-sidebar li {
+            color: #333;
+            transition: color 0.2s ease;
+        }
+        .settings-sidebar li:hover {
+            color: #000;
+        }
+        .settings-sidebar li.active {
+            color: #000;
+            font-weight: 600;
+        }
         @media (max-width: 768px) {
             .users-section table {
                 font-size: 12px;
@@ -3970,7 +3981,7 @@
                 <div style="display: flex;">
                     <div class="settings-sidebar" style="width: 200px; padding: 20px; background-color: #f8f9fa; border-right: 1px solid #ddd;">
                         <ul style="list-style: none; padding: 0;">
-                            <li style="padding: 10px 0; cursor: pointer; color: #007bff;" onclick="showSettingsSection('account')">Account</li>
+                            <li style="padding: 10px 0; cursor: pointer;" onclick="showSettingsSection('account')">Account</li>
                             <li onclick="showSettingsSection('terms-conditions')" style="cursor: pointer; padding-top: 10px; padding-bottom: 10px;">Terms & Conditions</li>
                             <li onclick="showSettingsSection('privacy-policy')" style="cursor: pointer; padding-top: 10px;">Privacy Policy</li>
                         </ul>

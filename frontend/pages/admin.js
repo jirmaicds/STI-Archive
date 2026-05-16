@@ -7,6 +7,11 @@
         // Supabase script creates global supabase object, just initialize it
         window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Ensure global stub exists so early calls won't throw; real implementation overwrites later
+if (typeof window !== 'undefined' && typeof window.updateNotificationBadge === 'undefined') {
+    window.updateNotificationBadge = function() { /* stub until real implementation loads */ };
+}
+
         // Utility functions needed early
         function extractLastname(fullname) {
             const names = fullname.trim().split(/\\s+/);
@@ -2581,8 +2586,8 @@ let emailToUse = user.personal_email || user.email;
 let grade = user.grade;
 let secDegr = user.Sec_Degr;
 let roleDisplay = formatRole(user.role);
+let badgeClass = '';
 if (isAdmin) {
-    let badgeClass;
     if (user.fullname === 'admin2' || user.fullname === 'Admin2') {
         badgeClass = 'badge-coadmin';
         roleDisplay = 'Co-Admin';
@@ -3477,6 +3482,8 @@ function updateNotificationBadge(notifications) {
         markAllBtn.style.display = unreadCount > 0 ? 'flex' : 'none';
     }
 }
+// Ensure function is available globally for early callers
+if (typeof window !== 'undefined') window.updateNotificationBadge = updateNotificationBadge;
 
 function updatePaginationControls() {
 const paginationControls = document.getElementById('pagination-controls');

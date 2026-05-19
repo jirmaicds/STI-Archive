@@ -6451,7 +6451,6 @@ const tbody = document.getElementById(tableId);
 if (!tbody) return;
 
 const searchFilterEl = document.getElementById(`search-filter-${tableType}`);
-const searchFilterEl = document.getElementById(`search-filter-${tableType}`);
 const roleFilterEl = document.getElementById(`role-filter-${tableType}`);
 const gradeFilterEl = document.getElementById(`grade-filter-${tableType}`);
 const strandFilterEl = document.getElementById(`strand-filter-${tableType}`);

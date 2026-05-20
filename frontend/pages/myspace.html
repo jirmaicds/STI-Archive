@@ -723,6 +723,12 @@
         display: flex !important;
         padding: 20px 20px 0 20px;
       }
+
+      .editor.fullscreen {
+        flex: 0 0 100% !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
     }
 
     @media (max-width: 1023px) {
@@ -3658,6 +3664,11 @@ color: #ffd700;
                 // Expand file-viewer to 100%, hide editor
                 fileViewer.classList.add('expanded');
                 editor.classList.add('collapsed');
+                editor.style.display = 'none';
+                fileViewer.style.display = 'flex';
+                fileViewer.style.flex = '0 0 100%';
+                fileViewer.style.width = '100%';
+                fileViewer.style.maxWidth = '100%';
                 // Move panel to right and show it
                 togglePanel.classList.add('right', 'no-right-space');
                 togglePanel.classList.remove('left', 'no-left-space');
@@ -3676,6 +3687,11 @@ color: #ffd700;
                 // Reset
                 fileViewer.classList.remove('expanded');
                 editor.classList.remove('collapsed');
+                fileViewer.style.display = 'flex';
+                fileViewer.style.flex = '0 0 50%';
+                fileViewer.style.width = '50%';
+                fileViewer.style.maxWidth = '50%';
+                editor.style.display = 'flex';
 
                 togglePanel.classList.remove('right', 'no-right-space');
                 // Reset button width
@@ -3752,6 +3768,7 @@ color: #ffd700;
             if (editor) {
                 editor.classList.remove('fullscreen', 'collapsed');
                 editor.classList.add('visible');
+                editor.classList.remove('hidden');
                 editor.style.display = 'flex';
                 editor.style.position = 'relative';
                 editor.style.width = '50%';
@@ -3766,6 +3783,7 @@ color: #ffd700;
 
             if (fileViewer) {
                 fileViewer.classList.remove('expanded');
+                fileViewer.classList.remove('hidden');
                 fileViewer.style.display = 'flex';
                 fileViewer.style.position = 'relative';
                 fileViewer.style.width = '50%';
@@ -3806,6 +3824,12 @@ color: #ffd700;
                 toggleState = 'editor';
 
                 editor.classList.add('fullscreen');
+                editor.classList.remove('collapsed');
+                editor.style.display = 'flex';
+                editor.style.flex = '0 0 100%';
+                editor.style.width = '100%';
+                editor.style.maxWidth = '100%';
+                fileViewer.classList.add('hidden');
                 fileViewer.style.display = 'none';
 
                 togglePanel.classList.add('left', 'no-left-space');

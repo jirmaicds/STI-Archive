@@ -237,6 +237,18 @@ window.supabaseHelpers = {
                     z-index: 9999;
                 }
             }
+
+            @media (min-width: 591px) and (max-width: 767px) {
+                #siteFooter, .site-footer {
+                    width: 100vw !important;
+                    max-width: none !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                    margin: 0 !important;
+                    padding-left: 0 !important;
+                    padding-right: 0 !important;
+                }
+            }
             /* Larger screens - footer below content */
             @media (min-width: 768px) {
                 #siteFooter, .site-footer {

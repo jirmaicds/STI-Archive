@@ -360,6 +360,7 @@
             margin-top: 80px;
             padding: 20px 50px 0 50px;
             height: calc(100% - 80px);
+            min-height: calc(100vh - 80px);
             background-color: #f8f9fa;
             transition: margin-left 0.3s;
             overflow-y: auto;
@@ -851,9 +852,11 @@
         
         .content-section {
             display: none;
+            visibility: hidden;
         }
         .content-section.active {
-            display: block;
+            display: block !important;
+            visibility: visible !important;
         }
         .users-section, .settings-section, .notifications-section, .upload-section, .request-section {
             background-color: white;

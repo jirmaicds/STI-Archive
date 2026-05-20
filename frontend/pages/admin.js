@@ -3071,38 +3071,66 @@ const modal = document.getElementById('notification-modal');
 if (modal) modal.style.display = 'none';
 
 try {
-document.querySelectorAll('.content-section').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
-const section = document.getElementById(sectionId);
-if (section) {
-    section.classList.add('active');
-    section.style.display = 'block'; // Ensure visibility
-    if (DEBUG) console.log('Section activated:', sectionId);
-} else {
-    console.error('Section not found:', sectionId);
-    alert('Section not found: ' + sectionId);
-    return;
-}
+    document.querySelectorAll('.content-section').forEach(s => {
+        s.classList.remove('active');
+        s.style.display = 'none';
+        s.style.visibility = 'hidden';
+    });
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.classList.add('active');
+        section.style.display = 'block';
+        section.style.visibility = 'visible';
+        section.scrollIntoView({ behavior: 'auto', block: 'start' });
+        if (DEBUG) console.log('Section activated:', sectionId);
+    } else {
+        console.error('Section not found:', sectionId);
+        alert('Section not found: ' + sectionId);
+        return;
+    }
 
-// Update sidebar active state
-document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
-const activeLink = document.querySelector(`.sidebar ul li a[data-section="${sectionId}"]`);
-if (activeLink) {
-activeLink.closest('li').classList.add('active');
-}
+    const pageTitleMap = {
+        dashboard: 'Dashboard',
+        users: 'Users',
+        upload: 'Upload',
+        notifications: 'Notifications',
+        settings: 'Settings',
+        profile: 'Profile'
+    };
+    const pageTitle = document.getElementById('page-title');
+    if (pageTitle && pageTitleMap[sectionId]) {
+        pageTitle.textContent = pageTitleMap[sectionId];
+    }
 
-// Special handling for notifications section
-if (sectionId === 'notifications') {
-    try {
-        loadAllNotifications();
-    } catch (error) {
-        console.error('Error in showSection for notifications:', error);
-        const debugDiv = document.getElementById('notification-debug');
-        if (debugDiv) {
-            debugDiv.innerHTML = 'Error showing notifications section: ' + error.message;
-            debugDiv.style.display = 'block';
+    // Update sidebar active state
+    document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
+    const activeLink = document.querySelector(`.sidebar ul li a[data-section="${sectionId}"]`);
+    if (activeLink) {
+        activeLink.closest('li').classList.add('active');
+    }
+
+    // Special handling for notifications section
+    if (sectionId === 'notifications') {
+        try {
+            loadAllNotifications();
+        } catch (error) {
+            console.error('Error in showSection for notifications:', error);
+            const debugDiv = document.getElementById('notification-debug');
+            if (debugDiv) {
+                debugDiv.innerHTML = 'Error showing notifications section: ' + error.message;
+                debugDiv.style.display = 'block';
+            }
         }
     }
+
+    // Special handling for settings section
+    if (sectionId === 'settings') {
+        showSettingsSection('account');
+    }
+} catch (error) {
+    console.error('Error in showSection:', error);
 }
+
 } catch (e) {
 console.error('DEBUG: Error in showSection:', e);
 alert('Error switching section: ' + e.message);
@@ -4144,14 +4172,13 @@ window.openProfileModal = openProfileModal;
 function navigateToNotifications() { showSection('notifications'); }
 function showNotificationsFromModal() {
 showSection('notifications');
+document.getElementById('page-title').textContent = 'Notifications';
 toggleNotificationModal();
 document.querySelectorAll('.sidebar ul li').forEach(function(li){li.classList.remove('active')});
 var notifLink = document.querySelector('.sidebar ul li a[data-section="notifications"]');
 if(notifLink){
 notifLink.parentElement.classList.add('active');
 }
-// Load all notifications when navigating to notifications section from modal
-loadAllNotifications();
 }
 function navigateToUploadSection() {
 document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));

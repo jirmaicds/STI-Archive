@@ -91,10 +91,10 @@
                 // Also update on resize
                 window.addEventListener('resize', updateNavbar);
 
-                // Initial check
-                updateNavbar();
-            }
-        });
+                 // Initial check
+                 updateNavbar();
+             }
+         });
     </script>
     <style>
         * {
@@ -4002,7 +4002,7 @@
         // File upload functionality
          function initializeFileUpload() {
              const uploadCircle = document.querySelector('.upload-drop-zone-circle');
-             const fileInput = document.getElementById('file-upload');
+             const fileInput = document.getElementById('user-pdf-upload') || document.getElementById('file-upload');
              const myUploadsDropZone = document.getElementById('myuploads-drop-zone');
 
              if (uploadCircle && fileInput) {
@@ -4022,7 +4022,7 @@
              }
 
              // Handle myuploads-drop-zone drag and drop
-             if (myUploadsDropZone) {
+             if (myUploadsDropZone && fileInput) {
                  // Prevent default drag behaviors
                  myUploadsDropZone.addEventListener('dragover', function(e) {
                      e.preventDefault();
@@ -4065,13 +4065,14 @@
                      }
                  });
 
-                 // Add click handler to trigger file input
-                 myUploadsDropZone.addEventListener('click', function() {
-                     fileInput.click();
-                 });
-             }
-         }
-
+                  // Add click handler to trigger file input
+                  myUploadsDropZone.addEventListener('click', function() {
+                       const targetInput = document.getElementById('user-pdf-upload') || document.getElementById('file-upload');
+                       if (targetInput) {
+                           targetInput.click();
+                       }
+                  });
+            }}
 
         function handleFileUpload(files) {
             // Store files globally for later use

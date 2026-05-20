@@ -3064,109 +3064,90 @@ showSection(section);
 }
 
 function showSection(sectionId) {
-if (DEBUG) console.log('DEBUG: showSection called with:', sectionId);
+    if (DEBUG) console.log('DEBUG: showSection called with:', sectionId);
 
-// Close notification modal if open
-const modal = document.getElementById('notification-modal');
-if (modal) modal.style.display = 'none';
+    // Close notification modal if open
+    const modal = document.getElementById('notification-modal');
+    if (modal) modal.style.display = 'none';
 
-try {
-    document.querySelectorAll('.content-section').forEach(s => {
-        s.classList.remove('active');
-        s.style.display = 'none';
-        s.style.visibility = 'hidden';
-    });
-    const section = document.getElementById(sectionId);
-    if (section) {
-        section.classList.add('active');
-        section.style.display = 'block';
-        section.style.visibility = 'visible';
-        section.scrollIntoView({ behavior: 'auto', block: 'start' });
-        if (DEBUG) console.log('Section activated:', sectionId);
-    } else {
-        console.error('Section not found:', sectionId);
-        alert('Section not found: ' + sectionId);
-        return;
-    }
+    try {
+        document.querySelectorAll('.content-section').forEach(s => {
+            s.classList.remove('active');
+            s.style.display = 'none';
+            s.style.visibility = 'hidden';
+        });
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.classList.add('active');
+            section.style.display = 'block';
+            section.style.visibility = 'visible';
+            section.scrollIntoView({ behavior: 'auto', block: 'start' });
+            if (DEBUG) console.log('Section activated:', sectionId);
+        } else {
+            console.error('Section not found:', sectionId);
+            alert('Section not found: ' + sectionId);
+            return;
+        }
 
-    const pageTitleMap = {
-        dashboard: 'Dashboard',
-        users: 'Users',
-        upload: 'Upload',
-        notifications: 'Notifications',
-        settings: 'Settings',
-        profile: 'Profile'
-    };
-    const pageTitle = document.getElementById('page-title');
-    if (pageTitle && pageTitleMap[sectionId]) {
-        pageTitle.textContent = pageTitleMap[sectionId];
-    }
+        const pageTitleMap = {
+            dashboard: 'Dashboard',
+            users: 'Users',
+            upload: 'Upload',
+            notifications: 'Notifications',
+            settings: 'Settings',
+            profile: 'Profile'
+        };
+        const pageTitle = document.getElementById('page-title');
+        if (pageTitle && pageTitleMap[sectionId]) {
+            pageTitle.textContent = pageTitleMap[sectionId];
+        }
 
-    // Update sidebar active state
-    document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
-    const activeLink = document.querySelector(`.sidebar ul li a[data-section="${sectionId}"]`);
-    if (activeLink) {
-        activeLink.closest('li').classList.add('active');
-    }
+        // Update sidebar active state
+        document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
+        const activeLink = document.querySelector(`.sidebar ul li a[data-section="${sectionId}"]`);
+        if (activeLink) {
+            activeLink.closest('li').classList.add('active');
+        }
 
-    // Special handling for notifications section
-    if (sectionId === 'notifications') {
-        try {
-            loadAllNotifications();
-        } catch (error) {
-            console.error('Error in showSection for notifications:', error);
-            const debugDiv = document.getElementById('notification-debug');
-            if (debugDiv) {
-                debugDiv.innerHTML = 'Error showing notifications section: ' + error.message;
-                debugDiv.style.display = 'block';
+        // Special handling for notifications section
+        if (sectionId === 'notifications') {
+            try {
+                loadAllNotifications();
+            } catch (error) {
+                console.error('Error in showSection for notifications:', error);
+                const debugDiv = document.getElementById('notification-debug');
+                if (debugDiv) {
+                    debugDiv.innerHTML = 'Error showing notifications section: ' + error.message;
+                    debugDiv.style.display = 'block';
+                }
             }
         }
+
+        // Special handling for settings section
+        if (sectionId === 'settings') {
+            showSettingsSection('account');
+        }
+
+        // Reset upload section to default (PDF Upload) when navigating to upload
+        if (sectionId === 'upload') {
+            document.querySelectorAll('.upload-subsection').forEach(sub => sub.classList.remove('active'));
+            document.getElementById('upload-form-section').classList.add('active');
+            document.querySelectorAll('.upload-nav .nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-pdf-upload').classList.add('active');
+        }
+
+        if (sectionId === 'dashboard') {
+            // Dashboard counts are updated when tables are populated
+            setTimeout(() => {
+                renderUserChart();
+                renderSigningUpChart();
+                renderDashboardUploadsChart();
+                renderGaugeChart('session-duration-gauge', 'Average Session Duration', 2.5, '#007bff');
+            }, 100);
+        }
+    } catch (error) {
+        console.error('Error in showSection:', error);
     }
-
-    // Special handling for settings section
-    if (sectionId === 'settings') {
-        showSettingsSection('account');
-    }
-} catch (error) {
-    console.error('Error in showSection:', error);
-}
-
-} catch (e) {
-console.error('DEBUG: Error in showSection:', e);
-alert('Error switching section: ' + e.message);
-}
-
-const pageTitles = {
-    dashboard: 'Dashboard',
-    upload: 'Upload',
-    users: 'Users',
-    profile: 'Profile',
-    settings: 'Settings',
-    notifications: 'Notifications'
-};
-document.getElementById('page-title').textContent = pageTitles[sectionId] || 'Dashboard';
-
-if (sectionId === 'settings') {
-    showSettingsSection('account');
-}
-// Reset upload section to default (PDF Upload) when navigating to upload
-if (sectionId === 'upload') {
-// Reset to PDF Upload form (default)
-document.querySelectorAll('.upload-subsection').forEach(sub => sub.classList.remove('active'));
-document.getElementById('upload-form-section').classList.add('active');
-// Reset buttons to PDF Upload as active
-document.querySelectorAll('.upload-nav .nav-btn').forEach(btn => btn.classList.remove('active'));
-document.getElementById('btn-pdf-upload').classList.add('active');
-}
-if (sectionId === 'dashboard') {
-// Dashboard counts are updated when tables are populated
-setTimeout(() => {
-renderUserChart();
-renderSigningUpChart();
-renderDashboardUploadsChart();
-renderGaugeChart('session-duration-gauge', 'Average Session Duration', 2.5, '#007bff');
-}, 100);
-}
 }
 
 // Add event listeners for sidebar navigation

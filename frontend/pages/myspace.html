@@ -2586,131 +2586,49 @@ color: #ffd700;
     }
     
     /* === COMPREHENSIVE RESPONSIVE STYLES FOR TABLET AND PHONE === */
-    
-    /* Tablet and below */
+
     @media (max-width: 767px) {
       .main-content {
-        padding-top: 0;
+        padding-top: 50px !important;
         padding-bottom: 0 !important;
-        min-height: 100vh;
+        min-height: calc(100vh - 50px);
         height: auto;
         flex-direction: column;
         display: flex;
       }
-      
-       .file-viewer {
-         width: 100% !important;
-         flex: 1 !important;
-         height: auto !important;
-         min-height: 0 !important;
-         position: relative !important;
-         top: auto !important;
-         left: auto !important;
-         overflow: auto;
-         display: flex !important;
-       }
 
-       .footer-toggle-container {
+      .file-viewer {
+        width: 100% !important;
+        flex: 1 !important;
+        height: auto !important;
+        min-height: 0 !important;
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        overflow: auto;
+        display: flex !important;
+      }
+
+      .footer-toggle-container {
         bottom: 0;
         height: 50px;
+        width: 100%;
         flex-shrink: 0;
         display: flex !important;
         z-index: 1000 !important;
       }
-      
-      /* PDF container sizing for tablet */
+
+      .footer-toggle-container .toggle-btn-mobile {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+
       #pdfContainer1, #pdfCanvas {
         width: 100% !important;
         height: 100% !important;
+        min-height: 300px !important;
       }
-    }
-    
-     /* Phone (below 768px) */
-     @media (max-width: 767px) {
-       .main-content {
-         padding-top: 50px !important;
-         padding-bottom: 0 !important;
-         min-height: calc(100vh - 50px);
-         height: auto;
-         flex-direction: column;
-         display: flex;
-       }
-       
-        .file-viewer {
-          width: 100% !important;
-          flex: 1 !important;
-          height: auto !important;
-          min-height: 0 !important;
-          position: relative !important;
-          top: auto !important;
-          left: auto !important;
-          right: auto !important;
-          overflow: auto;
-          display: flex !important;
-        }
-
-        .footer-toggle-container {
-         bottom: 0;
-         height: 50px;
-         width: 100%;
-         flex-shrink: 0;
-         display: flex !important;
-         z-index: 1000 !important;
-       }
-       
-       .footer-toggle-container .toggle-btn-mobile {
-         padding: 8px 10px;
-         font-size: 12px;
-       }
-       
-       /* PDF container sizing for phone */
-       #pdfContainer1, #pdfCanvas {
-         width: 100% !important;
-         height: 100% !important;
-         min-height: 600px !important;
-       }
-    }
-    
-     /* Small tablets/large phones (767px and below) */
-     @media (max-width: 767px) {
-       .main-content {
-         padding-top: 50px !important;
-         padding-bottom: 0 !important;
-         min-height: calc(100vh - 50px);
-         height: auto;
-         flex-direction: column;
-         display: flex;
-       }
-       
-        .file-viewer {
-          width: 100% !important;
-          flex: 1 !important;
-          height: auto !important;
-          min-height: 0 !important;
-          position: relative !important;
-          top: auto !important;
-          left: auto !important;
-          right: auto !important;
-          overflow: auto;
-          display: flex !important;
-        }
-
-        .footer-toggle-container {
-         bottom: 0;
-         height: 50px;
-         width: 100%;
-         flex-shrink: 0;
-         display: flex !important;
-         z-index: 1000 !important;
-       }
-       
-       /* PDF container sizing - full height */
-       #pdfContainer1, #pdfCanvas {
-         width: 100% !important;
-         height: 100% !important;
-         min-height: 300px !important;
-       }
-    }
     
     /* Small phones (below 480px) */
     @media (max-width: 480px) {
@@ -2722,11 +2640,12 @@ color: #ffd700;
       .footer-toggle-container .toggle-btn-mobile i {
         font-size: 12px;
       }
-    .main-content {
+
+      .main-content {
         margin-top: 0;
         min-height: 100vh;
         padding-top: 50px;
-    }
+      }
 
       .file-viewer {
         width: 100% !important;
@@ -2754,6 +2673,7 @@ color: #ffd700;
         min-height: 500px !important;
       }
     }
+  }
 
     /* Desktop screens (1024px and above) */
     @media (min-width: 1024px) {
@@ -4186,7 +4106,7 @@ color: #ffd700;
                 const leftBtn = document.querySelector('.toggle-half.toggle-editor');
                 const rightBtn = document.querySelector('.toggle-half.toggle-file-viewer');
 
-                const isDesktop = window.innerWidth > 1024;
+                const isDesktop = window.innerWidth > 767;
 
                 if (isDesktop) {
                     // Desktop: keep editor visible, file-viewer at 50%
@@ -4664,7 +4584,7 @@ color: #ffd700;
                 }
 
                 // On tablet/phone, make editor fullscreen and hide file-viewer
-                if (window.innerWidth <= 1024) {
+                if (window.innerWidth <= 767) {
                     // Remove any conflicting classes
                     editor.classList.remove('fullscreen', 'visible', 'collapsed');
                     // Set styles manually to avoid CSS conflicts - fullscreen covering entire screen
@@ -4686,7 +4606,7 @@ color: #ffd700;
                 }
                 if (editor) {
                     // Set display based on screen size with !important to override CSS
-                    if (window.innerWidth <= 1024) {
+                    if (window.innerWidth <= 767) {
                         editor.style.setProperty('display', 'block', 'important'); // For fullscreen on mobile/tablet
                         console.log('Setting editor to block for mobile');
                     } else {
@@ -4700,7 +4620,7 @@ color: #ffd700;
                        fileViewer.style.setProperty('display', 'none', 'important');
                    }
                     // Update footer toggle to show Word as active on mobile/tablet
-                    if (window.innerWidth <= 1024) {
+                    if (window.innerWidth <= 767) {
                         const pdfBtn = document.getElementById('footerPdfBtn');
                         const wordBtn = document.getElementById('footerWordBtn');
                         if (pdfBtn) pdfBtn.classList.remove('active');
@@ -4748,9 +4668,7 @@ color: #ffd700;
                toggleState = 'default';
                if (fileViewer) {
                    fileViewer.style.display = 'flex';
-                   if (window.innerWidth <= 1024) {
-                       fileViewer.style.flex = '0 0 100%';
-                       fileViewer.style.width = '100%';
+                       if (window.innerWidth <= 767) {
                    } else {
                        fileViewer.style.flex = '0 0 100%';
                        fileViewer.style.width = '100%';
@@ -4759,7 +4677,7 @@ color: #ffd700;
 
                // Show toggle-panel when editor is closed (only on desktop)
                const togglePanel = document.querySelector('.toggle-panel');
-               if (togglePanel && window.innerWidth > 1024) {
+if (togglePanel && window.innerWidth > 767) {
                    togglePanel.style.display = 'flex';
                }
 
@@ -4775,8 +4693,8 @@ color: #ffd700;
                 var editor = document.getElementById('editor');
                 var fileViewer = document.querySelector('.file-viewer');
 
-                if (window.innerWidth > 1024) {
-                    // Desktop: show both at 50%
+                if (window.innerWidth > 767) {
+                    // Desktop/tablet: show both panels side-by-side or stacked depending on CSS
                       if (fileViewer) {
                           fileViewer.style.display = 'flex';
                           fileViewer.style.setProperty('width', '50%', 'important');
@@ -4804,8 +4722,8 @@ color: #ffd700;
 
                   // Force apply styles after a short delay to ensure it works
                   setTimeout(function() {
-                  if (window.innerWidth >= 1024) {
-                     // Desktop: show both at 50%
+                  if (window.innerWidth > 767) {
+                     // Desktop/tablet: show both panels
                      if (fileViewer) {
                          fileViewer.style.display = 'flex';
                          fileViewer.style.setProperty('width', '50%', 'important');
@@ -4839,8 +4757,8 @@ color: #ffd700;
                   var editor = document.getElementById('editor');
                   var fileViewer = document.querySelector('.file-viewer');
 
-                  if (window.innerWidth >= 1024) {
-                     // Desktop: show both at 50%
+                  if (window.innerWidth > 767) {
+                     // Desktop/tablet: show both panels
                      if (fileViewer) {
                          fileViewer.style.display = 'flex';
                          fileViewer.style.flex = '0 0 50%';
@@ -4866,8 +4784,8 @@ color: #ffd700;
 
                  // Force apply styles after a short delay to ensure it works
                   setTimeout(function() {
-                      if (window.innerWidth > 1024) {
-                          // Desktop: show both at 50%
+                      if (window.innerWidth > 767) {
+                          // Desktop/tablet: show both panels
                           if (fileViewer) {
                               fileViewer.style.display = 'flex';
                               fileViewer.style.setProperty('width', '50%', 'important');
@@ -5396,7 +5314,7 @@ color: #ffd700;
                    editor.classList.add('fullscreen');
 
                    // Only show mobile toggle panel on larger screens (not tablet/mobile)
-                   if (window.innerWidth > 1024) {
+                   if (window.innerWidth > 767) {
                        document.getElementById('mobileFileViewerTogglePanel').style.display = 'block';
                    }
                    document.querySelector('.mobile-toggle-back').style.display = 'none';
@@ -5463,8 +5381,8 @@ color: #ffd700;
             // Load editor if there is saved state
             var editor = document.getElementById('editor');
             // Set default layout based on screen size
-            if (window.innerWidth > 1024) {
-                // Desktop: both visible
+            if (window.innerWidth > 767) {
+                // Desktop/tablet: both visible
                 if (editor) {
                     editor.style.display = 'flex';
                     editor.style.flex = '0 0 50%';
@@ -5571,7 +5489,7 @@ color: #ffd700;
                 }
             } else {
                 // No URL params - set default layout based on screen size
-                if (window.innerWidth > 1024) {
+                if (window.innerWidth > 767) {
                     if (editor) {
                         editor.style.display = 'flex';
                         editor.style.flex = '0 0 50%';
@@ -6296,7 +6214,7 @@ color: #ffd700;
             }
             if (editor) {
                 editor.classList.remove('hidden');
-                if (window.innerWidth <= 1024) {
+                if (window.innerWidth <= 767) {
                     editor.classList.add('fullscreen');
                     editor.classList.remove('collapsed');
                 } else {
@@ -6304,7 +6222,7 @@ color: #ffd700;
                     editor.style.display = 'flex';
                 }
             }
-            if (fileViewer && window.innerWidth > 1024) {
+            if (fileViewer && window.innerWidth > 767) {
                 fileViewer.style.display = 'none';
             }
         }
@@ -6396,8 +6314,8 @@ color: #ffd700;
                 pdfModal.style.display = 'none';
             }
 
-            // On desktop screens (>=1024px), show both panels
-            if (window.innerWidth >= 1024) {
+            // On desktop/tablet widths (>767px), show both panels
+            if (window.innerWidth > 767) {
                 const fileViewer = document.querySelector('.file-viewer');
                 const editor = document.getElementById('editor');
                 if (fileViewer) {

@@ -1456,15 +1456,16 @@ color: #ffd700;
     .editor.fullscreen .toolbar {
       background: #fff;
       border-bottom: 1px solid #ccc;
-      position: fixed;
-      top: 50px;
-      left: 0;
-      right: 0;
+      position: relative;
+      top: auto;
+      left: auto;
+      right: auto;
       z-index: 1000;
       padding: 20px;
       margin: 0;
-      height: 70px;
-      overflow: hidden;
+      height: auto;
+      overflow: visible;
+      flex-shrink: 0;
     }
 
     .editor.fullscreen .document-container {
@@ -1472,9 +1473,11 @@ color: #ffd700;
       border-radius: 12px;
       padding: 30px 50px;  /* More left/right padding */
       overflow: auto;
-      margin: 90px 20px 20px 20px;  /* Add margins for spacing, top margin for fixed toolbar */
+      margin: 15px 0 0 0;
       background: #fff;
       counter-reset: page 0;
+      flex: 1 1 auto;
+      min-height: 0;
     }
 
     .editor.fullscreen .page {
@@ -1573,15 +1576,16 @@ color: #ffd700;
     .dark-mode .editor.fullscreen .toolbar {
       background: #2d2d2d;
       border-bottom-color: #444;
-      position: fixed;
-      top: 50px;
-      left: 0;
-      right: 0;
+      position: relative;
+      top: auto;
+      left: auto;
+      right: auto;
       z-index: 1000;
       padding: 20px;
       margin: 0;
-      height: 70px;
-      overflow: hidden;
+      height: auto;
+      overflow: visible;
+      flex-shrink: 0;
     }
 
     .dark-mode .editor.fullscreen .document-container {

@@ -4720,6 +4720,10 @@
                     align-items: center;
                 }
 
+                .badge-approved{background:#28a745;color:#fff;padding:4px 8px;border-radius:12px;font-size:12px;}
+                .badge-rejected{background:#dc3545;color:#fff;padding:4px 8px;border-radius:12px;font-size:12px;}
+                .badge-pending{background:#ffae00;color:#fff;padding:4px 8px;border-radius:12px;font-size:12px;}
+
                 .file-info {
                     flex: 1;
                 }
@@ -6755,19 +6759,20 @@
             return;
         }
         
-        container.innerHTML = uploads.map(upload => `
+        container.innerHTML = uploads.map(upload => {
+            const status = (upload.status || 'pending').toLowerCase();
+            const badgeClass = status === 'approved' ? 'badge-approved' : status === 'rejected' ? 'badge-rejected' : 'badge-pending';
+            const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
+            return `
             <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin: 10px; width: 300px;">
                 <h3 style="color: #0057b8; margin-top: 0; font-size: 18px;">${upload.title}</h3>
                 <p style="color: #666; font-size: 14px;"><strong>Authors:</strong> ${upload.authors || 'N/A'}</p>
                 <p style="color: #666; font-size: 14px;"><strong>File:</strong> ${upload.filename}</p>
-                <p style="color: #666; font-size: 14px;"><strong>Status:</strong> 
-                    <span style="color: ${upload.status === 'approved' ? 'green' : upload.status === 'rejected' ? 'red' : 'orange'};">
-                        ${upload.status.charAt(0).toUpperCase() + upload.status.slice(1)}
-                    </span>
-                </p>
+                <p style="color: #666; font-size: 14px;"><strong>Status:</strong> <span class="${badgeClass}">${statusLabel}</span></p>
                 <p style="color: #999; font-size: 12px;">Uploaded: ${new Date(upload.uploadedAt).toLocaleDateString()}</p>
             </div>
-        `).join('');
+            `;
+        }).join('');
     }
     
     // Initialize user uploads and approved uploads on page load

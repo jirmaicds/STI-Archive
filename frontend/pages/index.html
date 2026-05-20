@@ -3429,8 +3429,8 @@ window.supabaseHelpers = {
            let filePath = null;
            if (requiredFile) {
                try {
-                   // Define storage path: {role}/{userId}/{filename}
-                   const storagePath = `${role}/${userId}/${requiredFile.name}`;
+                   const relativePath = `${role}/${userId}/${requiredFile.name}`;
+                   const storagePath = `Raf-edu_id/${relativePath}`;
                    
                     // Upload to Supabase storage with timeout
                     const uploadTimeout = setTimeout(() => {
@@ -3438,14 +3438,10 @@ window.supabaseHelpers = {
                     }, 30000); // 30 second timeout
                     
                     try {
-                        const uploadResult = await window.supabaseHelpers.uploadFile(
-                            'user-documents', // bucket name - adjust as needed
-                            storagePath,
-                            requiredFile
-                        );
+                        const uploadResult = await window.supabaseHelpers.uploadFile('uploads', storagePath, requiredFile);
                         
                         clearTimeout(uploadTimeout);
-                        filePath = storagePath; // Store the path for database reference
+                        filePath = relativePath;
                         console.log('File uploaded to Supabase:', uploadResult);
                     } catch (uploadError) {
                         clearTimeout(uploadTimeout);
@@ -3454,7 +3450,7 @@ window.supabaseHelpers = {
                         const msg = (uploadError && uploadError.message) ? uploadError.message.toString().toLowerCase() : '';
                         if (msg.includes('bucket not found') || (uploadError && uploadError.status === 404)) {
                             // Fallback: mark file as local and continue signup
-                            filePath = 'local:' + storagePath;
+                            filePath = 'local:' + relativePath;
                             console.warn('Supabase bucket not found; using local storage placeholder for filePath:', filePath);
                         } else if (msg.includes('timeout')) {
                             document.getElementById('signup-message').innerHTML = 

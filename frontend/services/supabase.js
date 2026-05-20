@@ -107,13 +107,14 @@ window.supabaseHelpers = {
     return user;
   },
 
-  async uploadFile(bucket, path, file) {
+  async uploadFile(bucket, path, file, options) {
     if (!window.supabase || !window.supabase.storage) {
       throw new Error('Supabase not initialized');
     }
+    const uploadOptions = options && typeof options === 'object' ? options : undefined;
     const { data, error } = await window.supabase.storage
       .from(bucket)
-      .upload(path, file);
+      .upload(path, file, uploadOptions);
     if (error) throw error;
     return data;
   },

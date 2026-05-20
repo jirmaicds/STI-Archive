@@ -3438,7 +3438,10 @@ window.supabaseHelpers = {
                     }, 30000); // 30 second timeout
                     
                     try {
-                        const uploadResult = await window.supabaseHelpers.uploadFile('uploads', storagePath, requiredFile);
+                        const safeContentType = requiredFile && requiredFile.type && requiredFile.type.toLowerCase() === 'application/msword'
+                          ? 'application/octet-stream'
+                          : (requiredFile && requiredFile.type ? requiredFile.type : undefined);
+                        const uploadResult = await window.supabaseHelpers.uploadFile('uploads', storagePath, requiredFile, safeContentType ? { contentType: safeContentType } : undefined);
                         
                         clearTimeout(uploadTimeout);
                         filePath = relativePath;

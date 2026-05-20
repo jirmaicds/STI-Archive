@@ -4007,17 +4007,21 @@
 
              if (uploadCircle && fileInput) {
                  // Add click handler for upload circle
-                 let isFileDialogOpen = false;
-                 let clickTimeout;
-
                  uploadCircle.addEventListener('click', function(e) {
                      e.preventDefault();
                      e.stopPropagation();
+                     fileInput.value = '';
                      fileInput.click();
                  });
+             }
 
+             if (fileInput) {
                  fileInput.addEventListener('change', (e) => {
-                     handleFileUpload(e.target.files);
+                     if (e.target.files && e.target.files.length > 0) {
+                         handleFileUpload(e.target.files);
+                     }
+                     // Clear value so selecting the same file again still triggers change
+                     e.target.value = '';
                  });
              }
 
@@ -6375,7 +6379,7 @@
             const citedContainer = document.getElementById('cited-articles-container');
             const savedArticlesContainer = document.getElementById('saved-articles-container');
 
-            const tabs = document.querySelectorAll('.profile-tabs .tab-btn');
+            const tabs = document.querySelectorAll('.tabs-left-sidebar .tab-btn');
 
             // Hide all containers first
             if (myUploadsList) myUploadsList.style.display = 'none';
@@ -6383,32 +6387,31 @@
             if (citedContainer) citedContainer.style.display = 'none';
             if (savedArticlesContainer) savedArticlesContainer.style.display = 'none';
 
-
             // Remove active from all tabs
             tabs.forEach(tab => tab.classList.remove('active'));
 
             if (tabName === 'myuploads') {
                 const uploadedContainer = document.getElementById('uploaded-files-container');
-                if (uploadedContainer) uploadedContainer.style.display = 'block';
+                if (uploadedContainer) uploadedContainer.style.display = 'flex';
                 if (myUploadsList) myUploadsList.style.display = 'block';
-                tabs[0].classList.add('active');
+                if (tabs[0]) tabs[0].classList.add('active');
             } else if (tabName === 'upload') {
                 if (uploadForm) uploadForm.style.display = 'block';
-                tabs[1].classList.add('active');
+                if (tabs[1]) tabs[1].classList.add('active');
             } else if (tabName === 'cited') {
                 if (citedContainer) citedContainer.style.display = 'block';
                 // Load cited articles when tab is clicked
                 if (typeof loadCitedArticles === 'function') {
                     loadCitedArticles();
                 }
-                tabs[1].classList.add('active');
+                if (tabs[1]) tabs[1].classList.add('active');
             } else if (tabName === 'saved-articles') {
                 if (savedArticlesContainer) savedArticlesContainer.style.display = 'flex';
                 // Load saved articles when tab is clicked
                 if (typeof loadSavedArticles === 'function') {
                     loadSavedArticles();
                 }
-                tabs[2].classList.add('active');
+                if (tabs[2]) tabs[2].classList.add('active');
             }
         }
 

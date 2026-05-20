@@ -197,6 +197,13 @@
     overflow-y: hidden;
     position: relative;
 }
+    .file-viewer .select-article {
+        margin-top: 0;
+    }
+    
+    .file-viewer .select-article h2 {
+        margin-top: 0;
+    }
 
     /* Dark mode styles */
     .dark-mode body {
@@ -925,7 +932,7 @@ color: #ffd700;
         min-height: calc(100vh - 50px);
         display: flex;
         flex-direction: column;
-        padding: 20px 20px 0 20px;
+        padding: 0 20px 0 20px;
         background: #f0f0f0;
         border: 1px solid #ccc;
         transition: opacity 0.3s ease, transform 0.3s ease;
@@ -964,15 +971,49 @@ color: #ffd700;
     .toolbar {
        display: flex;
        gap: 10px;
-       margin-bottom: 15px;
        flex-wrap: wrap;
        align-items: center;
+       margin-bottom: 15px;
        background: transparent;
        border: 1px solid #ccc;
        padding: 10px;
        position: relative;
        z-index: 1001;
+       height: auto;
+       min-height: auto;
+       overflow: visible;
+       transition: none;
      }
+
+    .toolbar.expanded {
+      height: auto;
+      padding: 10px;
+    }
+
+    .toolbar-header {
+      display: none;
+    }
+
+    .toolbar-open-btn {
+      display: none;
+    }
+
+    .toolbar-content {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 0;
+      max-height: none;
+      overflow: visible;
+      opacity: 1;
+      transition: none;
+    }
+
+    .toolbar.expanded .toolbar-content {
+      max-height: none;
+      opacity: 1;
+    }
 
     .toolbar select, .toolbar button, .toolbar input[type="color"] {
       padding: 6px 10px;
@@ -983,7 +1024,8 @@ color: #ffd700;
       cursor: pointer;
     }
 
-    .toolbar button:hover {
+    .toolbar button:hover,
+    .toolbar-open-btn:hover {
       background: #e0e0e0;
     }
 
@@ -1185,25 +1227,11 @@ color: #ffd700;
       }
 
      .toolbar-toggle-panel {
-       position: absolute;
-       bottom: 0;
-       left: 50%;
-       transform: translateX(-50%) translateY(50%);
-       z-index: 100;
+       display: none;
      }
 
      .toolbar-toggle-btn {
-       background: #2c2c2c;
-       border: none;
-       border-radius: 8px;
-       width: 50px;
-       height: 30px;
-       display: flex;
-       align-items: center;
-       justify-content: center;
-       box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-       cursor: pointer;
-       color: white;
+       display: none;
      }
 
      .toolbar-toggle-btn:hover {
@@ -1615,33 +1643,376 @@ color: #ffd700;
       }
     }
 
-    /* Tablet and below responsive layout */
-    @media (max-width: 767px) {
-      /* Hide toggle-panel in tablet and mobile */
-      .toggle-panel {
-        display: none !important;
-      }
+    /* Small desktop / tablet: hide toolbar contents and show collapsible toolbar header */
+@media (max-width: 1104px) {
+    .toolbar {
+        flex-direction: column;
+        gap: 0;
+        padding: 0 16px;
+        min-height: 50px !important;
+        height: 50px !important;
+        overflow: hidden;
+        transition: height 0.3s ease, padding 0.3s ease;
+        background: #fff;
+    }
+
+    .toolbar-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 50px;
+        width: 100%;
+    }
+
+    .toolbar-open-btn {
+        display: flex;
+        background: #2c2c2c;
+        border: none;
+        border-radius: 8px;
+        width: 42px;
+        height: 34px;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+
+    .toolbar-label {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .toolbar-content {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin-top: 12px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.25s ease, opacity 0.25s ease;
+        opacity: 0;
+    }
+
+    .toolbar.expanded .toolbar-content {
+        max-height: 1000px;
+        opacity: 1;
+    }
+}
+
+   /* Tablet and below responsive layout */
+@media (max-width: 767px) {
+   /* Hide toggle-panel in tablet and mobile */
+   .toggle-panel {
+     display: none !important;
+   }
+
+   /* Hide file-viewer on tablet and mobile */
+   .file-viewer {
+     display: none;
+   }
+
+   .editor {
+     flex: 0 0 auto !important;
+     width: 100% !important;
+     position: relative !important;
+     left: 0 !important;
+     top: 0 !important;
+     margin-bottom: 80px !important; /* space for fixed footer-toggle at bottom */
+     height: auto !important;
+     padding: 0 !important;
+     overflow: visible !important;
+   }
+   
+   .editor.fullscreen {
+     display: flex !important;
+     flex-direction: column !important;
+     min-height: calc(100vh - 50px - 80px) !important;
+     overflow: hidden !important;
+   }
+   
+   .editor.fullscreen .document-container {
+     flex: 1 1 auto !important;
+     min-height: 0 !important;
+     overflow: auto !important;
+     margin-bottom: 10px !important;
+     padding-bottom: 14px !important;
+   }
+
+   .editor:not(.fullscreen) {
+     display: none !important;
+   }
+   
+   /* Hide toggle panel in tablet */
+   .toggle-panel {
+     display: none !important;
+   }
+   
+   /* Hide old toggle-btn-mobile - only use footer version */
+   .toggle-btn-mobile:not(.footer-toggle-container .toggle-btn-mobile) {
+     display: none !important;
+   }
+   
+   /* Hide mobile toggles */
+   .mobile-editor-toggle,
+   .mobile-file-viewer-toggle-panel,
+   .mobile-toggle-back {
+     display: none !important;
+   }
+   
+   /* Ensure toolbar is visible and not covered by navbar */
+   .editor .toolbar {
+     position: relative !important;
+     top: auto !important;
+     margin-top: 10px !important;
+     margin-bottom: 10px !important;
+   }
+   
+   /* Ensure footer inside editor is visible */
+    .editor .footer {
+      margin-top: 8px !important;
+      margin-bottom: 0 !important;
+    }
+   
+   .toolbar {
+     flex-direction: column;
+     gap: 0;
+     padding: 0 16px;
+     min-height: 50px !important;
+     height: 50px !important;
+     overflow: hidden;
+     transition: height 0.3s ease, padding 0.3s ease;
+     background: #fff;
+   }
+
+   .toolbar.expanded {
+     position: relative;
+     z-index: 1005;
+     box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+     height: auto;
+     padding: 10px 16px 16px;
+   }
+
+   .toolbar-header {
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     min-height: 50px;
+     width: 100%;
+   }
+
+   .toolbar-open-btn {
+     display: flex;
+     background: #2c2c2c;
+     border: none;
+     border-radius: 8px;
+     width: 42px;
+     height: 34px;
+     align-items: center;
+     justify-content: center;
+     cursor: pointer;
+     color: white;
+     box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+   }
+
+   .toolbar-label {
+     font-size: 1rem;
+     font-weight: 700;
+     color: #333;
+   }
+
+   .toolbar.expanded .toolbar-open-btn i {
+     transform: rotate(180deg);
+     transition: transform 0.2s ease;
+   }
+
+   .toolbar-content {
+     display: flex;
+     flex-wrap: wrap;
+     align-items: center;
+     gap: 10px;
+     margin-top: 12px;
+     max-height: 0;
+     overflow: hidden;
+     transition: max-height 0.25s ease, opacity 0.25s ease;
+     opacity: 0;
+   }
+
+   .toolbar.expanded .toolbar-content {
+     max-height: 1000px;
+     opacity: 1;
+   }
+
+   /* Hide file-viewer on tablet and mobile */
+   .file-viewer {
+     display: none;
+   }
+
+   .editor {
+     flex: 0 0 100% !important;
+     width: 100% !important;
+     position: absolute !important;
+     left: 0 !important;
+     top: 50px !important;
+     bottom: 80px !important; /* keep editor above fixed footer-toggle */
+     height: auto !important;
+     padding-bottom: 0 !important;
+     overflow: hidden !important;
+   }
+   
+   .editor.fullscreen {
+     display: flex !important;
+     flex-direction: column !important;
+     min-height: calc(100vh - 50px - 80px) !important;
+     overflow: hidden !important;
+   }
+   
+   .editor.fullscreen .document-container {
+     flex: 1 1 auto !important;
+     min-height: 0 !important;
+     overflow: auto !important;
+     margin-bottom: 10px !important;
+     padding-bottom: 14px !important;
+   }
+
+   .editor:not(.fullscreen) {
+     display: none !important;
+   }
+   
+   /* Hide toggle panel in tablet */
+   .toggle-panel {
+     display: none !important;
+   }
+   
+   /* Hide old toggle-btn-mobile - only use footer version */
+   .toggle-btn-mobile:not(.footer-toggle-container .toggle-btn-mobile) {
+     display: none !important;
+   }
+   
+   /* Hide mobile toggles */
+   .mobile-editor-toggle,
+   .mobile-file-viewer-toggle-panel,
+   .mobile-toggle-back {
+     display: none !important;
+   }
+   
+   /* Ensure toolbar is visible and not covered by navbar */
+   .editor .toolbar {
+     position: relative !important;
+     top: auto !important;
+     margin-top: 10px !important;
+     margin-bottom: 10px !important;
+   }
+   
+   /* Ensure footer inside editor is visible */
+    .editor .footer {
+      margin-top: 8px !important;
+      margin-bottom: 0 !important;
+    }
+   
+   .toolbar {
+     flex-direction: column;
+     gap: 0;
+     padding: 0 16px;
+     min-height: 50px !important;
+     height: 50px !important;
+     overflow: hidden;
+     transition: height 0.3s ease, padding 0.3s ease;
+     background: #fff;
+   }
+
+   .toolbar.expanded {
+     position: relative;
+     z-index: 1005;
+     box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+     height: auto;
+     padding: 10px 16px 16px;
+   }
+
+   .toolbar-header {
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     min-height: 50px;
+     width: 100%;
+   }
+
+   .toolbar-open-btn {
+     display: flex;
+     background: #2c2c2c;
+     border: none;
+     border-radius: 8px;
+     width: 42px;
+     height: 34px;
+     align-items: center;
+     justify-content: center;
+     cursor: pointer;
+     color: white;
+     box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+   }
+
+   .toolbar-label {
+     font-size: 1rem;
+     font-weight: 700;
+     color: #333;
+   }
+
+   .toolbar.expanded .toolbar-open-btn i {
+     transform: rotate(180deg);
+     transition: transform 0.2s ease;
+   }
+
+   .toolbar-content {
+     display: flex;
+     flex-wrap: wrap;
+     align-items: center;
+     gap: 10px;
+     margin-top: 12px;
+     max-height: 0;
+     overflow: hidden;
+     transition: max-height 0.25s ease, opacity 0.25s ease;
+     opacity: 0;
+   }
+
+   .toolbar.expanded .toolbar-content {
+     max-height: 1000px;
+     opacity: 1;
+   }
+}
 
       /* Hide file-viewer on tablet and mobile */
       .file-viewer {
         display: none;
       }
 
-      .editor {
-        flex: 0 0 100% !important;
-        width: 100% !important;
-        position: absolute !important;
-        left: 0 !important;
-        top: 50px !important;
-        height: calc(100vh - 50px - 80px) !important; /* Subtract header (50px) and footer toggle (80px) */
-        padding-bottom: 0 !important;
+    .editor {
+      flex: 0 0 100% !important;
+      width: 100% !important;
+      position: absolute !important;
+      left: 0 !important;
+      top: 50px !important;
+      margin-bottom: 80px !important; /* space for fixed footer-toggle at bottom */
+      height: auto !important;
+      padding-bottom: 0 !important;
+      overflow: hidden !important;
+    }
+      
+      .editor.fullscreen {
+        display: flex !important;
+        flex-direction: column !important;
+        min-height: calc(100vh - 50px - 80px) !important;
         overflow: hidden !important;
       }
       
-      .editor.fullscreen {
-        display: block !important;
-      }
-      
+    .editor.fullscreen .document-container {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow: auto !important;
+      padding-bottom: 14px !important;
+    }
+
       .editor:not(.fullscreen) {
         display: none !important;
       }
@@ -1663,21 +2034,21 @@ color: #ffd700;
         display: none !important;
       }
       
-      /* Ensure toolbar is visible and not covered by navbar */
-      .editor .toolbar {
-        position: relative !important;
-        top: auto !important;
-        margin-top: 10px !important;
-        margin-bottom: 10px !important;
-      }
-      
-      /* Ensure footer inside editor is visible */
-      .editor .footer {
-        margin-top: auto !important;
-        margin-bottom: 10px !important;
-      }
+    /* Ensure toolbar is visible and not covered by navbar */
+    .editor .toolbar {
+      position: relative !important;
+      top: auto !important;
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
     }
-
+      
+     /* Ensure footer inside editor is visible */
+     .editor .footer {
+       margin-top: 8px !important;
+       margin-bottom: 0 !important;
+     }
+    
+  
     @media (max-width: 546px) {
       .file-viewer {
         flex:0 0 100%;
@@ -1698,9 +2069,79 @@ color: #ffd700;
       .mobile-file-viewer-toggle-panel {
         display: none !important;
       }
+
       /* Show toggle-btn-mobile */
       .toggle-btn-mobile {
         display: flex !important;
+      }
+
+      .toolbar {
+        flex-direction: column;
+        gap: 0;
+        padding: 0 16px;
+        min-height: 50px !important;
+        height: 50px !important;
+        overflow: hidden;
+        transition: height 0.3s ease, padding 0.3s ease;
+        background: #fff;
+      }
+
+    .toolbar.expanded {
+      position: relative;
+      z-index: 2000;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+      height: auto;
+      padding: 10px 16px 16px;
+    }
+
+      .toolbar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 50px;
+        width: 100%;
+      }
+
+      .toolbar-open-btn {
+        display: flex;
+        background: #2c2c2c;
+        border: none;
+        border-radius: 8px;
+        width: 42px;
+        height: 34px;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      }
+
+      .toolbar-label {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #333;
+      }
+
+      .toolbar.expanded .toolbar-open-btn i {
+        transform: rotate(180deg);
+        transition: transform 0.2s ease;
+      }
+
+      .toolbar-content {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin-top: 12px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.25s ease, opacity 0.25s ease;
+        opacity: 0;
+      }
+
+      .toolbar.expanded .toolbar-content {
+        max-height: 1000px;
+        opacity: 1;
       }
     }
  
@@ -1909,60 +2350,68 @@ color: #ffd700;
 
     }
 
-    /* Tablet and mobile layout */
-    @media (max-width: 767px) {
-      .main-content {
-        /* Keep content below the fixed header on tablet/phone */
-        padding-top: 50px !important;
-      }
-      .file-viewer {
-        flex: 0 0 100% !important;
-        width: 100% !important;
-        height: calc(100vh - 50px - 80px) !important; /* header + footer toggle */
-        position: relative !important;
-        top: 0 !important;
-      }
-      .editor {
-        width: 100% !important;
-        left: 0 !important;
-        right: auto !important;
-        top: 50px !important;
-        height: calc(100vh - 50px - 80px) !important; /* header + footer toggle */
-        position: absolute !important;
-        overflow: hidden !important;
-        display: flex !important;
-        flex-direction: column !important;
-      }
-      
-      /* Ensure toolbar is visible on mobile */
-      .editor .toolbar {
-        position: relative !important;
-        top: auto !important;
-        margin-top: 0 !important;
-        margin-bottom: 5px !important;
-        flex-shrink: 0 !important;
-      }
-      
-      /* Ensure document container has space for footer */
-      .editor .document-container {
-        flex: 1 1 auto !important;
-        overflow: auto !important;
-        margin-bottom: 5px !important;
-      }
-      
-      /* Ensure footer inside editor is visible on mobile */
-      .editor .footer {
-        margin-top: auto !important;
-        margin-bottom: 0 !important;
-        flex-shrink: 0 !important;
-      }
-      .toggle-panel {
-        display: none !important;
-      }
-      .footer-toggle-container {
-        display: flex !important;
-        z-index: 1000 !important;
-      }
+     /* Tablet and mobile layout */
+     @media (max-width: 767px) {
+       .main-content {
+         /* Keep content below the fixed header on tablet/phone */
+         padding-top: 50px !important;
+         position: relative !important;
+       }
+       .file-viewer {
+         flex: 0 0 100% !important;
+         width: 100% !important;
+         height: auto !important;
+         position: relative !important;
+         top: 0 !important;
+         overflow-y: auto !important;
+       }
+       .editor {
+         width: 100% !important;
+         flex: 0 0 auto !important;
+         left: 0 !important;
+         right: auto !important;
+         top: 0 !important;
+         margin-bottom: 80px !important; /* space for footerToggleContainer */
+         position: relative !important;
+         overflow-y: auto !important;
+         display: flex !important;
+         flex-direction: column !important;
+         padding-bottom: 0 !important;
+       }
+       
+        /* Ensure toolbar is visible on mobile */
+        .editor .toolbar {
+          position: relative !important;
+          top: auto !important;
+          margin: 0 !important;
+          flex-shrink: 0 !important;
+          height: 50px !important;
+          min-height: 50px !important;
+        }
+       
+        /* Ensure document container expands to fill space above footer */
+        .editor .document-container {
+          flex: 1 1 auto !important;
+          overflow: auto !important;
+          padding-bottom: 0 !important;
+        }
+       
+       /* Ensure footer sits just below documentContainer — no big gaps */
+       .editor .footer {
+         margin-top: 8px !important;
+         margin-bottom: 0 !important;
+         flex-shrink: 0 !important;
+         padding: 10px 20px !important;
+         min-height: 50px;
+         box-sizing: border-box;
+       }
+       .toggle-panel {
+         display: none !important;
+       }
+       .footer-toggle-container {
+         display: flex !important;
+         z-index: 1100 !important;
+       }
     }
     @media (max-width: 1023px) {
       .toggle-panel {
@@ -2005,7 +2454,6 @@ color: #ffd700;
         flex: 1 1 auto !important;
         min-height: 0 !important;
         overflow: auto !important;
-        margin-bottom: 10px !important;
       }
 
       .editor.fullscreen .toolbar {
@@ -2014,14 +2462,15 @@ color: #ffd700;
         left: auto !important;
         right: auto !important;
         width: auto !important;
-        margin-bottom: 10px !important;
-        height: auto !important;
+        margin-bottom: 0 !important;
+        height: 50px !important;
+        min-height: 50px !important;
       }
 
       /* Ensure footer inside editor is visible in fullscreen mode on mobile */
       .editor.fullscreen .footer {
         margin-top: auto !important;
-        margin-bottom: 10px !important;
+        margin-bottom: 0 !important;
         flex-shrink: 0 !important;
       }
 
@@ -2030,19 +2479,19 @@ color: #ffd700;
         padding: 20px !important;
       }
 
-      .main-content {
-        flex-direction: column !important;
-        height: auto !important;
-        min-height: calc(100vh - 50px) !important;
-        padding-top: 0 !important;
-        padding-bottom: 80px !important;
-        overflow: visible !important;
-      }
+       .main-content {
+         flex-direction: column !important;
+         height: auto !important;
+         min-height: calc(100vh - 50px) !important;
+         padding-top: 50px !important;
+         padding-bottom: 80px !important;
+         overflow: visible !important;
+       }
 
-      .footer-toggle-container {
-        display: flex !important;
-        z-index: 1000 !important;
-      }
+       .footer-toggle-container {
+         display: flex !important;
+         z-index: 1000 !important;
+       }
     }
 
     /* Mobile footer toggle responsive sizing */
@@ -2076,12 +2525,15 @@ color: #ffd700;
     }
     
     /* PDF Canvas Responsive Styles for Tablet and Mobile */
-    @media (max-width: 767px) {
-      .pdf-modal-content {
-        width: 95% !important;
-        height: 85% !important;
-        padding: 15px !important;
-      }
+     @media (max-width: 767px) {
+       .footer-toggle-container {
+         bottom: 0;
+         height: 50px;
+         width: 100%;
+         flex-shrink: 0;
+         display: flex !important;
+         z-index: 1000 !important;
+       }
       #pdfCanvas {
         height: 80% !important;
       }
@@ -2173,91 +2625,91 @@ color: #ffd700;
       }
     }
     
-    /* Phone (below 768px) */
-    @media (max-width: 767px) {
-      .main-content {
-        padding-top: 0;
-        padding-bottom: 0 !important;
-        min-height: calc(100vh - 50px);
-        height: auto;
-        flex-direction: column;
-        display: flex;
-      }
-      
-       .file-viewer {
-         width: 100% !important;
-         flex: 1 !important;
-         height: auto !important;
-         min-height: 0 !important;
-         position: relative !important;
-         top: auto !important;
-         left: auto !important;
-         right: auto !important;
-         overflow: auto;
-         display: flex !important;
+     /* Phone (below 768px) */
+     @media (max-width: 767px) {
+       .main-content {
+         padding-top: 50px !important;
+         padding-bottom: 0 !important;
+         min-height: calc(100vh - 50px);
+         height: auto;
+         flex-direction: column;
+         display: flex;
        }
+       
+        .file-viewer {
+          width: 100% !important;
+          flex: 1 !important;
+          height: auto !important;
+          min-height: 0 !important;
+          position: relative !important;
+          top: auto !important;
+          left: auto !important;
+          right: auto !important;
+          overflow: auto;
+          display: flex !important;
+        }
 
-       .footer-toggle-container {
-        bottom: 0;
-        height: 45px;
-        width: 100%;
-        flex-shrink: 0;
-        display: flex !important;
-        z-index: 1000 !important;
-      }
-      
-      .footer-toggle-container .toggle-btn-mobile {
-        padding: 8px 10px;
-        font-size: 12px;
-      }
-      
-      /* PDF container sizing for phone */
-      #pdfContainer1, #pdfCanvas {
-        width: 100% !important;
-        height: 100% !important;
-        min-height: 600px !important;
-      }
+        .footer-toggle-container {
+         bottom: 0;
+         height: 50px;
+         width: 100%;
+         flex-shrink: 0;
+         display: flex !important;
+         z-index: 1000 !important;
+       }
+       
+       .footer-toggle-container .toggle-btn-mobile {
+         padding: 8px 10px;
+         font-size: 12px;
+       }
+       
+       /* PDF container sizing for phone */
+       #pdfContainer1, #pdfCanvas {
+         width: 100% !important;
+         height: 100% !important;
+         min-height: 600px !important;
+       }
     }
     
-    /* Small tablets/large phones (767px and below) */
-    @media (max-width: 767px) {
-      .main-content {
-        padding-top: 0;
-        padding-bottom: 0 !important;
-        min-height: calc(100vh - 50px);
-        height: auto;
-        flex-direction: column;
-        display: flex;
-      }
-      
-       .file-viewer {
-         width: 100% !important;
-         flex: 1 !important;
-         height: auto !important;
-         min-height: 0 !important;
-         position: relative !important;
-         top: auto !important;
-         left: auto !important;
-         right: auto !important;
-         overflow: auto;
-         display: flex !important;
+     /* Small tablets/large phones (767px and below) */
+     @media (max-width: 767px) {
+       .main-content {
+         padding-top: 50px !important;
+         padding-bottom: 0 !important;
+         min-height: calc(100vh - 50px);
+         height: auto;
+         flex-direction: column;
+         display: flex;
        }
+       
+        .file-viewer {
+          width: 100% !important;
+          flex: 1 !important;
+          height: auto !important;
+          min-height: 0 !important;
+          position: relative !important;
+          top: auto !important;
+          left: auto !important;
+          right: auto !important;
+          overflow: auto;
+          display: flex !important;
+        }
 
-       .footer-toggle-container {
-        bottom: 0;
-        height: 45px;
-        width: 100%;
-        flex-shrink: 0;
-        display: flex !important;
-        z-index: 1000 !important;
-      }
-      
-      /* PDF container sizing - full height */
-      #pdfContainer1, #pdfCanvas {
-        width: 100% !important;
-        height: 100% !important;
-        min-height: 300px !important;
-      }
+        .footer-toggle-container {
+         bottom: 0;
+         height: 50px;
+         width: 100%;
+         flex-shrink: 0;
+         display: flex !important;
+         z-index: 1000 !important;
+       }
+       
+       /* PDF container sizing - full height */
+       #pdfContainer1, #pdfCanvas {
+         width: 100% !important;
+         height: 100% !important;
+         min-height: 300px !important;
+       }
     }
     
     /* Small phones (below 480px) */
@@ -2270,14 +2722,11 @@ color: #ffd700;
       .footer-toggle-container .toggle-btn-mobile i {
         font-size: 12px;
       }
-      .main-content {
-        padding-top: 0;
-        padding-bottom: 0 !important;
-        min-height: 100%;
-        height: auto;
-        flex-direction: column;
-        display: flex;
-      }
+    .main-content {
+        margin-top: 0;
+        min-height: 100vh;
+        padding-top: 50px;
+    }
 
       .file-viewer {
         width: 100% !important;
@@ -2293,7 +2742,7 @@ color: #ffd700;
 
       .footer-toggle-container {
         bottom: 0;
-        height: 45px;
+        height: 50px;
         width: 100%;
         flex-shrink: 0;
       }
@@ -2316,6 +2765,33 @@ color: #ffd700;
       .toggle-panel {
         display: flex !important;
       }
+    }
+
+    /* Mobile: Ensure footer toggle stays above editor footer */
+    @media (max-width: 767px) {
+      #footerToggleContainer {
+        z-index: 2001 !important;
+        height: 50px;
+      }
+       .editor .document-container {
+         max-height: calc(100vh - 200px);
+       }
+
+       /* Final mobile footer visibility - must win over all other blocks */
+       .editor .toolbar,
+       .editor .document-container {
+         margin-bottom: 0 !important;
+       }
+       .editor .footer {
+         margin-top: 8px !important;
+         margin-bottom: 0 !important;
+         flex-shrink: 0 !important;
+         height: auto !important;
+         padding: 10px 20px !important;
+         position: relative !important;
+         bottom: auto !important;
+         z-index: 3000 !important;
+       }
     }
   </style>
 </head>
@@ -2522,57 +2998,51 @@ color: #ffd700;
                 <button onclick="toggleEditorOnMobile()" title="Toggle File Viewer"><i class="fa fa-eye"></i></button>
             </div>
 
-            <button id="showToolbarBtn" onclick="toggleToolbar()" style="display:none; position:absolute; top:5px; left:50%; transform:translateX(-50%); z-index:100; background:#2c2c2c; border:none; border-radius:8px; width:50px; height:30px; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.3); cursor:pointer; color:white;"><i class="fa fa-chevron-down"></i></button>
-
-            <div class="toolbar">
-                <button onclick="closeEditor()" title="Close Editor" style="background: #dc3545; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer; margin-right: 10px;">
-                    <i class="fas fa-times"></i>
-                </button>
-                <select onchange="format('fontName', this.value)">
-                    <option value="Arial">Arial</option>
-                    <option value="Georgia">Georgia</option>
-                    <option value="Times New Roman">Times New Roman</option>
-                    <option value="Courier New">Courier New</option>
-                </select>
-
-                <button onclick="adjustFontSize(1)">A+</button>
-                <button onclick="adjustFontSize(-1)">A−</button>
-
-                <button onclick="format('bold')"><b>B</b></button>
-                <button onclick="format('italic')"><i>I</i></button>
-
-                <button onclick="format('underline')" title="Underline" class="underline-btn"><u>U</u></button>
-
-                <input type="color" onchange="format('foreColor', this.value)" title="Text Color" />
-
-                <button onclick="format('justifyLeft')" title="Align Left"><i class="fas fa-align-left"></i></button>
-                <button onclick="format('justifyCenter')" title="Align Center"><i class="fas fa-align-center"></i></button>
-                <button onclick="format('justifyRight')" title="Align Right"><i class="fas fa-align-right"></i></button>
-                <button onclick="format('justifyFull')" title="Justify"><i class="fas fa-align-justify"></i></button>
-
-                <button onclick="setLineHeight('1.5')" title="Line Spacing" class="line-spacing-btn"><i class="fas fa-list"></i></button>
-
-                <select id="paperSizeSelect" onchange="setPaperSize(this.value)">
-                    <option value="letter">Letter</option>
-                    <option value="a4">A4</option>
-                    <option value="a5">A5</option>
-                    <option value="legal">Legal</option>
-                </select>
-
-                <input type="text" id="docTitle" placeholder="Untitled document" class="doc-title-input" style="padding: 6px 10px; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9; margin-right: 10px; width: 200px; color: #333;" />
-
-                <button onclick="downloadDocument()" title="Download Document"><i class="fas fa-download"></i></button>
-                <button onclick="addNewPage()" title="Add New Page"><i class="fas fa-plus"></i> New Page</button>
-                <button onclick="removeCurrentPage()" title="Remove Current Page"><i class="fas fa-minus"></i> Remove Page</button>
-
-                <div class="toolbar-toggle-panel" id="toolbarTogglePanel" onclick="toggleToolbar()" title="Toggle Toolbar">
-                    <div class="toolbar-toggle-btn">
-                        <i class="fa fa-chevron-up" id="toolbarToggleIcon"></i>
-                    </div>
+            <div class="toolbar" id="toolbar">
+                <div class="toolbar-header">
+                    <span class="toolbar-label">Toolbar</span>
+                    <button class="toolbar-open-btn" type="button" onclick="toggleToolbar()" aria-expanded="false" title="Show toolbar options">
+                        <i class="fa fa-chevron-down" id="toolbarToggleIcon"></i>
+                    </button>
                 </div>
-        
+                <div class="toolbar-content" id="toolbarContent">
+                    <select onchange="format('fontName', this.value)">
+                        <option value="Arial">Arial</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Courier New">Courier New</option>
+                    </select>
 
-                
+                    <button onclick="adjustFontSize(1)">A+</button>
+                    <button onclick="adjustFontSize(-1)">A−</button>
+
+                    <button onclick="format('bold')"><b>B</b></button>
+                    <button onclick="format('italic')"><i>I</i></button>
+
+                    <button onclick="format('underline')" title="Underline" class="underline-btn"><u>U</u></button>
+
+                    <input type="color" onchange="format('foreColor', this.value)" title="Text Color" />
+
+                    <button onclick="format('justifyLeft')" title="Align Left"><i class="fas fa-align-left"></i></button>
+                    <button onclick="format('justifyCenter')" title="Align Center"><i class="fas fa-align-center"></i></button>
+                    <button onclick="format('justifyRight')" title="Align Right"><i class="fas fa-align-right"></i></button>
+                    <button onclick="format('justifyFull')" title="Justify"><i class="fas fa-align-justify"></i></button>
+
+                    <button onclick="setLineHeight('1.5')" title="Line Spacing" class="line-spacing-btn"><i class="fas fa-list"></i></button>
+
+                    <select id="paperSizeSelect" onchange="setPaperSize(this.value)">
+                        <option value="letter">Letter</option>
+                        <option value="a4">A4</option>
+                        <option value="a5">A5</option>
+                        <option value="legal">Legal</option>
+                    </select>
+
+                    <input type="text" id="docTitle" placeholder="Untitled document" class="doc-title-input" style="padding: 6px 10px; font-size: 0.9rem; border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9; margin-right: 10px; width: 200px; color: #333;" />
+
+                    <button onclick="downloadDocument()" title="Download Document"><i class="fas fa-download"></i></button>
+                    <button onclick="addNewPage()" title="Add New Page"><i class="fas fa-plus"></i> New Page</button>
+                    <button onclick="removeCurrentPage()" title="Remove Current Page"><i class="fas fa-minus"></i> Remove Page</button>
+                </div>
             </div>
                 <div class="document-container" id="documentContainer">
                     <div class="page active letter">
@@ -3336,26 +3806,101 @@ color: #ffd700;
             }
         }
 
+        function restoreDefaultSplitView() {
+            const editor = document.getElementById('editor');
+            const fileViewer = document.querySelector('.file-viewer');
+            const togglePanel = document.querySelector('.toggle-panel');
+            const toggleBtn = document.querySelector('.toggle-btn');
+            const leftBtn = document.querySelector('.toggle-half.toggle-editor');
+            const rightBtn = document.querySelector('.toggle-half.toggle-file-viewer');
+
+            toggleState = 'default';
+
+            if (editor) {
+                editor.classList.remove('fullscreen', 'collapsed');
+                editor.classList.add('visible');
+                editor.style.display = 'flex';
+                editor.style.position = 'relative';
+                editor.style.width = '50%';
+                editor.style.maxWidth = '50%';
+                editor.style.flex = '0 0 50%';
+                editor.style.left = 'auto';
+                editor.style.right = 'auto';
+                editor.style.top = 'auto';
+                editor.style.height = 'auto';
+                editor.style.zIndex = 'auto';
+            }
+
+            if (fileViewer) {
+                fileViewer.classList.remove('expanded');
+                fileViewer.style.display = 'flex';
+                fileViewer.style.position = 'relative';
+                fileViewer.style.width = '50%';
+                fileViewer.style.maxWidth = '50%';
+                fileViewer.style.flex = '0 0 50%';
+                fileViewer.style.top = 'auto';
+                fileViewer.style.height = 'auto';
+            }
+
+            if (togglePanel) {
+                togglePanel.classList.remove('left', 'right', 'no-left-space', 'no-right-space');
+                togglePanel.style.display = 'flex';
+            }
+
+            if (toggleBtn) {
+                toggleBtn.style.width = '30px';
+            }
+
+            if (leftBtn) {
+                leftBtn.style.display = 'flex';
+                leftBtn.querySelector('i').className = 'fa fa-chevron-left';
+                leftBtn.onclick = () => toggleHomeEditor();
+            }
+
+            if (rightBtn) {
+                rightBtn.style.display = 'flex';
+                rightBtn.querySelector('i').className = 'fa fa-chevron-right';
+                rightBtn.onclick = () => toggleFileViewer();
+            }
+        }
+
         // Toggle editor: implements the new toggle behavior
         function toggleEditor() {
             console.log('toggleEditor called, current toggleState:', toggleState);
+
             if (toggleState === 'default') {
                 console.log('Going to editor state');
-                // Go to editor toggled
                 toggleState = 'editor';
-                // Expand editor to 100%, hide file-viewer
+
                 editor.classList.add('fullscreen');
                 fileViewer.style.display = 'none';
-                // Position toggle panel on left with no space and change icon, adjust button width and hide right button
+
                 togglePanel.classList.add('left', 'no-left-space');
                 togglePanel.classList.remove('right', 'no-right-space');
                 togglePanel.style.display = 'flex';
                 toggleBtn.style.width = '15px';
                 leftBtn.querySelector('i').className = 'fa fa-chevron-right';
-                // Hide right button, show left button for mobile toggle back
                 rightBtn.style.display = 'none';
                 leftBtn.style.display = 'flex';
+                return;
             }
+
+            if (toggleState === 'editor' || editor.classList.contains('fullscreen')) {
+                console.log('Restoring default split view from editor state');
+                restoreDefaultSplitView();
+                return;
+            }
+
+            if (toggleState === 'fileViewer') {
+                console.log('Restoring default split view from fileViewer state');
+                restoreDefaultSplitView();
+                return;
+            }
+        }
+
+        function toggleHomeEditor() {
+            console.log('toggleHomeEditor called, current toggleState:', toggleState);
+            toggleEditor();
         }
 
 
@@ -5321,17 +5866,15 @@ color: #ffd700;
         }
 
         function toggleToolbar() {
-            const toolbar = document.querySelector('.toolbar');
+            const toolbar = document.getElementById('toolbar');
             const icon = document.getElementById('toolbarToggleIcon');
-            const showBtn = document.getElementById('showToolbarBtn');
-            if (toolbar.style.display === 'none') {
-                toolbar.style.display = 'flex';
+            const isOpen = toolbar.classList.toggle('expanded');
+            if (isOpen) {
                 icon.className = 'fa fa-chevron-up';
-                showBtn.style.display = 'none';
+                toolbar.querySelector('.toolbar-open-btn').setAttribute('aria-expanded', 'true');
             } else {
-                toolbar.style.display = 'none';
                 icon.className = 'fa fa-chevron-down';
-                showBtn.style.display = 'flex';
+                toolbar.querySelector('.toolbar-open-btn').setAttribute('aria-expanded', 'false');
             }
         }
 

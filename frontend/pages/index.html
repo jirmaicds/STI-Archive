@@ -3271,8 +3271,14 @@ window.supabaseHelpers = {
                  document.getElementById('signup-email-error').style.display = 'none';
                  document.getElementById('signup-email').classList.remove('input-error');
                  return true;
-             }
-         }
+            } catch (outerError) {
+                console.error('Outer error in file upload handling:', outerError);
+                document.getElementById('signup-message').innerHTML = 
+                    '<span style="color: red;">An unexpected error occurred. Please try again.</span>';
+                document.getElementById('signup-message').style.display = 'block';
+                return;
+            }
+        }
 
         function validateGrade() {
             const role = document.getElementById('signup-role').value;

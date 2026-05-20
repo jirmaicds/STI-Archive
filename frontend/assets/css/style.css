@@ -481,6 +481,27 @@ body {
                 transform: none !important;
                 display: block !important;
                 margin-bottom: 20px;
+                z-index: 999 !important;
+            }
+
+            @media (max-width: 768px) {
+                .main-content.mobile-layout #adsContentContainer {
+                    width: 90% !important;
+                    max-width: 480px !important;
+                    margin: 0 auto 20px !important;
+                    right: auto !important;
+                    left: auto !important;
+                }
+            }
+
+            @media (max-width: 1024px) {
+                #stiBuildingImage {
+                    position: relative;
+                    z-index: 1;
+                }
+                #adsContentContainer {
+                    z-index: 999;
+                }
             }
             
             .file-viewer.mobile-hidden {

@@ -124,13 +124,14 @@ window.supabaseHelpers = {
     return user;
   },
 
-  async uploadFile(bucket, path, file) {
+  async uploadFile(bucket, path, file, options) {
     if (!window.supabase || !window.supabase.storage) {
       throw new Error('Supabase not initialized');
     }
+    const uploadOptions = options && typeof options === 'object' ? options : undefined;
     const { data, error } = await window.supabase.storage
       .from(bucket)
-      .upload(path, file);
+      .upload(path, file, uploadOptions);
     if (error) throw error;
     return data;
   },
@@ -234,6 +235,8 @@ window.supabaseHelpers = {
                     position: fixed;
                     bottom: 0;
                     left: 0;
+                    right: 0;
+                    width: 100%;
                     z-index: 9999;
                 }
             }
@@ -286,7 +289,7 @@ window.supabaseHelpers = {
                     position: absolute !important;
                     left: 50% !important;
                     transform: translateX(-50%) !important;
-                    bottom: -100px !important;
+                    bottom: 110px !important;
                     margin: 0 !important;
                     padding: 10px !important;
                     user-select: none;
@@ -515,6 +518,12 @@ window.supabaseHelpers = {
                 /* Show adsContentContainer login button on mobile */
                 #loginNavBtnMobile {
                     display: block !important;
+                }
+            }
+
+            @media (min-width: 481px) and (max-width: 1024px) {
+                .main-content {
+                    padding-top: 0 !important;
                 }
             }
             body::before {
@@ -1712,7 +1721,7 @@ window.supabaseHelpers = {
                     position: absolute !important;
                     left: 50% !important;
                     transform: translateX(-50%) !important;
-                    bottom: -100px !important;
+                    bottom: 110px !important;
                     right: auto !important;
                     top: auto !important;
                     margin: 0 !important;
@@ -1745,6 +1754,33 @@ window.supabaseHelpers = {
                     background: transparent !important;
                 }
             }
+
+            @media (min-width: 767px) and (max-width: 768px) {
+                #stiBuildingSection {
+                    justify-content: flex-start !important;
+                }
+                #adsContentContainer {
+                    position: relative !important;
+                    left: auto !important;
+                    right: auto !important;
+                    top: auto !important;
+                    bottom: auto !important;
+                    transform: none !important;
+                    margin: 20px auto 0 auto !important;
+                }
+                .main-content {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    justify-content: flex-start !important;
+                    margin-top: 0 !important;
+                }
+                #siteFooter, .site-footer {
+                    position: relative !important;
+                    width: 100% !important;
+                    margin-top: 20px;
+                }
+            }
             
             @media (max-width: 480px) {
                 #adsContentContainer {
@@ -1754,7 +1790,7 @@ window.supabaseHelpers = {
                     position: absolute !important;
                     left: 50% !important;
                     transform: translateX(-50%) !important;
-                    bottom: -80px !important;
+                    bottom: 110px !important;
                 }
                 #adsContentContainer img {
                     max-height: 250px;

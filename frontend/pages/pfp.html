@@ -1396,6 +1396,14 @@
             background: rgba(0,0,0,0.1);
         }
 
+        .dark-mode .remove-article-btn {
+            color: #e2e8f0;
+        }
+
+        .dark-mode .remove-article-btn:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+
         .saved-article .meta {
             font-size: 0.85rem;
             color: #555;
@@ -2781,14 +2789,14 @@
                     <div id="myuploads-list-container" style="display: block;">
                         <div id="uploaded-files-container" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
                             <div class="upload-form-content upld-content">
-                            <div class="drop-zone" id="myuploads-drop-zone" onclick="showUploadModal([])">
-                                <div class="upload-icon">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                </div>
-                                <p>Click to upload or drag and drop</p>
-                                <p>PDF files only (max 10MB)</p>
-                                <input type="file" id="user-pdf-upload" accept=".pdf" multiple style="display: none;">
-                            </div>
+                             <div class="drop-zone" id="myuploads-drop-zone">
+                                 <div class="upload-icon">
+                                     <i class="fas fa-cloud-upload-alt"></i>
+                                 </div>
+                                 <p>Click to upload or drag and drop</p>
+                                  <p>PDF files only (max 50MB)</p>
+                                 <input type="file" id="user-pdf-upload" accept=".pdf" multiple style="display: none;">
+                             </div>
                         </div>
                         </div>
                     </div>
@@ -3396,7 +3404,7 @@
                         </div>
                         <div class="meta">${article.meta}</div>
                         <div class="summary">${article.summary}</div>
-                        <div class="saved-date">Saved on: ${new Date(article.savedDate).toLocaleDateString()}</div>
+                         <div class="saved-date">${new Date(article.savedDate).toLocaleDateString()}</div>
                         ${article.pdfUrl ? `<div class="article-pdf" style="display: none;"><iframe src="${article.pdfUrl}" width="100%" height="400px" frameborder="0" allowfullscreen></iframe></div>` : ''}
                     `;
 
@@ -3992,26 +4000,77 @@
         });
 
         // File upload functionality
-        function initializeFileUpload() {
-            const uploadCircle = document.querySelector('.upload-drop-zone-circle');
-            const fileInput = document.getElementById('file-upload');
+         function initializeFileUpload() {
+             const uploadCircle = document.querySelector('.upload-drop-zone-circle');
+             const fileInput = document.getElementById('file-upload');
+             const myUploadsDropZone = document.getElementById('myuploads-drop-zone');
 
-            if (uploadCircle && fileInput) {
-                // Add click handler for upload circle
-                let isFileDialogOpen = false;
-                let clickTimeout;
+             if (uploadCircle && fileInput) {
+                 // Add click handler for upload circle
+                 let isFileDialogOpen = false;
+                 let clickTimeout;
 
-                uploadCircle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    fileInput.click();
-                });
+                 uploadCircle.addEventListener('click', function(e) {
+                     e.preventDefault();
+                     e.stopPropagation();
+                     fileInput.click();
+                 });
 
-                fileInput.addEventListener('change', (e) => {
-                    handleFileUpload(e.target.files);
-                });
-            }
-        }
+                 fileInput.addEventListener('change', (e) => {
+                     handleFileUpload(e.target.files);
+                 });
+             }
+
+             // Handle myuploads-drop-zone drag and drop
+             if (myUploadsDropZone) {
+                 // Prevent default drag behaviors
+                 myUploadsDropZone.addEventListener('dragover', function(e) {
+                     e.preventDefault();
+                     e.stopPropagation();
+                     myUploadsDropZone.classList.add('drag-over');
+                 });
+
+                 myUploadsDropZone.addEventListener('dragleave', function(e) {
+                     e.preventDefault();
+                     e.stopPropagation();
+                     myUploadsDropZone.classList.remove('drag-over');
+                 });
+
+                 myUploadsDropZone.addEventListener('drop', function(e) {
+                     e.preventDefault();
+                     e.stopPropagation();
+                     myUploadsDropZone.classList.remove('drag-over');
+
+                     const files = e.dataTransfer.files;
+                     if (files.length > 0) {
+                         // Filter for PDF files only
+                         const pdfFiles = Array.from(files).filter(file => 
+                             file.type === 'application/pdf' || 
+                             file.name.toLowerCase().endsWith('.pdf')
+                         );
+
+                         if (pdfFiles.length === 0) {
+                             showNotification('Please upload PDF files only', 'error');
+                             return;
+                         }
+
+                          // Check file size (50MB limit)
+                          const oversizedFiles = pdfFiles.filter(file => file.size > 50 * 1024 * 1024);
+                          if (oversizedFiles.length > 0) {
+                              showNotification('Files must be less than 50MB each', 'error');
+                              return;
+                          }
+
+                         handleFileUpload(pdfFiles);
+                     }
+                 });
+
+                 // Add click handler to trigger file input
+                 myUploadsDropZone.addEventListener('click', function() {
+                     fileInput.click();
+                 });
+             }
+         }
 
 
         function handleFileUpload(files) {

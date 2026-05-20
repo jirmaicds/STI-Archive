@@ -1495,7 +1495,46 @@ window.supabaseHelpers = {
             
             
             
-            /* Custom thin scrollbar - expands only when hovering on scrollbar */
+             /* File upload container styles */
+             .file-upload-container {
+                 position: relative;
+                 margin-top: 8px;
+             }
+             
+             .file-display {
+                 display: flex;
+                 justify-content: space-between;
+                 align-items: center;
+                 background: #f8f9fa;
+                 border: 1px solid #dee2e6;
+                 border-radius: 4px;
+                 padding: 8px 12px;
+                 margin-top: 8px;
+             }
+             
+             .file-name {
+                 font-size: 14px;
+                 color: #333;
+                 overflow: hidden;
+                 text-overflow: ellipsis;
+                 white-space: nowrap;
+                 max-width: 200px;
+             }
+             
+             .remove-file-btn {
+                 background: none;
+                 border: none;
+                 color: #dc3545;
+                 cursor: pointer;
+                 font-size: 16px;
+                 padding: 4px 8px;
+                 border-radius: 4px;
+             }
+             
+             .remove-file-btn:hover {
+                 background: #f8d7da;
+                 color: #c82333;
+             }
             .auth-container::-webkit-scrollbar {
                
                 max-width:10px;
@@ -1994,16 +2033,32 @@ window.supabaseHelpers = {
                         </select>
                         <span id="signup-section-error" class="error-message" style="display: none;"><i class="fas fa-exclamation-circle"></i> Please select a section.</span>
                     </div>
-                     <div class="form-group" id="rafGroup" style="display: none;">
-                         <label for="signup-raf">Registration Assessment Form (RAF)</label>
-                         <input type="file" id="signup-raf" name="raf" accept=".pdf,.doc,.docx,.jpg,.png">
-                         <span id="signup-raf-error" class="error-message" style="display: none;"><i class="fas fa-exclamation-circle"></i> Please upload your RAF file.</span>
+                      <div class="form-group" id="rafGroup" style="display: none;">
+                          <label for="signup-raf">Registration Assessment Form (RAF)</label>
+                          <div class="file-upload-container" id="raf-upload-container">
+                              <input type="file" id="signup-raf" name="raf" accept=".pdf,.doc,.docx,.jpg,.png">
+                              <div class="file-display" id="raf-file-display" style="display: none; margin-top: 8px;">
+                                  <span class="file-name" id="raf-file-name"></span>
+                                  <button type="button" class="remove-file-btn" onclick="removeRafFile()">
+                                      <i class="fas fa-times"></i>
+                                  </button>
+                              </div>
+                          </div>
+                          <span id="signup-raf-error" class="error-message" style="display: none;"><i class="fas fa-exclamation-circle"></i> Please upload your RAF file.</span>
+                      </div>
+                     <div class="form-group" id="educatorIdGroup" style="display: none;">
+                         <label for="signup-educator-id">Educator ID</label>
+                         <div class="file-upload-container" id="educator-id-upload-container">
+                             <input type="file" id="signup-educator-id" name="educator_id" accept=".pdf,.doc,.docx">
+                             <div class="file-display" id="educator-id-file-display" style="display: none; margin-top: 8px;">
+                                 <span class="file-name" id="educator-id-file-name"></span>
+                                 <button type="button" class="remove-file-btn" onclick="removeEducatorIdFile()">
+                                     <i class="fas fa-times"></i>
+                                 </button>
+                             </div>
+                         </div>
+                         <span id="signup-educator-id-error" class="error-message" style="display: none;"><i class="fas fa-exclamation-circle"></i> Please upload your Educator ID file.</span>
                      </div>
-                    <div class="form-group" id="educatorIdGroup" style="display: none;">
-                        <label for="signup-educator-id">Educator ID</label>
-                        <input type="file" id="signup-educator-id" name="educator_id" accept=".pdf,.doc,.docx">
-                        <span id="signup-educator-id-error" class="error-message" style="display: none;"><i class="fas fa-exclamation-circle"></i> Please upload your Educator ID file.</span>
-                    </div>
                     <div class="form-group full-width" style="display: flex; align-items: center; gap: 4px; text-align:justify;">
                         <label for="terms-signup" style="font-size: 14px; margin: 0;">
                             <input type="checkbox" id="terms-signup" name="terms" required> 
@@ -3377,30 +3432,42 @@ window.supabaseHelpers = {
                    // Define storage path: {role}/{userId}/{filename}
                    const storagePath = `${role}/${userId}/${requiredFile.name}`;
                    
-                   // Upload to Supabase storage
-                   const uploadResult = await window.supabaseHelpers.uploadFile(
-                       'user-documents', // bucket name - adjust as needed
-                       storagePath,
-                       requiredFile
-                   );
-                   
-                   filePath = storagePath; // Store the path for database reference
-                   console.log('File uploaded to Supabase:', uploadResult);
-               } catch (uploadError) {
-                   console.error('Error uploading file to Supabase:', uploadError);
-                   console.warn('Upload failed; attempting local fallback if bucket missing');
-                   const msg = (uploadError && uploadError.message) ? uploadError.message.toString().toLowerCase() : '';
-                   if (msg.includes('bucket not found') || (uploadError && uploadError.status === 404)) {
-                       // Fallback: mark file as local and continue signup
-                       filePath = 'local:' + storagePath;
-                       console.warn('Supabase bucket not found; using local storage placeholder for filePath:', filePath);
-                   } else {
-                       document.getElementById('signup-message').innerHTML = 
-                           '<span style="color: red;">File upload failed. Please try again.</span>';
-                       document.getElementById('signup-message').style.display = 'block';
-                       return;
-                   }
-               }
+                    // Upload to Supabase storage with timeout
+                    const uploadTimeout = setTimeout(() => {
+                        throw new Error('Upload timeout - please check your connection');
+                    }, 30000); // 30 second timeout
+                    
+                    try {
+                        const uploadResult = await window.supabaseHelpers.uploadFile(
+                            'user-documents', // bucket name - adjust as needed
+                            storagePath,
+                            requiredFile
+                        );
+                        
+                        clearTimeout(uploadTimeout);
+                        filePath = storagePath; // Store the path for database reference
+                        console.log('File uploaded to Supabase:', uploadResult);
+                    } catch (uploadError) {
+                        clearTimeout(uploadTimeout);
+                        console.error('Error uploading file to Supabase:', uploadError);
+                        console.warn('Upload failed; attempting local fallback if bucket missing');
+                        const msg = (uploadError && uploadError.message) ? uploadError.message.toString().toLowerCase() : '';
+                        if (msg.includes('bucket not found') || (uploadError && uploadError.status === 404)) {
+                            // Fallback: mark file as local and continue signup
+                            filePath = 'local:' + storagePath;
+                            console.warn('Supabase bucket not found; using local storage placeholder for filePath:', filePath);
+                        } else if (msg.includes('timeout')) {
+                            document.getElementById('signup-message').innerHTML = 
+                                '<span style="color: red;">Upload timed out. Please check your connection and try again.</span>';
+                            document.getElementById('signup-message').style.display = 'block';
+                            return;
+                        } else {
+                            document.getElementById('signup-message').innerHTML = 
+                                '<span style="color: red;">File upload failed. Please try again.</span>';
+                            document.getElementById('signup-message').style.display = 'block';
+                            return;
+                        }
+                    }
            }
 
            // Create JSON data for server (without file binary data)
@@ -4629,7 +4696,65 @@ window.supabaseHelpers = {
                 console.log('Dark mode turned ON');
             }
         }
-        </script>
+        
+        // File removal functions for signup form
+        function removeRafFile() {
+            const rafInput = document.getElementById('signup-raf');
+            const rafDisplay = document.getElementById('raf-file-display');
+            const rafFileName = document.getElementById('raf-file-name');
+            
+            rafInput.value = '';
+            rafDisplay.style.display = 'none';
+            rafFileName.textContent = '';
+            
+            // Hide error if visible
+            const rafError = document.getElementById('signup-raf-error');
+            if (rafError) {
+                rafError.style.display = 'none';
+            }
+        }
+        
+        function removeEducatorIdFile() {
+            const eduInput = document.getElementById('signup-educator-id');
+            const eduDisplay = document.getElementById('educator-id-file-display');
+            const eduFileName = document.getElementById('educator-id-file-name');
+            
+            eduInput.value = '';
+            eduDisplay.style.display = 'none';
+            eduFileName.textContent = '';
+            
+            // Hide error if visible
+            const eduError = document.getElementById('signup-educator-id-error');
+            if (eduError) {
+                eduError.style.display = 'none';
+            }
+        }
+        
+        // File selection handlers for signup form
+        document.getElementById('signup-raf').addEventListener('change', function() {
+            const rafDisplay = document.getElementById('raf-file-display');
+            const rafFileName = document.getElementById('raf-file-name');
+            
+            if (this.files && this.files[0]) {
+                rafFileName.textContent = this.files[0].name;
+                rafDisplay.style.display = 'block';
+            } else {
+                rafDisplay.style.display = 'none';
+            }
+        });
+        
+        document.getElementById('signup-educator-id').addEventListener('change', function() {
+            const eduDisplay = document.getElementById('educator-id-file-display');
+            const eduFileName = document.getElementById('educator-id-file-name');
+            
+            if (this.files && this.files[0]) {
+                eduFileName.textContent = this.files[0].name;
+                eduDisplay.style.display = 'block';
+            } else {
+                eduDisplay.style.display = 'none';
+            }
+        });
+    </script>
         <script src="frontend/assets/js/script.js"></script>
         
         <!-- Footer -->

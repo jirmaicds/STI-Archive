@@ -1835,6 +1835,14 @@
                 min-width: 1000px;
                 display: table;
             }
+            /* Bulk actions wrap on small screens */
+            .bulk-actions {
+                flex-wrap: wrap;
+            }
+            .bulk-actions > * {
+                flex: 1 1 auto;
+                min-width: fit-content;
+            }
         }
         /* Additional media query for screens 703px and below */
         @media (max-width: 703px) {

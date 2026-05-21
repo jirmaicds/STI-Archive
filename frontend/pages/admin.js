@@ -1998,17 +1998,17 @@ const marginValue = window.innerWidth >= 1025 ? '200px' : window.innerWidth >= 7
 document.querySelector('.header').style.paddingLeft = marginValue;
 document.getElementById('main-content').style.marginLeft = marginValue;
 }
-loadUsers().then(() => {
+loadUsers().then(async () => {
 // Counts are now updated automatically when tables are populated
-renderUserChart();
-renderSigningUpChart();
-renderDashboardUploadsChart();
+await renderUserChart();
+await renderSigningUpChart();
+await renderDashboardUploadsChart();
 renderGaugeChart('session-duration-gauge', 'Average Session Duration', 2.5, '#007bff');
-}).catch(() => {
+}).catch(async () => {
 // Fallback if async fails
-renderUserChart();
-renderSigningUpChart();
-renderDashboardUploadsChart();
+await renderUserChart();
+await renderSigningUpChart();
+await renderDashboardUploadsChart();
 });
 // Clear the saved section after loading
 localStorage.removeItem('adminCurrentSection');
@@ -2697,65 +2697,89 @@ if (DEBUG) console.log('loadAdmins called - admins are loaded by loadUsers');
 }
 
 async function renderUserChart() {
-// Example data for demonstration
-const exampleData = {
-shs: 150,
-college: 80,
-educator: 25,
-admin: 5
-};
-const barColors = [
-'#008000', // SHS Emerald Green
-'#00008B', // College Deep Blue
-'#FFA500', // Teacher Warm Orange
-'#8A2BE2'  // Admin Cool Purple
-];
-const labels = ['SHS', 'COLLEGE', 'TEACHER', 'ADMIN'];
-const ctx = document.getElementById('user-chart').getContext('2d');
-if (window.userChart) {
-window.userChart.destroy();
-}
-const isDarkMode = document.body.classList.contains('dark-mode');
-const textColor = isDarkMode ? '#ffffff' : '#000000';
-window.userChart = new Chart(ctx, {
-type: 'bar',
-data: {
-labels: labels,
-datasets: [{
-data: [exampleData.shs, exampleData.college, exampleData.educator, exampleData.admin],
-backgroundColor: barColors,
-borderColor: barColors,
-borderWidth: 1
-}]
-},
-options: {
-responsive: true,
-plugins: {
-legend: {
-display: false
-}
-},
-scales: {
-x: {
-ticks: {
-color: textColor
-}
-},
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    ticks: {
-                        color: textColor,
-                        stepSize: 10
-                    }
-                }
-}
-}
-});
+    // Fetch real user counts from Supabase filtered by user type
+    const counts = { shs: 0, college: 0, educator: 0, admin: 0 };
+    try {
+      const { data, error } = await window.supabaseClient
+        .from('users')
+        .select('id, user_type, role');
+
+      if (!error && data) {
+        data.forEach(u => {
+          const type = (u.user_type || '').toLowerCase();
+          const role = (u.role || '').toLowerCase();
+          if (type === 'senior_high') counts.shs++;
+          else if (type === 'college') counts.college++;
+          else if (type === 'educator') counts.educator++;
+          else if (['admin', 'coadmin', 'subadmin'].includes(role)) counts.admin++;
+        });
+      }
+    } catch (e) {
+      console.warn('Failed to fetch user counts from Supabase, using fallback:', e.message);
+      const fallback = { shs: 0, college: 0, educator: 0, admin: 0 };
+      const localUsers = JSON.parse(localStorage.getItem('users')) || [];
+      localUsers.forEach(u => {
+        const t = (u.user_type || u.role || '').toLowerCase();
+        if (t === 'senior_high' || t === 'shs') fallback.shs++;
+        else if (t === 'college') fallback.college++;
+        else if (t === 'educator') fallback.educator++;
+        else if (['admin','coadmin','subadmin'].includes(t)) fallback.admin++;
+      });
+      return buildUserChart(fallback);
+    }
+    buildUserChart(counts);
 }
 
+function buildUserChart(counts) {
+    const labels = ['SHS', 'COLLEGE', 'EDUCATOR', 'ADMIN'];
+    const barColors = [
+      '#008000', // SHS Emerald Green
+      '#00008B', // College Deep Blue
+      '#FFA500', // Educator Warm Orange
+      '#8A2BE2'  // Admin Cool Purple
+    ];
+    const ctx = document.getElementById('user-chart').getContext('2d');
+    if (window.userChart) {
+      window.userChart.destroy();
+    }
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    const textColor = isDarkMode ? '#ffffff' : '#000000';
+    window.userChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: [counts.shs, counts.college, counts.educator, counts.admin],
+          backgroundColor: barColors,
+          borderColor: barColors,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: textColor
+            }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              color: textColor
+            }
+          }
+        }
+      }
+    });
+  }
 
-function renderSigningUpChart(period = 'day', filter = null) {
+  function renderSigningUpChart(period = 'day', filter = null) {
 if (DEBUG) console.log('DEBUG: Rendering signing up chart');
 const ctx = document.getElementById('signing-up-chart').getContext('2d');
 if (window.signingUpChart) {
@@ -2808,66 +2832,21 @@ fill: true
 },
 options: {
 responsive: true,
-scales: {
-y: {
-beginAtZero: true
-}
-}
-}
-});
-}
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            ticks: {
+              color: textColor,
+              stepSize: 10
+            }
+          }
+        }
+      }
+    });
+  }
 
-
-function renderDashboardUploadsChart() {
-const ctx = document.getElementById('dashboard-uploadsChart').getContext('2d');
-if (window.dashboardUploadsChart) {
-window.dashboardUploadsChart.destroy();
-}
-
-const barColors = [
-'#8A2BE2', // Admin Cool Purple
-'#FFA500', // Teacher Warm Orange
-'#008000', // SHS Emerald Green
-'#00008B'  // College Deep Blue
-];
-const labels = ['ADMIN', 'TEACHER', 'SHS', 'COLLEGE'];
-const data = [1, 1, 1, 1]; // Demo data
-const total = data.reduce((a, b) => a + b, 0);
-const percentageData = data.map(d => (d / total) * 100);
-
-window.dashboardUploadsChart = new Chart(ctx, {
-type: 'doughnut',
-data: {
-labels: labels,
-datasets: [{
-data: percentageData,
-backgroundColor: barColors,
-borderWidth: 1
-}]
-},
-options: {
-responsive: true,
-plugins: {
-legend: {
-display: true
-},
-tooltip: {
-callbacks: {
-label: function(context) {
-return context.label + ': ' + context.parsed + '%';
-}
-}
-}
-}
-}
-});
-}
-
-
-
-
-
-// Update dashboard counts
+  // Update dashboard counts
 async function updateDashboardCounts() {
 // Get total counts without pagination limits
 try {
@@ -3138,10 +3117,10 @@ function showSection(sectionId) {
 
         if (sectionId === 'dashboard') {
             // Dashboard counts are updated when tables are populated
-            setTimeout(() => {
-                renderUserChart();
-                renderSigningUpChart();
-                renderDashboardUploadsChart();
+            setTimeout(async () => {
+                await renderUserChart();
+                await renderSigningUpChart();
+                await renderDashboardUploadsChart();
                 renderGaugeChart('session-duration-gauge', 'Average Session Duration', 2.5, '#007bff');
             }, 100);
         }
@@ -5087,51 +5066,85 @@ submitBtn.textContent = 'Create Admin';
 
 
 
-function renderDashboardUploadsChart(category = 'grade11') {
-const ctx = document.getElementById('dashboard-uploadsChart').getContext('2d');
-if (window.dashboardUploadsChart) {
-window.dashboardUploadsChart.destroy();
-}
+async function renderDashboardUploadsChart(category = 'grade11') {
+    const ctx = document.getElementById('dashboard-uploadsChart').getContext('2d');
+    if (window.dashboardUploadsChart) {
+      window.dashboardUploadsChart.destroy();
+    }
 
-let labels = ['SHS', 'College', 'Teacher', 'Admin'];
-let data = [30, 25, 40, 35];
+    const barColors = [
+      '#008000', // SHS Emerald Green
+      '#00008B', // College Deep Blue
+      '#FFA500', // Educator Warm Orange
+      '#8A2BE2'  // Admin Cool Purple
+    ];
+    const labels = ['SHS', 'College', 'Educator', 'Admin'];
+    let data = [0, 0, 0, 0];
 
-const barColors = [
-'#008000', // SHS Emerald Green
-'#00008B', // College Deep Blue
-'#FFA500', // Teacher Warm Orange
-'#8A2BE2'  // Admin Cool Purple
-];
-const total = data.reduce((a, b) => a + b, 0);
-const percentageData = data.map(d => (d / total) * 100);
+    try {
+      // Fetch all approved user uploads to count by user type
+      const { data: uploads, error } = await window.supabaseClient
+        .from('user_uploads')
+        .select('*')
+        .eq('status', 'approved');
 
-window.dashboardUploadsChart = new Chart(ctx, {
-type: dashboardUploadsChartType,
-data: {
-labels: labels,
-datasets: [{
-data: percentageData,
-backgroundColor: barColors.slice(0, labels.length),
-borderWidth: 1
-}]
-},
-options: {
-responsive: true,
-plugins: {
-legend: {
-display: true
-},
-tooltip: {
-callbacks: {
-label: function(context) {
-return context.label + ': ' + context.parsed.toFixed(1) + '%';
-}
-}
-}
-}
-}
-});
-}
+      if (!error && uploads) {
+        const userIds = [...new Set(uploads.map(u => u.user_id).filter(Boolean))];
+        let typeCounts = { shs: 0, college: 0, educator: 0, admin: 0 };
+        if (userIds.length > 0) {
+          const { data: users } = await window.supabaseClient
+            .from('users')
+            .select('id, user_type, role')
+            .in('id', userIds);
+          if (users) {
+            users.forEach(u => {
+              const t = (u.user_type || '').toLowerCase();
+              const r = (u.role || '').toLowerCase();
+              if (t === 'senior_high') typeCounts.shs++;
+              else if (t === 'college') typeCounts.college++;
+              else if (t === 'educator') typeCounts.educator++;
+              else if (['admin','coadmin','subadmin'].includes(r)) typeCounts.admin++;
+              else typeCounts.shs++;
+            });
+          }
+        }
+        data = [typeCounts.shs, typeCounts.college, typeCounts.educator, typeCounts.admin];
+      }
+    } catch (e) {
+      console.warn('Failed to fetch upload stats from Supabase:', e.message);
+    }
+
+    const total = data.reduce((a, b) => a + b, 0);
+    const safeTotal = total === 0 ? 1 : total;
+    const percentageData = data.map(d => (d / safeTotal) * 100);
+
+    window.dashboardUploadsChart = new Chart(ctx, {
+      type: dashboardUploadsChartType,
+      data: {
+        labels: labels,
+        datasets: [{
+          data: percentageData,
+          backgroundColor: barColors,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.label + ': ' + context.parsed.toFixed(1) + '%';
+              }
+            }
+          }
+        }
+      }
+    });
+  }
 
 
 
@@ -5904,8 +5917,8 @@ loadUsers();
 // Update dashboard counts
 updateDashboardCounts();
 // Update charts
-renderUserChart();
-renderDashboardUploadsChart();
+renderUserChart().catch(() => {});
+renderDashboardUploadsChart().catch(() => {});
 renderSigningUpChart('day', null);
 }
 

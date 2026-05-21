@@ -806,7 +806,7 @@ window.supabaseHelpers = {
                 outline: none;
                 transition: border 0.2s;
             }
-            #signupForm input,
+            #signupForm input:not([type="file"]),
             #signupForm select {
                 background-color: #e8f0fe;
             }
@@ -859,6 +859,9 @@ window.supabaseHelpers = {
                 transition: border 0.2s;
                 background: #fff;
                 color: #000;
+            }
+            .auth-form select option {
+                color: black;
             }
             .auth-form select:focus {
                 border: 1.5px solid #0057b8;
@@ -1028,6 +1031,11 @@ window.supabaseHelpers = {
                 color: #fff;
                 border: 1px solid #bfc9d9;
             }
+            .dark-mode #signupForm input[type="file"] {
+                background-color: #e8f0fe;
+                color: black;
+                border: 1px solid #bfc9d9;
+            }
             .dark-mode .auth-container2 .auth-form input[type="file"] {
                 background: #fff !important;
                 color: #132a3f !important;
@@ -1053,6 +1061,17 @@ window.supabaseHelpers = {
             .dark-mode .form-footer a {
                 color: #ffd700;
             }
+            .dark-mode #switchToLogin,
+            .dark-mode #switchToSignup {
+                color: #ffd700 !important;
+            }
+            .dark-mode #termsLink,
+            .dark-mode #privacyLink,
+            .dark-mode #termsLinkSignup,
+            .dark-mode #privacyLinkSignup {
+                color: #ffd700 !important;
+            }
+            
             .dark-mode .auth-container2 .form-footer a {
                 color: #0057b8;
             }
@@ -1065,6 +1084,16 @@ window.supabaseHelpers = {
             .dark-mode .toggle-password:hover,
             .dark-mode .toggle-password:focus {
                 color: #fff;
+            }
+            .dark-mode .remove-file-btn {
+                color: #fff;
+            }
+            .dark-mode .remove-file-btn:hover {
+                background: rgba(255,255,255,0.1);
+                color: #fff;
+            }
+            .dark-mode .file-display {
+                background: #fff;
             }
             /* Dark mode for signup credentials */
             .dark-mode #signupCredentials {
@@ -1513,16 +1542,16 @@ window.supabaseHelpers = {
                  margin-top: 8px;
              }
              
-             .file-display {
-                 display: flex;
-                 justify-content: space-between;
-                 align-items: center;
-                 background: #f8f9fa;
-                 border: 1px solid #dee2e6;
-                 border-radius: 4px;
-                 padding: 8px 12px;
-                 margin-top: 8px;
-             }
+              .file-display {
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  background: #e8f0fe;
+                  border: 1px solid #dee2e6;
+                  border-radius: 4px;
+                  padding: 8px 12px;
+                  margin-top: 8px;
+              }
              
              .file-name {
                  font-size: 14px;
@@ -1533,20 +1562,20 @@ window.supabaseHelpers = {
                  max-width: 200px;
              }
              
-             .remove-file-btn {
-                 background: none;
-                 border: none;
-                 color: #dc3545;
-                 cursor: pointer;
-                 font-size: 16px;
-                 padding: 4px 8px;
-                 border-radius: 4px;
-             }
-             
-             .remove-file-btn:hover {
-                 background: #f8d7da;
-                 color: #c82333;
-             }
+              .remove-file-btn {
+                  background: none;
+                  border: none;
+                  color: #333;
+                  cursor: pointer;
+                  font-size: 16px;
+                  padding: 4px 8px;
+                  border-radius: 4px;
+              }
+              
+              .remove-file-btn:hover {
+                  background: #e9ecef;
+                  color: #333;
+              }
             .auth-container::-webkit-scrollbar {
                
                 max-width:10px;

@@ -518,7 +518,6 @@ window.supabaseHelpers = {
                     padding: 20px 5vw 80px 5vw !important;
                     display: block !important;
                     position: static !important;
-                    margin-top: 150px;
                 }
                 /* Hide navbar login button on mobile */
                 #loginNavBtn {
@@ -527,6 +526,18 @@ window.supabaseHelpers = {
                 /* Show adsContentContainer login button on mobile */
                 #loginNavBtnMobile {
                     display: block !important;
+                }
+            }
+
+            /* 767px - main-content transparent, no top margin, push upward */
+            @media screen and (max-width: 767px) {
+                .main-content {
+                    background: none !important;
+                    position: static !important;
+                    margin-top: 0 !important;
+                    padding-top: 0 !important;
+                    height: auto !important;
+                    min-height: auto !important;
                 }
             }
             body::before {

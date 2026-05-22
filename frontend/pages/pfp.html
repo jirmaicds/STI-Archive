@@ -2893,27 +2893,21 @@
 
         // Load saved images on page load
         function loadSavedImages() {
-            const savedProfilePic = localStorage.getItem('profilePicture');
+            const savedSelectedPic = localStorage.getItem('selectedProfilePic');
+            const savedUploadedPic = localStorage.getItem('profilePicture');
             const savedBackground = localStorage.getItem('backgroundImage');
 
-            if (savedProfilePic) {
-                document.getElementById('pfpPic').src = savedProfilePic;
-                // Also update mini profile picture
-                const miniPfpPic = document.getElementById('miniPfpPic');
-                if (miniPfpPic) {
-                    miniPfpPic.src = savedProfilePic;
-                }
-                // Update navbar profile picture
-                const userIcon = document.getElementById('userIcon');
-                if (userIcon) {
-                    userIcon.src = savedProfilePic;
-                }
-            } else {
-                // Set default
-                const userIcon = document.getElementById('userIcon');
-                if (userIcon) {
-                    userIcon.src = '/frontend/assets/images/Screenshot 2025-09-10 204105.png';
-                }
+            const selectedSrc = savedSelectedPic ? `/frontend/assets/images/${savedSelectedPic}` : (savedUploadedPic || '/frontend/assets/images/Screenshot 2025-09-10 204105.png');
+
+            document.getElementById('pfpPic').src = selectedSrc;
+            const userIcon = document.getElementById('userIcon');
+            if (userIcon) {
+                userIcon.src = selectedSrc;
+            }
+            // Also update mini profile picture
+            const miniPfpPic = document.getElementById('miniPfpPic');
+            if (miniPfpPic) {
+                miniPfpPic.src = selectedSrc;
             }
 
             if (savedBackground) {

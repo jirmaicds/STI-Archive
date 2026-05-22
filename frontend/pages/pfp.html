@@ -2546,6 +2546,13 @@
         .drop-zone:hover {
             background: #f0f4f8;
         }
+        .dark-mode .drop-zone {
+            border-color: #4b5563;
+            color: #e2e8f0;
+        }
+        .dark-mode .drop-zone:hover {
+            background: #374151;
+        }
         .file-queue {
             max-height: 200px;
             overflow-y: auto;
@@ -3861,6 +3868,8 @@
 
             if (savedFirstName && savedLastName) {
                 document.querySelectorAll('.full-name').forEach(el => el.textContent = `${savedFirstName} ${savedLastName}`);
+            } else if (currentUser.fullname) {
+                document.querySelectorAll('.full-name').forEach(el => el.textContent = currentUser.fullname);
             } else if (currentUser.name) {
                 document.querySelectorAll('.full-name').forEach(el => el.textContent = currentUser.name);
             }

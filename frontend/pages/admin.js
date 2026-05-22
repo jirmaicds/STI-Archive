@@ -2744,40 +2744,45 @@ function buildUserChart(counts) {
     }
     const isDarkMode = document.body.classList.contains('dark-mode');
     const textColor = isDarkMode ? '#ffffff' : '#000000';
-    window.userChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          data: [counts.shs, counts.college, counts.educator, counts.admin],
-          backgroundColor: barColors,
-          borderColor: barColors,
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            display: false
-          }
-        },
-        scales: {
-          x: {
-            ticks: {
-              color: textColor
-            }
-          },
-          y: {
-            beginAtZero: true,
-            ticks: {
-              color: textColor
-            }
-          }
-        }
-      }
-    });
-  }
+     window.userChart = new Chart(ctx, {
+       type: 'bar',
+       data: {
+         labels: labels,
+         datasets: [{
+           data: [counts.shs, counts.college, counts.educator, counts.admin],
+           backgroundColor: barColors,
+           borderColor: barColors,
+           borderWidth: 1
+         }]
+       },
+       options: {
+         responsive: true,
+         plugins: {
+           legend: {
+             display: false
+           }
+         },
+         scales: {
+           x: {
+             ticks: {
+               color: textColor
+             }
+           },
+           y: {
+             beginAtZero: true,
+             ticks: {
+               color: textColor,
+               stepSize: 10,
+               // Ensure only integer values are shown
+               callback: function(value) {
+                 return Number.isInteger(value) ? value : null;
+               }
+             }
+           }
+         }
+       }
+     });
+   }
 
   function renderSigningUpChart(period = 'day', filter = null) {
 if (DEBUG) console.log('DEBUG: Rendering signing up chart');
@@ -2817,6 +2822,8 @@ const count = filteredUsers.filter(user => user.created_at && user.created_at.sl
 data.push(count);
 }
 }
+const isDarkMode = document.body.classList.contains('dark-mode');
+const textColor = isDarkMode ? '#ffffff' : '#000000';
 window.signingUpChart = new Chart(ctx, {
 type: 'line',
 data: {
@@ -2832,19 +2839,19 @@ fill: true
 },
 options: {
 responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 100,
-            ticks: {
-              color: textColor,
-              stepSize: 10
-            }
-          }
-        }
-      }
-    });
-  }
+scales: {
+y: {
+beginAtZero: true,
+max: 100,
+ticks: {
+color: textColor,
+stepSize: 10
+}
+}
+}
+}
+});
+}
 
   // Update dashboard counts
 async function updateDashboardCounts() {
@@ -5118,33 +5125,48 @@ async function renderDashboardUploadsChart(category = 'grade11') {
     const safeTotal = total === 0 ? 1 : total;
     const percentageData = data.map(d => (d / safeTotal) * 100);
 
-    window.dashboardUploadsChart = new Chart(ctx, {
-      type: dashboardUploadsChartType,
-      data: {
-        labels: labels,
-        datasets: [{
-          data: percentageData,
-          backgroundColor: barColors,
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            display: true
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return context.label + ': ' + context.parsed.toFixed(1) + '%';
-              }
-            }
-          }
-        }
-      }
-    });
-  }
+     window.dashboardUploadsChart = new Chart(ctx, {
+       type: dashboardUploadsChartType,
+       data: {
+         labels: labels,
+         datasets: [{
+           data: percentageData,
+           backgroundColor: barColors,
+           borderWidth: 1
+         }]
+       },
+       options: {
+         responsive: true,
+         plugins: {
+           legend: {
+             display: true
+           },
+           tooltip: {
+             callbacks: {
+               label: function(context) {
+                 return context.label + ': ' + Math.round(context.parsed) + '%';
+               }
+             }
+           }
+         },
+         scales: {
+           y: {
+             beginAtZero: true,
+             ticks: {
+               // Ensure only integer values are shown
+               callback: function(value) {
+                 return Number.isInteger(value) ? value : null;
+               },
+               // Set step size to 10 for 0, 10, 20, etc.
+               stepSize: 10,
+               // Ensure max is 100
+               max: 100
+             }
+           }
+         }
+       }
+     });
+   }
 
 
 

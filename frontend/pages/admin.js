@@ -298,25 +298,40 @@ if (typeof window !== 'undefined' && typeof window.updateNotificationBadge === '
                 }
             }
 
-            if (user.raf_path) {
-                if (String(user.raf_path).startsWith('local:')) {
-                    const localData = localStorage.getItem(`${effectiveId}_raf`);
-                    renderDoc('RAF Document', null, null, localData);
-                } else {
-                    const rafUrl = user.raf_path.startsWith('http') ? user.raf_path : `https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/Raf-edu_id/${user.raf_path}`;
-                    renderDoc('RAF Document', rafUrl, user.raf_path.split('.').pop().toLowerCase());
-                }
-            }
-
-            if (user.educator_id) {
-                if (String(user.educator_id).startsWith('local:')) {
-                    const localData = localStorage.getItem(`${effectiveId}_educator_id`);
-                    renderDoc('Educator ID', null, null, localData);
-                } else {
-                    const eduUrl = user.educator_id.startsWith('http') ? user.educator_id : `https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/Raf-edu_id/${user.educator_id}`;
-                    renderDoc('Educator ID', eduUrl, user.educator_id.split('.').pop().toLowerCase());
-                }
-            }
+             // Function to get the correct folder based on user role/type
+             const getUserFolder = (user) => {
+                 // Check if user is an Educator
+                 const role = (user.role || '').toLowerCase();
+                 const userType = (user.user_type || '').toLowerCase();
+                 
+                 if (role === 'educator' || userType === 'educator') {
+                     return 'Edu';
+                 }
+                 // Default to Raf for SHS, College, Admin, etc.
+                 return 'Raf';
+             };
+ 
+             if (user.raf_path) {
+                 if (String(user.raf_path).startsWith('local:')) {
+                     const localData = localStorage.getItem(`${effectiveId}_raf`);
+                     renderDoc('RAF Document', null, null, localData);
+                 } else {
+                     const userFolder = getUserFolder(user);
+                     const rafUrl = user.raf_path.startsWith('http') ? user.raf_path : `https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/${userFolder}_edu_id/${user.raf_path}`;
+                     renderDoc('RAF Document', rafUrl, user.raf_path.split('.').pop().toLowerCase());
+                 }
+             }
+ 
+             if (user.educator_id) {
+                 if (String(user.educator_id).startsWith('local:')) {
+                     const localData = localStorage.getItem(`${effectiveId}_educator_id`);
+                     renderDoc('Educator ID', null, null, localData);
+                 } else {
+                     const userFolder = getUserFolder(user);
+                     const eduUrl = user.educator_id.startsWith('http') ? user.educator_id : `https://eopbqatvianrjkdbypvk.supabase.co/storage/v1/object/public/uploads/${userFolder}_edu_id/${user.educator_id}`;
+                     renderDoc('Educator ID', eduUrl, user.educator_id.split('.').pop().toLowerCase());
+                 }
+             }
 
             if (!renderedAny) {
                 html += '<p>No uploaded documents found.</p>';

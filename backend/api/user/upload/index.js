@@ -114,47 +114,55 @@ async function handleUserUpload(req, res) {
     const uploadId = 'user_' + Date.now() + '_' + uuidv4().substring(0, 8);
     const fileId = 'user_pdf_' + Date.now();
 
-    // Handle file upload to storage if Supabase is configured
-    let filePath = '';
-    let fileSize = 0;
-    
-    if (isSupabaseConfigured() && file_data) {
-      try {
-        const supabase = getSupabase();
-        
-        // Decode base64 file data
-        const buffer = Buffer.from(file_data, 'base64');
-        fileSize = buffer.length;
-        
-        // Upload to Supabase Storage bucket
-        const fileName = `${uploadId}_${filename}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('user-uploads')
-          .upload(fileName, buffer, {
-            contentType: getContentType(filename),
-            upsert: true
-          });
-        
-        if (uploadError) {
-          console.error('Storage upload error:', uploadError);
-          // Continue with local path as fallback
-          filePath = `/uploads/${fileName}`;
-        } else {
-          // Get public URL
-          const { data: urlData } = supabase.storage
-            .from('user-uploads')
-            .getPublicUrl(fileName);
-          
-          filePath = urlData.publicUrl;
-        }
-      } catch (storageError) {
-        console.error('Storage error:', storageError);
-        filePath = `/uploads/${uploadId}_${filename}`;
-      }
-    } else {
-      // Fallback: just store the metadata
-      filePath = `/uploads/${uploadId}_${filename}`;
-    }
+     // Handle file upload to storage if Supabase is configured
+     let filePath = '';
+     let fileSize = 0;
+     
+     // Determine user role for folder organization
+     let userFolder = 'Raf'; // Default to Raf for SHS and College
+     if (currentUser.role && currentUser.role.toLowerCase() === 'educator') {
+       userFolder = 'Edu';
+     } else if (currentUser.user_type && currentUser.user_type.toLowerCase() === 'educator') {
+       userFolder = 'Edu';
+     }
+     
+     if (isSupabaseConfigured() && file_data) {
+       try {
+         const supabase = getSupabase();
+         
+         // Decode base64 file data
+         const buffer = Buffer.from(file_data, 'base64');
+         fileSize = buffer.length;
+         
+         // Upload to Supabase Storage bucket with role-based folder
+         const fileName = `${userFolder}/${uploadId}_${filename}`;
+         const { data: uploadData, error: uploadError } = await supabase.storage
+           .from('user-uploads')
+           .upload(fileName, buffer, {
+             contentType: getContentType(filename),
+             upsert: true
+           });
+         
+         if (uploadError) {
+           console.error('Storage upload error:', uploadError);
+           // Continue with local path as fallback
+           filePath = `/uploads/${fileName}`;
+         } else {
+           // Get public URL
+           const { data: urlData } = supabase.storage
+             .from('user-uploads')
+             .getPublicUrl(fileName);
+           
+           filePath = urlData.publicUrl;
+         }
+       } catch (storageError) {
+         console.error('Storage error:', storageError);
+         filePath = `/uploads/${uploadId}_${filename}`;
+       }
+     } else {
+       // Fallback: just store the metadata
+       filePath = `/uploads/${uploadId}_${filename}`;
+     }
 
     // Create user upload record
     const newUpload = {

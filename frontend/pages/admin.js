@@ -2733,56 +2733,76 @@ async function renderUserChart() {
 function buildUserChart(counts) {
     const labels = ['SHS', 'COLLEGE', 'EDUCATOR', 'ADMIN'];
     const barColors = [
-      '#008000', // SHS Emerald Green
-      '#00008B', // College Deep Blue
-      '#FFA500', // Educator Warm Orange
-      '#8A2BE2'  // Admin Cool Purple
+        '#008000', // SHS Emerald Green
+        '#00008B', // College Deep Blue
+        '#FFA500', // Educator Warm Orange
+        '#8A2BE2'  // Admin Cool Purple
     ];
+    
+    // Convert counts to percentages
+    const total = Object.values(counts).reduce((a, b) => a + b, 0);
+    const safeTotal = total === 0 ? 1 : total;
+    const data = [
+        (counts.shs / safeTotal) * 100,
+        (counts.college / safeTotal) * 100,
+        (counts.educator / safeTotal) * 100,
+        (counts.admin / safeTotal) * 100
+    ];
+    
     const ctx = document.getElementById('user-chart').getContext('2d');
     if (window.userChart) {
-      window.userChart.destroy();
+        window.userChart.destroy();
     }
     const isDarkMode = document.body.classList.contains('dark-mode');
     const textColor = isDarkMode ? '#ffffff' : '#000000';
      window.userChart = new Chart(ctx, {
-       type: 'bar',
-       data: {
-         labels: labels,
-         datasets: [{
-           data: [counts.shs, counts.college, counts.educator, counts.admin],
-           backgroundColor: barColors,
-           borderColor: barColors,
-           borderWidth: 1
-         }]
-       },
-       options: {
-         responsive: true,
-         plugins: {
-           legend: {
-             display: false
-           }
-         },
-         scales: {
-           x: {
-             ticks: {
-               color: textColor
-             }
-           },
-           y: {
-             beginAtZero: true,
-             ticks: {
-               color: textColor,
-               stepSize: 10,
-               // Ensure only integer values are shown
-               callback: function(value) {
-                 return Number.isInteger(value) ? value : null;
-               }
-             }
-           }
-         }
-       }
-     });
-   }
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: barColors,
+            borderColor: barColors,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.label + ': ' + Math.round(context.parsed) + '%';
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: textColor
+              }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: textColor,
+                stepSize: 10,
+                // Ensure only integer values are shown
+                callback: function(value) {
+                  return Number.isInteger(value) ? value : null;
+                }
+              },
+              // Ensure max is 100
+              max: 100
+            }
+          }
+        }
+      });
+    }
 
   function renderSigningUpChart(period = 'day', filter = null) {
 if (DEBUG) console.log('DEBUG: Rendering signing up chart');
@@ -5076,49 +5096,49 @@ submitBtn.textContent = 'Create Admin';
 async function renderDashboardUploadsChart(category = 'grade11') {
     const ctx = document.getElementById('dashboard-uploadsChart').getContext('2d');
     if (window.dashboardUploadsChart) {
-      window.dashboardUploadsChart.destroy();
+        window.dashboardUploadsChart.destroy();
     }
 
     const barColors = [
-      '#008000', // SHS Emerald Green
-      '#00008B', // College Deep Blue
-      '#FFA500', // Educator Warm Orange
-      '#8A2BE2'  // Admin Cool Purple
+        '#008000', // SHS Emerald Green
+        '#00008B', // College Deep Blue
+        '#FFA500', // Educator Warm Orange
+        '#8A2BE2'  // Admin Cool Purple
     ];
     const labels = ['SHS', 'College', 'Educator', 'Admin'];
     let data = [0, 0, 0, 0];
 
     try {
-      // Fetch all approved user uploads to count by user type
-      const { data: uploads, error } = await window.supabaseClient
-        .from('user_uploads')
-        .select('*')
-        .eq('status', 'approved');
+        // Fetch all approved user uploads to count by user type
+        const { data: uploads, error } = await window.supabaseClient
+            .from('user_uploads')
+            .select('*')
+            .eq('status', 'approved');
 
-      if (!error && uploads) {
-        const userIds = [...new Set(uploads.map(u => u.user_id).filter(Boolean))];
-        let typeCounts = { shs: 0, college: 0, educator: 0, admin: 0 };
-        if (userIds.length > 0) {
-          const { data: users } = await window.supabaseClient
-            .from('users')
-            .select('id, user_type, role')
-            .in('id', userIds);
-          if (users) {
-            users.forEach(u => {
-              const t = (u.user_type || '').toLowerCase();
-              const r = (u.role || '').toLowerCase();
-              if (t === 'senior_high') typeCounts.shs++;
-              else if (t === 'college') typeCounts.college++;
-              else if (t === 'educator') typeCounts.educator++;
-              else if (['admin','coadmin','subadmin'].includes(r)) typeCounts.admin++;
-              else typeCounts.shs++;
-            });
-          }
+        if (!error && uploads) {
+            const userIds = [...new Set(uploads.map(u => u.user_id).filter(Boolean))];
+            let typeCounts = { shs: 0, college: 0, educator: 0, admin: 0 };
+            if (userIds.length > 0) {
+                const { data: users } = await window.supabaseClient
+                    .from('users')
+                    .select('id, user_type, role')
+                    .in('id', userIds);
+                if (users) {
+                    users.forEach(u => {
+                        const t = (u.user_type || '').toLowerCase();
+                        const r = (u.role || '').toLowerCase();
+                        if (t === 'senior_high') typeCounts.shs++;
+                        else if (t === 'college') typeCounts.college++;
+                        else if (t === 'educator') typeCounts.educator++;
+                        else if (['admin','coadmin','subadmin'].includes(r)) typeCounts.admin++;
+                        // Don't default to SHS - leave as 0 if unknown type/role
+                    });
+                }
+            }
+            data = [typeCounts.shs, typeCounts.college, typeCounts.educator, typeCounts.admin];
         }
-        data = [typeCounts.shs, typeCounts.college, typeCounts.educator, typeCounts.admin];
-      }
     } catch (e) {
-      console.warn('Failed to fetch upload stats from Supabase:', e.message);
+        console.warn('Failed to fetch upload stats from Supabase:', e.message);
     }
 
     const total = data.reduce((a, b) => a + b, 0);
@@ -5126,47 +5146,32 @@ async function renderDashboardUploadsChart(category = 'grade11') {
     const percentageData = data.map(d => (d / safeTotal) * 100);
 
      window.dashboardUploadsChart = new Chart(ctx, {
-       type: dashboardUploadsChartType,
-       data: {
-         labels: labels,
-         datasets: [{
-           data: percentageData,
-           backgroundColor: barColors,
-           borderWidth: 1
-         }]
-       },
-       options: {
-         responsive: true,
-         plugins: {
-           legend: {
-             display: true
-           },
-           tooltip: {
-             callbacks: {
-               label: function(context) {
-                 return context.label + ': ' + Math.round(context.parsed) + '%';
-               }
-             }
-           }
-         },
-         scales: {
-           y: {
-             beginAtZero: true,
-             ticks: {
-               // Ensure only integer values are shown
-               callback: function(value) {
-                 return Number.isInteger(value) ? value : null;
-               },
-               // Set step size to 10 for 0, 10, 20, etc.
-               stepSize: 10,
-               // Ensure max is 100
-               max: 100
-             }
-           }
-         }
-       }
-     });
-   }
+        type: dashboardUploadsChartType,
+        data: {
+          labels: labels,
+          datasets: [{
+            data: percentageData,
+            backgroundColor: barColors,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: true
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.label + ': ' + Math.round(context.parsed) + '%';
+                }
+              }
+            }
+          }
+        }
+      });
+    }
 
 
 

@@ -3022,47 +3022,51 @@
     currentFilter = { category: null, value: null, attribute: null, additional: null };
     lastGrade = null;
 
-    // Read URL params
-    const urlParams = new URLSearchParams(window.location.search);
-    const category = urlParams.get('category');
-    const filter = urlParams.get('filter');
-    const topic = urlParams.get('topic');
-    const year = urlParams.get('year');
-    let search = urlParams.get('search'); // Support search parameter
+     // Read URL params
+     const urlParams = new URLSearchParams(window.location.search);
+     const category = urlParams.get('category');
+     const filter = urlParams.get('filter');
+     const topic = urlParams.get('topic');
+     const year = urlParams.get('year');
+     let search = urlParams.get('search'); // Support search parameter
 
-    // Check sessionStorage for homepage search (backward compatibility)
-    if (!search) {
-        const sessionSearch = sessionStorage.getItem('homepageSearch');
-        if (sessionSearch) {
-            search = sessionSearch;
-            sessionStorage.removeItem('homepageSearch'); // Clear after use
-        }
-    }
-
-    // Handle category from homepage links (e.g., ?category=research)
-    if (category) {
-      if (category === 'research' || category === 'capstone') {
-        currentFilter.category = category;
-      } else {
-        // Old link, treat as topic
-        filterArticles(null, category, 'topic');
-        localStorage.setItem('librarySelectedTopic', category);
-        setTimeout(() => highlightTopicInUI(category), 100);
+      // Check localStorage for homepage search (backward compatibility)
+      if (!search) {
+          const localSearch = localStorage.getItem('homepageSearch');
+          if (localSearch) {
+              search = localSearch;
+              // Keep in localStorage for potential reuse - do NOT clear after use
+              // localStorage.removeItem('homepageSearch');
+          }
       }
-    }
 
-    // Handle topic from homepage links (e.g., ?topic=agriculture)
-    if (topic) {
-      filterArticles(null, topic, 'topic');
-      localStorage.setItem('librarySelectedTopic', topic);
-      setTimeout(() => highlightTopicInUI(topic), 100);
-    } else {
-      // Check for saved topic from previous session (localStorage)
-      const savedTopic = localStorage.getItem('librarySelectedTopic');
-      if (savedTopic && !topic) {
-        filterArticles(null, savedTopic, 'topic');
-        setTimeout(() => highlightTopicInUI(savedTopic), 100);
-      }
+      // Handle category from homepage links (e.g., ?category=research)
+     if (category) {
+       if (category === 'research' || category === 'capstone') {
+         currentFilter.category = category;
+       } else {
+         // Old link, treat as topic
+         filterArticles(null, category, 'topic');
+         sessionStorage.setItem('librarySelectedTopic', category);
+         setTimeout(() => highlightTopicInUI(category), 100);
+       }
+     }
+
+     // Handle topic from homepage links (e.g., ?topic=agriculture)
+     if (topic) {
+       filterArticles(null, topic, 'topic');
+       sessionStorage.setItem('librarySelectedTopic', topic);
+       setTimeout(() => highlightTopicInUI(topic), 100);
+     } else {
+  // Check for saved topic from previous session (localStorage)
+    // Commented out to prevent automatic filter application
+    /*
+    const savedTopic = localStorage.getItem('librarySelectedTopic');
+    if (savedTopic && !topic) {
+      filterArticles(null, savedTopic, 'topic');
+      setTimeout(() => highlightTopicInUI(savedTopic), 100);
+    }
+    */
     }
     
     // Function to highlight topic in UI (case-insensitive)
@@ -3374,14 +3378,14 @@
         item.classList.remove('selected');
       });
       
-      // Add selected class to clicked topic
-      element.classList.add('selected');
-      
-      // Filter by checking both topic AND type attributes (use null for category)
-      filterArticles(null, topic, 'both');
-      
-      // Save to localStorage for persistence
-      localStorage.setItem('librarySelectedTopic', topic);
+       // Add selected class to clicked topic
+       element.classList.add('selected');
+       
+       // Filter by checking both topic AND type attributes (use null for category)
+       filterArticles(null, topic, 'both');
+       
+       // Save to sessionStorage for topic filters (not localStorage to prevent auto-apply on nav click)
+       sessionStorage.setItem('librarySelectedTopic', topic);
     }
     
     // Keep modal open - don't close it
@@ -3520,14 +3524,18 @@
       main.appendChild(pagination);
     }
 
-    // Check for homepage search term after articles are loaded
-    const homepageSearch = sessionStorage.getItem('homepageSearch');
-    if (homepageSearch) {
-      sessionStorage.removeItem('homepageSearch'); // Clear it after use
-      document.getElementById('articleSearch').value = homepageSearch;
-      currentQuery = homepageSearch.toLowerCase().trim();
-      applyFilters(); // Apply the search filter
-    }
+      // Check for homepage search term after articles are loaded
+      const homepageSearch = localStorage.getItem('homepageSearch');
+      if (homepageSearch) {
+        document.getElementById('articleSearch').value = homepageSearch;
+        // Also update main search input if it exists
+        const mainSearchInput = document.getElementById('mainArticleSearch');
+        if (mainSearchInput) {
+          mainSearchInput.value = homepageSearch;
+        }
+        currentQuery = homepageSearch.toLowerCase().trim();
+        applyFilters(); // Apply the search filter
+      }
 
     // Make articles clickable
     document.querySelectorAll('.article').forEach(article => {

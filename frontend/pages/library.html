@@ -21,24 +21,10 @@
         align-items: center;
     }
     
-    .search-input-suggestion {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #999;
-        font-style: italic;
-        pointer-events: none;
-    }
-    
     .search-input {
         padding-left: 30px !important;
         width: 100%;
         box-sizing: border-box;
-    }
-    
-    .search-input:focus + .search-input-suggestion,
-    .search-input:not(:placeholder-shown) + .search-input-suggestion {
-        display: none;
     }
 
    body {
@@ -2396,13 +2382,12 @@
           <i class="fas fa-filter"></i>
         </button>
        <div class="search-container" id="searchContainer">
-           <div class="search-input-wrapper">
-               <input type="text" id="articleSearch" placeholder="Search works, authors, or topics... " class="search-input">
-               <div class="search-input-suggestion" id="searchInputSuggestion"></div>
-               <i class="fas fa-times clear-icon" id="clearIcon" style="display: none;"></i>
-           </div>
-           <div class="search-suggestions" id="searchSuggestions"></div>
-       </div>
+            <div class="search-input-wrapper">
+                <input type="text" id="articleSearch" placeholder="Search works, authors, or topics... " class="search-input">
+                <i class="fas fa-times clear-icon" id="clearIcon" style="display: none;"></i>
+            </div>
+            <div class="search-suggestions" id="searchSuggestions"></div>
+        </div>
       </div>
       <!-- Topics Filter Modal for Navbar -->
       <div class="topics-modal topics-modal-navbar" id="topicsModalNavbar">
@@ -2470,16 +2455,15 @@
       <button class="filter-icon-btn filter-icon-btn-main" id="filterIconBtnMain" onclick="toggleTopicsModal()" title="Filter by topic">
         <i class="fas fa-filter"></i>
       </button>
-       <div class="search-container in-main" id="mainSearchContainer" style="flex: 1; max-width: 100%; display: flex;">
-         <button class="menu-btn" onclick="toggleSidebar()" style="flex-shrink: 0; margin-right: 10px;"><i class="fas fa-bars"></i></button>
-       <div style="flex: 1; display: flex; justify-content: center;">
-           <div class="search-input-wrapper">
-               <input type="text" id="mainArticleSearch" placeholder="Search works, authors, or topics... " class="search-input" style="width: 100%;">
-               <div class="search-input-suggestion" id="mainSearchInputSuggestion"></div>
-               <i class="fas fa-times clear-icon" id="mainClearIcon" style="display: none;"></i>
-           </div>
-       </div>
-       </div>
+        <div class="search-container in-main" id="mainSearchContainer" style="flex: 1; max-width: 100%; display: flex;">
+          <button class="menu-btn" onclick="toggleSidebar()" style="flex-shrink: 0; margin-right: 10px;"><i class="fas fa-bars"></i></button>
+        <div style="flex: 1; display: flex; justify-content: center;">
+            <div class="search-input-wrapper">
+                <input type="text" id="mainArticleSearch" placeholder="Search works, authors, or topics... " class="search-input" style="width: 100%;">
+                <i class="fas fa-times clear-icon" id="mainClearIcon" style="display: none;"></i>
+            </div>
+        </div>
+        </div>
     </div>
   </div>
   <!-- Sidebar -->
@@ -3637,87 +3621,13 @@
       applyAllFilters();
     });
 
-     // Clear search input on page refresh
-     window.addEventListener('beforeunload', function() {
-       searchInput.value = '';
-       currentQuery = '';
-       clearIcon.style.display = 'none';
-       applyAllFilters();
-     });
-
-      // Search input suggestion functionality
-      function updateSearchInputSuggestion() {
-        const homepageSearch = localStorage.getItem('homepageSearch');
-        const searchInputValue = searchInput.value.trim();
-        const mainSearchInputValue = mainSearchInput.value.trim();
-        const searchInputSuggestion = document.getElementById('searchInputSuggestion');
-        const mainSearchInputSuggestion = document.getElementById('mainSearchInputSuggestion');
-        
-        // Only show suggestion if:
-        // 1. There's a homepage search term in localStorage
-        // 2. The user is typing in the search input
-        // 3. What they've typed matches the beginning of the homepage search term (case-insensitive)
-        if (searchInputSuggestion) {
-          if (homepageSearch && homepageSearch.trim() !== '' && 
-              searchInputValue !== '' && 
-              homepageSearch.toLowerCase().startsWith(searchInputValue.toLowerCase())) {
-            // Show the remaining part of the suggestion
-            const remaining = homepageSearch.substring(searchInputValue.length);
-            searchInputSuggestion.textContent = remaining;
-            searchInputSuggestion.style.display = 'block';
-          } else {
-            searchInputSuggestion.style.display = 'none';
-          }
-        }
-        
-        if (mainSearchInputSuggestion) {
-          if (homepageSearch && homepageSearch.trim() !== '' && 
-              mainSearchInputValue !== '' && 
-              homepageSearch.toLowerCase().startsWith(mainSearchInputValue.toLowerCase())) {
-            // Show the remaining part of the suggestion
-            const remaining = homepageSearch.substring(mainSearchInputValue.length);
-            mainSearchInputSuggestion.textContent = remaining;
-            mainSearchInputSuggestion.style.display = 'block';
-          } else {
-            mainSearchInputSuggestion.style.display = 'none';
-          }
-        }
-      }
-
-     // Initialize search input suggestion on load
-     updateSearchInputSuggestion();
-
-     // Update suggestion when search input changes
-     searchInput.addEventListener('input', function() {
-       updateSearchInputSuggestion();
-       syncSearchInputs(this, mainSearchInput, clearIcon, mainClearIcon);
-     });
-
-     mainSearchInput.addEventListener('input', function() {
-       updateSearchInputSuggestion();
-       syncSearchInputs(this, searchInput, mainClearIcon, clearIcon);
-     });
-
-     // Clear suggestion when clear icon is clicked
-     clearIcon.addEventListener('click', function() {
-       searchInput.value = '';
-       mainSearchInput.value = '';
-       this.style.display = 'none';
-       mainClearIcon.style.display = 'none';
-       currentQuery = '';
-       updateSearchInputSuggestion();
-       applyAllFilters();
-     });
-
-     mainClearIcon.addEventListener('click', function() {
-       mainSearchInput.value = '';
-       searchInput.value = '';
-       this.style.display = 'none';
-       clearIcon.style.display = 'none';
-       currentQuery = '';
-       updateSearchInputSuggestion();
-       applyAllFilters();
-     });
+      // Clear search input on page refresh
+      window.addEventListener('beforeunload', function() {
+        searchInput.value = '';
+        currentQuery = '';
+        clearIcon.style.display = 'none';
+        applyAllFilters();
+      });
 
     // Click outside to hide
     document.addEventListener('click', function(e) {

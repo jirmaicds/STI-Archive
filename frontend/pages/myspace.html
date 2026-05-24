@@ -566,6 +566,7 @@
     }
 
     .dark-mode .document-container {
+       touch-action: pinch-zoom;
        background: #2d2d2d;
        color: white;
        border-color: #444;
@@ -1096,6 +1097,7 @@ color: #ffd700;
     }
 
     .document-container {
+       touch-action: pinch-zoom;
        flex: 1;
        max-width: 100%;
        border: 1px solid #ccc;
@@ -1557,6 +1559,7 @@ color: #ffd700;
     }
 
     .editor.fullscreen .document-container {
+       touch-action: pinch-zoom;
       border: 1px solid #ccc;
       border-radius: 12px;
       padding: 30px 50px;  /* More left/right padding */
@@ -1674,6 +1677,7 @@ color: #ffd700;
     }
 
     .dark-mode .editor.fullscreen .document-container {
+       touch-action: pinch-zoom;
       border-color: #444;
       background: #2d2d2d;
     }
@@ -1856,6 +1860,7 @@ color: #ffd700;
    }
    
    .editor.fullscreen .document-container {
+       touch-action: pinch-zoom;
      flex: 1 1 auto !important;
      min-height: 0 !important;
      overflow: auto !important;
@@ -1998,6 +2003,7 @@ color: #ffd700;
    }
    
    .editor.fullscreen .document-container {
+       touch-action: pinch-zoom;
      flex: 1 1 auto !important;
      min-height: 0 !important;
      overflow: auto !important;
@@ -2141,6 +2147,7 @@ color: #ffd700;
       }
       
     .editor.fullscreen .document-container {
+       touch-action: pinch-zoom;
       flex: 1 1 auto !important;
       min-height: 0 !important;
       overflow: auto !important;
@@ -2538,6 +2545,7 @@ color: #ffd700;
        
         /* Ensure document container expands to fill space above footer */
         .editor .document-container {
+       touch-action: pinch-zoom;
           flex: 1 1 auto !important;
           overflow: auto !important;
           padding-bottom: 0 !important;
@@ -2599,6 +2607,7 @@ color: #ffd700;
 
       .editor .document-container,
       .editor.fullscreen .document-container {
+       touch-action: pinch-zoom;
         flex: 1 1 auto !important;
         min-height: 0 !important;
         overflow: auto !important;
@@ -2623,6 +2632,7 @@ color: #ffd700;
       }
 
       .editor.fullscreen .document-container {
+       touch-action: pinch-zoom;
         margin: 0 0 10px 0 !important;
         padding: 20px !important;
       }
@@ -2842,12 +2852,14 @@ color: #ffd700;
         height: 50px;
       }
        .editor .document-container {
+       touch-action: pinch-zoom;
          max-height: calc(100vh - 200px);
        }
 
        /* Final mobile footer visibility - must win over all other blocks */
        .editor .toolbar,
        .editor .document-container {
+       touch-action: pinch-zoom;
          margin-bottom: 0 !important;
        }
        .editor .footer {
@@ -2968,35 +2980,8 @@ color: #ffd700;
                 display: flex;
                 flex-direction: column;
             ">
-                <div class="pdf-modal-header" style="
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 10px 15px;
-                    background:  #0057b8;
-                    color:  white;
-                    flex-shrink: 0;
-                ">
-                    <h3 id="pdf-modal-title" style="margin: 0; font-size: 16px; color: white;">Analyzing Safety Protocols Adherence In Gasoline Stations: Urban vs. Rural Perspectives</h3>
-                    <button onclick="closePDFModal()" style="
-                        background: none;
-                        border: none;
-                        color: #1a1a1a;
-                        font-size: 24px;
-                        cursor: pointer;
-                        padding: 0;
-                        width: 30px;
-                        height: 30px;
-                    ">×</button>
-                </div>
-                <div id="pdf-viewer-container" style="
-                    flex: 1;
-                    overflow: auto;
-                    background: #1a1a1a;
-                    height: auto;
-                ">
-                    <div class="pdf-toolbar" style="display:flex;flex-direction:column;height:100%;">
-                        <div style="padding:8px 12px;background:#1a1a1a;border-bottom:1px solid #444;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
+                    <div style="padding:8px 12px;background:#1a1a1a;border-bottom:1px solid #444;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+                        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
                             <input type="text" id="pdf-search-input" placeholder="Search (Ctrl+F)..." style="padding:6px 10px;border:1px solid #555;border-radius:4px;width:200px;font-size:14px;background:#2d2d2d;color:#fff;">
                             <button id="pdf-search-btn" style="padding:6px 12px;background:#ffd700;color:#1a1a1a;border:none;border-radius:4px;cursor:pointer;">
                                 <i class="fas fa-search"></i>
@@ -3013,8 +2998,15 @@ color: #ffd700;
                             <span id="pdf-search-count" style="font-size:13px;color:#aaa;"></span>
                             <span style="color:#aaa;margin-left:10px;">|</span>
                             <span id="pdf-page-indicator" style="font-size:13px;color:#aaa;min-width:80px;text-align:center;">Page 1 of 78</span>
-                        </div>  
+                        </div>
+                        <button onclick="closePDFModal()" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:0;width:30px;height:30px;margin-left:10px;">×</button>
                     </div>
+                <div id="pdf-viewer-container" style="
+                    flex: 1;
+                    overflow: auto;
+                    background: #1a1a1a;
+                    height: auto;
+                ">
                 </div>
             </div>
         </div>

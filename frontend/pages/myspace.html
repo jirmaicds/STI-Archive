@@ -30,10 +30,11 @@
         flex-wrap: nowrap;
         position: relative;
         top: 0;
-        margin-top: 50px;
+        margin-top: 0;
         min-height: calc(100vh - 50px);
         width: 100%;
         overflow: hidden;
+        padding: 0 !important;
       }
 
     .toggle-panel {
@@ -238,7 +239,7 @@
     #pdf-viewer-modal > div {
       background: #fff;
       border: 1px solid #ccc;
-      border-radius: 8px;
+      border-radius: 0;
       padding: 10px;
       width: 100%;
       height: 100%;
@@ -253,12 +254,12 @@
       height: 100% !important;
       display: none;
       background-color: rgba(0,0,0,0.5);
-      z-index: 10001;
+      z-index: 999;
     }
     .pdf-modal-header {
       position: sticky;
       top: 0;
-      z-index: 10002;
+      z-index: 1000;
     }
 
     #pdf-viewer-modal #pdf-viewer-container {
@@ -523,8 +524,21 @@
         
         .dark-mode .toolbar select, .dark-mode .toolbar button, .dark-mode .toolbar input[type="color"] {
       background: #333;
-      color: white;
+      color: white !important;
       border: 1px solid #555;
+    }
+    
+    .dark-mode .toolbar-header {
+      background: #2c2c2c;
+    }
+    
+    .dark-mode .toolbar-label {
+      color: white !important;
+    }
+    
+    .dark-mode .toolbar-btn {
+      background: #444;
+      color: white !important;
     }
 
     /* Doc title input dark mode */
@@ -562,12 +576,6 @@
        border-color: #444;
        background: #3a3a3a;
        tab-size: 1.27cm;
-     }
-
-    .dark-mode .page::before {
-       background: #2d2d2d;
-       border-color: #444;
-       color: #b0b7c3;
      }
 
     .dark-mode .page-content:empty:before,
@@ -709,6 +717,10 @@
     @media (min-width: 1024px) {
       .main-content {
         flex-direction: row !important;
+        padding: 0 !important;
+        margin-top: 50px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
       }
       .file-viewer {
         flex: 0 0 50% !important;
@@ -722,6 +734,64 @@
         max-width: 50% !important;
         display: flex !important;
         padding: 20px 20px 0 20px;
+      }
+      
+      .editor.fullscreen {
+        flex: 0 0 100% !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        display: flex !important;
+      }
+      
+      .editor.hidden {
+        display: none !important;
+      }
+      
+      .file-viewer.expanded {
+        flex: 0 0 100% !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      
+      .file-viewer.hidden {
+        display: none !important;
+      }
+      
+      /* Desktop toolbar height */
+      .toolbar {
+        height: 150px !important;
+        min-height: 150px !important;
+      }
+    }
+
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .main-content {
+        flex-direction: column !important;
+        padding: 0 !important;
+        margin-top: 0 !important;
+      }
+      .file-viewer {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .editor {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        display: none !important;
+      }
+      .editor.visible {
+        display: flex !important;
+      }
+      
+      /* Tablet toolbar collapsed/expanded heights */
+      .toolbar {
+        height: 50px !important;
+        min-height: 50px !important;
+      }
+      .toolbar.expanded {
+        height: 200px !important;
       }
     }
 
@@ -975,14 +1045,14 @@ color: #ffd700;
        padding: 10px;
        position: relative;
        z-index: 1001;
-       height: auto;
-       min-height: auto;
+       height: 150px;
+       min-height: 150px;
        overflow: visible;
        transition: none;
      }
 
     .toolbar.expanded {
-      height: auto;
+      height: 150px;
       padding: 10px;
     }
 
@@ -990,7 +1060,7 @@ color: #ffd700;
       display: none;
     }
 
-    .toolbar-open-btn {
+    .toolbar-btn {
       display: none;
     }
 
@@ -1021,7 +1091,7 @@ color: #ffd700;
     }
 
     .toolbar button:hover,
-    .toolbar-open-btn:hover {
+    .toolbar-btn:hover {
       background: #e0e0e0;
     }
 
@@ -1120,7 +1190,23 @@ color: #ffd700;
     .page.a5 { height: 793px; }
 
     .page::before {
-      content: none;
+      content: counter(page);
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      padding: 4px 8px;
+      font-size: 0.85rem;
+      background: rgb(240, 240, 240);
+      color: rgb(102, 102, 102);
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      counter-increment: page;
+    }
+
+    .dark-mode .page::before {
+      background: #2d2d2d;
+      border-color: #444;
+      color: #b0b7c3;
     }
 
     .document[contenteditable="true"] {
@@ -1151,7 +1237,7 @@ color: #ffd700;
        top: 50%;
        left: calc(50% - 15px);  /* Center by default, adjusted for 30px width */
        transform: translateY(-50%);
-       z-index: 1006;
+       z-index: 10000;
      }
 
     .toggle-panel.right {
@@ -1162,7 +1248,7 @@ color: #ffd700;
     .toggle-panel.left,
     .toggle-panel.right {
       display: flex !important;
-      z-index: 1006 !important;
+      z-index: 10000 !important;
     }
 
     .toggle-panel.left {
@@ -1183,7 +1269,7 @@ color: #ffd700;
        border-radius: 8px;
        width: 30px;
        height: 50px;
-       z-index: 1007;
+       z-index: 10001;
        display: flex;
        flex-direction: row;
        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
@@ -1192,7 +1278,7 @@ color: #ffd700;
 
      .toggle-half {
        width: 15px;
-       z-index: 1005;
+       z-index: 9999;
        height: 50px;
        display: flex;
        align-items: center;
@@ -1462,7 +1548,7 @@ color: #ffd700;
       border-radius: 12px;
       padding: 30px 50px;  /* More left/right padding */
       overflow: auto;
-      margin: 90px 20px 20px 20px;  /* Add margins for spacing, top margin for fixed toolbar */
+      margin: 20px 20px 20px 20px;  /* Add margins for spacing, top margin reduced from 90px to 20px */
       background: #fff;
       counter-reset: page 0;
     }
@@ -1644,12 +1730,17 @@ color: #ffd700;
     .toolbar {
         flex-direction: column;
         gap: 0;
-        padding: 0 16px;
+        padding: 0 !important;
         min-height: 50px !important;
         height: 50px !important;
         overflow: hidden;
         transition: height 0.3s ease, padding 0.3s ease;
         background: #fff;
+    }
+
+    .toolbar.expanded {
+        height: 150px !important;
+        padding: 0 !important;
     }
 
     .toolbar-header {
@@ -1658,11 +1749,15 @@ color: #ffd700;
         align-items: center;
         min-height: 50px;
         width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 10;
     }
 
-    .toolbar-open-btn {
+    .toolbar-btn {
         display: flex;
-        background: #2c2c2c;
+        background: #f0f0f0;
         border: none;
         border-radius: 8px;
         width: 42px;
@@ -1674,6 +1769,15 @@ color: #ffd700;
         box-shadow: 0 2px 8px rgba(0,0,0,0.25);
     }
 
+    /* Light mode icon color */
+    .toolbar-btn i {
+        color: #000;
+    }
+
+    [data-theme="dark"] .toolbar-btn i {
+        color: #fff;
+    }
+
     .toolbar-label {
         font-size: 1rem;
         font-weight: 700;
@@ -1681,7 +1785,7 @@ color: #ffd700;
     }
 
     .toolbar-content {
-        display: flex;
+        display: none;
         flex-wrap: wrap;
         align-items: center;
         gap: 10px;
@@ -1693,10 +1797,10 @@ color: #ffd700;
     }
 
     .toolbar.expanded .toolbar-content {
+        display: flex;
         max-height: 1000px;
         opacity: 1;
     }
-}
 
    /* Tablet and below responsive layout */
 @media (max-width: 767px) {
@@ -1787,7 +1891,7 @@ color: #ffd700;
      position: relative;
      z-index: 1005;
      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-     height: auto;
+     height: 200px !important;
      padding: 10px 16px 16px;
    }
 
@@ -1799,9 +1903,9 @@ color: #ffd700;
      width: 100%;
    }
 
-   .toolbar-open-btn {
+   .toolbar-btn {
      display: flex;
-     background: #2c2c2c;
+     background: #f0f0f0;
      border: none;
      border-radius: 8px;
      width: 42px;
@@ -1819,7 +1923,7 @@ color: #ffd700;
      color: #333;
    }
 
-   .toolbar.expanded .toolbar-open-btn i {
+   .toolbar.expanded .toolbar-btn i {
      transform: rotate(180deg);
      transition: transform 0.2s ease;
    }
@@ -1923,7 +2027,7 @@ color: #ffd700;
      position: relative;
      z-index: 1005;
      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-     height: auto;
+     height: 200px !important;
      padding: 10px 16px 16px;
    }
 
@@ -1935,9 +2039,9 @@ color: #ffd700;
      width: 100%;
    }
 
-   .toolbar-open-btn {
+   .toolbar-btn {
      display: flex;
-     background: #2c2c2c;
+     background: #f0f0f0;
      border: none;
      border-radius: 8px;
      width: 42px;
@@ -1955,7 +2059,7 @@ color: #ffd700;
      color: #333;
    }
 
-   .toolbar.expanded .toolbar-open-btn i {
+   .toolbar.expanded .toolbar-btn i {
      transform: rotate(180deg);
      transition: transform 0.2s ease;
    }
@@ -2086,7 +2190,7 @@ color: #ffd700;
       position: relative;
       z-index: 2000;
       box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-      height: auto;
+      height: 200px !important;
       padding: 10px 16px 16px;
     }
 
@@ -2096,11 +2200,15 @@ color: #ffd700;
         align-items: center;
         min-height: 50px;
         width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 10;
       }
 
-      .toolbar-open-btn {
+      .toolbar-btn {
         display: flex;
-        background: #2c2c2c;
+        background: #f0f0f0;
         border: none;
         border-radius: 8px;
         width: 42px;
@@ -2111,6 +2219,15 @@ color: #ffd700;
         color: white;
         box-shadow: 0 2px 8px rgba(0,0,0,0.25);
       }
+      
+      /* Light mode icon color */
+      .toolbar-btn i {
+        color: #000;
+      }
+      
+      [data-theme="dark"] .toolbar-btn i {
+        color: #fff;
+      }
 
       .toolbar-label {
         font-size: 1rem;
@@ -2118,7 +2235,7 @@ color: #ffd700;
         color: #333;
       }
 
-      .toolbar.expanded .toolbar-open-btn i {
+      .toolbar.expanded .toolbar-btn i {
         transform: rotate(180deg);
         transition: transform 0.2s ease;
       }
@@ -2390,6 +2507,7 @@ color: #ffd700;
           flex: 1 1 auto !important;
           overflow: auto !important;
           padding-bottom: 0 !important;
+          margin-bottom: 0 !important;
         }
        
        /* Ensure footer sits just below documentContainer — no big gaps */
@@ -2870,26 +2988,9 @@ color: #ffd700;
 
   
 
-        <!-- Template Modal -->
-        <div id="templateModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
-            <div class="modal-content" style="background-color: #fff; padding: 20px; width: 80%; max-width: 600px; border-radius: 8px; position: relative;">
-                <span class="close" onclick="closeTemplateModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
-                <h2 style="margin-top: 0;">Templates</h2>
-                <div id="templateList" style="max-height: 400px; overflow-y: auto;">
-                <div class="page-preview">
-                    <div style="display: flex; align-items: center; margin-bottom: 10px; background: white; padding: 5px; border-radius: 4px;">
-                        <label><input type="radio" name="template" value="pr2_complete" checked></label>
-                        <h3 style="margin: 0 0 0 10px;">FORMAT - PR 2 - COMPLETE.pdf</h3>
-                    </div>
-                    <iframe src="" style="width: 100%; height: 100%; border: none;"></iframe>
-                </div>
-                </div>
-            </div>
-        </div>
-
         <!-- PDF Editor Modal -->
         <div id="pdfEditorModal" class="modal" onclick="if(event.target === this) { this.style.display='none'; top.location.href='library.html'; }" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
-            <div class="modal-content pdf-modal-content" style="background-color: #fff; padding: 20px; width: 90%; max-width: 1200px; height: 80%; border-radius: 8px; position: relative;">
+            <div class="modal-content pdf-modal-content" style="background-color: #fff; padding: 20px; width: 90%; max-width: 1200px; height: 80%; border-radius: 0; position: relative;">
                 <span class="close" onclick="closePdfModal(); return false;" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
                 <h2 style="margin-top: 0;">PDF Editor</h2>
                 <canvas id="pdfCanvas" style="width: 100%; height: 90%; border: 1px solid #ccc;"></canvas>
@@ -2917,7 +3018,7 @@ color: #ffd700;
             <div class="toolbar" id="toolbar">
                 <div class="toolbar-header">
                     <span class="toolbar-label">Toolbar</span>
-                    <button class="toolbar-open-btn" type="button" onclick="toggleToolbar()" aria-expanded="false" title="Show toolbar options">
+                    <button class="toolbar-btn" type="button" onclick="toggleToolbar()" aria-expanded="false" title="Show toolbar options">
                         <i class="fa fa-chevron-down" id="toolbarToggleIcon"></i>
                     </button>
                 </div>
@@ -3593,82 +3694,49 @@ color: #ffd700;
 
         // Toggle file-viewer: implements the new toggle behavior
         function toggleFileViewer() {
-            // Check if editor is in fullscreen mode (from creating blank document)
+            const editor = document.getElementById('editor');
+            const fileViewer = document.querySelector('.file-viewer');
+            
+            // Check if editor is in fullscreen mode
             const isEditorFullscreen = editor.classList.contains('fullscreen');
 
             if (isEditorFullscreen) {
                 // When editor is fullscreen and user clicks toggle, go back to half/half
-                // Requirement: file viewer on left, editor on right
-                toggleState = 'default';
-
-                // Reset editor from fullscreen to 50% width (right side)
-                editor.classList.remove('fullscreen');
-                editor.classList.add('visible');
-                editor.style.display = 'flex';
-                editor.style.flex = '0 0 50%';
-                editor.style.width = '50%';
-                editor.style.maxWidth = '50%';
-                editor.style.position = 'relative';
-                editor.style.right = 'auto';
-                editor.style.left = 'auto';
-                editor.style.top = 'auto';
-                editor.style.height = 'auto';
-
-                // Show file-viewer at 50% width (left side)
-                fileViewer.style.display = 'flex';
-                fileViewer.style.flex = '0 0 50%';
-                fileViewer.style.width = '50%';
-                fileViewer.style.maxWidth = '50%';
-                fileViewer.style.position = 'relative';
-                fileViewer.style.top = 'auto';
-                fileViewer.style.height = 'auto';
-
-                // Reset toggle panel
-                togglePanel.classList.remove('left', 'no-left-space', 'right', 'no-right-space');
-                toggleBtn.style.width = '30px';
-                leftBtn.querySelector('i').className = 'fa fa-chevron-left';
-                rightBtn.querySelector('i').className = 'fa fa-chevron-right';
-                rightBtn.onclick = () => toggleFileViewer();
-                leftBtn.style.display = 'flex';
-                rightBtn.style.display = 'flex';
-
+                restoreDefaultSplitView();
                 return;
             }
 
             if (toggleState === 'default') {
-                // Go to fileViewer toggled
+                // Go to fileViewer full width (hide editor)
                 toggleState = 'fileViewer';
-                // Expand file-viewer to 100%, hide editor
+                
+                // Expand file-viewer to 100%
+                fileViewer.classList.remove('hidden');
                 fileViewer.classList.add('expanded');
-                editor.classList.add('collapsed');
-                // Move panel to right and show it
+                fileViewer.style.display = 'flex';
+                fileViewer.style.flex = '0 0 100%';
+                fileViewer.style.width = '100%';
+                fileViewer.style.maxWidth = '100%';
+                
+                // Hide editor
+                editor.classList.add('hidden');
+                editor.classList.remove('visible');
+                editor.style.display = 'none';
+                
+                // Move panel to right
                 togglePanel.classList.add('right', 'no-right-space');
                 togglePanel.classList.remove('left', 'no-left-space');
                 togglePanel.style.display = 'flex';
-                // Adjust button width
+                
+                // Adjust button
                 toggleBtn.style.width = '15px';
-                // Change icon to chevron-left for toggle back
                 rightBtn.querySelector('i').className = 'fa fa-chevron-left';
-                // Hide the left button (HomeEditor toggle)
                 leftBtn.style.display = 'none';
-                // Show the right button (File Viewer toggle)
                 rightBtn.style.display = 'flex';
+                
             } else if (toggleState === 'fileViewer') {
-                // Restore default
-                toggleState = 'default';
-                // Reset
-                fileViewer.classList.remove('expanded');
-                editor.classList.remove('collapsed');
-
-                togglePanel.classList.remove('right', 'no-right-space');
-                // Reset button width
-                toggleBtn.style.width = '30px';
-                // Reset icons
-                leftBtn.querySelector('i').className = 'fa fa-chevron-left';
-                rightBtn.querySelector('i').className = 'fa fa-chevron-right';
-                rightBtn.onclick = () => toggleFileViewer();
-                // Show the left button
-                leftBtn.style.display = 'flex';
+                // Restore default split view (half/half)
+                restoreDefaultSplitView();
             }
         }
 
@@ -3733,29 +3801,14 @@ color: #ffd700;
             toggleState = 'default';
 
             if (editor) {
-                editor.classList.remove('fullscreen', 'collapsed');
+                editor.classList.remove('fullscreen', 'collapsed', 'hidden');
                 editor.classList.add('visible');
-                editor.style.display = 'flex';
-                editor.style.position = 'relative';
-                editor.style.width = '50%';
-                editor.style.maxWidth = '50%';
-                editor.style.flex = '0 0 50%';
-                editor.style.left = 'auto';
-                editor.style.right = 'auto';
-                editor.style.top = 'auto';
-                editor.style.height = 'auto';
-                editor.style.zIndex = 'auto';
+                editor.style.cssText = 'display: flex !important; position: relative; width: 50%; max-width: 50%; flex: 0 0 50%; left: auto; right: auto; top: auto; height: auto; z-index: auto;';
             }
 
             if (fileViewer) {
-                fileViewer.classList.remove('expanded');
-                fileViewer.style.display = 'flex';
-                fileViewer.style.position = 'relative';
-                fileViewer.style.width = '50%';
-                fileViewer.style.maxWidth = '50%';
-                fileViewer.style.flex = '0 0 50%';
-                fileViewer.style.top = 'auto';
-                fileViewer.style.height = 'auto';
+                fileViewer.classList.remove('expanded', 'hidden');
+                fileViewer.style.cssText = 'display: flex; position: relative; width: 50%; max-width: 50%; flex: 0 0 50%; top: auto; height: auto;';
             }
 
             if (togglePanel) {
@@ -3782,14 +3835,27 @@ color: #ffd700;
 
         // Toggle editor: implements the new toggle behavior
         function toggleEditor() {
+            const editor = document.getElementById('editor');
+            const fileViewer = document.querySelector('.file-viewer');
             console.log('toggleEditor called, current toggleState:', toggleState);
 
             if (toggleState === 'default') {
-                console.log('Going to editor state');
+                // From Split View -> Editor Fullscreen
+                console.log('Going to editor fullscreen state');
                 toggleState = 'editor';
 
-                editor.classList.add('fullscreen');
+                // Hide file viewer
+                fileViewer.classList.add('hidden');
                 fileViewer.style.display = 'none';
+                
+                // Show editor fullscreen
+                editor.classList.remove('hidden');
+                editor.classList.add('fullscreen');
+                editor.classList.remove('visible');
+                editor.style.display = 'flex';
+                editor.style.flex = '0 0 100%';
+                editor.style.width = '100%';
+                editor.style.maxWidth = '100%';
 
                 togglePanel.classList.add('left', 'no-left-space');
                 togglePanel.classList.remove('right', 'no-right-space');
@@ -3802,16 +3868,21 @@ color: #ffd700;
             }
 
             if (toggleState === 'editor' || editor.classList.contains('fullscreen')) {
+                // From Editor Fullscreen -> Back to Split View (Half/Half)
                 console.log('Restoring default split view from editor state');
                 restoreDefaultSplitView();
                 return;
             }
 
             if (toggleState === 'fileViewer') {
+                // From File Viewer Full Width -> Restore Split View (which shows editor on right)
                 console.log('Restoring default split view from fileViewer state');
                 restoreDefaultSplitView();
                 return;
             }
+            
+            // Default case: ensure editor shows on right side
+            restoreDefaultSplitView();
         }
 
         function toggleHomeEditor() {
@@ -4582,7 +4653,7 @@ color: #ffd700;
                 // On tablet/phone, make editor fullscreen and hide file-viewer
                 if (window.innerWidth <= 767) {
                     // Remove any conflicting classes
-                    editor.classList.remove('fullscreen', 'visible', 'collapsed');
+                    editor.classList.remove('fullscreen', 'visible', 'collapsed', 'hidden');
                     // Set styles manually to avoid CSS conflicts - fullscreen covering entire screen
                     editor.style.setProperty('display', 'block', 'important');
                     editor.style.setProperty('position', 'fixed', 'important'); // Use fixed to cover entire viewport
@@ -4595,10 +4666,12 @@ color: #ffd700;
                         fileViewer.style.setProperty('display', 'none', 'important');
                     }
                 } else {
-                    // Desktop: add visible class
-                    editor.classList.add('visible');
-                    editor.classList.remove('fullscreen', 'collapsed');
+                    // Desktop: make editor fullscreen
+                    editor.classList.add('fullscreen');
+                    editor.classList.remove('visible');
+                    editor.classList.add('hidden');
                     editor.style.setProperty('display', 'flex', 'important');
+                    fileViewer.style.setProperty('display', 'none', 'important');
                 }
                 if (editor) {
                     // Set display based on screen size with !important to override CSS
@@ -4651,8 +4724,8 @@ color: #ffd700;
                var isEditorFullscreen = editor && editor.classList.contains('fullscreen');
 
                if (editor) {
-                   editor.classList.remove('visible', 'fullscreen');
-                   editor.style.display = 'none';
+                   editor.classList.remove('visible', 'fullscreen', 'hidden');
+                   editor.style.display = 'flex';
                    editor.style.flex = '0 0 50%';
                    editor.style.width = '50%';
                    editor.style.position = 'relative';
@@ -4666,8 +4739,8 @@ color: #ffd700;
                    fileViewer.style.display = 'flex';
                        if (window.innerWidth <= 767) {
                    } else {
-                       fileViewer.style.flex = '0 0 100%';
-                       fileViewer.style.width = '100%';
+                       fileViewer.style.flex = '0 0 50%';
+                       fileViewer.style.width = '50%';
                    }
                }
 
@@ -4689,8 +4762,8 @@ if (togglePanel && window.innerWidth > 767) {
                 var editor = document.getElementById('editor');
                 var fileViewer = document.querySelector('.file-viewer');
 
-                if (window.innerWidth > 767) {
-                    // Desktop/tablet: show both panels side-by-side or stacked depending on CSS
+                if (window.innerWidth >= 1024) {
+                    // Desktop: show both panels side-by-side (50% each) - editor visible by default
                       if (fileViewer) {
                           fileViewer.style.display = 'flex';
                           fileViewer.style.setProperty('width', '50%', 'important');
@@ -4699,11 +4772,24 @@ if (togglePanel && window.innerWidth > 767) {
                       }
                       if (editor) {
                           editor.classList.add('visible');
+                          editor.classList.remove('hidden');
                           editor.style.display = 'flex';
                           editor.style.setProperty('width', '50%', 'important');
                           editor.style.setProperty('maxWidth', '50%', 'important');
                           editor.style.setProperty('flex', '0 0 50%', 'important');
                       }
+                } else if (window.innerWidth > 767 && window.innerWidth < 1024) {
+                    // Tablet (768px-1023px): show file-viewer full, hide editor
+                    if (fileViewer) {
+                        fileViewer.style.display = 'flex';
+                        fileViewer.style.flex = '0 0 100%';
+                        fileViewer.style.width = '100%';
+                    }
+                    if (editor) {
+                        editor.classList.remove('visible');
+                        editor.classList.add('hidden');
+                        editor.style.display = 'none';
+                    }
                 } else {
                     // Mobile: show file-viewer full, hide editor
                     if (fileViewer) {
@@ -4718,8 +4804,8 @@ if (togglePanel && window.innerWidth > 767) {
 
                   // Force apply styles after a short delay to ensure it works
                   setTimeout(function() {
-                  if (window.innerWidth > 767) {
-                     // Desktop/tablet: show both panels
+                  if (window.innerWidth >= 1024) {
+                     // Desktop: show both panels (50% each) - editor visible
                      if (fileViewer) {
                          fileViewer.style.display = 'flex';
                          fileViewer.style.setProperty('width', '50%', 'important');
@@ -4728,11 +4814,24 @@ if (togglePanel && window.innerWidth > 767) {
                      }
                      if (editor) {
                          editor.classList.add('visible');
+                         editor.classList.remove('hidden');
                          editor.style.display = 'flex';
                          editor.style.setProperty('width', '50%', 'important');
                          editor.style.setProperty('maxWidth', '50%', 'important');
                          editor.style.setProperty('flex', '0 0 50%', 'important');
                      }
+                    } else if (window.innerWidth > 767 && window.innerWidth < 1024) {
+                        // Tablet: show file-viewer full, hide editor
+                        if (fileViewer) {
+                            fileViewer.style.display = 'flex';
+                            fileViewer.style.flex = '0 0 100%';
+                            fileViewer.style.width = '100%';
+                        }
+                        if (editor) {
+                            editor.classList.add('hidden');
+                            editor.style.display = 'none';
+                            editor.classList.remove('visible');
+                        }
                     } else {
                         // Mobile: show file-viewer full, hide editor
                         if (editor) {
@@ -5785,10 +5884,10 @@ if (togglePanel && window.innerWidth > 767) {
             const isOpen = toolbar.classList.toggle('expanded');
             if (isOpen) {
                 icon.className = 'fa fa-chevron-up';
-                toolbar.querySelector('.toolbar-open-btn').setAttribute('aria-expanded', 'true');
+                toolbar.querySelector('.toolbar-btn').setAttribute('aria-expanded', 'true');
             } else {
                 icon.className = 'fa fa-chevron-down';
-                toolbar.querySelector('.toolbar-open-btn').setAttribute('aria-expanded', 'false');
+                toolbar.querySelector('.toolbar-btn').setAttribute('aria-expanded', 'false');
             }
         }
 
@@ -6194,12 +6293,13 @@ if (togglePanel && window.innerWidth > 767) {
             if (editor) {
                 editor.style.display = 'none';
                 editor.classList.add('hidden');
-                editor.classList.remove('fullscreen');
+                editor.classList.remove('fullscreen', 'visible');
             }
             if (fileViewer) {
                 fileViewer.classList.remove('hidden');
                 fileViewer.style.display = 'flex';
             }
+            toggleState = 'default';
         } else {
             pdfBtn.classList.remove('active');
             wordBtn.classList.add('active');
@@ -6212,15 +6312,17 @@ if (togglePanel && window.innerWidth > 767) {
                 editor.classList.remove('hidden');
                 if (window.innerWidth <= 767) {
                     editor.classList.add('fullscreen');
-                    editor.classList.remove('collapsed');
+                    editor.classList.remove('collapsed', 'visible');
                 } else {
                     editor.classList.add('fullscreen');
+                    editor.classList.remove('visible');
                     editor.style.display = 'flex';
                 }
             }
             if (fileViewer && window.innerWidth > 767) {
                 fileViewer.style.display = 'none';
             }
+            toggleState = 'editor';
         }
 
         // Filter documents

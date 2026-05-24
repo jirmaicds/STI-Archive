@@ -722,17 +722,32 @@
         flex: 0 0 50% !important;
         width: 50% !important;
         max-width: 50% !important;
-        display: flex !important;
+        display: none !important;
         padding: 20px 20px 0 20px;
+      }
+      
+      .editor.visible {
+        display: flex !important;
       }
       
       .editor.fullscreen {
         flex: 0 0 100% !important;
         width: 100% !important;
         max-width: 100% !important;
+        display: flex !important;
       }
       
       .editor.hidden {
+        display: none !important;
+      }
+      
+      .file-viewer.expanded {
+        flex: 0 0 100% !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      
+      .file-viewer.hidden {
         display: none !important;
       }
     }
@@ -3648,6 +3663,7 @@ color: #ffd700;
                 editor.style.height = 'auto';
 
                 // Show file-viewer at 50% width (left side)
+                fileViewer.classList.remove('expanded', 'hidden');
                 fileViewer.style.display = 'flex';
                 fileViewer.style.flex = '0 0 50%';
                 fileViewer.style.width = '50%';
@@ -3669,11 +3685,13 @@ color: #ffd700;
             }
 
             if (toggleState === 'default') {
-                // Go to fileViewer toggled
+                // Go to fileViewer toggled (full width)
                 toggleState = 'fileViewer';
                 // Expand file-viewer to 100%, hide editor
                 fileViewer.classList.add('expanded');
-                editor.classList.add('collapsed');
+                fileViewer.classList.remove('hidden');
+                editor.classList.add('hidden');
+                editor.classList.remove('visible');
                 // Move panel to right and show it
                 togglePanel.classList.add('right', 'no-right-space');
                 togglePanel.classList.remove('left', 'no-left-space');
@@ -3690,8 +3708,9 @@ color: #ffd700;
                 // Restore default
                 toggleState = 'default';
                 // Reset
-                fileViewer.classList.remove('expanded');
-                editor.classList.remove('collapsed');
+                fileViewer.classList.remove('expanded', 'hidden');
+                editor.classList.remove('collapsed', 'hidden');
+                editor.classList.add('visible');
 
                 togglePanel.classList.remove('right', 'no-right-space');
                 // Reset button width
@@ -3781,7 +3800,7 @@ color: #ffd700;
             }
 
             if (fileViewer) {
-                fileViewer.classList.remove('expanded');
+                fileViewer.classList.remove('expanded', 'hidden');
                 fileViewer.style.display = 'flex';
                 fileViewer.style.position = 'relative';
                 fileViewer.style.width = '50%';
@@ -3826,7 +3845,7 @@ color: #ffd700;
                 editor.classList.add('fullscreen');
                 editor.classList.remove('visible');
                 editor.classList.add('hidden');
-                fileViewer.style.display = 'none';
+                fileViewer.classList.add('hidden');
 
                 togglePanel.classList.add('left', 'no-left-space');
                 togglePanel.classList.remove('right', 'no-right-space');

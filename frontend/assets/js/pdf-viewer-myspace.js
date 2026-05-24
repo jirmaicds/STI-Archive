@@ -181,75 +181,11 @@ class PDFViewer {
     }
 
     updatePageControls() {
-        // Create or update page controls
-        let controls = document.getElementById('pdf-controls-' + this.container.id);
-
-        if (!controls) {
-            controls = document.createElement('div');
-            controls.id = 'pdf-controls-' + this.container.id;
-            controls.className = 'pdf-controls';
-            controls.style.cssText = `
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                gap: 15px;
-                padding: 15px;
-                background: #f5f5f5;
-                border-top: 1px solid #ddd;
-            `;
-
-            const prevBtn = document.createElement('button');
-            prevBtn.textContent = 'Previous';
-            prevBtn.className = 'pdf-prev-btn';
-            prevBtn.style.cssText = `
-                padding: 8px 16px;
-                background: #0057b8;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-            `;
-            prevBtn.onclick = () => this.onPrevPage();
-
-            const pageInfo = document.createElement('span');
-            pageInfo.className = 'pdf-page-info';
-            pageInfo.style.cssText = `
-                font-size: 14px;
-                color: #333;
-            `;
-
-            const nextBtn = document.createElement('button');
-            nextBtn.textContent = 'Next';
-            nextBtn.className = 'pdf-next-btn';
-            nextBtn.style.cssText = `
-                padding: 8px 16px;
-                background: #0057b8;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-            `;
-            nextBtn.onclick = () => this.onNextPage();
-
-            controls.appendChild(prevBtn);
-            controls.appendChild(pageInfo);
-            controls.appendChild(nextBtn);
-
-            // Insert controls after canvas
-            this.container.parentNode.insertBefore(controls, this.container.nextSibling);
+        // Page indicator only - no buttons, no zoom
+        const pageIndicator = document.getElementById('pdf-page-indicator');
+        if (pageIndicator && this.pdfDoc) {
+            pageIndicator.textContent = `Page ${this.pageNum} of ${this.pdfDoc.numPages}`;
         }
-
-        // Update page info
-        const pageInfo = controls.querySelector('.pdf-page-info');
-        if (pageInfo && this.pdfDoc) {
-            pageInfo.textContent = `Page ${this.pageNum} of ${this.pdfDoc.numPages}`;
-        }
-
-        // Update button states
-        const prevBtn = controls.querySelector('.pdf-prev-btn');
-        const nextBtn = controls.querySelector('.pdf-next-btn');
-        if (prevBtn) prevBtn.disabled = this.pageNum <= 1;
-        if (nextBtn) nextBtn.disabled = this.pageNum >= this.pdfDoc.numPages;
     }
 
     showError(message) {
@@ -455,47 +391,20 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
             };
         }
 
-        // Function to update toolbar colors dynamically
-        function updateToolbarColors() {
-            const colors = getColorScheme();
-            const toolbar = container.querySelector('#pdf-page-indicator')?.parentElement;
-            if (toolbar) {
-                toolbar.style.background = colors.toolbarBg;
-                toolbar.style.borderBottom = `1px solid ${colors.toolbarBorder}`;
-
-                const pageIndicator = container.querySelector('#pdf-page-indicator');
-                if (pageIndicator) {
-                    pageIndicator.style.color = colors.countColor;
-                }
-
-                // Only update the page indicator color
-            }
-
-            // Update canvas container background
-            const canvasContainer = container.querySelector('#pdf-viewer-canvas-container');
-            if (canvasContainer) {
-                canvasContainer.style.background = colors.canvasBg;
-            }
-        }
-
         // Get current color scheme
         const colors = getColorScheme();
 
-        // Container with page navigation - dark mode support
+        // Container with page indicator only - no buttons, no zoom
         const toolbarHtml = `
-                <div id="pdf-toolbar" style="padding:8px 12px;background:${colors.toolbarBg};border-bottom:1px solid ${colors.toolbarBorder};display:flex;align-items:center;justify-content:center;">
-                    <span id="pdf-page-indicator" style="font-size:13px;color:${colors.countColor};text-align:center;">Page 1 of 1</span>
-                </div>`;
+            <div id="pdf-toolbar" style="display:flex;justify-content:center;align-items:center;padding:8px;background:${colors.containerBg};border-bottom:1px solid ${colors.inputBorder};">
+                <span id="pdf-page-indicator" style="color:${colors.countColor};font-size:14px;font-weight:500;"></span>
+            </div>
+        `;
 
         // Always include search toolbar
         container.innerHTML = `
             <style>
                 @media (max-width: 768px) {
-                    #pdf-toolbar {
-                        flex-direction: column !important;
-                        gap: 8px !important;
-                        align-items: center !important;
-                    }
                     #pdf-viewer-canvas-container {
                         padding: 0 !important;
                         touch-action: manipulation !important;
@@ -540,7 +449,6 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
 
         const canvasContainer = container.querySelector('#pdf-viewer-canvas-container');
         console.log('Canvas container found:', canvasContainer);
-        const pageIndicator = container.querySelector('#pdf-page-indicator');
 
         // Store page data and canvases for search (only if toolbar exists)
         const pageData = [];
@@ -628,11 +536,6 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
 
                 canvasContainer.appendChild(fragment);
 
-
-                if (pageIndicator) {
-                    const currentPage = getCurrentVisiblePage();
-                    pageIndicator.textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
-                }
             } finally {
                 renderAllPagesLock = false;
                 if (renderAllPagesPending) {
@@ -652,14 +555,11 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
             canvasContainer.style.webkitOverflowScrolling = 'touch';
         }
 
-        // Initial color update
-        updateToolbarColors();
-
         // Watch for dark mode changes and update colors
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                    updateToolbarColors();
+                    // Colors can be updated here if needed
                 }
             });
         });
@@ -712,14 +612,6 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
             const pageDataItem = pageData.find(p => p.pageNum === pageNum);
             if (pageDataItem) {
                 pageDataItem.canvasWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                // Update page indicator immediately and after scroll
-                if (pageIndicator) {
-                    pageIndicator.textContent = `Page ${pageNum} of ${pdfDoc.numPages}`;
-                    // Also update after scroll completes
-                    setTimeout(() => {
-                        pageIndicator.textContent = `Page ${pageNum} of ${pdfDoc.numPages}`;
-                    }, 500);
-                }
             }
         }
 
@@ -728,9 +620,10 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         canvasContainer.addEventListener('scroll', () => {
             clearTimeout(scrollTimeout);
             scrollTimeout = setTimeout(() => {
-                if (pageIndicator) {
-                    const currentPage = getCurrentVisiblePage();
-                    pageIndicator.textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
+                const currentPage = getCurrentVisiblePage();
+                if (viewerInstance && viewerInstance.pdfDoc) {
+                    viewerInstance.pageNum = currentPage;
+                    viewerInstance.updatePageControls();
                 }
             }, 100);
         });

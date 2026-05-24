@@ -3060,10 +3060,13 @@
       // Check localStorage for homepage search (backward compatibility)
       if (!search) {
           const localSearch = localStorage.getItem('homepageSearch');
-          if (localSearch) {
+          const cameFromSuggestion = sessionStorage.getItem('cameFromHomepageSuggestion');
+          if (localSearch && cameFromSuggestion) {
               search = localSearch;
-              // Keep in localStorage for potential reuse - do NOT clear after use
-              // localStorage.removeItem('homepageSearch');
+              // Clear the search term from localStorage after use to prevent persistence
+              localStorage.removeItem('homepageSearch');
+              // Clear the flag so it doesn't persist
+              sessionStorage.removeItem('cameFromHomepageSuggestion');
           }
       }
 
@@ -3644,30 +3647,44 @@
        applyAllFilters();
      });
 
-     // Search input suggestion functionality
-     function updateSearchInputSuggestion() {
-       const suggestion = localStorage.getItem('homepageSearch');
-       const searchInputSuggestion = document.getElementById('searchInputSuggestion');
-       const mainSearchInputSuggestion = document.getElementById('mainSearchInputSuggestion');
-       
-       if (searchInputSuggestion) {
-         if (suggestion && suggestion.trim() !== '') {
-           searchInputSuggestion.textContent = suggestion;
-           searchInputSuggestion.style.display = 'block';
-         } else {
-           searchInputSuggestion.style.display = 'none';
-         }
-       }
-       
-       if (mainSearchInputSuggestion) {
-         if (suggestion && suggestion.trim() !== '') {
-           mainSearchInputSuggestion.textContent = suggestion;
-           mainSearchInputSuggestion.style.display = 'block';
-         } else {
-           mainSearchInputSuggestion.style.display = 'none';
-         }
-       }
-     }
+      // Search input suggestion functionality
+      function updateSearchInputSuggestion() {
+        const homepageSearch = localStorage.getItem('homepageSearch');
+        const searchInputValue = searchInput.value.trim();
+        const mainSearchInputValue = mainSearchInput.value.trim();
+        const searchInputSuggestion = document.getElementById('searchInputSuggestion');
+        const mainSearchInputSuggestion = document.getElementById('mainSearchInputSuggestion');
+        
+        // Only show suggestion if:
+        // 1. There's a homepage search term in localStorage
+        // 2. The user is typing in the search input
+        // 3. What they've typed matches the beginning of the homepage search term (case-insensitive)
+        if (searchInputSuggestion) {
+          if (homepageSearch && homepageSearch.trim() !== '' && 
+              searchInputValue !== '' && 
+              homepageSearch.toLowerCase().startsWith(searchInputValue.toLowerCase())) {
+            // Show the remaining part of the suggestion
+            const remaining = homepageSearch.substring(searchInputValue.length);
+            searchInputSuggestion.textContent = remaining;
+            searchInputSuggestion.style.display = 'block';
+          } else {
+            searchInputSuggestion.style.display = 'none';
+          }
+        }
+        
+        if (mainSearchInputSuggestion) {
+          if (homepageSearch && homepageSearch.trim() !== '' && 
+              mainSearchInputValue !== '' && 
+              homepageSearch.toLowerCase().startsWith(mainSearchInputValue.toLowerCase())) {
+            // Show the remaining part of the suggestion
+            const remaining = homepageSearch.substring(mainSearchInputValue.length);
+            mainSearchInputSuggestion.textContent = remaining;
+            mainSearchInputSuggestion.style.display = 'block';
+          } else {
+            mainSearchInputSuggestion.style.display = 'none';
+          }
+        }
+      }
 
      // Initialize search input suggestion on load
      updateSearchInputSuggestion();

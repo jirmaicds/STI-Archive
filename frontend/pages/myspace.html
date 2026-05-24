@@ -1741,6 +1741,7 @@ color: #ffd700;
     /* Small desktop / tablet: hide toolbar contents and show collapsible toolbar header */
 @media (max-width: 1104px) {
     .toolbar {
+        display: flex;
         flex-direction: column;
         gap: 0;
         padding: 0 !important;
@@ -1749,9 +1750,17 @@ color: #ffd700;
         overflow: hidden;
         transition: height 0.3s ease, padding 0.3s ease;
         background: #fff;
+        position: relative;
+        z-index: 1001;
     }
 
     .toolbar.expanded {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1005;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.18);
         height: 150px !important;
         padding: 0 !important;
     }
@@ -1890,6 +1899,7 @@ color: #ffd700;
     }
    
    .toolbar {
+     display: flex;
      flex-direction: column;
      gap: 0;
      padding: 0 16px;
@@ -1898,14 +1908,19 @@ color: #ffd700;
      overflow: hidden;
      transition: height 0.3s ease, padding 0.3s ease;
      background: #fff;
+     position: relative;
+     z-index: 1001;
    }
 
    .toolbar.expanded {
-     position: relative;
+     position: absolute;
+     top: 0;
+     left: 0;
+     width: 100%;
      z-index: 1005;
      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-     height: 200px !important;
-     padding: 10px 16px 16px;
+     height: 150px !important;
+     padding: 0 16px;
    }
 
    .toolbar-header {
@@ -2026,6 +2041,7 @@ color: #ffd700;
     }
    
    .toolbar {
+     display: flex;
      flex-direction: column;
      gap: 0;
      padding: 0 16px;
@@ -2034,14 +2050,19 @@ color: #ffd700;
      overflow: hidden;
      transition: height 0.3s ease, padding 0.3s ease;
      background: #fff;
+     position: relative;
+     z-index: 1001;
    }
 
    .toolbar.expanded {
-     position: relative;
+     position: absolute;
+     top: 0;
+     left: 0;
+     width: 100%;
      z-index: 1005;
      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-     height: 200px !important;
-     padding: 10px 16px 16px;
+     height: 150px !important;
+     padding: 0 16px;
    }
 
    .toolbar-header {

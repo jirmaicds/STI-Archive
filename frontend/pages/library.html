@@ -1986,26 +1986,7 @@
        display: flex;
        align-items: center;
    }
-    .main-navbar.shrink {
-      position: fixed;
-      height: 50px;
-      box-shadow: 0 4px 12px #0003;
-    }
-
-    .main-navbar.shrink .sti-logo {
-      height: 34px;
-      margin-top: 0;
-    }
-
-    
-
-    .main-navbar.shrink .sti-logo span {
-      font-size: 22px;
-    }
-
-    .main-navbar.shrink .nav-text {
-      font-size: 24px;
-    }
+    /* Shrink functionality removed - navbar stays at full height */
 
     .navbar-right.user-nav-fixed #userIcon {
     width: 32px;
@@ -2703,7 +2684,7 @@
         <div class="summary">${article.summary}</div>
         <div class="actions">
           <span onclick="saveArticle(this)">★ Save</span>
-          <span class="cited-counter" data-article-title="${article.title.replace(/"/g, '&quot;')}">
+          <span class="cited-counter" data-article-title="${article.title.replace(/"/g, '&quot;')}" onclick="openCitationModal(this)">
             <span>cited</span>
             <span class="counter-value">${getCitationCount(article.title)}</span>
           </span>
@@ -2774,7 +2755,7 @@
             <div class="summary">${upload.abstract || upload.description || 'No description available.'}</div>
             <div class="actions">
               <span onclick="saveArticle(this)">★ Save</span>
-              <span class="cited-counter" data-article-title="${upload.title.replace(/"/g, '&quot;')}">
+              <span class="cited-counter" data-article-title="${upload.title.replace(/"/g, '&quot;')}" onclick="openCitationModal(this)">
                 <span>cited</span>
                 <span class="counter-value">0</span>
               </span>
@@ -3678,7 +3659,7 @@
 
     // Create citation modal
     const modal = document.createElement('div');
-    modal.className = 'citation-modal';
+    modal.className = 'citation-modal show';
     // Store article data on modal element
     modal._title = title;
     modal._meta = meta;
@@ -3702,7 +3683,6 @@
     `;
 
     document.body.appendChild(modal);
-    modal.style.display = 'flex';
 
     // Generate APA citation by default
     generateCitation('apa', title, meta);

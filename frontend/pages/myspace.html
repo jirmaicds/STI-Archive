@@ -1733,20 +1733,8 @@ color: #ffd700;
     }
 
     .toolbar.expanded {
-        height: 150px !important;
+        height: auto !important;
         padding: 0 !important;
-    }
-
-    .toolbar-header {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 50px;
-        width: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 10;
     }
 
     .toolbar-btn {
@@ -1772,12 +1760,6 @@ color: #ffd700;
         color: #fff;
     }
 
-    .toolbar-label {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #333;
-    }
-
     .toolbar-content {
         display: none;
         flex-wrap: wrap;
@@ -1788,12 +1770,6 @@ color: #ffd700;
         overflow: hidden;
         transition: max-height 0.25s ease, opacity 0.25s ease;
         opacity: 0;
-    }
-
-    .toolbar.expanded .toolbar-content {
-        display: flex;
-        max-height: 1000px;
-        opacity: 1;
     }
 
    /* Tablet and below responsive layout */
@@ -1885,16 +1861,8 @@ color: #ffd700;
      position: relative;
      z-index: 1005;
      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-     height: 200px !important;
-     padding: 10px 16px 16px;
-   }
-
-   .toolbar-header {
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     min-height: 50px;
-     width: 100%;
+     height: auto !important;
+     padding: 0;
    }
 
    .toolbar-btn {
@@ -1911,17 +1879,6 @@ color: #ffd700;
      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
    }
 
-   .toolbar-label {
-     font-size: 1rem;
-     font-weight: 700;
-     color: #333;
-   }
-
-   .toolbar.expanded .toolbar-btn i {
-     transform: rotate(180deg);
-     transition: transform 0.2s ease;
-   }
-
    .toolbar-content {
      display: flex;
      flex-wrap: wrap;
@@ -1932,11 +1889,6 @@ color: #ffd700;
      overflow: hidden;
      transition: max-height 0.25s ease, opacity 0.25s ease;
      opacity: 0;
-   }
-
-   .toolbar.expanded .toolbar-content {
-     max-height: 1000px;
-     opacity: 1;
    }
 
    /* Hide file-viewer on tablet and mobile */
@@ -2021,16 +1973,8 @@ color: #ffd700;
      position: relative;
      z-index: 1005;
      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-     height: 200px !important;
-     padding: 10px 16px 16px;
-   }
-
-   .toolbar-header {
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     min-height: 50px;
-     width: 100%;
+     height: auto !important;
+     padding: 0;
    }
 
    .toolbar-btn {
@@ -2047,17 +1991,6 @@ color: #ffd700;
      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
    }
 
-   .toolbar-label {
-     font-size: 1rem;
-     font-weight: 700;
-     color: #333;
-   }
-
-   .toolbar.expanded .toolbar-btn i {
-     transform: rotate(180deg);
-     transition: transform 0.2s ease;
-   }
-
    .toolbar-content {
      display: flex;
      flex-wrap: wrap;
@@ -2068,11 +2001,6 @@ color: #ffd700;
      overflow: hidden;
      transition: max-height 0.25s ease, opacity 0.25s ease;
      opacity: 0;
-   }
-
-   .toolbar.expanded .toolbar-content {
-     max-height: 1000px;
-     opacity: 1;
    }
 }
 
@@ -2184,21 +2112,9 @@ color: #ffd700;
       position: relative;
       z-index: 2000;
       box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-      height: 200px !important;
-      padding: 10px 16px 16px;
+      height: auto !important;
+      padding: 0;
     }
-
-      .toolbar-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        min-height: 50px;
-        width: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 10;
-      }
 
       .toolbar-btn {
         display: flex;
@@ -2223,17 +2139,6 @@ color: #ffd700;
         color: #fff;
       }
 
-      .toolbar-label {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #333;
-      }
-
-      .toolbar.expanded .toolbar-btn i {
-        transform: rotate(180deg);
-        transition: transform 0.2s ease;
-      }
-
       .toolbar-content {
         display: flex;
         flex-wrap: wrap;
@@ -2244,11 +2149,6 @@ color: #ffd700;
         overflow: hidden;
         transition: max-height 0.25s ease, opacity 0.25s ease;
         opacity: 0;
-      }
-
-      .toolbar.expanded .toolbar-content {
-        max-height: 1000px;
-        opacity: 1;
       }
     }
  
@@ -2969,12 +2869,9 @@ color: #ffd700;
             </div>
 
             <div class="toolbar" id="toolbar">
-                <div class="toolbar-header">
-                    <span class="toolbar-label">Toolbar</span>
-                    <button class="toolbar-btn" type="button" onclick="toggleToolbar()" aria-expanded="false" title="Show toolbar options">
-                        <i class="fa fa-chevron-down" id="toolbarToggleIcon"></i>
-                    </button>
-                </div>
+                <button class="toolbar-btn" type="button" onclick="toggleToolbar()" aria-expanded="false" title="Show toolbar options">
+                    <i class="fa fa-wrench" id="toolbarToggleIcon"></i>
+                </button>
                 <div class="toolbar-content" id="toolbarContent">
                     <select onchange="format('fontName', this.value)">
                         <option value="Arial">Arial</option>
@@ -5832,13 +5729,78 @@ if (togglePanel && window.innerWidth > 767) {
         function toggleToolbar() {
             const toolbar = document.getElementById('toolbar');
             const icon = document.getElementById('toolbarToggleIcon');
+            const content = document.getElementById('toolbarContent');
             const isOpen = toolbar.classList.toggle('expanded');
+            
             if (isOpen) {
-                icon.className = 'fa fa-chevron-up';
+                // Show toolbar content as a centered modal
+                content.style.display = 'flex';
+                content.style.position = 'fixed';
+                content.style.top = '50%';
+                content.style.left = '50%';
+                content.style.transform = 'translate(-50%, -50%)';
+                content.style.zIndex = '1001';
+                content.style.background = getComputedStyle(document.documentElement).getPropertyValue('--bg-color') || '#fff';
+                content.style.padding = '20px';
+                content.style.borderRadius = '12px';
+                content.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
+                content.style.maxHeight = '80vh';
+                content.style.overflowY = 'auto';
+                
+                // Add click outside to close
+                setTimeout(() => {
+                    document.addEventListener('click', closeToolbarOutside);
+                }, 10);
+                
+                icon.className = 'fa fa-wrench';
                 toolbar.querySelector('.toolbar-btn').setAttribute('aria-expanded', 'true');
             } else {
-                icon.className = 'fa fa-chevron-down';
+                // Hide toolbar content
+                content.style.display = '';
+                content.style.position = '';
+                content.style.top = '';
+                content.style.left = '';
+                content.style.transform = '';
+                content.style.zIndex = '';
+                content.style.background = '';
+                content.style.padding = '';
+                content.style.borderRadius = '';
+                content.style.boxShadow = '';
+                content.style.maxHeight = '';
+                content.style.overflowY = '';
+                
+                document.removeEventListener('click', closeToolbarOutside);
+                
+                icon.className = 'fa fa-wrench';
                 toolbar.querySelector('.toolbar-btn').setAttribute('aria-expanded', 'false');
+            }
+        }
+        
+        function closeToolbarOutside(event) {
+            const toolbar = document.getElementById('toolbar');
+            const content = document.getElementById('toolbarContent');
+            const btn = toolbar.querySelector('.toolbar-btn');
+            
+            if (!toolbar.contains(event.target)) {
+                toolbar.classList.remove('expanded');
+                content.style.display = '';
+                content.style.position = '';
+                content.style.top = '';
+                content.style.left = '';
+                content.style.transform = '';
+                content.style.zIndex = '';
+                content.style.background = '';
+                content.style.padding = '';
+                content.style.borderRadius = '';
+                content.style.boxShadow = '';
+                content.style.maxHeight = '';
+                content.style.overflowY = '';
+                
+                document.removeEventListener('click', closeToolbarOutside);
+                
+                const icon = document.getElementById('toolbarToggleIcon');
+                icon.className = 'fa fa-wrench';
+                btn.setAttribute('aria-expanded', 'false');
             }
         }
 

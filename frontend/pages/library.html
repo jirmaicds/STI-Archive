@@ -14,12 +14,33 @@
   <title>Library | STI Archives</title>
   <link rel="icon" type="image/png" href="/frontend/assets/images/370044409_696741882497707_8408055328080058811_n.jpg?v=1" id="favicon-link">
   <style>
-    /* Global overflow prevention */
-    html, body {
-      overflow-x: hidden !important;
-      max-width: 100vw !important;
-      overflow-wrap: break-word;
-      word-break: break-word;
+    .search-input-wrapper {
+        position: relative;
+        width: 100%;
+        display: flex;
+        align-items: center;
+    }
+    
+    .search-input-suggestion {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+        font-style: italic;
+        pointer-events: none;
+        padding-left: 10px;
+    }
+    
+    .search-input {
+        padding-left: 30px !important;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .search-input:focus + .search-input-suggestion,
+    .search-input:not(:placeholder-shown) + .search-input-suggestion {
+        display: none;
     }
 
    body {
@@ -2376,11 +2397,14 @@
         <button class="filter-icon-btn" onclick="toggleTopicsModal()" title="Filter by topic">
           <i class="fas fa-filter"></i>
         </button>
-        <div class="search-container" id="searchContainer">
-          <input type="text" id="articleSearch" placeholder="Search works, authors, or topics... " class="search-input">
-          <i class="fas fa-times clear-icon" id="clearIcon" style="display: none;"></i>
-          <div class="search-suggestions" id="searchSuggestions"></div>
-        </div>
+       <div class="search-container" id="searchContainer">
+           <div class="search-input-wrapper">
+               <input type="text" id="articleSearch" placeholder="Search works, authors, or topics... " class="search-input">
+               <div class="search-input-suggestion" id="searchInputSuggestion"></div>
+               <i class="fas fa-times clear-icon" id="clearIcon" style="display: none;"></i>
+           </div>
+           <div class="search-suggestions" id="searchSuggestions"></div>
+       </div>
       </div>
       <!-- Topics Filter Modal for Navbar -->
       <div class="topics-modal topics-modal-navbar" id="topicsModalNavbar">
@@ -2448,13 +2472,16 @@
       <button class="filter-icon-btn filter-icon-btn-main" id="filterIconBtnMain" onclick="toggleTopicsModal()" title="Filter by topic">
         <i class="fas fa-filter"></i>
       </button>
-      <div class="search-container in-main" id="mainSearchContainer" style="flex: 1; max-width: 100%; display: flex;">
-        <button class="menu-btn" onclick="toggleSidebar()" style="flex-shrink: 0; margin-right: 10px;"><i class="fas fa-bars"></i></button>
-      <div style="flex: 1; display: flex; justify-content: center;">
-          <input type="text" id="mainArticleSearch" placeholder="Search works, authors, or topics... " class="search-input" style="width: 100%;">
-          <i class="fas fa-times clear-icon" id="mainClearIcon" style="display: none;"></i>
-      </div>
-      </div>
+       <div class="search-container in-main" id="mainSearchContainer" style="flex: 1; max-width: 100%; display: flex;">
+         <button class="menu-btn" onclick="toggleSidebar()" style="flex-shrink: 0; margin-right: 10px;"><i class="fas fa-bars"></i></button>
+       <div style="flex: 1; display: flex; justify-content: center;">
+           <div class="search-input-wrapper">
+               <input type="text" id="mainArticleSearch" placeholder="Search works, authors, or topics... " class="search-input" style="width: 100%;">
+               <div class="search-input-suggestion" id="mainSearchInputSuggestion"></div>
+               <i class="fas fa-times clear-icon" id="mainClearIcon" style="display: none;"></i>
+           </div>
+       </div>
+       </div>
     </div>
   </div>
   <!-- Sidebar -->
@@ -3524,17 +3551,39 @@
       main.appendChild(pagination);
     }
 
-      // Check for homepage search term after articles are loaded
-      const homepageSearch = localStorage.getItem('homepageSearch');
-      if (homepageSearch) {
-        document.getElementById('articleSearch').value = homepageSearch;
-        // Also update main search input if it exists
-        const mainSearchInput = document.getElementById('mainArticleSearch');
-        if (mainSearchInput) {
-          mainSearchInput.value = homepageSearch;
-        }
-        currentQuery = homepageSearch.toLowerCase().trim();
-        applyFilters(); // Apply the search filter
+      // Check if we came from a homepage suggestion
+      const cameFromSuggestion = sessionStorage.getItem('cameFromHomepageSuggestion');
+      if (cameFromSuggestion) {
+          // Clear the flag so it doesn't persist
+          sessionStorage.removeItem('cameFromHomepageSuggestion');
+          
+          // Get the search term from localStorage
+          const homepageSearch = localStorage.getItem('homepageSearch');
+          if (homepageSearch) {
+              // Clear the search term from localStorage after use to prevent persistence
+              localStorage.removeItem('homepageSearch');
+              
+              // Set the search inputs
+              const searchInput = document.getElementById('articleSearch');
+              const mainSearchInput = document.getElementById('mainArticleSearch');
+              const clearIcon = document.getElementById('clearIcon');
+              const mainClearIcon = document.getElementById('mainClearIcon');
+              
+              if (searchInput) {
+                  searchInput.value = homepageSearch;
+              }
+              if (mainSearchInput) {
+                  mainSearchInput.value = homepageSearch;
+              }
+              
+              // Update clear icon visibility
+              const hasValue = homepageSearch && homepageSearch.trim() !== '';
+              if (clearIcon) clearIcon.style.display = hasValue ? 'block' : 'none';
+              if (mainClearIcon) mainClearIcon.style.display = hasValue ? 'block' : 'none';
+              
+              currentQuery = homepageSearch.toLowerCase().trim();
+              applyFilters(); // Apply the search filter
+          }
       }
 
     // Make articles clickable
@@ -3587,104 +3636,73 @@
       applyAllFilters();
     });
 
-    // Clear search input on page refresh
-    window.addEventListener('beforeunload', function() {
-      searchInput.value = '';
-      currentQuery = '';
-      clearIcon.style.display = 'none';
-      applyAllFilters();
-    });
+     // Clear search input on page refresh
+     window.addEventListener('beforeunload', function() {
+       searchInput.value = '';
+       currentQuery = '';
+       clearIcon.style.display = 'none';
+       applyAllFilters();
+     });
 
-    // Recent searches functionality
-    let recentSearches = JSON.parse(localStorage.getItem('libraryRecentSearches')) || [];
+     // Search input suggestion functionality
+     function updateSearchInputSuggestion() {
+       const suggestion = localStorage.getItem('homepageSearch');
+       const searchInputSuggestion = document.getElementById('searchInputSuggestion');
+       const mainSearchInputSuggestion = document.getElementById('mainSearchInputSuggestion');
+       
+       if (searchInputSuggestion) {
+         if (suggestion && suggestion.trim() !== '') {
+           searchInputSuggestion.textContent = suggestion;
+           searchInputSuggestion.style.display = 'block';
+         } else {
+           searchInputSuggestion.style.display = 'none';
+         }
+       }
+       
+       if (mainSearchInputSuggestion) {
+         if (suggestion && suggestion.trim() !== '') {
+           mainSearchInputSuggestion.textContent = suggestion;
+           mainSearchInputSuggestion.style.display = 'block';
+         } else {
+           mainSearchInputSuggestion.style.display = 'none';
+         }
+       }
+     }
 
-    function addToRecent(term) {
-      term = term.trim();
-      if (!term) return;
-      // Remove if exists
-      recentSearches = recentSearches.filter(t => t !== term);
-      // Add to front
-      recentSearches.unshift(term);
-      // Max 5
-      if (recentSearches.length > 5) recentSearches.length = 5;
-      localStorage.setItem('libraryRecentSearches', JSON.stringify(recentSearches));
-    }
+     // Initialize search input suggestion on load
+     updateSearchInputSuggestion();
 
-    function removeFromRecent(term) {
-      recentSearches = recentSearches.filter(t => t !== term);
-      localStorage.setItem('libraryRecentSearches', JSON.stringify(recentSearches));
-    }
+     // Update suggestion when search input changes
+     searchInput.addEventListener('input', function() {
+       updateSearchInputSuggestion();
+       syncSearchInputs(this, mainSearchInput, clearIcon, mainClearIcon);
+     });
 
-    function showRecentSuggestions() {
-      const suggestions = document.getElementById('searchSuggestions');
-      if (!suggestions) return;
-      if (recentSearches.length === 0) {
-        suggestions.innerHTML = '';
-        suggestions.classList.remove('show');
-        return;
-      }
-      suggestions.innerHTML = recentSearches.map(term =>
-        `<li class="recent-item" onclick="selectRecent('${term.replace(/'/g, "\\'")}')">
-          <i class="fas fa-history"></i> ${term}
-          <span class="remove-icon" onclick="removeFromRecent('${term.replace(/'/g, "\\'")}'); showRecentSuggestions(); event.stopPropagation();">×</span>
-        </li>`
-      ).join('');
-      suggestions.classList.add('show');
-    }
+     mainSearchInput.addEventListener('input', function() {
+       updateSearchInputSuggestion();
+       syncSearchInputs(this, searchInput, mainClearIcon, clearIcon);
+     });
 
-    function selectRecent(term) {
-      mainSearchInput.value = term;
-      searchInput.value = term;
-      currentQuery = term.toLowerCase().trim();
-      addToRecent(term);
-      applyAllFilters();
-      document.getElementById('searchSuggestions').classList.remove('show');
-    }
+     // Clear suggestion when clear icon is clicked
+     clearIcon.addEventListener('click', function() {
+       searchInput.value = '';
+       mainSearchInput.value = '';
+       this.style.display = 'none';
+       mainClearIcon.style.display = 'none';
+       currentQuery = '';
+       updateSearchInputSuggestion();
+       applyAllFilters();
+     });
 
-    // Modify input events to show recent
-    searchInput.addEventListener('input', function() {
-      const query = this.value.trim();
-      if (query === '') {
-        showRecentSuggestions();
-      } else {
-        document.getElementById('searchSuggestions').classList.remove('show');
-      }
-      syncSearchInputs(this, mainSearchInput, clearIcon, mainClearIcon);
-    });
-
-    mainSearchInput.addEventListener('input', function() {
-      const query = this.value.trim();
-      if (query === '') {
-        showRecentSuggestions();
-      } else {
-        document.getElementById('searchSuggestions').classList.remove('show');
-      }
-      syncSearchInputs(this, searchInput, mainClearIcon, clearIcon);
-    });
-
-    // Add to recent on blur
-    searchInput.addEventListener('blur', function() {
-      const query = this.value.trim();
-      if (query) addToRecent(query);
-    });
-
-    mainSearchInput.addEventListener('blur', function() {
-      const query = this.value.trim();
-      if (query) addToRecent(query);
-    });
-
-    // Focus to show recent if empty
-    searchInput.addEventListener('focus', function() {
-      if (this.value.trim() === '') {
-        showRecentSuggestions();
-      }
-    });
-
-    mainSearchInput.addEventListener('focus', function() {
-      if (this.value.trim() === '') {
-        showRecentSuggestions();
-      }
-    });
+     mainClearIcon.addEventListener('click', function() {
+       mainSearchInput.value = '';
+       searchInput.value = '';
+       this.style.display = 'none';
+       clearIcon.style.display = 'none';
+       currentQuery = '';
+       updateSearchInputSuggestion();
+       applyAllFilters();
+     });
 
     // Click outside to hide
     document.addEventListener('click', function(e) {

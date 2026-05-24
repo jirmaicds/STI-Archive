@@ -709,6 +709,7 @@
     @media (min-width: 1024px) {
       .main-content {
         flex-direction: row !important;
+        padding: 0 !important;
       }
       .file-viewer {
         flex: 0 0 50% !important;
@@ -720,8 +721,39 @@
         flex: 0 0 50% !important;
         width: 50% !important;
         max-width: 50% !important;
-        display: flex !important;
+        display: none !important;
         padding: 20px 20px 0 20px;
+      }
+      
+      .editor.visible {
+        display: flex !important;
+      }
+      
+      .editor.fullscreen {
+        flex: 0 0 100% !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+    }
+
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .main-content {
+        flex-direction: column !important;
+        padding: 0 !important;
+      }
+      .file-viewer {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .editor {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        display: none !important;
+      }
+      .editor.visible {
+        display: flex !important;
       }
     }
 
@@ -3785,10 +3817,11 @@ color: #ffd700;
             console.log('toggleEditor called, current toggleState:', toggleState);
 
             if (toggleState === 'default') {
-                console.log('Going to editor state');
+                console.log('Going to editor fullscreen state');
                 toggleState = 'editor';
 
                 editor.classList.add('fullscreen');
+                editor.classList.remove('visible');
                 fileViewer.style.display = 'none';
 
                 togglePanel.classList.add('left', 'no-left-space');
@@ -4595,10 +4628,11 @@ color: #ffd700;
                         fileViewer.style.setProperty('display', 'none', 'important');
                     }
                 } else {
-                    // Desktop: add visible class
-                    editor.classList.add('visible');
-                    editor.classList.remove('fullscreen', 'collapsed');
+                    // Desktop: make editor fullscreen
+                    editor.classList.add('fullscreen');
+                    editor.classList.remove('visible');
                     editor.style.setProperty('display', 'flex', 'important');
+                    fileViewer.style.setProperty('display', 'none', 'important');
                 }
                 if (editor) {
                     // Set display based on screen size with !important to override CSS
@@ -6194,12 +6228,13 @@ if (togglePanel && window.innerWidth > 767) {
             if (editor) {
                 editor.style.display = 'none';
                 editor.classList.add('hidden');
-                editor.classList.remove('fullscreen');
+                editor.classList.remove('fullscreen', 'visible');
             }
             if (fileViewer) {
                 fileViewer.classList.remove('hidden');
                 fileViewer.style.display = 'flex';
             }
+            toggleState = 'default';
         } else {
             pdfBtn.classList.remove('active');
             wordBtn.classList.add('active');
@@ -6212,15 +6247,17 @@ if (togglePanel && window.innerWidth > 767) {
                 editor.classList.remove('hidden');
                 if (window.innerWidth <= 767) {
                     editor.classList.add('fullscreen');
-                    editor.classList.remove('collapsed');
+                    editor.classList.remove('collapsed', 'visible');
                 } else {
                     editor.classList.add('fullscreen');
+                    editor.classList.remove('visible');
                     editor.style.display = 'flex';
                 }
             }
             if (fileViewer && window.innerWidth > 767) {
                 fileViewer.style.display = 'none';
             }
+            toggleState = 'editor';
         }
 
         // Filter documents

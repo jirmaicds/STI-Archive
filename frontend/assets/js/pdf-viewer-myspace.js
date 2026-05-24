@@ -548,6 +548,12 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
 
         // Render pages vertically at default scale
         await renderAllPages();
+        
+        // Initialize page indicator after rendering
+        const pageIndicator = document.getElementById('pdf-page-indicator');
+        if (pageIndicator && pdfDoc) {
+            pageIndicator.textContent = `Page 1 of ${pdfDoc.numPages}`;
+        }
 
         // Enable natural touch zoom on mobile/tablet
         if (canvasContainer) {
@@ -622,9 +628,11 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
             clearTimeout(scrollTimeout);
             scrollTimeout = setTimeout(() => {
                 const currentPage = getCurrentVisiblePage();
-                if (viewerInstance && viewerInstance.pdfDoc) {
-                    viewerInstance.pageNum = currentPage;
-                    viewerInstance.updatePageControls();
+                if (pdfDoc) {
+                    const pageIndicator = document.getElementById('pdf-page-indicator');
+                    if (pageIndicator) {
+                        pageIndicator.textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
+                    }
                 }
             }, 100);
         });

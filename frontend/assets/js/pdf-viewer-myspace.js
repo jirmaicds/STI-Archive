@@ -394,10 +394,11 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         // Get current color scheme
         const colors = getColorScheme();
 
-        // Container with page indicator only - no buttons, no zoom
+        // Container with page indicator and close button
         const toolbarHtml = `
-            <div id="pdf-toolbar" style="display:flex;justify-content:center;align-items:center;padding:8px;background:${colors.containerBg};border-bottom:1px solid ${colors.inputBorder};">
+            <div id="pdf-toolbar" style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:${colors.toolbarBg};border-bottom:1px solid ${colors.toolbarBorder};">
                 <span id="pdf-page-indicator" style="color:${colors.countColor};font-size:14px;font-weight:500;"></span>
+                <button id="pdf-close-btn" style="background:none;border:none;font-size:24px;color:${colors.countColor};cursor:pointer;margin-right:10px;">&times;</button>
             </div>
         `;
 
@@ -628,6 +629,13 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
             }, 100);
         });
 
+        // Close button functionality
+        const closeBtn = container.querySelector('#pdf-close-btn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                closePDFModal();
+            });
+        }
 
 
     } catch (error) {

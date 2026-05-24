@@ -5735,17 +5735,33 @@ if (togglePanel && window.innerWidth > 767) {
             if (isOpen) {
                 // Show toolbar content as a centered modal
                 content.style.display = 'flex';
+                content.style.flexDirection = 'column';
+                content.style.gap = '15px';
                 content.style.position = 'fixed';
                 content.style.top = '50%';
                 content.style.left = '50%';
                 content.style.transform = 'translate(-50%, -50%)';
                 content.style.zIndex = '1001';
                 content.style.background = getComputedStyle(document.documentElement).getPropertyValue('--bg-color') || '#fff';
-                content.style.padding = '20px';
+                content.style.padding = '25px';
                 content.style.borderRadius = '12px';
                 content.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
                 content.style.maxHeight = '80vh';
                 content.style.overflowY = 'auto';
+                content.style.minWidth = '300px';
+                
+                // Add close button at top right if not exists
+                if (!document.getElementById('toolbarModalClose')) {
+                    const closeBtn = document.createElement('span');
+                    closeBtn.id = 'toolbarModalClose';
+                    closeBtn.innerHTML = '&times;';
+                    closeBtn.style.cssText = 'position:absolute;top:10px;right:15px;font-size:28px;font-weight:bold;cursor:pointer;color:#aaa;';
+                    closeBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        toggleToolbar();
+                    };
+                    content.insertBefore(closeBtn, content.firstChild);
+                }
                 
                 // Add click outside to close
                 setTimeout(() => {
@@ -5757,6 +5773,8 @@ if (togglePanel && window.innerWidth > 767) {
             } else {
                 // Hide toolbar content
                 content.style.display = '';
+                content.style.flexDirection = '';
+                content.style.gap = '';
                 content.style.position = '';
                 content.style.top = '';
                 content.style.left = '';
@@ -5768,6 +5786,13 @@ if (togglePanel && window.innerWidth > 767) {
                 content.style.boxShadow = '';
                 content.style.maxHeight = '';
                 content.style.overflowY = '';
+                content.style.minWidth = '';
+                
+                // Remove close button
+                const closeBtn = document.getElementById('toolbarModalClose');
+                if (closeBtn) {
+                    closeBtn.remove();
+                }
                 
                 document.removeEventListener('click', closeToolbarOutside);
                 
@@ -5784,6 +5809,8 @@ if (togglePanel && window.innerWidth > 767) {
             if (!toolbar.contains(event.target)) {
                 toolbar.classList.remove('expanded');
                 content.style.display = '';
+                content.style.flexDirection = '';
+                content.style.gap = '';
                 content.style.position = '';
                 content.style.top = '';
                 content.style.left = '';
@@ -5795,6 +5822,13 @@ if (togglePanel && window.innerWidth > 767) {
                 content.style.boxShadow = '';
                 content.style.maxHeight = '';
                 content.style.overflowY = '';
+                content.style.minWidth = '';
+                
+                // Remove close button
+                const closeBtn = document.getElementById('toolbarModalClose');
+                if (closeBtn) {
+                    closeBtn.remove();
+                }
                 
                 document.removeEventListener('click', closeToolbarOutside);
                 

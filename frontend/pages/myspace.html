@@ -35,7 +35,6 @@
         width: 100%;
         overflow: hidden;
         padding: 0 !important;
-        padding-top: 0 !important;
       }
 
     .toggle-panel {
@@ -255,12 +254,12 @@
       height: 100% !important;
       display: none;
       background-color: rgba(0,0,0,0.5);
-      z-index: 10001;
+      z-index: 999;
     }
     .pdf-modal-header {
       position: sticky;
       top: 0;
-      z-index: 10002;
+      z-index: 1000;
     }
 
     #pdf-viewer-modal #pdf-viewer-container {
@@ -579,12 +578,6 @@
        tab-size: 1.27cm;
      }
 
-    .dark-mode .page::before {
-       background: #2d2d2d;
-       border-color: #444;
-       color: #b0b7c3;
-     }
-
     .dark-mode .page-content:empty:before,
     .dark-mode .page-content[data-placeholder]:not(:focus):before {
        color: #b0b7c3;
@@ -725,6 +718,7 @@
       .main-content {
         flex-direction: row !important;
         padding: 0 !important;
+        margin: 50px !important;
       }
       .file-viewer {
         flex: 0 0 50% !important;
@@ -1033,14 +1027,14 @@ color: #ffd700;
        padding: 10px;
        position: relative;
        z-index: 1001;
-       height: auto;
-       min-height: auto;
+       height: 150px;
+       min-height: 150px;
        overflow: visible;
        transition: none;
      }
 
     .toolbar.expanded {
-      height: auto;
+      height: 150px;
       padding: 10px;
     }
 
@@ -1178,7 +1172,23 @@ color: #ffd700;
     .page.a5 { height: 793px; }
 
     .page::before {
-      content: none;
+      content: counter(page);
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      padding: 4px 8px;
+      font-size: 0.85rem;
+      background: rgb(240, 240, 240);
+      color: rgb(102, 102, 102);
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      counter-increment: page;
+    }
+
+    .dark-mode .page::before {
+      background: #2d2d2d;
+      border-color: #444;
+      color: #b0b7c3;
     }
 
     .document[contenteditable="true"] {
@@ -1209,7 +1219,7 @@ color: #ffd700;
        top: 50%;
        left: calc(50% - 15px);  /* Center by default, adjusted for 30px width */
        transform: translateY(-50%);
-       z-index: 1006;
+       z-index: 10000;
      }
 
     .toggle-panel.right {
@@ -1220,7 +1230,7 @@ color: #ffd700;
     .toggle-panel.left,
     .toggle-panel.right {
       display: flex !important;
-      z-index: 1006 !important;
+      z-index: 10000 !important;
     }
 
     .toggle-panel.left {
@@ -1241,7 +1251,7 @@ color: #ffd700;
        border-radius: 8px;
        width: 30px;
        height: 50px;
-       z-index: 1007;
+       z-index: 10001;
        display: flex;
        flex-direction: row;
        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
@@ -1250,7 +1260,7 @@ color: #ffd700;
 
      .toggle-half {
        width: 15px;
-       z-index: 1005;
+       z-index: 9999;
        height: 50px;
        display: flex;
        align-items: center;
@@ -1520,7 +1530,7 @@ color: #ffd700;
       border-radius: 12px;
       padding: 30px 50px;  /* More left/right padding */
       overflow: auto;
-      margin: 90px 20px 20px 20px;  /* Add margins for spacing, top margin for fixed toolbar */
+      margin: 20px 20px 20px 20px;  /* Add margins for spacing, top margin reduced from 90px to 20px */
       background: #fff;
       counter-reset: page 0;
     }
@@ -1703,8 +1713,8 @@ color: #ffd700;
         flex-direction: column;
         gap: 0;
         padding: 0 16px;
-        min-height: 100px !important;
-        height: auto !important;
+        min-height: 50px !important;
+        height: 50px !important;
         overflow: hidden;
         transition: height 0.3s ease, padding 0.3s ease;
         background: #fff;
@@ -3765,27 +3775,12 @@ color: #ffd700;
             if (editor) {
                 editor.classList.remove('fullscreen', 'collapsed', 'hidden');
                 editor.classList.add('visible');
-                editor.style.display = 'flex !important';
-                editor.style.position = 'relative';
-                editor.style.width = '50%';
-                editor.style.maxWidth = '50%';
-                editor.style.flex = '0 0 50%';
-                editor.style.left = 'auto';
-                editor.style.right = 'auto';
-                editor.style.top = 'auto';
-                editor.style.height = 'auto';
-                editor.style.zIndex = 'auto';
+                editor.style.cssText = 'display: flex !important; position: relative; width: 50%; max-width: 50%; flex: 0 0 50%; left: auto; right: auto; top: auto; height: auto; z-index: auto;';
             }
 
             if (fileViewer) {
                 fileViewer.classList.remove('expanded', 'hidden');
-                fileViewer.style.display = 'flex';
-                fileViewer.style.position = 'relative';
-                fileViewer.style.width = '50%';
-                fileViewer.style.maxWidth = '50%';
-                fileViewer.style.flex = '0 0 50%';
-                fileViewer.style.top = 'auto';
-                fileViewer.style.height = 'auto';
+                fileViewer.style.cssText = 'display: flex; position: relative; width: 50%; max-width: 50%; flex: 0 0 50%; top: auto; height: auto;';
             }
 
             if (togglePanel) {

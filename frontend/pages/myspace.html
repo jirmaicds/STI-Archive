@@ -1214,21 +1214,34 @@ color: #ffd700;
     }
 
     .page-indicator {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
+      position: static;
       padding: 5px 10px;
       font-size: 0.9rem;
       color: #666;
       background: rgba(255,255,255,0.8);
       border: 1px solid #ccc;
       border-radius: 4px;
+      text-align: center;
+    }
+
+    .page-container {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      padding: 5px 10px;
+      background: #f9f9f9;
+      border-bottom: 1px solid #eee;
     }
 
     .dark-mode .page-indicator {
       color: #b0b7c3;
       border-top-color: #444;
       background: #2d2d2d;
+    }
+
+    .dark-mode .page-container {
+      background: #1a1a1a;
+      border-bottom: 1px solid #333;
     }
 
     /* Toggle Panel Styles */
@@ -3061,16 +3074,14 @@ color: #ffd700;
                     <button onclick="removeCurrentPage()" title="Remove Current Page"><i class="fas fa-minus"></i> Remove Page</button>
                 </div>
             </div>
+                <div class="page-container">
+                    <div id="pageIndicator">Page 1 of 1</div>
+                </div>
                 <div class="document-container" id="documentContainer">
                     <div class="page active letter">
                         <div class="page-content" contenteditable="true" data-placeholder="Start Typing Your Document Here.."></div>
                         <div class="page-footer">i</div>
                     </div>
-                </div>
-                <!-- Footer inside editor -->
-                <div class="footer">
-                    <div id="wordCounter">0 words</div>
-                    <div id="pageIndicator">Page 1 of 1</div>
                 </div>
         </div>
     </div>

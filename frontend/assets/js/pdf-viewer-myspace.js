@@ -481,10 +481,14 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
         // Get current color scheme
         const colors = getColorScheme();
 
-        // Container with page navigation - dark mode support
+        // Container with page navigation and close button - dark mode support
         const toolbarHtml = `
-                <div id="pdf-toolbar" style="padding:8px 12px;background:${colors.toolbarBg};border-bottom:1px solid ${colors.toolbarBorder};display:flex;align-items:center;justify-content:center;">
-                    <span id="pdf-page-indicator" style="font-size:13px;color:${colors.countColor};text-align:center;">Page 1 of 1</span>
+                <div id="pdf-toolbar" style="padding:8px 12px;background:${colors.toolbarBg};border-bottom:1px solid ${colors.toolbarBorder};display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:10px;">
+                    <span id="pdf-page-indicator" style="font-size:13px;color:${colors.countColor};margin-left:10px;white-space:nowrap;">Page 1 of 1</span>
+                    <div style="flex:1;"></div>
+                    <button onclick="closePDFModal()" style="background:none;border:none;cursor:pointer;font-size:18px;color:${colors.inputColor};padding:4px 8px;margin-right:10px;" title="Close">
+                        <i class="fa fa-times"></i>
+                    </button>
                 </div>`;
 
         // Always include search toolbar
@@ -492,8 +496,8 @@ async function loadPDFWithPDFJS(pdfUrl, container, title) {
             <style>
                 @media (max-width: 768px) {
                     #pdf-toolbar {
-                        flex-direction: column !important;
-                        gap: 8px !important;
+                        flex-direction: row !important;
+                        gap: 10px !important;
                         align-items: center !important;
                     }
                     #pdf-viewer-canvas-container {

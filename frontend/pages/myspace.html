@@ -239,7 +239,7 @@
     #pdf-viewer-modal > div {
       background: #fff;
       border: 1px solid #ccc;
-      border-radius: 8px;
+      border-radius: 0;
       padding: 10px;
       width: 100%;
       height: 100%;
@@ -536,7 +536,7 @@
       color: white !important;
     }
     
-    .dark-mode .toolbar-open-btn {
+    .dark-mode .toolbar-btn {
       background: #444;
       color: white !important;
     }
@@ -1060,7 +1060,7 @@ color: #ffd700;
       display: none;
     }
 
-    .toolbar-open-btn {
+    .toolbar-btn {
       display: none;
     }
 
@@ -1091,7 +1091,7 @@ color: #ffd700;
     }
 
     .toolbar button:hover,
-    .toolbar-open-btn:hover {
+    .toolbar-btn:hover {
       background: #e0e0e0;
     }
 
@@ -1730,17 +1730,17 @@ color: #ffd700;
     .toolbar {
         flex-direction: column;
         gap: 0;
-        padding: 0 16px;
+        padding: 0 !important;
         min-height: 50px !important;
         height: 50px !important;
         overflow: hidden;
         transition: height 0.3s ease, padding 0.3s ease;
         background: #fff;
     }
-    
+
     .toolbar.expanded {
-        height: auto !important;
-        padding: 10px 16px 16px;
+        height: 150px !important;
+        padding: 0 !important;
     }
 
     .toolbar-header {
@@ -1749,11 +1749,15 @@ color: #ffd700;
         align-items: center;
         min-height: 50px;
         width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 10;
     }
 
-    .toolbar-open-btn {
+    .toolbar-btn {
         display: flex;
-        background: #2c2c2c;
+        background: #f0f0f0;
         border: none;
         border-radius: 8px;
         width: 42px;
@@ -1765,6 +1769,15 @@ color: #ffd700;
         box-shadow: 0 2px 8px rgba(0,0,0,0.25);
     }
 
+    /* Light mode icon color */
+    .toolbar-btn i {
+        color: #000;
+    }
+
+    [data-theme="dark"] .toolbar-btn i {
+        color: #fff;
+    }
+
     .toolbar-label {
         font-size: 1rem;
         font-weight: 700;
@@ -1772,7 +1785,7 @@ color: #ffd700;
     }
 
     .toolbar-content {
-        display: flex;
+        display: none;
         flex-wrap: wrap;
         align-items: center;
         gap: 10px;
@@ -1784,10 +1797,10 @@ color: #ffd700;
     }
 
     .toolbar.expanded .toolbar-content {
+        display: flex;
         max-height: 1000px;
         opacity: 1;
     }
-}
 
    /* Tablet and below responsive layout */
 @media (max-width: 767px) {
@@ -1890,9 +1903,9 @@ color: #ffd700;
      width: 100%;
    }
 
-   .toolbar-open-btn {
+   .toolbar-btn {
      display: flex;
-     background: #2c2c2c;
+     background: #f0f0f0;
      border: none;
      border-radius: 8px;
      width: 42px;
@@ -1910,7 +1923,7 @@ color: #ffd700;
      color: #333;
    }
 
-   .toolbar.expanded .toolbar-open-btn i {
+   .toolbar.expanded .toolbar-btn i {
      transform: rotate(180deg);
      transition: transform 0.2s ease;
    }
@@ -2026,9 +2039,9 @@ color: #ffd700;
      width: 100%;
    }
 
-   .toolbar-open-btn {
+   .toolbar-btn {
      display: flex;
-     background: #2c2c2c;
+     background: #f0f0f0;
      border: none;
      border-radius: 8px;
      width: 42px;
@@ -2046,7 +2059,7 @@ color: #ffd700;
      color: #333;
    }
 
-   .toolbar.expanded .toolbar-open-btn i {
+   .toolbar.expanded .toolbar-btn i {
      transform: rotate(180deg);
      transition: transform 0.2s ease;
    }
@@ -2187,11 +2200,15 @@ color: #ffd700;
         align-items: center;
         min-height: 50px;
         width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 10;
       }
 
-      .toolbar-open-btn {
+      .toolbar-btn {
         display: flex;
-        background: #2c2c2c;
+        background: #f0f0f0;
         border: none;
         border-radius: 8px;
         width: 42px;
@@ -2202,6 +2219,15 @@ color: #ffd700;
         color: white;
         box-shadow: 0 2px 8px rgba(0,0,0,0.25);
       }
+      
+      /* Light mode icon color */
+      .toolbar-btn i {
+        color: #000;
+      }
+      
+      [data-theme="dark"] .toolbar-btn i {
+        color: #fff;
+      }
 
       .toolbar-label {
         font-size: 1rem;
@@ -2209,7 +2235,7 @@ color: #ffd700;
         color: #333;
       }
 
-      .toolbar.expanded .toolbar-open-btn i {
+      .toolbar.expanded .toolbar-btn i {
         transform: rotate(180deg);
         transition: transform 0.2s ease;
       }
@@ -2961,26 +2987,9 @@ color: #ffd700;
 
   
 
-        <!-- Template Modal -->
-        <div id="templateModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
-            <div class="modal-content" style="background-color: #fff; padding: 20px; width: 80%; max-width: 600px; border-radius: 8px; position: relative;">
-                <span class="close" onclick="closeTemplateModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
-                <h2 style="margin-top: 0;">Templates</h2>
-                <div id="templateList" style="max-height: 400px; overflow-y: auto;">
-                <div class="page-preview">
-                    <div style="display: flex; align-items: center; margin-bottom: 10px; background: white; padding: 5px; border-radius: 4px;">
-                        <label><input type="radio" name="template" value="pr2_complete" checked></label>
-                        <h3 style="margin: 0 0 0 10px;">FORMAT - PR 2 - COMPLETE.pdf</h3>
-                    </div>
-                    <iframe src="" style="width: 100%; height: 100%; border: none;"></iframe>
-                </div>
-                </div>
-            </div>
-        </div>
-
         <!-- PDF Editor Modal -->
         <div id="pdfEditorModal" class="modal" onclick="if(event.target === this) { this.style.display='none'; top.location.href='library.html'; }" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
-            <div class="modal-content pdf-modal-content" style="background-color: #fff; padding: 20px; width: 90%; max-width: 1200px; height: 80%; border-radius: 8px; position: relative;">
+            <div class="modal-content pdf-modal-content" style="background-color: #fff; padding: 20px; width: 90%; max-width: 1200px; height: 80%; border-radius: 0; position: relative;">
                 <span class="close" onclick="closePdfModal(); return false;" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
                 <h2 style="margin-top: 0;">PDF Editor</h2>
                 <canvas id="pdfCanvas" style="width: 100%; height: 90%; border: 1px solid #ccc;"></canvas>
@@ -3008,7 +3017,7 @@ color: #ffd700;
             <div class="toolbar" id="toolbar">
                 <div class="toolbar-header">
                     <span class="toolbar-label">Toolbar</span>
-                    <button class="toolbar-open-btn" type="button" onclick="toggleToolbar()" aria-expanded="false" title="Show toolbar options">
+                    <button class="toolbar-btn" type="button" onclick="toggleToolbar()" aria-expanded="false" title="Show toolbar options">
                         <i class="fa fa-chevron-down" id="toolbarToggleIcon"></i>
                     </button>
                 </div>
@@ -5874,10 +5883,10 @@ if (togglePanel && window.innerWidth > 767) {
             const isOpen = toolbar.classList.toggle('expanded');
             if (isOpen) {
                 icon.className = 'fa fa-chevron-up';
-                toolbar.querySelector('.toolbar-open-btn').setAttribute('aria-expanded', 'true');
+                toolbar.querySelector('.toolbar-btn').setAttribute('aria-expanded', 'true');
             } else {
                 icon.className = 'fa fa-chevron-down';
-                toolbar.querySelector('.toolbar-open-btn').setAttribute('aria-expanded', 'false');
+                toolbar.querySelector('.toolbar-btn').setAttribute('aria-expanded', 'false');
             }
         }
 

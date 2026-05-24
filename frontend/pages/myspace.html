@@ -34,6 +34,7 @@
         min-height: calc(100vh - 50px);
         width: 100%;
         overflow: hidden;
+        padding: 0 !important;
         padding-top: 0 !important;
       }
 
@@ -526,6 +527,19 @@
       background: #333;
       color: white;
       border: 1px solid #555;
+    }
+    
+    .dark-mode .toolbar-header {
+      background: #2c2c2c;
+    }
+    
+    .dark-mode .toolbar-label {
+      color: white;
+    }
+    
+    .dark-mode .toolbar-open-btn {
+      background: #444;
+      color: white;
     }
 
     /* Doc title input dark mode */
@@ -1694,10 +1708,15 @@ color: #ffd700;
         gap: 0;
         padding: 0 16px;
         min-height: 50px !important;
-        height: 50px !important;
+        height: auto !important;
         overflow: hidden;
         transition: height 0.3s ease, padding 0.3s ease;
         background: #fff;
+    }
+    
+    .toolbar.expanded {
+        height: auto !important;
+        padding: 10px 16px 16px;
     }
 
     .toolbar-header {
@@ -3683,30 +3702,7 @@ color: #ffd700;
                 
             } else if (toggleState === 'fileViewer') {
                 // Restore default split view (half/half)
-                toggleState = 'default';
-                
-                // Reset file-viewer to 50%
-                fileViewer.classList.remove('expanded', 'hidden');
-                fileViewer.style.display = 'flex';
-                fileViewer.style.flex = '0 0 50%';
-                fileViewer.style.width = '50%';
-                fileViewer.style.maxWidth = '50%';
-                
-                // Show editor on right at 50%
-                editor.classList.remove('hidden');
-                editor.classList.add('visible');
-                editor.style.display = 'flex';
-                editor.style.flex = '0 0 50%';
-                editor.style.width = '50%';
-                editor.style.maxWidth = '50%';
-                
-                // Reset panel
-                togglePanel.classList.remove('right', 'no-right-space');
-                toggleBtn.style.width = '30px';
-                leftBtn.querySelector('i').className = 'fa fa-chevron-left';
-                rightBtn.querySelector('i').className = 'fa fa-chevron-right';
-                rightBtn.onclick = () => toggleFileViewer();
-                leftBtn.style.display = 'flex';
+                restoreDefaultSplitView();
             }
         }
 
@@ -3773,7 +3769,7 @@ color: #ffd700;
             if (editor) {
                 editor.classList.remove('fullscreen', 'collapsed', 'hidden');
                 editor.classList.add('visible');
-                editor.style.display = 'flex';
+                editor.style.display = 'flex !important';
                 editor.style.position = 'relative';
                 editor.style.width = '50%';
                 editor.style.maxWidth = '50%';
@@ -3865,6 +3861,9 @@ color: #ffd700;
                 restoreDefaultSplitView();
                 return;
             }
+            
+            // Default case: ensure editor shows on right side
+            restoreDefaultSplitView();
         }
 
         function toggleHomeEditor() {

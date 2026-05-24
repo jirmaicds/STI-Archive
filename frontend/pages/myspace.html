@@ -30,7 +30,7 @@
         flex-wrap: nowrap;
         position: relative;
         top: 0;
-        margin-top: 50px;
+        margin-top: 0;
         min-height: calc(100vh - 50px);
         width: 100%;
         overflow: hidden;
@@ -525,7 +525,7 @@
         
         .dark-mode .toolbar select, .dark-mode .toolbar button, .dark-mode .toolbar input[type="color"] {
       background: #333;
-      color: white;
+      color: white !important;
       border: 1px solid #555;
     }
     
@@ -534,12 +534,12 @@
     }
     
     .dark-mode .toolbar-label {
-      color: white;
+      color: white !important;
     }
     
     .dark-mode .toolbar-open-btn {
       background: #444;
-      color: white;
+      color: white !important;
     }
 
     /* Doc title input dark mode */
@@ -736,12 +736,8 @@
         flex: 0 0 50% !important;
         width: 50% !important;
         max-width: 50% !important;
-        display: none !important;
-        padding: 20px 20px 0 20px;
-      }
-      
-      .editor.visible {
         display: flex !important;
+        padding: 20px 20px 0 20px;
       }
       
       .editor.fullscreen {
@@ -1707,7 +1703,7 @@ color: #ffd700;
         flex-direction: column;
         gap: 0;
         padding: 0 16px;
-        min-height: 50px !important;
+        min-height: 100px !important;
         height: auto !important;
         overflow: hidden;
         transition: height 0.3s ease, padding 0.3s ease;

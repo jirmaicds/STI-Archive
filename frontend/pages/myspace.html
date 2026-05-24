@@ -34,6 +34,7 @@
         min-height: calc(100vh - 50px);
         width: 100%;
         overflow: hidden;
+        padding-top: 0 !important;
       }
 
     .toggle-panel {
@@ -721,18 +722,18 @@
         flex: 0 0 50% !important;
         width: 50% !important;
         max-width: 50% !important;
-        display: none !important;
-        padding: 20px 20px 0 20px;
-      }
-      
-      .editor.visible {
         display: flex !important;
+        padding: 20px 20px 0 20px;
       }
       
       .editor.fullscreen {
         flex: 0 0 100% !important;
         width: 100% !important;
         max-width: 100% !important;
+      }
+      
+      .editor.hidden {
+        display: none !important;
       }
     }
 
@@ -3765,7 +3766,7 @@ color: #ffd700;
             toggleState = 'default';
 
             if (editor) {
-                editor.classList.remove('fullscreen', 'collapsed');
+                editor.classList.remove('fullscreen', 'collapsed', 'hidden');
                 editor.classList.add('visible');
                 editor.style.display = 'flex';
                 editor.style.position = 'relative';
@@ -3814,6 +3815,8 @@ color: #ffd700;
 
         // Toggle editor: implements the new toggle behavior
         function toggleEditor() {
+            const editor = document.getElementById('editor');
+            const fileViewer = document.querySelector('.file-viewer');
             console.log('toggleEditor called, current toggleState:', toggleState);
 
             if (toggleState === 'default') {
@@ -3822,6 +3825,7 @@ color: #ffd700;
 
                 editor.classList.add('fullscreen');
                 editor.classList.remove('visible');
+                editor.classList.add('hidden');
                 fileViewer.style.display = 'none';
 
                 togglePanel.classList.add('left', 'no-left-space');
@@ -4615,7 +4619,7 @@ color: #ffd700;
                 // On tablet/phone, make editor fullscreen and hide file-viewer
                 if (window.innerWidth <= 767) {
                     // Remove any conflicting classes
-                    editor.classList.remove('fullscreen', 'visible', 'collapsed');
+                    editor.classList.remove('fullscreen', 'visible', 'collapsed', 'hidden');
                     // Set styles manually to avoid CSS conflicts - fullscreen covering entire screen
                     editor.style.setProperty('display', 'block', 'important');
                     editor.style.setProperty('position', 'fixed', 'important'); // Use fixed to cover entire viewport
@@ -4631,6 +4635,7 @@ color: #ffd700;
                     // Desktop: make editor fullscreen
                     editor.classList.add('fullscreen');
                     editor.classList.remove('visible');
+                    editor.classList.add('hidden');
                     editor.style.setProperty('display', 'flex', 'important');
                     fileViewer.style.setProperty('display', 'none', 'important');
                 }
@@ -4685,8 +4690,8 @@ color: #ffd700;
                var isEditorFullscreen = editor && editor.classList.contains('fullscreen');
 
                if (editor) {
-                   editor.classList.remove('visible', 'fullscreen');
-                   editor.style.display = 'none';
+                   editor.classList.remove('visible', 'fullscreen', 'hidden');
+                   editor.style.display = 'flex';
                    editor.style.flex = '0 0 50%';
                    editor.style.width = '50%';
                    editor.style.position = 'relative';
@@ -4700,8 +4705,8 @@ color: #ffd700;
                    fileViewer.style.display = 'flex';
                        if (window.innerWidth <= 767) {
                    } else {
-                       fileViewer.style.flex = '0 0 100%';
-                       fileViewer.style.width = '100%';
+                       fileViewer.style.flex = '0 0 50%';
+                       fileViewer.style.width = '50%';
                    }
                }
 
@@ -4723,8 +4728,8 @@ if (togglePanel && window.innerWidth > 767) {
                 var editor = document.getElementById('editor');
                 var fileViewer = document.querySelector('.file-viewer');
 
-                if (window.innerWidth > 767) {
-                    // Desktop/tablet: show both panels side-by-side or stacked depending on CSS
+                if (window.innerWidth >= 1024) {
+                    // Desktop: show both panels side-by-side (50% each) - editor visible by default
                       if (fileViewer) {
                           fileViewer.style.display = 'flex';
                           fileViewer.style.setProperty('width', '50%', 'important');
@@ -4733,11 +4738,24 @@ if (togglePanel && window.innerWidth > 767) {
                       }
                       if (editor) {
                           editor.classList.add('visible');
+                          editor.classList.remove('hidden');
                           editor.style.display = 'flex';
                           editor.style.setProperty('width', '50%', 'important');
                           editor.style.setProperty('maxWidth', '50%', 'important');
                           editor.style.setProperty('flex', '0 0 50%', 'important');
                       }
+                } else if (window.innerWidth > 767 && window.innerWidth < 1024) {
+                    // Tablet (768px-1023px): show file-viewer full, hide editor
+                    if (fileViewer) {
+                        fileViewer.style.display = 'flex';
+                        fileViewer.style.flex = '0 0 100%';
+                        fileViewer.style.width = '100%';
+                    }
+                    if (editor) {
+                        editor.classList.remove('visible');
+                        editor.classList.add('hidden');
+                        editor.style.display = 'none';
+                    }
                 } else {
                     // Mobile: show file-viewer full, hide editor
                     if (fileViewer) {
@@ -4752,8 +4770,8 @@ if (togglePanel && window.innerWidth > 767) {
 
                   // Force apply styles after a short delay to ensure it works
                   setTimeout(function() {
-                  if (window.innerWidth > 767) {
-                     // Desktop/tablet: show both panels
+                  if (window.innerWidth >= 1024) {
+                     // Desktop: show both panels (50% each) - editor visible
                      if (fileViewer) {
                          fileViewer.style.display = 'flex';
                          fileViewer.style.setProperty('width', '50%', 'important');
@@ -4762,11 +4780,24 @@ if (togglePanel && window.innerWidth > 767) {
                      }
                      if (editor) {
                          editor.classList.add('visible');
+                         editor.classList.remove('hidden');
                          editor.style.display = 'flex';
                          editor.style.setProperty('width', '50%', 'important');
                          editor.style.setProperty('maxWidth', '50%', 'important');
                          editor.style.setProperty('flex', '0 0 50%', 'important');
                      }
+                    } else if (window.innerWidth > 767 && window.innerWidth < 1024) {
+                        // Tablet: show file-viewer full, hide editor
+                        if (fileViewer) {
+                            fileViewer.style.display = 'flex';
+                            fileViewer.style.flex = '0 0 100%';
+                            fileViewer.style.width = '100%';
+                        }
+                        if (editor) {
+                            editor.classList.add('hidden');
+                            editor.style.display = 'none';
+                            editor.classList.remove('visible');
+                        }
                     } else {
                         // Mobile: show file-viewer full, hide editor
                         if (editor) {

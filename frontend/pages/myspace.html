@@ -3641,85 +3641,71 @@ color: #ffd700;
 
         // Toggle file-viewer: implements the new toggle behavior
         function toggleFileViewer() {
-            // Check if editor is in fullscreen mode (from creating blank document)
+            const editor = document.getElementById('editor');
+            const fileViewer = document.querySelector('.file-viewer');
+            
+            // Check if editor is in fullscreen mode
             const isEditorFullscreen = editor.classList.contains('fullscreen');
 
             if (isEditorFullscreen) {
                 // When editor is fullscreen and user clicks toggle, go back to half/half
-                // Requirement: file viewer on left, editor on right
+                restoreDefaultSplitView();
+                return;
+            }
+
+            if (toggleState === 'default') {
+                // Go to fileViewer full width (hide editor)
+                toggleState = 'fileViewer';
+                
+                // Expand file-viewer to 100%
+                fileViewer.classList.remove('hidden');
+                fileViewer.classList.add('expanded');
+                fileViewer.style.display = 'flex';
+                fileViewer.style.flex = '0 0 100%';
+                fileViewer.style.width = '100%';
+                fileViewer.style.maxWidth = '100%';
+                
+                // Hide editor
+                editor.classList.add('hidden');
+                editor.classList.remove('visible');
+                editor.style.display = 'none';
+                
+                // Move panel to right
+                togglePanel.classList.add('right', 'no-right-space');
+                togglePanel.classList.remove('left', 'no-left-space');
+                togglePanel.style.display = 'flex';
+                
+                // Adjust button
+                toggleBtn.style.width = '15px';
+                rightBtn.querySelector('i').className = 'fa fa-chevron-left';
+                leftBtn.style.display = 'none';
+                rightBtn.style.display = 'flex';
+                
+            } else if (toggleState === 'fileViewer') {
+                // Restore default split view (half/half)
                 toggleState = 'default';
-
-                // Reset editor from fullscreen to 50% width (right side)
-                editor.classList.remove('fullscreen');
-                editor.classList.add('visible');
-                editor.style.display = 'flex';
-                editor.style.flex = '0 0 50%';
-                editor.style.width = '50%';
-                editor.style.maxWidth = '50%';
-                editor.style.position = 'relative';
-                editor.style.right = 'auto';
-                editor.style.left = 'auto';
-                editor.style.top = 'auto';
-                editor.style.height = 'auto';
-
-                // Show file-viewer at 50% width (left side)
+                
+                // Reset file-viewer to 50%
                 fileViewer.classList.remove('expanded', 'hidden');
                 fileViewer.style.display = 'flex';
                 fileViewer.style.flex = '0 0 50%';
                 fileViewer.style.width = '50%';
                 fileViewer.style.maxWidth = '50%';
-                fileViewer.style.position = 'relative';
-                fileViewer.style.top = 'auto';
-                fileViewer.style.height = 'auto';
-
-                // Reset toggle panel
-                togglePanel.classList.remove('left', 'no-left-space', 'right', 'no-right-space');
-                toggleBtn.style.width = '30px';
-                leftBtn.querySelector('i').className = 'fa fa-chevron-left';
-                rightBtn.querySelector('i').className = 'fa fa-chevron-right';
-                rightBtn.onclick = () => toggleFileViewer();
-                leftBtn.style.display = 'flex';
-                rightBtn.style.display = 'flex';
-
-                return;
-            }
-
-            if (toggleState === 'default') {
-                // Go to fileViewer toggled (full width)
-                toggleState = 'fileViewer';
-                // Expand file-viewer to 100%, hide editor
-                fileViewer.classList.add('expanded');
-                fileViewer.classList.remove('hidden');
-                editor.classList.add('hidden');
-                editor.classList.remove('visible');
-                // Move panel to right and show it
-                togglePanel.classList.add('right', 'no-right-space');
-                togglePanel.classList.remove('left', 'no-left-space');
-                togglePanel.style.display = 'flex';
-                // Adjust button width
-                toggleBtn.style.width = '15px';
-                // Change icon to chevron-left for toggle back
-                rightBtn.querySelector('i').className = 'fa fa-chevron-left';
-                // Hide the left button (HomeEditor toggle)
-                leftBtn.style.display = 'none';
-                // Show the right button (File Viewer toggle)
-                rightBtn.style.display = 'flex';
-            } else if (toggleState === 'fileViewer') {
-                // Restore default
-                toggleState = 'default';
-                // Reset
-                fileViewer.classList.remove('expanded', 'hidden');
-                editor.classList.remove('collapsed', 'hidden');
+                
+                // Show editor on right at 50%
+                editor.classList.remove('hidden');
                 editor.classList.add('visible');
-
+                editor.style.display = 'flex';
+                editor.style.flex = '0 0 50%';
+                editor.style.width = '50%';
+                editor.style.maxWidth = '50%';
+                
+                // Reset panel
                 togglePanel.classList.remove('right', 'no-right-space');
-                // Reset button width
                 toggleBtn.style.width = '30px';
-                // Reset icons
                 leftBtn.querySelector('i').className = 'fa fa-chevron-left';
                 rightBtn.querySelector('i').className = 'fa fa-chevron-right';
                 rightBtn.onclick = () => toggleFileViewer();
-                // Show the left button
                 leftBtn.style.display = 'flex';
             }
         }
@@ -3839,13 +3825,22 @@ color: #ffd700;
             console.log('toggleEditor called, current toggleState:', toggleState);
 
             if (toggleState === 'default') {
+                // From Split View -> Editor Fullscreen
                 console.log('Going to editor fullscreen state');
                 toggleState = 'editor';
 
+                // Hide file viewer
+                fileViewer.classList.add('hidden');
+                fileViewer.style.display = 'none';
+                
+                // Show editor fullscreen
+                editor.classList.remove('hidden');
                 editor.classList.add('fullscreen');
                 editor.classList.remove('visible');
-                editor.classList.add('hidden');
-                fileViewer.classList.add('hidden');
+                editor.style.display = 'flex';
+                editor.style.flex = '0 0 100%';
+                editor.style.width = '100%';
+                editor.style.maxWidth = '100%';
 
                 togglePanel.classList.add('left', 'no-left-space');
                 togglePanel.classList.remove('right', 'no-right-space');
@@ -3858,12 +3853,14 @@ color: #ffd700;
             }
 
             if (toggleState === 'editor' || editor.classList.contains('fullscreen')) {
+                // From Editor Fullscreen -> Back to Split View (Half/Half)
                 console.log('Restoring default split view from editor state');
                 restoreDefaultSplitView();
                 return;
             }
 
             if (toggleState === 'fileViewer') {
+                // From File Viewer Full Width -> Restore Split View (which shows editor on right)
                 console.log('Restoring default split view from fileViewer state');
                 restoreDefaultSplitView();
                 return;

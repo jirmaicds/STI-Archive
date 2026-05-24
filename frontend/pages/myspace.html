@@ -566,6 +566,7 @@
     }
 
     .dark-mode .document-container {
+       touch-action: pinch-zoom;
        background: #2d2d2d;
        color: white;
        border-color: #444;
@@ -1090,6 +1091,7 @@ color: #ffd700;
     }
 
     .document-container {
+       touch-action: pinch-zoom;
        flex: 1;
        max-width: 100%;
        border: 1px solid #ccc;
@@ -1208,21 +1210,34 @@ color: #ffd700;
     }
 
     .page-indicator {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
+      position: static;
       padding: 5px 10px;
       font-size: 0.9rem;
       color: #666;
       background: rgba(255,255,255,0.8);
       border: 1px solid #ccc;
       border-radius: 4px;
+      text-align: center;
+    }
+
+    .page-container {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      padding: 5px 10px;
+      background: #f9f9f9;
+      border-bottom: 1px solid #eee;
     }
 
     .dark-mode .page-indicator {
       color: #b0b7c3;
       border-top-color: #444;
       background: #2d2d2d;
+    }
+
+    .dark-mode .page-container {
+      background: #1a1a1a;
+      border-bottom: 1px solid #333;
     }
 
     /* Toggle Panel Styles */
@@ -1538,6 +1553,7 @@ color: #ffd700;
     }
 
     .editor.fullscreen .document-container {
+       touch-action: pinch-zoom;
       border: 1px solid #ccc;
       border-radius: 12px;
       padding: 30px 50px;  /* More left/right padding */
@@ -1655,6 +1671,7 @@ color: #ffd700;
     }
 
     .dark-mode .editor.fullscreen .document-container {
+       touch-action: pinch-zoom;
       border-color: #444;
       background: #2d2d2d;
     }
@@ -1722,6 +1739,7 @@ color: #ffd700;
     /* Small desktop / tablet: hide toolbar contents and show collapsible toolbar header */
 @media (max-width: 1104px) {
     .toolbar {
+        display: flex;
         flex-direction: column;
         gap: 0;
         padding: 0 !important;
@@ -1730,6 +1748,8 @@ color: #ffd700;
         overflow: hidden;
         transition: height 0.3s ease, padding 0.3s ease;
         background: #fff;
+        position: relative;
+        z-index: 1001;
     }
 
     .toolbar.expanded {
@@ -1804,6 +1824,7 @@ color: #ffd700;
    }
    
    .editor.fullscreen .document-container {
+       touch-action: pinch-zoom;
      flex: 1 1 auto !important;
      min-height: 0 !important;
      overflow: auto !important;
@@ -1847,6 +1868,7 @@ color: #ffd700;
     }
    
    .toolbar {
+     display: flex;
      flex-direction: column;
      gap: 0;
      padding: 0 16px;
@@ -1855,10 +1877,15 @@ color: #ffd700;
      overflow: hidden;
      transition: height 0.3s ease, padding 0.3s ease;
      background: #fff;
+     position: relative;
+     z-index: 1001;
    }
 
    .toolbar.expanded {
-     position: relative;
+     position: absolute;
+     top: 0;
+     left: 0;
+     width: 100%;
      z-index: 1005;
      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
      height: auto !important;
@@ -1916,6 +1943,7 @@ color: #ffd700;
    }
    
    .editor.fullscreen .document-container {
+       touch-action: pinch-zoom;
      flex: 1 1 auto !important;
      min-height: 0 !important;
      overflow: auto !important;
@@ -1959,6 +1987,7 @@ color: #ffd700;
     }
    
    .toolbar {
+     display: flex;
      flex-direction: column;
      gap: 0;
      padding: 0 16px;
@@ -1967,10 +1996,15 @@ color: #ffd700;
      overflow: hidden;
      transition: height 0.3s ease, padding 0.3s ease;
      background: #fff;
+     position: relative;
+     z-index: 1001;
    }
 
    .toolbar.expanded {
-     position: relative;
+     position: absolute;
+     top: 0;
+     left: 0;
+     width: 100%;
      z-index: 1005;
      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
      height: auto !important;
@@ -2029,6 +2063,7 @@ color: #ffd700;
       }
       
     .editor.fullscreen .document-container {
+       touch-action: pinch-zoom;
       flex: 1 1 auto !important;
       min-height: 0 !important;
       overflow: auto !important;
@@ -2398,6 +2433,7 @@ color: #ffd700;
        
         /* Ensure document container expands to fill space above footer */
         .editor .document-container {
+       touch-action: pinch-zoom;
           flex: 1 1 auto !important;
           overflow: auto !important;
           padding-bottom: 0 !important;
@@ -2459,6 +2495,7 @@ color: #ffd700;
 
       .editor .document-container,
       .editor.fullscreen .document-container {
+       touch-action: pinch-zoom;
         flex: 1 1 auto !important;
         min-height: 0 !important;
         overflow: auto !important;
@@ -2483,6 +2520,7 @@ color: #ffd700;
       }
 
       .editor.fullscreen .document-container {
+       touch-action: pinch-zoom;
         margin: 0 0 10px 0 !important;
         padding: 20px !important;
       }
@@ -2702,12 +2740,14 @@ color: #ffd700;
         height: 50px;
       }
        .editor .document-container {
+       touch-action: pinch-zoom;
          max-height: calc(100vh - 200px);
        }
 
        /* Final mobile footer visibility - must win over all other blocks */
        .editor .toolbar,
        .editor .document-container {
+       touch-action: pinch-zoom;
          margin-bottom: 0 !important;
        }
        .editor .footer {
@@ -2833,6 +2873,8 @@ color: #ffd700;
                     overflow: auto;
                     background: #1a1a1a;
                     height: auto;
+                    display: flex;
+                    justify-content: center;
                 ">
                 </div>
             </div>
@@ -2909,16 +2951,14 @@ color: #ffd700;
                     <button onclick="removeCurrentPage()" title="Remove Current Page"><i class="fas fa-minus"></i> Remove Page</button>
                 </div>
             </div>
+                <div class="page-container">
+                    <div id="pageIndicator">Page 1 of 1</div>
+                </div>
                 <div class="document-container" id="documentContainer">
                     <div class="page active letter">
                         <div class="page-content" contenteditable="true" data-placeholder="Start Typing Your Document Here.."></div>
                         <div class="page-footer">i</div>
                     </div>
-                </div>
-                <!-- Footer inside editor -->
-                <div class="footer">
-                    <div id="wordCounter">0 words</div>
-                    <div id="pageIndicator">Page 1 of 1</div>
                 </div>
         </div>
     </div>
